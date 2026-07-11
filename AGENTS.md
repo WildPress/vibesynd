@@ -217,8 +217,10 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 
 ## Current Status  (update every session)
 
-### ⭐ SNAPSHOT, read this first (as of 2026-07-11)
+### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
 - **Coverage: 71/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (cont. 13 mapped the weapons/combat subsystem — see the 🔫 entry below — but banked 0 new matches:
+  its clean vein was already mined, the two tractable leaves are register/CMP-encoding walls.)
 - 🧰 **TOOLCHAIN INDEX: see `tools/README.md`** (primary workflow + every active tool). The fuzzer
   `tools/cpermute.py` is now heavily commented — read its header for how the permuter works in detail.
   Superseded/one-off scripts (old W10 pipeline, pre-cpermute permuters, LE-unpack) are moved to
@@ -274,6 +276,30 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
   C form we tried puts idx in EBX → a `lea` + a 2-byte-longer block. `src/FUN_00026e18.c` kept as a
   documented near-miss (NOT in manifest/recipes). Grid-head table is `g_10e` (u16[] @ abs 0x10e);
   p_id = (u16)(p - g_810e).
+- 🔫 **WEAPONS / COMBAT subsystem mapped (cont. 13).** The shot/damage cluster is `0x34xxx`, coupled by
+  the shot-position accumulator globals `g_10b5e`(x)/`g_10b5c`(y)/`g_10b5a`(level), the 256-entry
+  direction-vector tables `0xab60`/`0xad60`, and the `g_810e` pool + `g_10e` grid. Members: `0x34858`
+  (964B top-level fire; writes the accumulators) → `0x34198` (453B shot-trajectory loop) → `0x34088`
+  (collision query), `0x34118`✅ + `0x34168`✅ (damage core: `health -= dmg`), `0x34608` (590B step)
+  → `0x34368` (666B tile-type lookup) + `0x4d221` (angle calc). Aim setup: `0x30868` → `0x2f608`
+  (dir-to-target, __fastcall w/ 64-bit returns) → `0x37738`✅ + `0x1a458` (jump-table dispatcher).
+  **State:** damage core already matched; the rest are walls or poor exact-match shapes:
+  - 🅿️ **`0x34048` PARKED, register-role wall (49/56).** Direction-step clamp (turn cur toward tgt by
+    ≤0x20). Structure 100% correct (eager `cur-d` hoist, byte-mask-in-place `xor dh,ah`, branch
+    layout); the target keeps `cur` in EAX / `d` in EDX, Watcom insists on `cur`→EDX here, flipping
+    cwde↔movsx, lea↔add. int/short params, mask-in-place vs separate stmt, 8000 cpermute variants all
+    converge to the swapped-role form. `src/FUN_00034048.c` kept as documented near-miss.
+  - 🅿️ **`0x34088` PARKED, CMP-encoding wall (128/129 — ONE byte).** Spatial-grid collision query
+    (sibling of `0x26e18`; same pool/grid). Everything matches incl. the `-oa` CX-cache+writeback of
+    `g_10b5a` — except the level-compare CMP modrm: target `CMP EDX,EBX` (39 da, reg field = node8, the
+    memory operand), Watcom gives `CMP EBX,EDX` (39 d3) for every spelling. Rule is `r/m=left, reg=
+    right`; target additionally evaluates the RIGHT operand first (node8→EBX AND reg=node8), an
+    eval-order Watcom won't trigger from C. Both operand orders + node8-temp + 8000 variants confirm.
+    `src/FUN_00034088.c` kept as documented near-miss. Good vocabulary win: `g_10b5a/c/e` accumulators.
+  - ⚠️ **Poor exact-match shapes (don't grind):** `0x34368` (666B, 4-way tile lookup w/ signed
+    modulo/pow2-div rounding idioms), `0x2f608` (__fastcall + 64-bit `0x4d221` returns), `0x1a458`
+    (0x2d-entry jump-table dispatcher). Big loops `0x34198`/`0x34608`/`0x34858` are high-risk (one
+    tie-break blocks the whole fn). ⇒ combat's clean vein (the pool/damage accessors) is mined out.
 - 🔎 **FAST SEARCH ENGINE built (cont. 11): `tools/permute_par.py` + `tools/wcc95_batch.sh`.** Fans C
   variants across cores, ~200 compiles/sec (batched DOSBox in ONE session + work dirs on native `/tmp`,
   NOT the slow `/mnt/c` drvfs). Exhausted all 40,320 case orderings of `0x20d98`'s switch in **3m9s**.
