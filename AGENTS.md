@@ -218,7 +218,27 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-11)
-- **Coverage: 64/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 69/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- ⛔ **TWO PROLOGUE-LEVEL WALLS found (cont. 12), don't re-chase:**
+  1. **Framed-leaf frame-mode boundary.** Framed region (0x3a000+) matches non-leaf fns with `-3s -of`
+     (traceable frame: `55 89 e5 … 5d c3`, light epilogue, NO `89 ec`). But `-of` refuses to frame a
+     **leaf** (no call), and `-of+` frames every fn yet always adds a redundant `89 ec` (mov esp,ebp)
+     the target lacks. So framed leaves like `0x3ca0d` (`return 0`) / `0x3b9ee` (nibble→hex) can't be
+     hit from source (target = frame w/ light epilogue; we can only make frameless or heavy-epilogue).
+  2. **Stack-alignment padding push.** Guard-wrapper shape `if(g_flag) FUN(0);` (e.g. `0x36168`,
+     `0x39188`) has target bytes bracketed by `53 … 5b` (`push ebx`/`pop ebx`, **ebx unused**) — a
+     Watcom stack-align pad so the `call` site is 8-aligned. Body is otherwise byte-identical to ours.
+     NO flag (`-4s/-5s/-4/-4r/-zpN/-zt0/-ec/-za/±-s`) reproduces the pad; `-4r` even tail-jumps it.
+     Not source-reachable. ⇒ **Deprioritise thin call/guard wrappers & framed leaves; they hit
+     prologue walls. Bank COMPUTE/LOOP fns in the frameless main region (<0x39000) — those match
+     clean, as all cont-11 autonomous matches were.**
+- 📚 **0x3a000+ IS THE WATCOM C RUNTIME LIBRARY (cont. 12), pre-compiled — deprioritise.** Confirmed by
+  content: `strchr` (0x3e7f7), `strcpy`/byte-copy (0x3a8d7, 0x3dfcf), `strlen` via `repnz scasb`
+  (0x3dc1b), DOS `int 21h` calls (0x3c44d, 0x3df89, 0x3b1d3), `__STK` stack-checks (0x3cabb/0x3cade).
+  These came from `clib3r.lib`/`math3r.lib`, built with Watcom's OWN library flags (forced frames w/
+  **light** epilogue `5d 5b c3`, no `89 ec`). Our `-of` frames only NON-LEAF lib fns (matches by luck,
+  e.g. 0x3aa74); **library LEAVES can't be matched** (`-of`→frameless, `-of+`→heavy epilogue). ⇒ Chase
+  GAME code (<0x39000) first; only grab 0x3a000+ fns that contain a real `call` (non-leaf).
 - 🧬 **PERMUTER built (cont. 11): `tools/cpermute.py`** — AST-based C permuter for our setup, the
   decomp-permuter idea on our backend. Parses with **pycparser** (auto-`pip install --break-system-
   packages pycparser`; strips comments first — pycparser can't handle them), enumerates
