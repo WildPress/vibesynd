@@ -219,6 +219,21 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-11)
 - **Coverage: 62/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- ⚠️ **CORRECTION (cont. 11): the "multi-opt / lighter-unit" claim is RETRACTED as unproven.** Tested it:
+  `0x14998` looked "ONEATX-only" but that was **WRONG C** — I wrote a `while`; the real shape is a
+  **`do-while`**, which matches under BOTH `-oneatx` AND `-or` (identical bytes). **Trap: a
+  `while`-that-should-be-`do-while` forces `-oneatx` to ROTATE the loop, and the rotated form only
+  matches `-oneatx`, falsely implying opt-dependence.** So "needs -oneatx" was a reconstruction
+  artifact, not a unit boundary. ⇒ **Default HARD to canonical `-4s/-4r -oneatx -zp8 -s -zq`; treat
+  every miss as WRONG C first (loop shape `while`/`do-while`/`for` is a C variable to get right, not an
+  opt signal).** Only accept a lighter opt after EXHAUSTING C. `tools/optclass.py` classifies each
+  recipe by which opt it needs (oneatx-only / light-only / both); use it to spot wrong-C candidates.
+- 🟡 **`0x377b8` (`-or`) and `0x16638` (`-ot`) now SUSPECT-C, not proven units.** `0x377b8` resists
+  `-oneatx` only on register allocation (count in EDX+`mov eax,edx` vs `-oneatx` coalescing count into
+  EAX); tried ~5 C forms (while/do-while/for/reuse-p), none flip it — same class as the `0x33fb8`
+  register tie-break, could be C I haven't found. `0x16638` resists on a loop-constant hoist. Both
+  MATCH byte-identically under their lighter opt (valid matches), but the INTERPRETATION (real unit vs
+  unfound C) is unresolved. Re-derive onto `-oneatx` before claiming a unit.
 - 🔁 **INLINE vs NAME (cont. 11): `0x13a98` matched with an explicit `result` local.** The mirror of
   the inlining lesson: when a value must PERSIST in one register across branches/a call (especially a
   return value that also serves as a test mask, `test [reg],bl`, and wants a single `mov al,bl` exit),
