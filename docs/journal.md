@@ -303,3 +303,39 @@ came down to a single idiom, the original holds a field in a preserved register 
 widens it, ours keeps it in the accumulator, and no rearrangement of the C or the
 flags moved it. That's the register-allocation wall again, so it's parked. **59 of
 500.**
+
+## FUN_00014cc8 and FUN_00016638 — types and layout tell you more than you'd think
+
+Two small loops that both hinged on details the disassembly quietly announces.
+
+`0x14cc8` scans a few fixed-size records for a flag bit and returns yes or no. The
+first version had the right logic but returned through the full accumulator where the
+original only touches the low byte, and it counted with a 32-bit register where the
+original used a byte. Both are the same tell: the original works in bytes, so the
+counter is a `char` and the return type is a `char`. Switching to those brought the
+byte-sized instructions back. The last piece was where the compiler put the `return 1`.
+Written as a `while`, our exit ended up at the bottom, reached by a jump, where the
+original keeps it inline right after the loop guard. Rewriting the loop as
+`for (;;) { if (done) return 1; ...body... }` put the early return exactly where the
+original has it, and it matched.
+
+`0x16638` finds the count-th entry in a table matching a value, with an index that
+wraps at fifty. It taught two sharper lessons. First, **Watcom's `char` is unsigned by
+default.** Our index compiled to unsigned instructions, `jb` and a zero-extend, where
+the original uses signed ones, `jl` and `movsx`. Declaring the index `signed char`
+fixed that in one stroke, a reminder to read the *signedness* off the diff, not just
+the width. Second, the count-is-zero guard: the original returns the same value as the
+normal exit and shares one return at the bottom, but because our early `return idx`
+happened when the compiler knew the index was still its start value, it folded it to a
+constant and wrote a second return. Restructuring as
+`if (count) { do ... while (count); } return idx;` gave a single shared exit like the
+original.
+
+There was one genuinely instructive flag moment. The wrap-to-zero inside the loop was
+being hoisted, the full `-oneatx` optimiser lifted the zero constant into a spare
+register once and reused it, where the original just zeroes the byte inline each time.
+That hoist is the `x` in the bundle. Dropping to `-ot`, which still gives the fast
+`lea`-based address arithmetic the original uses but doesn't do the loop-invariant
+hoist, matched exactly. So this unit, like the others we've found, was built with
+lighter optimisation than the main game, and the specific instruction that gave it
+away was a constant that should have been inline. **61 of 500.**

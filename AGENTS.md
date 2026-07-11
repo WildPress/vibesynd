@@ -218,7 +218,17 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-11)
-- **Coverage: 59/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 61/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- 🧩 **TYPE + LAYOUT LEVERS (cont. 11): `0x14cc8`, `0x16638` matched.** Key gotchas, all read from
+  the diff: (1) **Watcom `char` defaults to UNSIGNED** — a `jb`/zero-extend where target has
+  `jl`/`movsx` means declare `signed char`. (2) Byte-width counter/return (`inc dl`, `mov al,1`,
+  `xor al,al`, not eax) ⇒ use `char` types + `char` return. (3) **Loop early-exit LAYOUT**: `for(;;){
+  if(exit) return; body }` puts the exit INLINE after the guard (matches) where `while(cond){body};
+  return` parks it at the bottom. (4) Shared bottom return: write `if(c){ do..while(c); } return x;`
+  so a guard and the normal exit share one `ret` (else Watcom const-folds an early `return x` into a
+  second ret). (5) `-oneatx`'s **`x` hoists loop-invariant constants** (e.g. a wrap-to-0 lifted into a
+  spare reg); if target zeroes inline each pass, drop to **`-ot`** (keeps the `lea` addressing, no
+  hoist). `0x16638` recipe `-4s -ot -s -zq`; `0x14cc8` main-game `-4s -oneatx -zp8 -s -zq`.
 - 💡 **INLINING IS A REGISTER LEVER (cont. 11): `0x377e8`, `0x14998` matched by collapsing locals.**
   A named intermediate (`unsigned short id = ...; use id`) forces Watcom to load into one register
   and copy to another (`mov ax,[..]; mov dx,ax`) or widen the long way (`and eax,0xffff` vs the
