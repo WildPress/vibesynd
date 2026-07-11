@@ -1,11 +1,15 @@
-# Understanding this project
+# My notes on how this works
 
-These notes explain the ideas behind the decompilation in plain language, for
-someone learning as they go. They're written to be read in order, but each one
-stands on its own.
+These are my own notes for this project. I'm doing it to learn how decompilation
+actually works, and I'm new to all of it. I'm not a reverse engineer, so this is
+written for me to understand the ideas from scratch and to come back to later when
+I've forgotten them.
 
-If you want the terse working reference instead, that's `AGENTS.md` in the repo
-root. This folder is the friendly version.
+Each note explains one concept in plain language and defines the terms as it goes.
+They're meant to be read in order the first time, but each one stands on its own.
+
+(The terse working reference, the kind of thing an experienced person would want,
+is `AGENTS.md` in the repo root. This folder is the version for me.)
 
 ## The concepts, in a sensible reading order
 
