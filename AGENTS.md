@@ -218,7 +218,18 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-11)
-- **Coverage: 63/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 64/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- 🗺️ **SUBSYSTEM-DRIVEN approach (cont. 11): navigate top-down via `tools/callgraph.py` + strings,
+  match bottom-up.** Static call graph scans OBJECT1 for E8/E9 rel32 landing on known fn starts
+  (misses indirect `call [mem]`/`call reg`). Game's strings name every asset (`data/map%02d.dat`,
+  `col01.dat`, `hblk01.dat`, `mtitle.dat`…) ⇒ no debugger needed for semantic anchors. **MAP subsystem
+  mapped:** `0x22858` (415B map init, no direct caller = called indirectly) → `0x20d18` (columns→
+  g_5358), `0x20d98` (342B block/tile setup?), `0x22768` (3 pools), `0x35ed8` (clear 32-tbl), `0x49xxx`
+  (decompressor?). See `docs/game-systems.md`.
+- 🧩 **THREE OBJECT POOLS (`0x22768`, parked on register-alloc):** contiguous fixed-record pools — A
+  `[0x8110,0xdd10)` 256×0x5c, B `[0xdd10,0xe790)` 64×0x2a, C `[0xe790,0x11670)` 400×0x1e; record+0x18 =
+  in-use flag; free-ptrs → g_10ae0/g_10adc/g_10aec. Pool A (92B) is the array `0x14cc8` scans ⇒ likely
+  agents/people. 4-live-pointer register wall blocks the byte match; logic is correct (`src/` kept).
 - ✅ **CANONICAL OPT CONSOLIDATED (cont. 11): 53 `-oneatx` + just 2 holdouts (`0x16638` `-ot`, `0x377b8`
   `-or`).** After the do-while correction, re-derived `0x37xxx` neighbours onto canonical `-oneatx`:
   `0x376f8` (sum-over-chain, sibling of 377b8) matched `-oneatx` with `int` return + `unsigned short`

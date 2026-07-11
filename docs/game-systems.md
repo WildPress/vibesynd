@@ -58,6 +58,16 @@ An honest, short list. It'll grow.
   free one, fills in a few fields, and hands it back. This is the classic shape of an
   "entity pool", so it's likely how the game creates a person, a projectile, or a
   similar game object. Which one, we'll know when we match its callers.
+- **Three object pools, and a free-slot scan** (`0x22768`) — this one revealed a big
+  piece of the game's memory layout. There are three *contiguous* fixed-size-record
+  pools back to back: pool A at `0x8110`, 256 records of 92 bytes; pool B at `0xdd10`,
+  64 records of 42 bytes; pool C at `0xe790`, 400 records of 30 bytes. In every record
+  the byte at offset `0x18` is an "in use" flag. This function scans each pool from the
+  top down and caches a pointer to the free boundary in a global, so later allocations
+  are fast. It's called during map setup, which makes sense: loading a map resets the
+  world's objects. (Understood; the byte match is parked on register allocation.) The
+  92-byte pool A is the same array the flag-scan at `0x14cc8` walks, so pool A is a
+  strong candidate for the **agents and people** it manages.
 - **The map column-table initialiser** (`0x20d18`) — walks a 12,288-entry table,
   turning each stored offset into an absolute pointer, then publishes the table base in
   `g_5358`. This is the function that *builds* the table the passability check below
@@ -85,3 +95,25 @@ An honest, short list. It'll grow.
 - **The runtime library** — dozens of functions in the top region are Watcom's own
   `strcpy`, `tolower`, `fopen`, and so on. Not game systems, but worth knowing they're
   accounted for. See [game vs library](game-vs-library.md).
+
+## How a map loads (the picture so far)
+
+Instead of matching functions by size, we started following the *call graph* to work
+a whole system at once, and the map loader is the first one we mapped. A static scan
+of the code for call instructions (`tools/callgraph.py`) shows that the column-table
+builder `0x20d18` is called by one function, `0x22858`, a 415-byte routine that is the
+map initialiser. Its call tree is the shape of "load and set up a map":
+
+- `0x20d18` — build the column table `g_5358` (offsets become pointers)
+- `0x20d98` — a big sibling right after it, almost certainly the block/tile setup
+- `0x22768` — reset and index the three object pools (above)
+- `0x35ed8` — clear a small 32-entry table
+- a cluster of `0x49xxx` helpers — very likely the decompressor, since the game's
+  strings include `ERROR decompressing %s` and the map files (`data/map%02d.dat`,
+  `data/col01.dat`, `data/hblk01.dat`) are packed
+
+None of this needed a debugger: the game's own strings name every asset file, and the
+call graph links the loader to the routines that consume them. That's the method now,
+pick a system, find its top function, and match down the tree, understanding each
+piece as a part of the whole rather than as an isolated puzzle. The map system is the
+one in progress.
