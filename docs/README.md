@@ -51,6 +51,16 @@ as it goes.
 - **[Game code vs the library](game-vs-library.md)** — a program is the game plus
   the compiler's runtime, and we only decompile the game.
 
+The game itself, as we come to understand it:
+
+- **[How the game works](game-systems.md)** — what the code actually does, the
+  systems that make Syndicate run, filled in as we map them.
+
+And the running log of the actual work:
+
+- **[Reverse-engineering journal](journal.md)** — what we tackled function by
+  function, the thinking, the false starts, and how each one got matched.
+
 ## Quick glossary
 
 - **Machine code** — the raw bytes the CPU runs. The game is a big block of it, and

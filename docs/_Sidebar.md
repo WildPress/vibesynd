@@ -17,3 +17,11 @@
 - [Compiler flags](compiler-flags)
 - [Register allocation](register-allocation)
 - [Game vs library](game-vs-library)
+
+**The game**
+
+- [How the game works](game-systems)
+
+**Log**
+
+- [Reverse-engineering journal](journal)
