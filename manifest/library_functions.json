@@ -1,0 +1,652 @@
+[
+ {
+  "addr": "0003e7f7",
+  "fun": "FUN_0003e7f7",
+  "size": 30,
+  "status": "unmatched",
+  "coverage": 1.0,
+  "class": "library",
+  "lib": "95S",
+  "module": "strchr"
+ },
+ {
+  "addr": "0003e361",
+  "fun": "FUN_0003e361",
+  "size": 32,
+  "status": "unmatched",
+  "coverage": 1.0,
+  "class": "library",
+  "lib": "95S",
+  "module": "makepath"
+ },
+ {
+  "addr": "0003dfcf",
+  "fun": "FUN_0003dfcf",
+  "size": 25,
+  "status": "unmatched",
+  "coverage": 1.0,
+  "class": "library",
+  "lib": "95S",
+  "module": "cenvarg"
+ },
+ {
+  "addr": "0003deee",
+  "fun": "FUN_0003deee",
+  "size": 77,
+  "status": "unmatched",
+  "coverage": 1.0,
+  "class": "library",
+  "lib": "95S",
+  "module": "strnicmp"
+ },
+ {
+  "addr": "0003dce5",
+  "fun": "FUN_0003dce5",
+  "size": 21,
+  "status": "unmatched",
+  "coverage": 1.0,
+  "class": "library",
+  "lib": "95S",
+  "module": "toupper"
+ },
+ {
+  "addr": "0003da37",
+  "fun": "FUN_0003da37",
+  "size": 21,
+  "status": "unmatched",
+  "coverage": 1.0,
+  "class": "library",
+  "lib": "95S",
+  "module": "tolower"
+ },
+ {
+  "addr": "0003cbf9",
+  "fun": "FUN_0003cbf9",
+  "size": 45,
+  "status": "unmatched",
+  "coverage": 1.0,
+  "class": "library",
+  "lib": "95S",
+  "module": "spawnve"
+ },
+ {
+  "addr": "0003c44d",
+  "fun": "FUN_0003c44d",
+  "size": 32,
+  "status": "unmatched",
+  "coverage": 1.0,
+  "class": "library",
+  "lib": "95S",
+  "module": "isatty"
+ },
+ {
+  "addr": "0003b9ee",
+  "fun": "FUN_0003b9ee",
+  "size": 19,
+  "status": "unmatched",
+  "coverage": 1.0,
+  "class": "library",
+  "lib": "95S",
+  "module": "fclose"
+ },
+ {
+  "addr": "0003b972",
+  "fun": "FUN_0003b972",
+  "size": 44,
+  "status": "matched",
+  "coverage": 1.0,
+  "class": "library",
+  "lib": "95S",
+  "module": "fopen"
+ },
+ {
+  "addr": "0003b3b9",
+  "fun": "FUN_0003b3b9",
+  "size": 45,
+  "status": "unmatched",
+  "coverage": 1.0,
+  "class": "library",
+  "lib": "95S",
+  "module": "segread"
+ },
+ {
+  "addr": "0003b22d",
+  "fun": "FUN_0003b22d",
+  "size": 12,
+  "status": "unmatched",
+  "coverage": 1.0,
+  "class": "library",
+  "lib": "95S",
+  "module": "outp"
+ },
+ {
+  "addr": "0003aef9",
+  "fun": "FUN_0003aef9",
+  "size": 63,
+  "status": "unmatched",
+  "coverage": 1.0,
+  "class": "library",
+  "lib": "95S",
+  "module": "stricmp"
+ },
+ {
+  "addr": "0003aed8",
+  "fun": "FUN_0003aed8",
+  "size": 14,
+  "status": "unmatched",
+  "coverage": 1.0,
+  "class": "library",
+  "lib": "95S",
+  "module": "labs"
+ },
+ {
+  "addr": "0003aea6",
+  "fun": "FUN_0003aea6",
+  "size": 50,
+  "status": "unmatched",
+  "coverage": 1.0,
+  "class": "library",
+  "lib": "95S",
+  "module": "strncmp"
+ },
+ {
+  "addr": "0003a8d7",
+  "fun": "FUN_0003a8d7",
+  "size": 41,
+  "status": "unmatched",
+  "coverage": 1.0,
+  "class": "library",
+  "lib": "95S",
+  "module": "strcpy"
+ },
+ {
+  "addr": "0003be40",
+  "fun": "FUN_0003be40",
+  "size": 83,
+  "status": "unmatched",
+  "coverage": 0.847,
+  "class": "library",
+  "lib": "95S",
+  "module": "prtf"
+ },
+ {
+  "addr": "0003a97c",
+  "fun": "FUN_0003a97c",
+  "size": 73,
+  "status": "unmatched",
+  "coverage": 0.79,
+  "class": "library",
+  "lib": "95S",
+  "module": "tell"
+ },
+ {
+  "addr": "0003d894",
+  "fun": "FUN_0003d894",
+  "size": 119,
+  "status": "unmatched",
+  "coverage": 0.759,
+  "class": "library",
+  "lib": "95S",
+  "module": "ioalloc"
+ },
+ {
+  "addr": "0003a93b",
+  "fun": "FUN_0003a93b",
+  "size": 65,
+  "status": "unmatched",
+  "coverage": 0.759,
+  "class": "library",
+  "lib": "95S",
+  "module": "lseek"
+ },
+ {
+  "addr": "0003b8cd",
+  "fun": "FUN_0003b8cd",
+  "size": 43,
+  "status": "matched",
+  "coverage": 0.75,
+  "class": "library",
+  "lib": "95S",
+  "module": "fopen"
+ },
+ {
+  "addr": "0003d3e4",
+  "fun": "FUN_0003d3e4",
+  "size": 43,
+  "status": "unmatched",
+  "coverage": 0.688,
+  "class": "library",
+  "lib": "95S",
+  "module": "fgetc"
+ },
+ {
+  "addr": "0003dcb5",
+  "fun": "FUN_0003dcb5",
+  "size": 48,
+  "status": "unmatched",
+  "coverage": 0.676,
+  "class": "library",
+  "lib": "95S",
+  "module": "ltoa"
+ },
+ {
+  "addr": "0003dbeb",
+  "fun": "FUN_0003dbeb",
+  "size": 48,
+  "status": "unmatched",
+  "coverage": 0.676,
+  "class": "library",
+  "lib": "95S",
+  "module": "ltoa"
+ },
+ {
+  "addr": "0003d40f",
+  "fun": "FUN_0003d40f",
+  "size": 171,
+  "status": "unmatched",
+  "coverage": 0.65,
+  "class": "library",
+  "lib": "95S",
+  "module": "fgetc"
+ },
+ {
+  "addr": "0003d36b",
+  "fun": "FUN_0003d36b",
+  "size": 121,
+  "status": "unmatched",
+  "coverage": 0.645,
+  "class": "library",
+  "lib": "95S",
+  "module": "fgetc"
+ },
+ {
+  "addr": "0003a526",
+  "fun": "FUN_0003a526",
+  "size": 83,
+  "status": "unmatched",
+  "coverage": 0.639,
+  "class": "library",
+  "lib": "95S",
+  "module": "atol"
+ },
+ {
+  "addr": "0003da03",
+  "fun": "FUN_0003da03",
+  "size": 52,
+  "status": "unmatched",
+  "coverage": 0.634,
+  "class": "library",
+  "lib": "95S",
+  "module": "ftell"
+ },
+ {
+  "addr": "0003d935",
+  "fun": "FUN_0003d935",
+  "size": 49,
+  "status": "unmatched",
+  "coverage": 0.632,
+  "class": "library",
+  "lib": "95S",
+  "module": "qread"
+ },
+ {
+  "addr": "0003b539",
+  "fun": "FUN_0003b539",
+  "size": 91,
+  "status": "unmatched",
+  "coverage": 0.613,
+  "class": "library",
+  "lib": "95S",
+  "module": "fread"
+ },
+ {
+  "addr": "0003b239",
+  "fun": "FUN_0003b239",
+  "size": 58,
+  "status": "unmatched",
+  "coverage": 0.574,
+  "class": "library",
+  "lib": "95S",
+  "module": "d_getvec"
+ },
+ {
+  "addr": "0003db36",
+  "fun": "FUN_0003db36",
+  "size": 45,
+  "status": "unmatched",
+  "coverage": 0.559,
+  "class": "library",
+  "lib": "95S",
+  "module": "chktty"
+ },
+ {
+  "addr": "0003a579",
+  "fun": "FUN_0003a579",
+  "size": 31,
+  "status": "unmatched",
+  "coverage": 0.55,
+  "class": "library",
+  "lib": "95S",
+  "module": "open"
+ },
+ {
+  "addr": "0003b7e8",
+  "fun": "FUN_0003b7e8",
+  "size": 229,
+  "status": "unmatched",
+  "coverage": 0.5,
+  "class": "library",
+  "lib": "95S",
+  "module": "fopen"
+ },
+ {
+  "addr": "0003b273",
+  "fun": "FUN_0003b273",
+  "size": 55,
+  "status": "unmatched",
+  "coverage": 0.5,
+  "class": "library",
+  "lib": "95S",
+  "module": "d_setvec"
+ },
+ {
+  "addr": "0003e590",
+  "fun": "FUN_0003e590",
+  "size": 36,
+  "status": "unmatched",
+  "coverage": 0.48,
+  "class": "library",
+  "lib": "95S",
+  "module": "unlink"
+ },
+ {
+  "addr": "0003b99e",
+  "fun": "FUN_0003b99e",
+  "size": 44,
+  "status": "unmatched",
+  "coverage": 0.424,
+  "class": "library",
+  "lib": "95S",
+  "module": "fclose"
+ },
+ {
+  "addr": "0003ad66",
+  "fun": "FUN_0003ad66",
+  "size": 34,
+  "status": "unmatched",
+  "coverage": 0.391,
+  "class": "library?",
+  "lib": "95S",
+  "module": "printf"
+ },
+ {
+  "addr": "0003cc45",
+  "fun": "FUN_0003cc45",
+  "size": 47,
+  "status": "matched",
+  "coverage": 0.389,
+  "class": "library?",
+  "lib": "95S",
+  "module": "spawnve"
+ },
+ {
+  "addr": "0003c42d",
+  "fun": "FUN_0003c42d",
+  "size": 32,
+  "status": "unmatched",
+  "coverage": 0.381,
+  "class": "library?",
+  "lib": "95S",
+  "module": "prtf"
+ },
+ {
+  "addr": "0003b407",
+  "fun": "FUN_0003b407",
+  "size": 25,
+  "status": "matched",
+  "coverage": 0.357,
+  "class": "library?",
+  "lib": "95S",
+  "module": "rewind"
+ },
+ {
+  "addr": "0003c479",
+  "fun": "FUN_0003c479",
+  "size": 24,
+  "status": "unmatched",
+  "coverage": 0.308,
+  "class": "library?",
+  "lib": "95S",
+  "module": "dosret"
+ },
+ {
+  "addr": "0003af38",
+  "fun": "FUN_0003af38",
+  "size": 106,
+  "status": "unmatched",
+  "coverage": 0.295,
+  "class": "library?",
+  "lib": "95S",
+  "module": "system"
+ },
+ {
+  "addr": "0003adb2",
+  "fun": "FUN_0003adb2",
+  "size": 41,
+  "status": "unmatched",
+  "coverage": 0.267,
+  "class": "library?",
+  "lib": "95S",
+  "module": "int386"
+ },
+ {
+  "addr": "0003cfce",
+  "fun": "FUN_0003cfce",
+  "size": 23,
+  "status": "matched",
+  "coverage": 0.25,
+  "class": "library?",
+  "lib": "95S",
+  "module": "spawnlp"
+ },
+ {
+  "addr": "0003c491",
+  "fun": "FUN_0003c491",
+  "size": 23,
+  "status": "unmatched",
+  "coverage": 0.25,
+  "class": "library?",
+  "lib": "95S",
+  "module": "dosret"
+ },
+ {
+  "addr": "0003c002",
+  "fun": "FUN_0003c002",
+  "size": 23,
+  "status": "matched",
+  "coverage": 0.25,
+  "class": "library?",
+  "lib": "95S",
+  "module": "prtf"
+ },
+ {
+  "addr": "0003dae1",
+  "fun": "FUN_0003dae1",
+  "size": 51,
+  "status": "unmatched",
+  "coverage": 0.225,
+  "class": "library?",
+  "lib": "95R",
+  "module": "allocfp"
+ },
+ {
+  "addr": "0003b90d",
+  "fun": "FUN_0003b90d",
+  "size": 101,
+  "status": "unmatched",
+  "coverage": 0.222,
+  "class": "library?",
+  "lib": "95S",
+  "module": "fopen"
+ },
+ {
+  "addr": "0003a4fa",
+  "fun": "FUN_0003a4fa",
+  "size": 44,
+  "status": "unmatched",
+  "coverage": 0.182,
+  "class": "library?",
+  "lib": "95S",
+  "module": "sprintf"
+ },
+ {
+  "addr": "0003b2b5",
+  "fun": "FUN_0003b2b5",
+  "size": 113,
+  "status": "unmatched",
+  "coverage": 0.118,
+  "class": "game",
+  "lib": null,
+  "module": null
+ },
+ {
+  "addr": "0003e471",
+  "fun": "FUN_0003e471",
+  "size": 29,
+  "status": "matched",
+  "coverage": 0.111,
+  "class": "game",
+  "lib": null,
+  "module": null
+ },
+ {
+  "addr": "0003b8f8",
+  "fun": "FUN_0003b8f8",
+  "size": 21,
+  "status": "matched",
+  "coverage": 0.1,
+  "class": "game",
+  "lib": null,
+  "module": null
+ },
+ {
+  "addr": "0003addb",
+  "fun": "FUN_0003addb",
+  "size": 21,
+  "status": "matched",
+  "coverage": 0.1,
+  "class": "game",
+  "lib": null,
+  "module": null
+ },
+ {
+  "addr": "0003e48e",
+  "fun": "FUN_0003e48e",
+  "size": 28,
+  "status": "matched",
+  "coverage": 0.059,
+  "class": "game",
+  "lib": null,
+  "module": null
+ },
+ {
+  "addr": "0003b9ca",
+  "fun": "FUN_0003b9ca",
+  "size": 36,
+  "status": "unmatched",
+  "coverage": 0.04,
+  "class": "game",
+  "lib": null,
+  "module": null
+ },
+ {
+  "addr": "0003db69",
+  "fun": "FUN_0003db69",
+  "size": 16,
+  "status": "matched",
+  "coverage": 0.0,
+  "class": "game",
+  "lib": null,
+  "module": null
+ },
+ {
+  "addr": "0003ca0d",
+  "fun": "FUN_0003ca0d",
+  "size": 7,
+  "status": "unmatched",
+  "coverage": 0,
+  "class": "game",
+  "lib": null,
+  "module": null
+ },
+ {
+  "addr": "0003c57b",
+  "fun": "FUN_0003c57b",
+  "size": 24,
+  "status": "unmatched",
+  "coverage": 0.0,
+  "class": "game",
+  "lib": null,
+  "module": null
+ },
+ {
+  "addr": "0003b2aa",
+  "fun": "FUN_0003b2aa",
+  "size": 11,
+  "status": "unmatched",
+  "coverage": 0,
+  "class": "game",
+  "lib": null,
+  "module": null
+ },
+ {
+  "addr": "0003aee6",
+  "fun": "FUN_0003aee6",
+  "size": 19,
+  "status": "matched",
+  "coverage": 0.0,
+  "class": "game",
+  "lib": null,
+  "module": null
+ },
+ {
+  "addr": "0003ad89",
+  "fun": "FUN_0003ad89",
+  "size": 41,
+  "status": "unmatched",
+  "coverage": 0.0,
+  "class": "game",
+  "lib": null,
+  "module": null
+ },
+ {
+  "addr": "0003ab69",
+  "fun": "FUN_0003ab69",
+  "size": 37,
+  "status": "unmatched",
+  "coverage": 0.0,
+  "class": "game",
+  "lib": null,
+  "module": null
+ },
+ {
+  "addr": "0003ab59",
+  "fun": "FUN_0003ab59",
+  "size": 16,
+  "status": "matched",
+  "coverage": 0.0,
+  "class": "game",
+  "lib": null,
+  "module": null
+ },
+ {
+  "addr": "0003aa74",
+  "fun": "FUN_0003aa74",
+  "size": 16,
+  "status": "matched",
+  "coverage": 0.0,
+  "class": "game",
+  "lib": null,
+  "module": null
+ }
+]

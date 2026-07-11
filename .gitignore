@@ -1,0 +1,33 @@
+# The legacy FreeSynd/VibeSynd port lives here for reference but is NOT part of
+# this (matching-decompilation) repository. It keeps its own git history inside.
+legacy/
+
+# The original copyrighted binary and everything derived directly from it
+# is NEVER committed. Standard matching-decomp hygiene.
+inputs/
+ghidra/
+
+# Build artifacts and compiled objects
+build/
+*.obj
+*.o
+*.err
+
+# Cached toolchain downloads
+*.tar.xz
+*.tar.gz
+owinst
+open-watcom-*
+
+# Period Watcom 10.0a (abandonware ISO + extracted tree + DOS scratch) — never committed,
+# EXCEPT the provenance README (tracks the download's identity/checksum, not the bits).
+toolchain/*
+!toolchain/README.md
+
+# Local coverage cockpit DATA embeds disassembly of the original (copyrighted)
+# code — keep it local + regenerable (tools/dashboard.py), don't commit it.
+# The viewer (dashboard/index.html) is tracked; it regenerates data.json.
+dashboard/data.json
+
+__pycache__/
+*.pyc
