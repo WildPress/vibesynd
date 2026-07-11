@@ -75,6 +75,10 @@
   "addr": "000289a8",
   "flags": "-4s -oneatx -zp8 -s -zq"
  },
+ "FUN_00028cc8": {
+  "addr": "00028cc8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
  "FUN_00029a68": {
   "addr": "00029a68",
   "flags": "-4s -oneatx -zp8 -s -zq"

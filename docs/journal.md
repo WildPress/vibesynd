@@ -378,3 +378,28 @@ base in a preserved register with an explicit pointer walk rather than the folde
 addressing ours used. Reproducing padding that depends on the function's absolute
 placement is fragile in isolation, so it's parked as understood-but-unmatched, with
 its purpose recorded because that's the half that lasts.
+
+## The do-while correction, and matching on canonical flags
+
+A scepticism check paid off here. We had a handful of functions recorded with lighter
+optimisation than the main game, and it looked like the binary was built from several
+translation units with different settings. Pushed to prove it, most of that evaporated.
+
+The key case was `0x14998`, a chain walk I'd written as a `while` loop. It appeared to
+*need* the main optimisation level, because only that level matched. But the real shape
+was a `do-while`, and once written that way it matched under both settings. A
+`while`-that-should-be-a-`do-while` forces the compiler to rotate the loop, and only
+the heavier optimisation rotates, so a wrong loop shape masqueraded as a build
+difference. That's a humbling and useful lesson: a loop's `while`/`do-while`/`for`
+shape is a variable to get right in the C, not a signal about compiler flags.
+
+With that understood, the discipline became: assume one canonical build, and treat
+every mismatch as our C until proven otherwise. Two functions in the "lighter" region
+then fell to canonical flags with better C. `0x376f8` (a sum over the same chain
+`0x377b8` counts) matched once its return type was an `int` over a 16-bit accumulator,
+the giveaway being a zero-extend of the low sixteen bits on the way out. `0x28cc8`, a
+routine that builds two local buffers and calls out, matched once the two buffers were
+declared in the right order, because the compiler lays locals out in reverse of
+declaration, so swapping their order swapped their stack offsets to match. The
+optimisation picture collapsed from five flag sets to one canonical setting plus two
+lone holdouts still stuck on register placement.
