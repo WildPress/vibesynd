@@ -248,6 +248,16 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
   variants, best 63/137 bytes — commutative swaps can't cross a REGISTER tie-break. Permuters crack
   scheduling/order/temp near-misses, NOT pure register/allocation walls. To extend: add statement-
   reorder + temp-intro transforms (pycparser Compound.block_items / hoist subexprs).
+- 🆕 **INLINE-VARIABLE transform added (cont. 12) + the insight behind it.** New permuter
+  transform `inline_sites`/`inline_flags`: the INVERSE of temp-intro — drop a `T name=init;`
+  local and paste `init` at every use. **Why it matters:** a NAMED local lets Watcom keep a
+  16-bit value in EAX and zero-extend in place (`and eax,0xffff`); the REPEATED inline
+  subexpression makes Watcom CSE it into a callee-saved register (EBX/ESI) and zero-extend via
+  `xor eax,eax; mov ax,bx` — i.e. **inlining a value's uses ↔ forcing a persistent register.**
+  This cracked `0x37738` and the previously-parked "register wall" `0x34118` by hand, then the
+  permuter reproduced it automatically (variant 86). Also drop redundant `(int)` casts — they can
+  force a full-width cache instead of the target's per-width stack re-reads. (Limitation: enumerates
+  only top-level `block_items` decls, not decls nested inside `if`/loop compounds — extend later.)
 - 🔎 **FAST SEARCH ENGINE built (cont. 11): `tools/permute_par.py` + `tools/wcc95_batch.sh`.** Fans C
   variants across cores, ~200 compiles/sec (batched DOSBox in ONE session + work dirs on native `/tmp`,
   NOT the slow `/mnt/c` drvfs). Exhausted all 40,320 case orderings of `0x20d98`'s switch in **3m9s**.

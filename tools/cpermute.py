@@ -176,7 +176,30 @@ def type_sites(body):
             out.append(stmt.type.type)
     return out
 
-def apply_mutations(ast, loop_flags, comm_flags, rewrite_flags, hoist_types, local_types, order_seed):
+def _count_id(root, name):
+    c = [0]
+    class V(c_ast.NodeVisitor):
+        def visit_ID(self, n):
+            if n.name == name: c[0] += 1
+    V().visit(root)
+    return c[0]
+
+def inline_sites(body):
+    """Local declarations `T name = init;` whose name is used later -- candidates
+    to INLINE: drop the decl and paste `init` at each use. The inverse of temp
+    introduction. Forces Watcom to re-evaluate the subexpression, which can flip a
+    mask-in-place load into a CSE into a persistent register (ebx/esi) -- matching
+    targets that keep a value live across a test (cracked 0x37738 / 0x34118)."""
+    items = body.block_items or []
+    out = []
+    for si, stmt in enumerate(items):
+        if isinstance(stmt, c_ast.Decl) and stmt.init is not None and stmt.name:
+            if sum(_count_id(s, stmt.name) for s in items[si + 1:]) >= 1:
+                out.append(stmt)
+    return out
+
+def apply_mutations(ast, loop_flags, comm_flags, rewrite_flags, hoist_types,
+                    local_types, order_seed, inline_flags=()):
     # loop-form swaps (while <-> do-while) first, since they replace nodes
     ls = loop_sites(ast)
     for i, on in enumerate(loop_flags):
@@ -189,6 +212,28 @@ def apply_mutations(ast, loop_flags, comm_flags, rewrite_flags, hoist_types, loc
                   else c_ast.While(cond=n.cond, stmt=n.stmt)
             replace_child(parent, n, new)
     body = body_of(ast)
+    # variable inlining (inverse of temp-intro): drop `T name=init;` and paste
+    # `init` at every use, so Watcom recomputes / CSEs into a persistent register.
+    # Done before type/hoist site enumeration so those operate on the reduced body.
+    isites = inline_sites(body)
+    for i, on in enumerate(inline_flags):
+        if not on or i >= len(isites):
+            continue
+        d = isites[i]
+        if d not in (body.block_items or []):
+            continue
+        name, init = d.name, d.init
+        uses = []
+        class _U(c_ast.NodeVisitor):
+            def visit_ID(self, n):
+                if n.name == name: uses.append(n)
+        _U().visit(body)
+        pm = parent_map(ast)
+        for u in uses:
+            par = pm.get(id(u))
+            if par is not None:
+                replace_child(par, u, copy.deepcopy(init))
+        body.block_items = [s for s in (body.block_items or []) if s is not d]
     cs = comm_sites(ast)
     for i, on in enumerate(comm_flags):
         if on and i < len(cs):
@@ -283,14 +328,16 @@ def main():
     ast0 = PARSER.parse(src0)
     nloop = len(loop_sites(ast0)); ncomm = len(comm_sites(ast0)); nrw = len(rewrite_sites(ast0))
     nhoist = len(hoist_sites(body_of(ast0))); ntype = len(type_sites(body_of(ast0)))
+    ninline = len(inline_sites(body_of(ast0)))
     print(f"{name}: {nloop} loop, {ncomm} commutative, {nrw} rewrite, {nhoist} hoist, "
-          f"{ntype} type sites; sampling {N} variants, target={len(target)}B", flush=True)
+          f"{ntype} type, {ninline} inline sites; sampling {N} variants, "
+          f"target={len(target)}B", flush=True)
 
     rng = random.Random(seed)
     seen, specs = set(), []
     # always include the identity variant first
     specs.append((tuple([0]*nloop), tuple([0]*ncomm), tuple([0]*nrw),
-                  tuple([None]*nhoist), tuple([None]*ntype), None))
+                  tuple([None]*nhoist), tuple([None]*ntype), None, tuple([0]*ninline)))
     while len(specs) < N:
         lf = tuple(rng.randint(0, 1) for _ in range(nloop))
         cf = tuple(rng.randint(0, 1) for _ in range(ncomm))
@@ -298,14 +345,15 @@ def main():
         hf = tuple(rng.choice(TYPES) if rng.random() < 0.2 else None for _ in range(nhoist))
         lt = tuple(rng.choice(TYPES) if rng.random() < 0.25 else None for _ in range(ntype))
         od = rng.randint(0, 10**9) if rng.random() < 0.5 else None
-        key = (lf, cf, rw, hf, lt, od)
+        inf = tuple(rng.randint(0, 1) for _ in range(ninline))
+        key = (lf, cf, rw, hf, lt, od, inf)
         if key in seen: continue
         seen.add(key); specs.append(key)
 
     def render(spec):
         a = copy.deepcopy(ast0)
         try:
-            apply_mutations(a, spec[0], spec[1], spec[2], spec[3], spec[4], spec[5])
+            apply_mutations(a, spec[0], spec[1], spec[2], spec[3], spec[4], spec[5], spec[6])
             return GEN.visit(a)
         except Exception:
             return "void __broken(void){}"
