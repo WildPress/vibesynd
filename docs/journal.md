@@ -187,3 +187,32 @@ result is only as good as the case you tested it on.
 So from here the harness switches to 9.5. It unlocks flag tests and bit-field checks,
 which are everywhere in game logic, while keeping every match we already have.
 **56 of 500**, and the road ahead just got wider.
+
+## FUN_00033fb8 — a map passability check, one register short
+
+This one didn't fully match, but it's worth recording because it shows both how far
+reading the diff gets you and exactly where the hard wall is, and because we worked
+out what the function actually does.
+
+It's a piece of the map system. Given a world position (x, y, z), it finds the map
+tile under that spot and returns whether the tile is walkable. It gets there with a
+column index from x, a row from y, a per-column base offset from a table, then reads
+the tile byte, looks its type up in a second table, and checks whether the type is
+in the walkable set (6 to 9, or 11).
+
+My first attempt was structurally wrong, but the diff walked it in. Swapping the
+order of two calculations fixed a whole cascade (the compiler had allocated registers
+differently because I computed the column before the row). Inlining a lookup instead
+of storing it in a local fixed another. Those two changes took it from a completely
+different function down to a single byte.
+
+That last byte is register allocation, the wall we keep meeting. The original holds a
+pointer in one register and combines it with a `lea`; ours puts it in a different
+register and uses an `add`, which happens to be one byte shorter. Same result,
+different register, and there's no clean lever in the C to change which register
+Watcom picks. So this sits at ninety-nine percent, parked with the other
+register-allocation cases until we find a way to crack those.
+
+Still a win of a kind: we understood a real game system function, even though its
+bytes aren't matched yet. That understanding goes in
+[how the game works](game-systems.md).

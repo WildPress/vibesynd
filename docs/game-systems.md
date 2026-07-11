@@ -58,6 +58,12 @@ An honest, short list. It'll grow.
   free one, fills in a few fields, and hands it back. This is the classic shape of an
   "entity pool", so it's likely how the game creates a person, a projectile, or a
   similar game object. Which one, we'll know when we match its callers.
+- **A map passability check** (`0x33fb8`) — given a world position, it finds the map
+  tile there and returns whether it's walkable (part of the **map and rendering**
+  system). It's understood but not yet byte-matched, it's one register-allocation
+  byte short. See the [journal](journal.md).
+- **A per-object status update** (`0x2d998`) — recomputes an object's state code from
+  its flags, the function that led us to the 9.5 compiler.
 - **The runtime library** — dozens of functions in the top region are Watcom's own
   `strcpy`, `tolower`, `fopen`, and so on. Not game systems, but worth knowing they're
   accounted for. See [game vs library](game-vs-library.md).
