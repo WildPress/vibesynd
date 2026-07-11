@@ -1,7 +1,7 @@
 # Function manifest
 
 `functions.json` is the single source of truth for the decompilation's coverage.
-It is generated from Ghidra's analysis of the original binary and updated by the
+It's generated from Ghidra's analysis of the original binary and updated by the
 matching harness as functions are matched.
 
 ## Schema
@@ -31,13 +31,20 @@ matching harness as functions are matched.
 
 ## Status values
 
-- `unmatched` — identified, no C written yet.
-- `wip` — C drafted, not yet byte-identical.
-- `matched` — compiles to byte-identical assembly (the goal).
-- `equivalent` — behaviourally correct but a known non-matching codegen
+- `unmatched`: identified, no C written yet.
+- `wip`: C drafted, not yet byte-identical.
+- `matched`: compiles to byte-identical assembly, which is the goal.
+- `equivalent`: behaviourally correct, but with a known non-matching codegen
   difference we accept for now (documented in `notes`).
 
 ## Picking the next function
 
-Leaf functions (`calls == 0`, `data_refs == 0`, small `size`) are the cheapest
-first matches. The harness sorts by these to suggest the next target.
+Leaf functions (`calls == 0`, `data_refs == 0`, small `size`) are the cheapest first
+matches. The harness sorts by these to suggest the next target.
+
+## Runtime library
+
+The framed functions near the top of the code segment (`0x3a000` and up) are the
+linked-in Watcom C runtime, not game code. They're identified and named in
+`library_functions.md`, and tagged `LIBRARY` in Ghidra. Skip them when picking
+decompilation targets.

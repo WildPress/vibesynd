@@ -1,26 +1,31 @@
-# Library functions in the `0x3a000+` region — identified
+# Identified library functions in the `0x3a000+` region
 
-The framed functions clustered at the top of OBJECT1 (`0x3a000`–`0x3e600`) are a **mix**
-of linked-in **Watcom C runtime library** code and the game's own thin wrapper functions.
-This file records which is which, and names the library ones.
+The framed functions clustered at the top of OBJECT1 (`0x3a000` to `0x3e600`) are a
+**mix** of linked-in **Watcom C runtime library** code and the game's own thin
+wrapper functions. This file records which is which, and names the library ones.
 
-**Method** (`tools/libname.py`, machine-generated → `manifest/library_functions.json`):
-for each framed function (`55 89 e5` or `53 55 89 e5` prologue), slide a 12-byte window
-over its bytes and search the unpacked Watcom `CLIB3R/S.LIB` (9.5b + 10.0a). *Coverage* =
-fraction of windows found verbatim in a library. The module name is the CLIB module holding
-the **longest contiguous run** of the function's bytes (from `wlib` module offsets).
+**Method** (`tools/libname.py`, machine-generated into `manifest/library_functions.json`):
+for each framed function (`55 89 e5` or `53 55 89 e5` prologue), slide a 12-byte
+window over its bytes and search the unpacked Watcom `CLIB3R/S.LIB` (9.5b and 10.0a).
+*Coverage* is the fraction of windows found verbatim in a library. The module name is
+the CLIB module holding the **longest contiguous run** of the function's bytes, taken
+from the `wlib` module offsets.
 
 **Confidence:**
-- **≥90% coverage** — near-certain: the function's exact code is a CLIB module. Name reliable.
-- **40–89%** — definitely library (relocations lower coverage); module name is best-effort
-  (one Watcom source module holds several functions, so the name is the *source module*,
-  not necessarily this exact symbol).
-- **15–40%** (`library?`) — probably library, low confidence; verify before trusting the name.
-- **<15%** — the game's own code (a wrapper that *calls* the library). These match our compiler.
+
+- **90% coverage and up**: near-certain. The function's exact code is a CLIB module,
+  and the name is reliable.
+- **40 to 89%**: definitely library. Relocations lower the coverage, so the module
+  name is best-effort. One Watcom source module holds several functions, so the name
+  is the source module, not necessarily this exact symbol.
+- **15 to 40%** (`library?`): probably library, low confidence. Verify before trusting
+  the name.
+- **Below 15%**: the game's own code, a wrapper that calls the library. These match
+  our compiler.
 
 Regenerate: `docker run --rm -e WRITE_JSON=1 -v "$PWD":/work -w /work synd-decomp python3 tools/libname.py`
 
-## Confirmed library — high confidence (100% coverage)
+## Confirmed library, high confidence (100% coverage)
 
 | addr | FUN | size | CLIB module |
 |---|---|---|---|
@@ -41,7 +46,7 @@ Regenerate: `docker run --rm -e WRITE_JSON=1 -v "$PWD":/work -w /work synd-decom
 | 0003e361 | FUN_0003e361 | 32 | **makepath** |
 | 0003e7f7 | FUN_0003e7f7 | 30 | **strchr** |
 
-## Confirmed library — module name best-effort (40–89% coverage)
+## Confirmed library, module name best-effort (40 to 89% coverage)
 
 | addr | FUN | size | CLIB source module |
 |---|---|---|---|
@@ -67,16 +72,19 @@ Regenerate: `docker run --rm -e WRITE_JSON=1 -v "$PWD":/work -w /work synd-decom
 | 0003e590 | FUN_0003e590 | 36 | unlink |
 | 0003b99e | FUN_0003b99e | 44 | fclose (helper) |
 
-## Probably library — low confidence (15–40%, verify)
+## Probably library, low confidence (15 to 40%, verify)
 
-ad66→printf, cc45→spawnve, c42d→prtf, b407→rewind, c479→dosret, af38→system,
-adb2→int386, cfce→spawnlp, c491→dosret, c002→prtf, dae1→allocfp, b90d→fopen, a4fa→sprintf.
-(These call/return into library routines; the low coverage means the function body is mostly
-game glue or is heavily relocated. `cc45`, `b407`, `cfce`, `c002` are already byte-matched as
-game wrappers with `-3s -of`.)
+ad66 to printf, cc45 to spawnve, c42d to prtf, b407 to rewind, c479 to dosret, af38
+to system, adb2 to int386, cfce to spawnlp, c491 to dosret, c002 to prtf, dae1 to
+allocfp, b90d to fopen, a4fa to sprintf.
 
-## Game's own framed code (<15% — NOT in any library)
+These call or return into library routines. The low coverage means the function body
+is mostly game glue, or is heavily relocated. `cc45`, `b407`, `cfce`, and `c002` are
+already byte-matched as game wrappers with `-3s -of`.
 
-These are thin game wrappers that call the library; they match our compiler (`-3s -of`):
-db69, aee6, aa74, ab59, ab69, ad89, c57b, b2aa (INP port read), ca0d (return 0),
-b9ca, addb, b8f8, e48e, e471, b2b5. (Matched ones: db69, aee6, aa74, ab59, addb, b8f8, e48e, e471.)
+## The game's own framed code (below 15%, not in any library)
+
+These are thin game wrappers that call the library, and they match our compiler
+(`-3s -of`): db69, aee6, aa74, ab59, ab69, ad89, c57b, b2aa (INP port read), ca0d
+(return 0), b9ca, addb, b8f8, e48e, e471, b2b5. Already matched: db69, aee6, aa74,
+ab59, addb, b8f8, e48e, e471.
