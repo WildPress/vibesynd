@@ -264,3 +264,42 @@ isn't a dead end like the pure register tie-break in `0x33fb8`. It responds to t
 levers we can actually pull, the optimisation level and the way the loop is written
 in C. This unit, like the `0x39xxx` block, wants lighter optimisation than the main
 game, and the byte diff is what tells us so. **57 of 500.**
+
+## FUN_000377e8 and FUN_00014998 — inlining as a register lever
+
+These two came next door to the chain counter, and both taught the same small trick.
+
+`0x377e8` is a map lookup. It reads a tile id from a field, turns it into a pointer
+into a table, bounds-checks it, and if it's valid reads a byte and translates it
+through a second table. My first C had the right logic but three separate byte
+differences: the pointer sat in the wrong register, the 16-bit read was widened the
+long way, and the early return was in the wrong place. The fixes were instructive.
+Getting the return type right (a 16-bit `unsigned short`, which the original's
+`xor ah,ah` tail gives away) fixed the return. Inlining the intermediate values
+instead of naming them in locals fixed both the register choice and the widening
+idiom in one go, the compiler stopped shuffling the value between registers when the
+expression was one piece. And the early return only fell into the right place once I
+wrote it as `if (valid) return lookup; return 0;` rather than `if (invalid) return 0;`
+first. Same logic, but the second form tells the compiler which path is the cold one,
+and it parks the `return 0` at the bottom exactly like the original.
+
+`0x14998` is a chain walk again, this time through fifteen-byte records, following a
+link field until it hits zero. It sits in the main game so it wants the normal
+optimisation, and the loop shape matched first time. The only snag was the same
+widening idiom, my named `id` local made the compiler load the value into one
+register and copy it to another. Inlining the read straight into the multiply let it
+load directly into the right register, and it matched.
+
+So the running lesson from this pair, an intermediate local isn't free. Naming a
+value can force the compiler to hold it somewhere and move it, where inlining lets it
+flow straight into where it's used. When the diff is a stray register copy or a
+widen done the long way, try collapsing the locals before reaching for anything
+cleverer.
+
+There were two near neighbours we couldn't take. `0x37818` shares its `return 0` with
+the function physically above it, its out-of-range branch jumps into that neighbour's
+tail, so it can't be matched on its own, only as part of a larger unit. And `0x37738`
+came down to a single idiom, the original holds a field in a preserved register and
+widens it, ours keeps it in the accumulator, and no rearrangement of the C or the
+flags moved it. That's the register-allocation wall again, so it's parked. **59 of
+500.**

@@ -218,7 +218,20 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-11)
-- **Coverage: 57/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 59/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- 💡 **INLINING IS A REGISTER LEVER (cont. 11): `0x377e8`, `0x14998` matched by collapsing locals.**
+  A named intermediate (`unsigned short id = ...; use id`) forces Watcom to load into one register
+  and copy to another (`mov ax,[..]; mov dx,ax`) or widen the long way (`and eax,0xffff` vs the
+  original's `xor eax,eax; mov ax,[..]`). **Inlining the read into where it's used** (`p = base +
+  *(unsigned short*)(p+2) * 15`) lets the value flow straight into the right register → matches.
+  Also: get the RETURN TYPE from the tail (`xor ah,ah` ⇒ `unsigned short`), and write early-returns
+  as `if (valid) return x; return 0;` (not `if (invalid) return 0;`) so Watcom parks the cold
+  `return 0` at the bottom like the original. `0x377e8` recipe `-4s -or -s -zq`, `0x14998` main-game
+  `-4s -oneatx -zp8 -s -zq`. ⚠ regress95 compiles into `build/` — don't leave scratch files there
+  (a stray `build/_dis.bin` made it report spurious breakage; `rm` it and re-run = 51/51).
+- ⛔ **`0x37818` UNMATCHABLE IN ISOLATION**: its out-of-range branch `jb` jumps into the PREVIOUS
+  function's shared `return 0` tail (cross-function epilogue sharing). Needs whole-unit compilation.
+  `0x37738` parked: field-in-EBX + pre-clear widen idiom, no C/flag lever (register-alloc wall).
 - 🔓 **LOOP-ROTATION WALL CRACKED (cont. 11): `0x377b8` matched with `-4s -or -s -zq`.** A
   chain-length counter (while-loop over a linked list). The main-game `-oneatx` bundle ROTATES
   loops (test at bottom); the original has the UN-rotated form (test at top, `jmp` back). This

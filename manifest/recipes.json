@@ -1,4 +1,8 @@
 {
+ "FUN_00014998": {
+  "addr": "00014998",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
  "FUN_00014c58": {
   "addr": "00014c58",
   "flags": "-4s -oneatx -zp8 -s -zq"
@@ -69,6 +73,10 @@
  },
  "FUN_000377b8": {
   "addr": "000377b8",
+  "flags": "-4s -or -s -zq"
+ },
+ "FUN_000377e8": {
+  "addr": "000377e8",
   "flags": "-4s -or -s -zq"
  },
  "FUN_000399b3": {

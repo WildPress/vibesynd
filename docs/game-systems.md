@@ -70,6 +70,13 @@ An honest, short list. It'll grow.
   list", so it's likely counting something attached to an object (inventory, a queue,
   or a group). Which one we'll know from its callers. It's byte-matched, and it's the
   function that cracked the [loop-rotation wall](journal.md).
+- **A tile-type lookup** (`0x377e8`) — takes an id from an object's field, indexes a
+  table to find a tile record, bounds-checks it, and translates a byte from the record
+  through a second table into a type code. Part of the **map and rendering** system,
+  the same table family as the passability check. Byte-matched.
+- **A record-chain walk** (`0x14998`) — follows a linked list of fixed 15-byte records
+  (a table indexed by id, each record holding the next id at a fixed offset) until the
+  chain ends. Another "walk a list attached to an object" primitive. Byte-matched.
 - **The runtime library** — dozens of functions in the top region are Watcom's own
   `strcpy`, `tolower`, `fopen`, and so on. Not game systems, but worth knowing they're
   accounted for. See [game vs library](game-vs-library.md).
