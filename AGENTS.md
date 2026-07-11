@@ -148,10 +148,24 @@ diverges (EAX vs EDX). Base flags **`-4s`** (stack) or **`-4r`** (register) + `-
 1. Pick an **unmatched, non-framed** target, SKIP `55 89 e5` prologues (blocked class).
 2. `disassemble_function` (Ghidra MCP) → read shape, note param source (stack vs reg).
 3. Write matching C → `src/<name>.c`. Idioms that matter:
-   - global access ⇒ `extern` var (direct `a1`/`803d` abs form), NOT a literal-pointer cast.
+   - global access via `a1`/`a3`/`803d` (simple abs load/store) ⇒ `extern` var, the differ
+     masks the 00000000 reloc placeholder. Works because the addend is 0.
+   - **BUT obj1-internal DATA at a computed position (array bounds, `arr[const]`,
+     `((T*)addr)->field`, loop `cmp ebx,end`) relocates with a NON-ZERO addend** (e.g.
+     `00 1e 00 00` = 0x1e00), which the naive masker does NOT catch (it only masks all-zero
+     runs). Two ways round it (cont. 9): (a) use a **literal-address cast**
+     `((struct T*)0x15e70)` — the original bakes these as literals (DOS/4GW fixed base) so you
+     get EXACT bytes, no masking; caveat: a literal loop bound is compile-time-provable so
+     Watcom may DROP the entry guard the original keeps (e.g. 0x22b38). (b) the proper fix:
+     teach `match_reloc.py` to mask real **OMF FIXUPP** sites, not just zero runs (TODO, would
+     unlock the extern form that keeps the guard). 0x22b38 is parked on this.
    - `return h(imm)` register-calling ⇒ Watcom tail-calls to `jmp` (matches thunk stubs).
    - call/jmp/abs-data operands are RELOCATIONS, the differ masks them, declare callees
      & globals `extern` and they won't block a match.
+   - **Register allocation is the main game-code wall.** Forced allocation (one sensible
+     register per value: forwarders, initialisers, linear call-seqs, setters) matches. Free
+     allocation (2+ values each fitting several registers) lets Watcom diverge from the
+     original's choice — hard to force from C. Target the forced-allocation shapes.
 4. `tools/match10.sh <name> "<flags>"` → want `RELOC-AWARE match (masked): YES`. If close,
    flip `-4s`/`-4r` or adjust the C, a couple tries, then move on (don't rabbit-hole).
 5. `tools/mark.py <name>` to record. Prefer batchable shapes (stubs, getters/setters,
