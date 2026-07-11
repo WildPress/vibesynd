@@ -1,9 +1,9 @@
 # Compiler flags
 
-A **compiler flag** is an option you pass to the compiler to change how it turns
-your C into machine code. The same C, compiled with different flags, produces
-different bytes. Since we need the *exact* original bytes, we have to use the exact
-flags the original was built with.
+A **compiler flag** is an option you pass to the [compiler](watcom.md) to change how
+it turns your C into machine code. The same C, compiled with different flags,
+produces different bytes. Since we need the *exact* original bytes, we have to use
+the exact flags the original was built with.
 
 The flags we settled on are `-4s -oneatx -zp8 -s -zq` (with `-4r` instead of `-4s`
 for register-calling functions). Here's what each part means and how sure we are of

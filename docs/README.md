@@ -32,6 +32,10 @@ as it goes.
 
 - **[The CPU, registers, and instructions](cpu-basics.md)** — the foundation the
   rest sits on. Come back here whenever a register or instruction is unfamiliar.
+- **[DOS, protected mode, and DOS/4GW](dos-and-dos4gw.md)** — the platform the game
+  runs on, and why it needs an "extender" to start.
+- **[The Watcom compiler and toolchain](watcom.md)** — the tools that built the
+  game, and the ones we use to reproduce it.
 - **[Matching decompilation](matching-decompilation.md)** — the goal, and why
   byte-for-byte rather than just "works the same".
 - **[Stack frames](stack-frames.md)** — framed vs frameless functions, and what a

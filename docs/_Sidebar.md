@@ -5,6 +5,8 @@
 **Foundations**
 
 - [The CPU & registers](cpu-basics)
+- [DOS & DOS/4GW](dos-and-dos4gw)
+- [The Watcom toolchain](watcom)
 
 **Concepts**
 

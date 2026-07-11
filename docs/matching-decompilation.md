@@ -5,7 +5,8 @@
 We have the original *Syndicate* game as a compiled program from 1995. That's a
 big block of **machine code**, the raw bytes a CPU runs. We don't have the source
 code it was built from. Our job is to write C source that, when compiled with the
-same old compiler, produces the *exact same bytes*, one function at a time.
+same old compiler (see [the Watcom toolchain](watcom.md)), produces the *exact same
+bytes*, one function at a time.
 
 Not code that plays the same. Code that *is* the same, byte for byte.
 
