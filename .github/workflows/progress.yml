@@ -29,7 +29,8 @@ jobs:
           import re, sys
           url = sys.argv[1]
           s = open("README.md", encoding="utf-8").read()
-          block = f"<!--PROGRESS-->![game matched]({url})<!--/PROGRESS-->"
+          block = (f'<!--PROGRESS--><a href="https://github.com/WildPress/vibesynd/wiki">'
+                   f'<img alt="game matched" src="{url}"></a><!--/PROGRESS-->')
           s = re.sub(r"<!--PROGRESS-->.*?<!--/PROGRESS-->", block, s, flags=re.S)
           open("README.md", "w", encoding="utf-8").write(s)
           PY
