@@ -20,6 +20,13 @@ An analogy: it's like writing a letter that says "meet me at ADDRESS at noon" an
 leaving ADDRESS blank because you haven't booked the venue yet. You mark the blank
 so you remember to fill it in before you post the letter.
 
+```mermaid
+flowchart LR
+    A[Compiler writes the instruction<br/>with a BLANK where the address goes] --> B[and attaches a note:<br/>fill this with the address of X]
+    B --> C[Later, the linker or loader<br/>fills the blank with the real address]
+    C --> D[Now the instruction is complete]
+```
+
 ## Why relocations complicate our byte comparison
 
 Here's the snag for us. The *original* game has already been linked, so its blanks

@@ -15,6 +15,13 @@ Your code and the library get combined by a program called the **linker**, which
 stitches all the pieces into one executable. So the finished game is the authors'
 code plus Watcom's library, stapled together.
 
+```mermaid
+flowchart TD
+    G[The game's own code<br/>the authors wrote] --> L[Linker]
+    R[Watcom runtime library<br/>strcpy, fopen, tolower, ...] --> L
+    L --> E[One finished executable<br/>game + library, stapled together]
+```
+
 ## The seam
 
 We found that these two parts sit in different regions of the game's code. The

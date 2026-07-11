@@ -7,6 +7,13 @@ have to agree on it, or they'd be reading and writing different places.
 There are two conventions in this game, and which one a given function uses is
 something we read straight from its disassembly.
 
+```mermaid
+flowchart TD
+    C[Caller has arguments to pass] --> Q{Which convention<br/>did this function use?}
+    Q -->|stack calling, -4s| S["Push the arguments onto the stack;<br/>the function reads them from [esp+N]"]
+    Q -->|register calling, -4r| R[Put the arguments in registers:<br/>eax, then edx, then ebx, then ecx]
+```
+
 ## Stack calling
 
 In **stack calling**, the caller pushes the arguments onto the stack before making
