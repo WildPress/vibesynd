@@ -71,6 +71,45 @@ def comm_sites(ast):
     V().visit(ast)
     return out
 
+def _pow2(v): return v is not None and v > 0 and (v & (v - 1)) == 0
+def _const(node):
+    if isinstance(node, c_ast.Constant) and node.type == "int":
+        try: return int(node.value, 0)
+        except Exception: return None
+    return None
+REL_SWAP = {"<": ">", ">": "<", "<=": ">=", ">=": "<="}
+
+def rewrite_sites(ast):
+    """BinaryOp nodes with a codegen-equivalent alternate form."""
+    out = []
+    class V(c_ast.NodeVisitor):
+        def visit_BinaryOp(self, n):
+            self.generic_visit(n)
+            if n.op == "*" and (_pow2(_const(n.left)) or _pow2(_const(n.right))):
+                out.append(n)
+            elif n.op in ("/", "%") and _pow2(_const(n.right)):
+                out.append(n)
+            elif n.op in REL_SWAP:
+                out.append(n)
+    V().visit(ast)
+    return out
+
+def apply_rewrite(n):
+    """rewrite a node to its equivalent form (re-inspects operands, so it composes
+    with a prior commutative swap)."""
+    if n.op == "*":
+        cs = "right" if _pow2(_const(n.right)) else "left"
+        k = _const(getattr(n, cs)).bit_length() - 1
+        n.op = "<<"; setattr(n, cs, c_ast.Constant("int", str(k)))
+    elif n.op == "/":
+        k = _const(n.right).bit_length() - 1
+        n.op = ">>"; n.right = c_ast.Constant("int", str(k))
+    elif n.op == "%":
+        m = _const(n.right) - 1
+        n.op = "&"; n.right = c_ast.Constant("int", hex(m))
+    elif n.op in REL_SWAP:
+        n.op = REL_SWAP[n.op]; n.left, n.right = n.right, n.left
+
 def hoist_sites(body):
     """(stmt_index, node) for hoistable subexpressions (ArrayRef / arithmetic op)."""
     out = []
@@ -98,12 +137,17 @@ def type_sites(body):
             out.append(stmt.type.type)
     return out
 
-def apply_mutations(ast, comm_flags, hoist_types, local_types, order_seed):
+def apply_mutations(ast, comm_flags, rewrite_flags, hoist_types, local_types, order_seed):
     body = body_of(ast)
     cs = comm_sites(ast)
     for i, on in enumerate(comm_flags):
         if on and i < len(cs):
             cs[i].left, cs[i].right = cs[i].right, cs[i].left
+    # codegen-equivalent rewrites (strength reduction, relational swap)
+    rs = rewrite_sites(ast)
+    for i, on in enumerate(rewrite_flags):
+        if on and i < len(rs):
+            apply_rewrite(rs[i])
     # swap existing scalar local types
     ts = type_sites(body)
     for i, t in enumerate(local_types):
@@ -187,28 +231,30 @@ def main():
 
     src0 = strip_comments(open(f"src/{name}.c").read())
     ast0 = PARSER.parse(src0)
-    ncomm = len(comm_sites(ast0)); nhoist = len(hoist_sites(body_of(ast0)))
-    ntype = len(type_sites(body_of(ast0)))
-    print(f"{name}: {ncomm} commutative, {nhoist} hoist, {ntype} type sites; "
-          f"sampling {N} variants, target={len(target)}B", flush=True)
+    ncomm = len(comm_sites(ast0)); nrw = len(rewrite_sites(ast0))
+    nhoist = len(hoist_sites(body_of(ast0))); ntype = len(type_sites(body_of(ast0)))
+    print(f"{name}: {ncomm} commutative, {nrw} rewrite, {nhoist} hoist, {ntype} type "
+          f"sites; sampling {N} variants, target={len(target)}B", flush=True)
 
     rng = random.Random(seed)
     seen, specs = set(), []
     # always include the identity variant first
-    specs.append((tuple([0]*ncomm), tuple([None]*nhoist), tuple([None]*ntype), None))
+    specs.append((tuple([0]*ncomm), tuple([0]*nrw), tuple([None]*nhoist),
+                  tuple([None]*ntype), None))
     while len(specs) < N:
         cf = tuple(rng.randint(0, 1) for _ in range(ncomm))
+        rw = tuple(rng.randint(0, 1) for _ in range(nrw))
         hf = tuple(rng.choice(TYPES) if rng.random() < 0.2 else None for _ in range(nhoist))
         lt = tuple(rng.choice(TYPES) if rng.random() < 0.25 else None for _ in range(ntype))
         od = rng.randint(0, 10**9) if rng.random() < 0.5 else None
-        key = (cf, hf, lt, od)
+        key = (cf, rw, hf, lt, od)
         if key in seen: continue
         seen.add(key); specs.append(key)
 
     def render(spec):
         a = copy.deepcopy(ast0)
         try:
-            apply_mutations(a, spec[0], spec[1], spec[2], spec[3])
+            apply_mutations(a, spec[0], spec[1], spec[2], spec[3], spec[4])
             return GEN.visit(a)
         except Exception:
             return "void __broken(void){}"
