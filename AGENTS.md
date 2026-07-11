@@ -219,6 +219,15 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-11)
 - **Coverage: 64/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- 🧬 **PERMUTER built (cont. 11): `tools/cpermute.py`** — AST-based C permuter for our setup, the
+  decomp-permuter idea on our backend. Parses with **pycparser** (auto-`pip install --break-system-
+  packages pycparser`; strips comments first — pycparser can't handle them), enumerates
+  semantics-preserving mutations (currently **commutative operand swaps**), regenerates via
+  `c_generator`, sweeps through the batched engine, scores by **leading matching bytes**. Also
+  `tools/permute_c.py` (manual `$[a $| b $]` template alternatives). LIMIT confirmed on `0x33fb8`: 128
+  variants, best 63/137 bytes — commutative swaps can't cross a REGISTER tie-break. Permuters crack
+  scheduling/order/temp near-misses, NOT pure register/allocation walls. To extend: add statement-
+  reorder + temp-intro transforms (pycparser Compound.block_items / hoist subexprs).
 - 🔎 **FAST SEARCH ENGINE built (cont. 11): `tools/permute_par.py` + `tools/wcc95_batch.sh`.** Fans C
   variants across cores, ~200 compiles/sec (batched DOSBox in ONE session + work dirs on native `/tmp`,
   NOT the slow `/mnt/c` drvfs). Exhausted all 40,320 case orderings of `0x20d98`'s switch in **3m9s**.
