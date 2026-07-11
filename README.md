@@ -1,6 +1,6 @@
 # Syndicate matching decompilation
 
-<!--PROGRESS--><a href="https://github.com/WildPress/vibesynd/wiki"><img alt="game matched" src="https://img.shields.io/badge/game%20matched-1.50%25%20bytes%20%7C%2055%2F463%20fns-blue"></a><!--/PROGRESS-->
+<!--PROGRESS--><a href="https://github.com/WildPress/vibesynd/wiki"><img alt="game matched" src="https://img.shields.io/badge/game%20matched-1.58%25%20bytes%20%7C%2057%2F463%20fns-blue"></a><!--/PROGRESS-->
 
 A matching decompilation of the original 1993/95 DOS *Syndicate*: C source that,
 compiled with the period Watcom toolchain, reproduces the game's machine code byte
