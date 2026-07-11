@@ -219,6 +219,19 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-11)
 - **Coverage: 64/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- 🔎 **FAST SEARCH ENGINE built (cont. 11): `tools/permute_par.py` + `tools/wcc95_batch.sh`.** Fans C
+  variants across cores, ~200 compiles/sec (batched DOSBox in ONE session + work dirs on native `/tmp`,
+  NOT the slow `/mnt/c` drvfs). Exhausted all 40,320 case orderings of `0x20d98`'s switch in **3m9s**.
+  Use for any function that's correct except for an enumerable choice (case order, operand order,
+  signedness, register). Also `tools/permute.py` (single-thread), `tools/callgraph.py` (static call
+  graph: E8/E9→known fn starts), `tools/optclass.py` (classify recipes by needed opt). GOTCHAS:
+  `TaskStop` kills the wrapper but NOT the docker container — `docker kill` leftovers; keep DOSBox I/O
+  off drvfs.
+- ⛔ **`0x20d98` PARKED — definitively NOT a reordered switch.** Exhaustive over all 40,320 orderings:
+  target size 342B is UNREACHABLE (sizes 311–364, 342 skipped). Structural sweep (default, 5 gap-enum
+  sets, int-switch) brackets 342 (327–359) but misses. The exact source (which enum gap-types were
+  listed, and order) isn't recoverable from bytes; would need original headers. Understood (HP-by-type
+  table), tooling captured. Don't re-chase ordering.
 - 🗺️ **SUBSYSTEM-DRIVEN approach (cont. 11): navigate top-down via `tools/callgraph.py` + strings,
   match bottom-up.** Static call graph scans OBJECT1 for E8/E9 rel32 landing on known fn starts
   (misses indirect `call [mem]`/`call reg`). Game's strings name every asset (`data/map%02d.dat`,
