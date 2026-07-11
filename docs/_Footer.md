@@ -1,0 +1,1 @@
+Personal learning notes for a matching decompilation of *Syndicate* (1995). These pages are generated from the [`docs/`](https://github.com/WildPress/vibesynd/tree/main/docs) folder in the repo, which is the source of truth.

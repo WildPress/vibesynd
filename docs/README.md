@@ -1,46 +1,62 @@
-# My notes on how this works
+# Syndicate decompilation: my learning notes
 
-These are my own notes for this project. I'm doing it to learn how decompilation
-actually works, and I'm new to all of it. I'm not a reverse engineer, so this is
-written for me to understand the ideas from scratch and to come back to later when
-I've forgotten them.
+This is a personal project to learn how decompilation actually works. I'm taking
+the original 1995 DOS game *Syndicate* and rebuilding it as C source that compiles
+to the exact same machine code, one function at a time.
 
-Each note explains one concept in plain language and defines the terms as it goes.
-They're meant to be read in order the first time, but each one stands on its own.
+I'm new to all of this and I'm not a reverse engineer. These pages are my own
+notes, written so I can understand each idea from scratch and come back to them
+later when I've forgotten.
 
-(The terse working reference, the kind of thing an experienced person would want,
-is `AGENTS.md` in the repo root. This folder is the version for me.)
+## What the project actually is
 
-## The concepts, in a sensible reading order
+The game is a compiled program from 1995, a big block of machine code. I don't have
+the source it was built from. The goal is to write C that, compiled with the same
+old compiler, produces the *identical* bytes. Not code that behaves the same, code
+that *is* the same.
 
-1. [What a matching decompilation is](matching-decompilation.md) — the goal, and
-   why we insist on byte-for-byte identical output.
-2. [Stack frames: framed vs frameless](stack-frames.md) — what a stack frame is,
-   and why some functions have one and some don't.
-3. [Calling conventions](calling-conventions.md) — how a function receives its
-   arguments, on the stack or in registers.
-4. [Relocations and the OMF differ](relocations-and-omf.md) — why addresses are
-   blanks until link time, and how we compare around them.
-5. [Compiler flags](compiler-flags.md) — what the flags mean, and how we worked
-   out which ones the game was built with.
-6. [Register allocation](register-allocation.md) — why the compiler's choice of
-   which register holds which value is the hardest thing to match.
-7. [Game code vs the library](game-vs-library.md) — a program is the game plus the
-   compiler's runtime, stapled together, and we only decompile the game.
+The point of being that strict is certainty. If my C compiles to the original
+bytes, it does exactly what the original does in every case, because it is the
+original. There's nothing to test and no edge cases to worry about. When a function
+matches, it's genuinely finished. The page on
+[matching decompilation](matching-decompilation.md) goes into why that's worth the
+extra effort.
 
-## A quick glossary
+Once enough of it is rebuilt this way, the whole game builds from source, and after
+that it could be ported to a modern machine with real understanding of every line.
 
-- **Machine code**: the raw bytes the CPU executes. The original game is a big
-  block of it. Our job is to produce the same bytes from C.
-- **Disassembly**: machine code translated back into human-readable instructions
-  like `mov eax, [esp+4]`. It's a view of the bytes, not the bytes themselves.
-- **Decompilation**: going one step further, from machine code back to something
-  like C source.
-- **Matching**: our specific discipline, where the C has to compile to the *exact*
-  original bytes, not just behave the same way.
-- **Relocation**: a spot in the code where an address gets filled in later, by the
-  linker or the loader, rather than being fixed when the function is compiled.
-- **Watcom**: the C compiler the game was built with, back in the early 1990s. We
-  run a preserved copy of it to reproduce its output.
-- **OMF**: the object file format Watcom produces. Knowing how to read it lets us
-  find exactly where the relocations are.
+## Start here
+
+If the ideas are new, read them in roughly this order. Each page defines its terms
+as it goes.
+
+- **[Matching decompilation](matching-decompilation.md)** — the goal, and why
+  byte-for-byte rather than just "works the same".
+- **[Stack frames](stack-frames.md)** — framed vs frameless functions, and what a
+  stack frame even is.
+- **[Calling conventions](calling-conventions.md)** — how a function receives its
+  arguments, on the stack or in registers.
+- **[Relocations and OMF](relocations-and-omf.md)** — why addresses are blanks until
+  link time, and how we compare around them.
+- **[Compiler flags](compiler-flags.md)** — what the flags mean, and how we worked
+  out which ones the game was built with.
+- **[Register allocation](register-allocation.md)** — why the compiler's choice of
+  which register holds which value is the hardest thing to match.
+- **[Game code vs the library](game-vs-library.md)** — a program is the game plus
+  the compiler's runtime, and we only decompile the game.
+
+## Quick glossary
+
+- **Machine code** — the raw bytes the CPU runs. The game is a big block of it, and
+  our job is to produce the same bytes from C.
+- **Disassembly** — machine code shown as readable instructions like
+  `mov eax, [esp+4]`. A view of the bytes, not the bytes themselves.
+- **Decompilation** — going further, from machine code back towards C source.
+- **Matching** — our discipline, where the C must compile to the *exact* original
+  bytes, not just behave the same.
+- **Relocation** — a spot where an address gets filled in later (at link or load
+  time) rather than when the function is compiled.
+- **Watcom** — the C compiler the game was built with. We run a preserved copy to
+  reproduce its output.
+- **OMF** — Object Module Format, the object-file format Watcom produces. Reading it
+  tells us exactly where the relocations are.
