@@ -339,3 +339,42 @@ That hoist is the `x` in the bundle. Dropping to `-ot`, which still gives the fa
 hoist, matched exactly. So this unit, like the others we've found, was built with
 lighter optimisation than the main game, and the specific instruction that gave it
 away was a constant that should have been inline. **61 of 500.**
+
+## FUN_00013a98 — when the explicit local is the answer
+
+Earlier the lesson was that naming a value can hurt, that inlining lets it flow into
+the right register. This one is the mirror image, and it's worth pairing them so the
+principle is clear rather than the recipe.
+
+`0x13a98` checks a flag on one of its arguments, and either forwards to another
+function and returns zero, or returns one. My first attempt wrote the two outcomes as
+two `return` statements. It was close but wrong in three linked ways. The original
+holds the result in a single register the whole way through, and that one register
+does triple duty, it starts as one for the "return 1" case, it's reused as the mask
+for the flag test (`test [reg+0xb], bl` rather than a fresh immediate), and it's
+zeroed before the call for the "return 0" case, with a single `mov al, bl` exit at
+the bottom. Two separate returns can't express that, because the value never lives in
+one place.
+
+Writing it with an explicit `result` variable, set to one, flipped to zero inside the
+branch, and returned once at the end, gave the compiler exactly that single-register
+lifetime. The test-mask reuse appeared, the shared exit appeared, and as a bonus the
+third call argument moved to the register the original uses, because the result was
+now occupying the one ours had wrongly borrowed. It matched.
+
+So the pair of lessons sits together. Inline a value when it should flow straight
+through an expression into where it's used. Name a value when it needs to persist in
+one place across branches or a call, especially when it's also a return value. The
+diff tells you which, a stray copy or a long-way widen says inline, a value that
+should have stayed put across a call says give it a name. **62 of 500.**
+
+We also looked at `0x20d18` and left it. It's a satisfying one to understand, it's
+the map initialiser, it walks a twelve-thousand-entry table turning stored offsets
+into real pointers and then publishes the table's base in the same `g_5358` the
+[passability check](game-systems.md) reads, so this is the function that *builds*
+what that one *reads*. But it compiles to an alignment-padded loop, the compiler
+inserts do-nothing instructions to line the loop up on a boundary, and it keeps the
+base in a preserved register with an explicit pointer walk rather than the folded
+addressing ours used. Reproducing padding that depends on the function's absolute
+placement is fragile in isolation, so it's parked as understood-but-unmatched, with
+its purpose recorded because that's the half that lasts.

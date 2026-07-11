@@ -58,6 +58,11 @@ An honest, short list. It'll grow.
   free one, fills in a few fields, and hands it back. This is the classic shape of an
   "entity pool", so it's likely how the game creates a person, a projectile, or a
   similar game object. Which one, we'll know when we match its callers.
+- **The map column-table initialiser** (`0x20d18`) — walks a 12,288-entry table,
+  turning each stored offset into an absolute pointer, then publishes the table base in
+  `g_5358`. This is the function that *builds* the table the passability check below
+  *reads*. Understood but not yet byte-matched (it compiles to an alignment-padded
+  loop). Part of the **map and rendering** system.
 - **A map passability check** (`0x33fb8`) — given a world position, it finds the map
   tile there and returns whether it's walkable (part of the **map and rendering**
   system). It's understood but not yet byte-matched, it's one register-allocation

@@ -218,7 +218,17 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-11)
-- **Coverage: 61/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 62/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- 🔁 **INLINE vs NAME (cont. 11): `0x13a98` matched with an explicit `result` local.** The mirror of
+  the inlining lesson: when a value must PERSIST in one register across branches/a call (especially a
+  return value that also serves as a test mask, `test [reg],bl`, and wants a single `mov al,bl` exit),
+  give it a NAMED local. Two separate `return` statements can't express a single-register lifetime.
+  Rule of thumb from the diff: stray copy / long-way widen ⇒ INLINE; value that should stay put across
+  a call ⇒ NAME it. Recipe `-4s -oneatx -zp8 -s -zq`.
+- ⛔ **`0x20d18` parked (map-init, pairs with `0x33fb8`)**: builds the `g_5358` column table (offset→
+  pointer fixup over 0x3000 entries) that `0x33fb8` reads. Compiles to an ALIGNMENT-PADDED loop
+  (`lea eax,[eax+0]; mov ecx,ecx` NOPs) + base in ESI via explicit pointer walk. Padding depends on
+  absolute placement ⇒ fragile in isolation. Understood, documented in game-systems, not byte-matched.
 - 🧩 **TYPE + LAYOUT LEVERS (cont. 11): `0x14cc8`, `0x16638` matched.** Key gotchas, all read from
   the diff: (1) **Watcom `char` defaults to UNSIGNED** — a `jb`/zero-extend where target has
   `jl`/`movsx` means declare `signed char`. (2) Byte-width counter/return (`inc dl`, `mov al,1`,
