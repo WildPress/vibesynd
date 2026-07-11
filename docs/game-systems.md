@@ -92,6 +92,15 @@ An honest, short list. It'll grow.
 - **A record-chain walk** (`0x14998`) — follows a linked list of fixed 15-byte records
   (a table indexed by id, each record holding the next id at a fixed offset) until the
   chain ends. Another "walk a list attached to an object" primitive. Byte-matched.
+- **Per-type stat initialisation** (`0x20d98`) — for every in-use record in pool B it
+  reads a type byte at `+0x19` and writes a value to the word at `+0x14`. The values
+  look like hit-points, and the types come in consecutive pairs (likely two variants of
+  the same object): `1,2 → 600`, `5,6 → 100`, `9,10 → 80`, `13,14 → 30`, `17,18 → 40`,
+  `28,29 → 10`, `36,37 → 120`, `40,41 → 115`. So pool B holds **typed objects with hit
+  points** (vehicles or destructible scenery are the likely candidates), and this pass
+  stamps each object's starting health from its type when a map loads. This is exactly
+  the kind of table you'd edit to mod object toughness. (Understood; the byte match is
+  parked on Watcom's switch-tree balancing.)
 - **The runtime library** — dozens of functions in the top region are Watcom's own
   `strcpy`, `tolower`, `fopen`, and so on. Not game systems, but worth knowing they're
   accounted for. See [game vs library](game-vs-library.md).
