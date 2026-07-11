@@ -1,16 +1,24 @@
 #!/usr/bin/env python3
-"""AST-based C permuter for our Watcom-9.5 setup. Parses a function with pycparser,
-enumerates semantics-preserving mutations (commutative operand swaps), regenerates
-each variant, and sweeps them through the fast batched compiler, scored by how many
-bytes match the target. A lightweight decomp-permuter tailored to our backend.
+"""AST-based C permuter for our Watcom-9.5 setup -- the decomp-permuter idea on our
+backend. Parses a function with pycparser and applies randomized semantics-preserving
+mutations, then sweeps the variants through the fast batched compiler, scored by how
+many leading bytes match the target.
+
+Transforms:
+  * commutative operand swaps   (a+b -> b+a, a==b -> b==a, ...)
+  * statement / declaration reordering
+  * temporary introduction      (hoist a subexpression into `int __tN = ...;`)
+
+Randomized search (like the real decomp-permuter): each variant deep-copies the AST,
+applies a random subset of mutations, and renders. Invalid variants just fail to
+compile and are skipped.
 
   docker run --rm -v "$PWD":/work -w /work synd-decomp python3 tools/cpermute.py \
-      FUN_00033fb8 "-4s -oneatx -zp8 -s -zq" [--workers 20] [--max 4096]
+      FUN_00033fb8 "-4s -oneatx -zp8 -s -zq" [--workers 24] [--n 4000] [--seed 0]
 
-Needs pycparser (pip-installs it with --break-system-packages if missing). Saves a
-byte-identical winner to src/<name>.c.match; leaves src/<name>.c untouched.
+Needs pycparser (auto-installed). Saves a byte-identical winner to src/<name>.c.match.
 """
-import json, subprocess, sys, re, os, itertools
+import json, subprocess, sys, re, os, copy, random
 import multiprocessing as mp
 try:
     from pycparser import c_parser, c_generator, c_ast
@@ -21,16 +29,95 @@ from omf import text_bytes_and_fixups
 
 SEG, MAN = "inputs/SYNDICAT_MAIN_OBJECT1.linear.bin", "manifest/functions.json"
 COMMUTATIVE = {"+", "*", "==", "!=", "&", "|", "^", "&&", "||"}
+ARITH = {"+", "-", "*", "/", "%", "<<", ">>", "&", "|", "^"}
+PARSER = c_parser.CParser()
+GEN = c_generator.CGenerator()
 
 def strip_comments(s):
     s = re.sub(r"/\*.*?\*/", "", s, flags=re.S)
     return re.sub(r"//[^\n]*", "", s)
 
-class Collect(c_ast.NodeVisitor):
-    def __init__(self): self.sites = []
-    def visit_BinaryOp(self, n):
-        if n.op in COMMUTATIVE: self.sites.append(n)
-        self.generic_visit(n)
+def body_of(ast):
+    fn = next(x for x in ast.ext if isinstance(x, c_ast.FuncDef))
+    return fn.body
+
+def parent_map(node, parent=None, pmap=None):
+    if pmap is None: pmap = {}
+    pmap[id(node)] = parent
+    for _, ch in node.children():
+        parent_map(ch, node, pmap)
+    return pmap
+
+def replace_child(parent, old, new):
+    for nm, ch in parent.children():
+        if ch is old:
+            if nm.endswith("]"):
+                attr, idx = nm[:-1].split("["); getattr(parent, attr)[int(idx)] = new
+            else:
+                setattr(parent, nm, new)
+            return True
+    return False
+
+def comm_sites(ast):
+    out = []
+    class V(c_ast.NodeVisitor):
+        def visit_BinaryOp(self, n):
+            if n.op in COMMUTATIVE: out.append(n)
+            self.generic_visit(n)
+    V().visit(ast)
+    return out
+
+def hoist_sites(body):
+    """(stmt_index, node) for hoistable subexpressions (ArrayRef / arithmetic op)."""
+    out = []
+    for si, stmt in enumerate(body.block_items or []):
+        stack = [stmt]
+        while stack:
+            n = stack.pop()
+            for _, ch in n.children():
+                if isinstance(ch, c_ast.ArrayRef) or \
+                   (isinstance(ch, c_ast.BinaryOp) and ch.op in ARITH):
+                    out.append((si, ch))
+                stack.append(ch)
+    return out
+
+def make_int_decl(name, expr):
+    d = PARSER.parse(f"void __f(void){{ int {name} = {GEN.visit(expr)}; }}")
+    return d.ext[0].body.block_items[0]
+
+def apply_mutations(ast, comm_flags, hoist_flags, order_seed):
+    body = body_of(ast)
+    cs = comm_sites(ast)
+    for i, on in enumerate(comm_flags):
+        if on and i < len(cs):
+            cs[i].left, cs[i].right = cs[i].right, cs[i].left
+    # temp hoists: build (index -> [decls]) then splice
+    hs = hoist_sites(body)
+    pm = parent_map(ast)
+    pre = {}
+    tn = 0
+    for i, on in enumerate(hoist_flags):
+        if not on or i >= len(hs):
+            continue
+        si, node = hs[i]
+        parent = pm.get(id(node))
+        if parent is None:
+            continue
+        name = f"__t{tn}"; tn += 1
+        decl = make_int_decl(name, node)
+        replace_child(parent, node, c_ast.ID(name=name))
+        pre.setdefault(si, []).append(decl)
+    items = body.block_items or []
+    spliced = []
+    for si, stmt in enumerate(items):
+        spliced.extend(pre.get(si, []))
+        spliced.append(stmt)
+    # statement/declaration reorder
+    if order_seed is not None:
+        idx = list(range(len(spliced)))
+        random.Random(order_seed).shuffle(idx)
+        spliced = [spliced[j] for j in idx]
+    body.block_items = spliced
 
 def mask(b, fx):
     b = bytearray(b)
@@ -39,10 +126,8 @@ def mask(b, fx):
     return bytes(b)
 
 def score(tb, ob, fx):
-    """leading matching bytes (works across sizes) -- the hill-climb signal."""
     tm, om = mask(tb, fx), mask(ob, fx)
-    n = min(len(tm), len(om))
-    lead = 0
+    n = min(len(tm), len(om)); lead = 0
     for i in range(n):
         if tm[i] == om[i]: lead += 1
         else: break
@@ -55,7 +140,6 @@ def init_worker(flags, target):
     G.update(flags=flags, target=target, work=work)
 
 def try_batch(batch):
-    """batch = list of (idx, source_string)."""
     W = G["work"]
     subprocess.run(f"rm -f {W}/SRC*.C {W}/O*.OBJ", shell=True)
     for j, (idx, src) in enumerate(batch):
@@ -68,14 +152,14 @@ def try_batch(batch):
         if not os.path.exists(p): out.append((idx, -1, False)); continue
         try: ob, fx = text_bytes_and_fixups(p)
         except Exception: out.append((idx, -1, False)); continue
-        matched = len(tb) == len(ob) and mask(tb, fx) == mask(ob, fx)
-        out.append((idx, score(tb, ob, fx), matched))
+        out.append((idx, score(tb, ob, fx), len(tb) == len(ob) and mask(tb, fx) == mask(ob, fx)))
     return out
 
 def main():
     name, flags = sys.argv[1], sys.argv[2]
-    workers = int(sys.argv[sys.argv.index("--workers")+1]) if "--workers" in sys.argv else 20
-    mx = int(sys.argv[sys.argv.index("--max")+1]) if "--max" in sys.argv else 4096
+    workers = int(sys.argv[sys.argv.index("--workers")+1]) if "--workers" in sys.argv else 24
+    N = int(sys.argv[sys.argv.index("--n")+1]) if "--n" in sys.argv else 4000
+    seed = int(sys.argv[sys.argv.index("--seed")+1]) if "--seed" in sys.argv else 0
     B = 40
 
     man = json.load(open(MAN)); base = int(man["image_base"], 16)
@@ -83,61 +167,51 @@ def main():
     off = int(f["addr"], 16) - base
     target = open(SEG, "rb").read()[off:off + f["size"]]
 
-    import random
-    ast = c_parser.CParser().parse(strip_comments(open(f"src/{name}.c").read()))
-    c = Collect(); c.visit(ast); sites = c.sites          # commutative-swap axes
-    fn = next(x for x in ast.ext if isinstance(x, c_ast.FuncDef))
-    body = fn.body                                        # statement-reorder axis
-    stmts = list(body.block_items or [])
-    k = len(stmts)
-    gen = c_generator.CGenerator()
+    src0 = strip_comments(open(f"src/{name}.c").read())
+    ast0 = PARSER.parse(src0)
+    ncomm = len(comm_sites(ast0)); nhoist = len(hoist_sites(body_of(ast0)))
+    print(f"{name}: {ncomm} commutative sites, {nhoist} hoist sites; "
+          f"sampling {N} variants, target={len(target)}B", flush=True)
 
-    # commutative combos (each site: swap / no-swap)
-    comm = list(itertools.product([0, 1], repeat=len(sites)))
-    # statement orderings: exhaustive if small, else identity + random samples
-    if k <= 6:
-        orders = list(itertools.permutations(range(k)))
-    else:
-        random.seed(0)
-        orders = [tuple(range(k))] + [tuple(random.sample(range(k), k)) for _ in range(720)]
-    variants = [(cc, so) for so in orders for cc in comm]
-    random.seed(1); random.shuffle(variants)
-    if len(variants) > mx:
-        variants = variants[:mx]
-    print(f"{name}: {len(sites)} commutative sites x {len(orders)} statement orders "
-          f"-> {len(comm)*len(orders)} variants (testing {len(variants)}), "
-          f"target={len(target)}B", flush=True)
+    rng = random.Random(seed)
+    seen, specs = set(), []
+    # always include the identity variant first
+    specs.append((tuple([0]*ncomm), tuple([0]*nhoist), None))
+    while len(specs) < N:
+        cf = tuple(rng.randint(0, 1) for _ in range(ncomm))
+        hf = tuple(1 if rng.random() < 0.25 else 0 for _ in range(nhoist))
+        od = rng.randint(0, 10**9) if rng.random() < 0.5 else None
+        key = (cf, hf, od)
+        if key in seen: continue
+        seen.add(key); specs.append(key)
 
-    def render(v):
-        cc, so = v
-        for i, s in enumerate(cc):
-            if s: sites[i].left, sites[i].right = sites[i].right, sites[i].left
-        body.block_items = [stmts[j] for j in so]
-        out = gen.visit(ast)
-        body.block_items = stmts
-        for i, s in enumerate(cc):
-            if s: sites[i].left, sites[i].right = sites[i].right, sites[i].left
-        return out
-    combos = variants                                    # keep name for the reporting code
-    sources = [(i, render(v)) for i, v in enumerate(variants)]
+    def render(spec):
+        a = copy.deepcopy(ast0)
+        try:
+            apply_mutations(a, spec[0], spec[1], spec[2])
+            return GEN.visit(a)
+        except Exception:
+            return "void __broken(void){}"
+    sources = [(i, render(s)) for i, s in enumerate(specs)]
 
     if not os.path.isdir("/tmp/wat"):
         subprocess.run("cp -r /work/toolchain/watcom95 /tmp/wat", shell=True)
     os.environ["WAT_ROOT"] = "/tmp/wat"
     batches = [sources[i:i+B] for i in range(0, len(sources), B)]
-    best = (-1, None); done = 0
+    best, done = (-1, 0), 0
     pool = mp.Pool(workers, initializer=init_worker, initargs=(flags, target))
     for results in pool.imap_unordered(try_batch, batches):
         for idx, sc, matched in results:
             done += 1
-            if sc > best[0]: best = (sc, combos[idx])
+            if sc > best[0]: best = (sc, idx)
             if matched:
-                open(f"src/{name}.c.match", "w").write(render(combos[idx]))
-                print(f"\n*** MATCH: swaps={combos[idx]} -> src/{name}.c.match ***", flush=True)
+                open(f"src/{name}.c.match", "w").write(sources[idx][1])
+                print(f"\n*** MATCH (variant {idx}) -> src/{name}.c.match ***", flush=True)
                 pool.terminate(); return
-        print(f"  [{done}/{len(combos)}] best={best[0]}/{len(target)} bytes match", flush=True)
+        print(f"  [{done}/{len(specs)}] best={best[0]}/{len(target)} bytes match", flush=True)
     pool.close(); pool.join()
-    print(f"\nno exact match. best {best[0]}/{len(target)} bytes via swaps={best[1]}", flush=True)
+    print(f"\nno exact match. best {best[0]}/{len(target)} bytes. winning C:\n"
+          f"{'-'*40}\n{sources[best[1]][1]}\n{'-'*40}", flush=True)
 
 if __name__ == "__main__":
     main()
