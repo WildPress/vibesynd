@@ -115,3 +115,31 @@ just below the runtime library, was built for the 386. So when a function refuse
 match on `-4` and the diff shows direct memory pushes and `movzx`, that's not a
 reconstruction bug to chase in the C, it's the code telling us its CPU level. Read
 it, switch to `-3`, move on. **52 of 500.**
+
+## FUN_00039f69 — the same region has lighter optimisation too
+
+Right next door, this one looked like a near-copy of the last: read the same 16-bit
+global, subtract six, push it with two other globals, call the same function. The
+only extra was a line at the end setting another global to 1. So I wrote the obvious
+C and compiled it with `-3s`, expecting a clean match.
+
+It came out one instruction-pair off. The original does the call, then cleans up the
+pushed arguments (`add esp, 0xc`), then does the trailing store. Ours did the call,
+the store, *then* the cleanup. Same instructions, swapped order.
+
+That swap is a scheduling choice the optimiser makes: with `-oneatx` on, Watcom
+noticed the store didn't depend on the stack pointer and moved it earlier. Turning
+the optimisation bundle off (plain `-3s`) put the two back in the original's order,
+and it matched.
+
+So this region wasn't only built for a different [CPU](cpu-basics.md) level, it was
+also built with *lighter optimisation* than the main game. The previous function
+couldn't show that, because it had nothing the optimiser would reorder.
+
+This refines the earlier lesson about [flags](compiler-flags.md). When we said the
+optimisation setting is "pinned", that was pinned for the main game's translation
+units, the bulk of the code. But separate units, like this `0x39xxx` block just
+below the library, can be built with their own settings. Optimisation level, like
+CPU level and calling convention, is a per-unit property. The regression test still
+protects us: it just means a function in a different unit gets its own recipe, and
+the byte diff is what tells us which unit we're in. **53 of 500.**
