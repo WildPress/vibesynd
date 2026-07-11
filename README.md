@@ -8,6 +8,16 @@ function at a time.
 This is a clean-room effort. It works only from the compiled binary you own and
 its disassembly, never from any original source.
 
+## Progress
+
+As of **v0.1.0**, game code is **0.73%** matched by bytes (753 of 102,740), across
+**41 of 463** functions. Another 37 functions are the runtime library, which we'll
+link rather than decompile. Byte coverage is the honest number, since early matches
+are small and function count runs ahead of it.
+
+Run `python3 tools/score.py` for the current figure, and see `CONVENTIONS.md` for how
+we commit and version.
+
 ## Goal, in two phases
 
 1. **Matching decompilation (current).** Rebuild the game as C that assembles to
