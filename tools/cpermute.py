@@ -71,6 +71,16 @@ def comm_sites(ast):
     V().visit(ast)
     return out
 
+def loop_sites(ast):
+    """While / DoWhile nodes -- each can be swapped to the other form (valid when
+    guarded, else it just fails to compile / mismatches and is dropped)."""
+    out = []
+    class V(c_ast.NodeVisitor):
+        def visit_While(self, n): out.append(n); self.generic_visit(n)
+        def visit_DoWhile(self, n): out.append(n); self.generic_visit(n)
+    V().visit(ast)
+    return out
+
 def _pow2(v): return v is not None and v > 0 and (v & (v - 1)) == 0
 def _const(node):
     if isinstance(node, c_ast.Constant) and node.type == "int":
@@ -166,7 +176,18 @@ def type_sites(body):
             out.append(stmt.type.type)
     return out
 
-def apply_mutations(ast, comm_flags, rewrite_flags, hoist_types, local_types, order_seed):
+def apply_mutations(ast, loop_flags, comm_flags, rewrite_flags, hoist_types, local_types, order_seed):
+    # loop-form swaps (while <-> do-while) first, since they replace nodes
+    ls = loop_sites(ast)
+    for i, on in enumerate(loop_flags):
+        if on and i < len(ls):
+            n = ls[i]
+            parent = parent_map(ast).get(id(n))
+            if parent is None:
+                continue
+            new = c_ast.DoWhile(cond=n.cond, stmt=n.stmt) if isinstance(n, c_ast.While) \
+                  else c_ast.While(cond=n.cond, stmt=n.stmt)
+            replace_child(parent, n, new)
     body = body_of(ast)
     cs = comm_sites(ast)
     for i, on in enumerate(comm_flags):
@@ -260,30 +281,31 @@ def main():
 
     src0 = strip_comments(open(f"src/{name}.c").read())
     ast0 = PARSER.parse(src0)
-    ncomm = len(comm_sites(ast0)); nrw = len(rewrite_sites(ast0))
+    nloop = len(loop_sites(ast0)); ncomm = len(comm_sites(ast0)); nrw = len(rewrite_sites(ast0))
     nhoist = len(hoist_sites(body_of(ast0))); ntype = len(type_sites(body_of(ast0)))
-    print(f"{name}: {ncomm} commutative, {nrw} rewrite, {nhoist} hoist, {ntype} type "
-          f"sites; sampling {N} variants, target={len(target)}B", flush=True)
+    print(f"{name}: {nloop} loop, {ncomm} commutative, {nrw} rewrite, {nhoist} hoist, "
+          f"{ntype} type sites; sampling {N} variants, target={len(target)}B", flush=True)
 
     rng = random.Random(seed)
     seen, specs = set(), []
     # always include the identity variant first
-    specs.append((tuple([0]*ncomm), tuple([0]*nrw), tuple([None]*nhoist),
-                  tuple([None]*ntype), None))
+    specs.append((tuple([0]*nloop), tuple([0]*ncomm), tuple([0]*nrw),
+                  tuple([None]*nhoist), tuple([None]*ntype), None))
     while len(specs) < N:
+        lf = tuple(rng.randint(0, 1) for _ in range(nloop))
         cf = tuple(rng.randint(0, 1) for _ in range(ncomm))
         rw = tuple(rng.randint(0, 1) for _ in range(nrw))
         hf = tuple(rng.choice(TYPES) if rng.random() < 0.2 else None for _ in range(nhoist))
         lt = tuple(rng.choice(TYPES) if rng.random() < 0.25 else None for _ in range(ntype))
         od = rng.randint(0, 10**9) if rng.random() < 0.5 else None
-        key = (cf, rw, hf, lt, od)
+        key = (lf, cf, rw, hf, lt, od)
         if key in seen: continue
         seen.add(key); specs.append(key)
 
     def render(spec):
         a = copy.deepcopy(ast0)
         try:
-            apply_mutations(a, spec[0], spec[1], spec[2], spec[3], spec[4])
+            apply_mutations(a, spec[0], spec[1], spec[2], spec[3], spec[4], spec[5])
             return GEN.visit(a)
         except Exception:
             return "void __broken(void){}"
