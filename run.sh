@@ -2,9 +2,11 @@
 # Host-side wrapper (run from WSL): execute a command inside the synd-decomp
 # pipeline image with this decomp repo mounted at /work.
 #
-#   ./run.sh                      # interactive shell in the container
-#   ./run.sh bash tools/smoke.sh  # run the compile+diff smoke test
-#   ./run.sh python3 tools/match.py <function>
+#   ./run.sh                                       # interactive shell in the container
+#   ./run.sh bash tools/match95.sh <function> "<flags>"   # compile + reloc-aware diff
+#   ./run.sh python3 tools/cpermute.py <function> "<flags>"  # fuzz a near-miss to a match
+#
+# See tools/README.md for the full toolchain; superseded scripts live in tools/archive/.
 #
 # The original binary lives under inputs/ (git-ignored) and is mounted with the
 # rest of the repo, read-only from the container's point of view for safety.

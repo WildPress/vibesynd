@@ -218,7 +218,12 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-11)
-- **Coverage: 69/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 71/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- 🧰 **TOOLCHAIN INDEX: see `tools/README.md`** (primary workflow + every active tool). The fuzzer
+  `tools/cpermute.py` is now heavily commented — read its header for how the permuter works in detail.
+  Superseded/one-off scripts (old W10 pipeline, pre-cpermute permuters, LE-unpack) are moved to
+  `tools/archive/` (`tools/archive/README.md`). Some bullets below still name archived tools by their
+  old paths for historical context — the live equivalents are `wcc_95.sh`/`match95.sh`/`cpermute.py`.
 - ⛔ **TWO PROLOGUE-LEVEL WALLS found (cont. 12), don't re-chase:**
   1. **Framed-leaf frame-mode boundary.** Framed region (0x3a000+) matches non-leaf fns with `-3s -of`
      (traceable frame: `55 89 e5 … 5d c3`, light epilogue, NO `89 ec`). But `-of` refuses to frame a
