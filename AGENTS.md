@@ -150,15 +150,15 @@ diverges (EAX vs EDX). Base flags **`-4s`** (stack) or **`-4r`** (register) + `-
 3. Write matching C → `src/<name>.c`. Idioms that matter:
    - global access via `a1`/`a3`/`803d` (simple abs load/store) ⇒ `extern` var, the differ
      masks the 00000000 reloc placeholder. Works because the addend is 0.
-   - **BUT obj1-internal DATA at a computed position (array bounds, `arr[const]`,
-     `((T*)addr)->field`, loop `cmp ebx,end`) relocates with a NON-ZERO addend** (e.g.
-     `00 1e 00 00` = 0x1e00), which the naive masker does NOT catch (it only masks all-zero
-     runs). Two ways round it (cont. 9): (a) use a **literal-address cast**
-     `((struct T*)0x15e70)` — the original bakes these as literals (DOS/4GW fixed base) so you
-     get EXACT bytes, no masking; caveat: a literal loop bound is compile-time-provable so
-     Watcom may DROP the entry guard the original keeps (e.g. 0x22b38). (b) the proper fix:
-     teach `match_reloc.py` to mask real **OMF FIXUPP** sites, not just zero runs (TODO, would
-     unlock the extern form that keeps the guard). 0x22b38 is parked on this.
+   - obj1-internal DATA at a computed position (array bounds, `arr[const]`,
+     `((T*)addr)->field`, loop `cmp ebx,end`) relocates with a NON-ZERO addend (e.g.
+     `00 1e 00 00` = 0x1e00). ✅ **FIXED (cont. 9): the differ now masks real OMF FIXUPP sites**
+     (`tools/omf.py` parses the .obj; `match_reloc.py` masks exactly those byte ranges), so the
+     plain **`extern` form works** for these (keeps the bounds guard the original has). This
+     unblocked 0x22b38. Prefer `extern` (differ handles the reloc). A literal-address cast
+     `((struct T*)0x15e70)` is an alternative that gives EXACT bytes, but a literal loop bound
+     is compile-time-provable so Watcom may DROP the entry guard — use `extern` unless you have
+     a reason not to.
    - `return h(imm)` register-calling ⇒ Watcom tail-calls to `jmp` (matches thunk stubs).
    - call/jmp/abs-data operands are RELOCATIONS, the differ masks them, declare callees
      & globals `extern` and they won't block a match.
@@ -218,7 +218,7 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-11)
-- **Coverage: 48/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 51/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
 - **Compiler = period Watcom C/C++ 10.0a via DOSBox** (`tools/wcc_dos.sh` / `tools/match10.sh`),
   **NOT** Open Watcom v2. Flags `-4s` (stack) or `-4r` (register) `-oneatx -zp8 -s -zq`.
   Full workflow + commands in the **Commands** and **Per-function matching loop** sections above.
