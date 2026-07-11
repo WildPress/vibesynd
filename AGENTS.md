@@ -218,9 +218,23 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 71/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
-  (cont. 13 mapped the weapons/combat subsystem — see the 🔫 entry below — but banked 0 new matches:
-  its clean vein was already mined, the two tractable leaves are register/CMP-encoding walls.)
+- **Coverage: 73/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (cont. 13 mapped the weapons/combat subsystem — see the 🔫 entry below — then a broad sweet-spot hunt
+  banked the buffer-copy pair `0x35538`/`0x35588`.)
+- 🧵 **BANKED the copy-loop pair `0x35538` + `0x35588` (cont. 13).** Unrolled-x3 `*dst++=*src++` bulk copy
+  of 15999 dwords between the two screen buffers `g_5368`/`g_5370` (pointer globals). Key trick: the
+  target's LOAD order (count→EBX, dst→EDX, src→EAX) needs the C declaration order **n, dst, src** with
+  `n` unsigned — the permuter's statement-reorder found it (variant 404). Loop-alignment NOP padding
+  (3 `lea`-nops before the loop top) reproduced automatically. `0x35588` is the mirror (buffers swapped).
+- 🅿️ **`0x37818` PARKED — cross-function tail-merge wall.** Pool accessor (sibling of matched 0x37738/
+  78/b8/e8). Its `return 0` jumps BACKWARD to 0x3780f = the `xor eax,eax; ret` tail of the PREVIOUS
+  function 0x377e8; Watcom shared the return-0 stub across the two siblings compiled in one module.
+  Isolated compile always emits a LOCAL return-0 (40B vs 39B). Only matchable by compiling the pair in
+  one file at the exact inter-fn padding — not worth it for one 39B fn. `src/FUN_00037818.c` kept.
+- 🅿️ **`0x269d8` PARKED — Watcom cache-vs-fold wall.** Advances a linked index through an 8-byte-record
+  table at pointer `g_5338`. Target caches g_5338 once in EBX (needs -oa) AND materialises each element
+  address via `LEA idx*8; ADD ebx` instead of folding into SIB — no available flag does both (every
+  -oa recipe folds; every unfolding recipe reloads g_5338 twice). Likely a Watcom minor-version thing.
 - 🧰 **TOOLCHAIN INDEX: see `tools/README.md`** (primary workflow + every active tool). The fuzzer
   `tools/cpermute.py` is now heavily commented — read its header for how the permuter works in detail.
   Superseded/one-off scripts (old W10 pipeline, pre-cpermute permuters, LE-unpack) are moved to
