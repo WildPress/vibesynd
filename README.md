@@ -8,6 +8,10 @@ function at a time.
 This is a clean-room effort. It works only from the compiled binary you own and
 its disassembly, never from any original source.
 
+New to this? The [`docs/`](docs/README.md) folder explains the concepts in plain
+language: matching decompilation, stack frames, calling conventions, relocations
+and OMF, the compiler flags, and register allocation.
+
 ## Progress
 
 As of **v0.1.0**, game code is **0.73%** matched by bytes (753 of 102,740), across
@@ -91,6 +95,7 @@ ordinary OS calls.
 ## Directory layout
 
 ```
+docs/            plain-language explainers of the concepts
 inputs/          original binary and extracted segments     (git-ignored)
 ghidra/          Ghidra project and databases               (git-ignored)
 toolchain/       period Watcom compilers (abandonware)      (git-ignored)
