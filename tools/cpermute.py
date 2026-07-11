@@ -18,7 +18,7 @@ compile and are skipped.
 
 Needs pycparser (auto-installed). Saves a byte-identical winner to src/<name>.c.match.
 """
-import json, subprocess, sys, re, os, copy, random
+import json, subprocess, sys, re, os, copy, random, difflib
 import multiprocessing as mp
 try:
     from pycparser import c_parser, c_generator, c_ast
@@ -283,12 +283,14 @@ def mask(b, fx):
     return bytes(b)
 
 def score(tb, ob, fx):
+    """Total ALIGNED matching bytes (difflib), not just the leading prefix. Leading-
+    byte scoring is capped by the first divergence -- e.g. an early jump-displacement
+    byte that differs because a later block is a couple bytes longer -- which hides
+    that the body is 95% right. Alignment-based scoring credits the matching tail too,
+    so the search can climb through length-shifted near-misses (e.g. 0x26e18)."""
     tm, om = mask(tb, fx), mask(ob, fx)
-    n = min(len(tm), len(om)); lead = 0
-    for i in range(n):
-        if tm[i] == om[i]: lead += 1
-        else: break
-    return lead
+    sm = difflib.SequenceMatcher(None, tm, om, autojunk=False)
+    return sum(b.size for b in sm.get_matching_blocks())
 
 G = {}
 def init_worker(flags, target):

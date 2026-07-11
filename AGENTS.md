@@ -258,6 +258,17 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
   permuter reproduced it automatically (variant 86). Also drop redundant `(int)` casts — they can
   force a full-width cache instead of the target's per-width stack re-reads. (Limitation: enumerates
   only top-level `block_items` decls, not decls nested inside `if`/loop compounds — extend later.)
+- 🆕 **Permuter SCORER upgraded to alignment-based (cont. 12).** `score()` now sums difflib
+  matching-block sizes instead of counting only the leading prefix. Leading-byte score is capped by
+  the FIRST diverging byte — e.g. an early `jne`/`je` displacement that differs only because a later
+  block is 2 bytes longer — which hid that a body was 95% right (reported 10/130 when it was ~110/130).
+  Alignment scoring credits the matching tail so the search can climb length-shifted near-misses.
+- 🅿️ **`0x26e18` PARKED (cont. 12), register-role wall (110/130).** Grid head-insert of a pool object
+  (sibling of `0x26da8`). Fully decoded, logic correct, tail matches. Stalls because the target keeps
+  the grid index in EDX (address materialised in place, reused for read+write) and p_id in EBX; every
+  C form we tried puts idx in EBX → a `lea` + a 2-byte-longer block. `src/FUN_00026e18.c` kept as a
+  documented near-miss (NOT in manifest/recipes). Grid-head table is `g_10e` (u16[] @ abs 0x10e);
+  p_id = (u16)(p - g_810e).
 - 🔎 **FAST SEARCH ENGINE built (cont. 11): `tools/permute_par.py` + `tools/wcc95_batch.sh`.** Fans C
   variants across cores, ~200 compiles/sec (batched DOSBox in ONE session + work dirs on native `/tmp`,
   NOT the slow `/mnt/c` drvfs). Exhausted all 40,320 case orderings of `0x20d98`'s switch in **3m9s**.
