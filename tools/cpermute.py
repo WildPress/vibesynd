@@ -79,6 +79,26 @@ def _const(node):
     return None
 REL_SWAP = {"<": ">", ">": "<", "<=": ">=", ">=": "<="}
 
+def parse_expr(text):
+    d = PARSER.parse(f"void __f(void){{ int __x = ({text}); }}")
+    return d.ext[0].body.block_items[0].init
+
+def range_check(n):
+    """if n is `a>=lo && a<=hi` (either order), return (a_node, lo, hi) else None."""
+    if n.op != "&&":
+        return None
+    def part(x):
+        if isinstance(x, c_ast.BinaryOp) and x.op in (">=", "<=") and _const(x.right) is not None:
+            return (x.op, x.left, _const(x.right))
+        return None
+    a, b = part(n.left), part(n.right)
+    if not a or not b or a[0] == b[0]:
+        return None
+    ge, le = (a, b) if a[0] == ">=" else (b, a)
+    if GEN.visit(ge[1]) != GEN.visit(le[1]):
+        return None
+    return (ge[1], ge[2], le[2])
+
 def rewrite_sites(ast):
     """BinaryOp nodes with a codegen-equivalent alternate form."""
     out = []
@@ -90,6 +110,8 @@ def rewrite_sites(ast):
             elif n.op in ("/", "%") and _pow2(_const(n.right)):
                 out.append(n)
             elif n.op in REL_SWAP:
+                out.append(n)
+            elif n.op == "&&" and range_check(n):
                 out.append(n)
     V().visit(ast)
     return out
@@ -109,6 +131,13 @@ def apply_rewrite(n):
         n.op = "&"; n.right = c_ast.Constant("int", hex(m))
     elif n.op in REL_SWAP:
         n.op = REL_SWAP[n.op]; n.left, n.right = n.right, n.left
+    elif n.op == "&&":
+        rc = range_check(n)
+        if rc:
+            a, lo, hi = rc
+            n.op = "<="
+            n.left = parse_expr(f"(unsigned)({GEN.visit(a)} - {lo})")
+            n.right = parse_expr(str(hi - lo))
 
 def hoist_sites(body):
     """(stmt_index, node) for hoistable subexpressions (ArrayRef / arithmetic op)."""
