@@ -1,0 +1,61 @@
+name: Publish docs to wiki
+
+# Keeps the GitHub wiki in sync with the docs/ folder.
+#
+# The docs in the repo are the source of truth: portable markdown, not tied to
+# GitHub. The wiki is only an auto-generated mirror for convenient reading. Leave
+# GitHub and you keep every doc; you just lose the mirror.
+#
+# ONE-TIME SETUP: a repo's wiki git repo does not exist until the wiki has at
+# least one page. In the repo on GitHub, open the Wiki tab, click "Create the
+# first page", save anything, then push a change under docs/ (or run this workflow
+# manually from the Actions tab). Also check Settings > Actions > General >
+# Workflow permissions is set to "Read and write", or the push below will fail.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/wiki.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sync docs/ into the wiki
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          git config --global user.name  "docs-sync[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git clone "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.wiki.git" wiki
+
+          # drop previously generated pages, keep any manual _Sidebar/_Footer
+          find wiki -maxdepth 1 -name '*.md' ! -name '_*' -delete
+
+          for f in docs/*.md; do
+            base="$(basename "$f")"
+            # the wiki home page must be called Home.md; other files keep their name
+            dest="$base"; [ "$base" = "README.md" ] && dest="Home.md"
+            # wiki links carry no .md extension: strip it, and point README -> Home
+            sed -E 's/\(([A-Za-z0-9_-]+)\.md\)/(\1)/g; s/\(README\)/(Home)/g' "$f" > "wiki/$dest"
+          done
+
+          cd wiki
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Wiki already up to date."
+          else
+            git commit -m "docs: sync from ${GITHUB_SHA}"
+            git push
+          fi
