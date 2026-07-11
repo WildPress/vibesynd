@@ -218,14 +218,20 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 73/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 75/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
   (cont. 13 mapped the weapons/combat subsystem — see the 🔫 entry below — then a broad sweet-spot hunt
-  banked the buffer-copy pair `0x35538`/`0x35588`.)
-- 🧵 **BANKED the copy-loop pair `0x35538` + `0x35588` (cont. 13).** Unrolled-x3 `*dst++=*src++` bulk copy
-  of 15999 dwords between the two screen buffers `g_5368`/`g_5370` (pointer globals). Key trick: the
-  target's LOAD order (count→EBX, dst→EDX, src→EAX) needs the C declaration order **n, dst, src** with
-  `n` unsigned — the permuter's statement-reorder found it (variant 404). Loop-alignment NOP padding
-  (3 `lea`-nops before the loop top) reproduced automatically. `0x35588` is the mirror (buffers swapped).
+  banked 5 loop/memory fns: the copy pair `0x35538`/`0x35588`, the VGA blit `0x355d8`, the grid fill
+  `0x1a8c8`. Loop/memory shapes match FAR more reliably than arithmetic leaves.)
+- 🧵 **BANKED loop/memory fns (cont. 13): the copy family + a grid fill.** These match clean:
+  - `0x35538` + `0x35588`: unrolled-x3 `*dst++=*src++` copy of 15999 dwords between screen buffers
+    `g_5368`/`g_5370` (pointer globals). The target's LOAD order (count→EBX, dst→EDX, src→EAX) needs C
+    decl order **n, dst, src**, `n` unsigned — permuter statement-reorder found it (variant 404).
+  - `0x355d8`: unrolled-x5 blit of 16000 dwords from `g_5368` to VGA `0xa0000` (a literal ptr). Decl
+    order src, dst, n (permuter variant 677).
+  - `0x1a8c8`: nested-loop 2D fill `g_db2c[x*0x10 + y]=1` (x<0x19, y<0x10) then flag `g_10b4f`; the
+    inner index must be written **`y + x*0x10`** (commutative order fixes x*16→EDX vs EBX).
+  - GENERAL LESSON: loop-alignment NOP padding (`lea`-nop runs before the loop top) reproduces
+    automatically under -oneatx as long as the loop isn't further unrolled. See 0x35ed8 for the catch.
 - 🅿️ **`0x37818` PARKED — cross-function tail-merge wall.** Pool accessor (sibling of matched 0x37738/
   78/b8/e8). Its `return 0` jumps BACKWARD to 0x3780f = the `xor eax,eax; ret` tail of the PREVIOUS
   function 0x377e8; Watcom shared the return-0 stub across the two siblings compiled in one module.
