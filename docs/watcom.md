@@ -18,10 +18,14 @@ different versions of the same compiler, turn the same C into different machine
 code. They make different choices about instructions, registers, and layout.
 
 So we can't reach for any modern compiler. We have to use the same Watcom the game
-was built with, roughly version 10.0 from the mid-90s. We even tried the modern Open
-Watcom and found its register choices have drifted over the decades, so its output
-no longer matches. We use a preserved period copy instead. There's more on this in
-[compiler flags](compiler-flags.md) and [register allocation](register-allocation.md).
+was built with, which we've since pinned down to **version 9.5** from the early 90s.
+For a long time we used 10.0a, which matched everything until we found a function
+whose flag-bit test only 9.5 compiles the original's way. It turns out 9.5 and 10.0a
+produce identical code for most functions, so the difference only shows on certain
+shapes. We also tried the modern Open Watcom and found its register choices have
+drifted over the decades, so its output no longer matches. We use a preserved period
+copy of 9.5 instead. There's more on this in [compiler flags](compiler-flags.md),
+[register allocation](register-allocation.md), and the [journal](journal.md).
 
 ## The tools
 

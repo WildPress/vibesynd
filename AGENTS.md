@@ -218,9 +218,17 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-11)
-- **Coverage: 51/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
-- **Compiler = period Watcom C/C++ 10.0a via DOSBox** (`tools/wcc_dos.sh` / `tools/match10.sh`),
-  **NOT** Open Watcom v2. Flags `-4s` (stack) or `-4r` (register) `-oneatx -zp8 -s -zq`.
+- **Coverage: 56/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- 🔴🎯 **COMPILER = Watcom 9.5b, NOT 10.0a (cont. 10 — CORRECTS cont. 8).** Use
+  **`tools/wcc_95.sh` / `tools/match95.sh`** as the PRIMARY compiler. Same flags: `-4s`/`-4r`
+  `-oneatx -zp8 -s -zq` (per-function convention). **Proof:** 9.5 matches ALL 48 regression
+  recipes (10.0a's matches hold) AND fixes a class 10.0a can't: **byte bit-tests**
+  (`if (mem & bit)`). 10.0a always emits `mov r8,mem; and r8,imm; and r32,0xff` (load+mask); the
+  original uses `test byte[mem],imm`, and **only 9.5 emits that at `-4s -oneatx`** (10.0a needs
+  `-os` or `-3`). 0x2d998 (a flag-state fn) matched 9.5 EXACT, 10.0a couldn't. cont.8 wrongly
+  "disproved" 9.5 — but that was on framed LIBRARY fns with unrelated differences (push order),
+  not clean game code. **Bottom line: switch to 9.5; it unlocks flag/bit-field logic everywhere.**
+  10.0a (`wcc_dos.sh`/`match10.sh`) stays available for A/B, but 9.5 is the game's compiler.
   Full workflow + commands in the **Commands** and **Per-function matching loop** sections above.
 - 🎯 **FLAGS CALIBRATED (cont. 9) against a regression baseline** (`manifest/recipes.json` =
   flags for all 48 matches, built by `tools/recipes.py`; `tools/caltest.py` substitutes a

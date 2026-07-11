@@ -143,3 +143,47 @@ below the library, can be built with their own settings. Optimisation level, lik
 CPU level and calling convention, is a per-unit property. The regression test still
 protects us: it just means a function in a different unit gets its own recipe, and
 the byte diff is what tells us which unit we're in. **53 of 500.**
+
+## FUN_0002d998 — the one that told us the compiler was 9.5
+
+This is the big one, so it's worth telling properly.
+
+`0x2d998` is a small piece of game logic: it recomputes a status code on an object,
+using a chain of checks, one of which tests a single flag bit, `if (thing & 0x10)`.
+I wrote the obvious C and it came out wrong, eight bytes too long. The difference was
+in that bit test. The original tests the flag straight in memory with one
+instruction, `test byte[mem], 0x10`. Ours loaded the byte into a register, masked it,
+and widened it, three instructions doing the same thing.
+
+I'd seen this shape before, so this time I stopped and probed it properly. I wrote a
+handful of tiny functions doing the bit test different ways and compiled them. Every
+single form produced the load-and-mask version. Our compiler, Watcom 10.0a at our
+usual settings, simply never emits the compact `test byte[mem]` form. So it wasn't my
+C. It was the compiler.
+
+Then the key move: I compiled the same probe with **Watcom 9.5** instead, an older
+version we had set aside earlier. 9.5 emitted the `test` form, the one the original
+uses. So I compiled the real function, `0x2d998`, with 9.5, and it matched **byte for
+byte, exactly**.
+
+That's a big claim, so I checked it couldn't be a fluke. I recompiled all 48
+functions we'd already matched with 9.5. **Every one still matched.** So 9.5 doesn't
+just fix the bit test, it keeps everything 10.0a ever got right.
+
+The honest conclusion: **the game was built with Watcom 9.5, not 10.0a.** The reason
+we didn't spot it for so long is that 9.5 and 10.0a produce identical code for most
+functions. The simple ones we'd been matching have nothing that tells the two
+compilers apart, so they compiled the same either way, and 10.0a looked correct.
+`0x2d998` is the first function whose shape actually distinguishes them, and it
+pointed at 9.5.
+
+There's a small humbling footnote. We *had* tried 9.5 once before and concluded it
+was no better than 10.0a. That test was run against the wrong functions, framed
+runtime-library code that fails on both compilers for reasons that have nothing to do
+with the version, like a different register-save order. Testing on clean game code
+with a bit test would have shown it immediately. A good reminder that a negative
+result is only as good as the case you tested it on.
+
+So from here the harness switches to 9.5. It unlocks flag tests and bit-field checks,
+which are everywhere in game logic, while keeping every match we already have.
+**56 of 500**, and the road ahead just got wider.
