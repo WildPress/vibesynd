@@ -224,8 +224,10 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
   `-oneatx -zp8 -s -zq` (per-function convention). **Proof:** 9.5 matches ALL 48 regression
   recipes (10.0a's matches hold) AND fixes a class 10.0a can't: **byte bit-tests**
   (`if (mem & bit)`). 10.0a always emits `mov r8,mem; and r8,imm; and r32,0xff` (load+mask); the
-  original uses `test byte[mem],imm`, and **only 9.5 emits that at `-4s -oneatx`** (10.0a needs
-  `-os` or `-3`). 0x2d998 (a flag-state fn) matched 9.5 EXACT, 10.0a couldn't. cont.8 wrongly
+  original uses `test byte[mem],imm`, and **only 9.5 emits that at `-4s -oneatx`**. NB: 10.0a
+  `-os`/`-3` DO emit `test byte[mem]` in isolation, BUT neither matches the FULL 0x2d998 (they
+  change other codegen) — tested `-4s`/`-3s`/`-os` on 10.0a, ALL fail; only 9.5 `-4s` matches.
+  So it's the compiler VERSION, not a flag. 0x2d998 (a flag-state fn) matched 9.5 EXACT. cont.8 wrongly
   "disproved" 9.5 — but that was on framed LIBRARY fns with unrelated differences (push order),
   not clean game code. **Bottom line: switch to 9.5; it unlocks flag/bit-field logic everywhere.**
   10.0a (`wcc_dos.sh`/`match10.sh`) stays available for A/B, but 9.5 is the game's compiler.
