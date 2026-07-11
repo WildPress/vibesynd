@@ -218,7 +218,14 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-11)
-- **Coverage: 62/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 63/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- ✅ **CANONICAL OPT CONSOLIDATED (cont. 11): 53 `-oneatx` + just 2 holdouts (`0x16638` `-ot`, `0x377b8`
+  `-or`).** After the do-while correction, re-derived `0x37xxx` neighbours onto canonical `-oneatx`:
+  `0x376f8` (sum-over-chain, sibling of 377b8) matched `-oneatx` with `int` return + `unsigned short`
+  accumulator; `0x377e8` re-confirmed under `-oneatx` (recipe switched from `-or`). So the `0x37xxx`
+  region is NOT a lighter unit — `0x377b8` is a lone register-allocation holdout, not a build
+  difference. **Optimisation is effectively ONE setting (`-oneatx`); the 2 holdouts are suspect-C
+  (register wall / const hoist), not units.** Keep trying to collapse them too.
 - ⚠️ **CORRECTION (cont. 11): the "multi-opt / lighter-unit" claim is RETRACTED as unproven.** Tested it:
   `0x14998` looked "ONEATX-only" but that was **WRONG C** — I wrote a `while`; the real shape is a
   **`do-while`**, which matches under BOTH `-oneatx` AND `-or` (identical bytes). **Trap: a
