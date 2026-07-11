@@ -218,10 +218,12 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 75/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 76/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
   (cont. 13 mapped the weapons/combat subsystem — see the 🔫 entry below — then a broad sweet-spot hunt
-  banked 5 loop/memory fns: the copy pair `0x35538`/`0x35588`, the VGA blit `0x355d8`, the grid fill
-  `0x1a8c8`. Loop/memory shapes match FAR more reliably than arithmetic leaves.)
+  banked 6 loop/memory + branchy fns: copy pair `0x35538`/`0x35588`, VGA blit `0x355d8`, grid fill
+  `0x1a8c8`, table writer `0x35f28`. Loop/memory/branchy shapes match FAR more reliably than arithmetic
+  leaves. LEVER that keeps recurring: fix branch LAYOUT by inverting the if/else (put the target's
+  fall-through path first); fix load/register order via decl order or the permuter's statement-reorder.)
 - 🧵 **BANKED loop/memory fns (cont. 13): the copy family + a grid fill.** These match clean:
   - `0x35538` + `0x35588`: unrolled-x3 `*dst++=*src++` copy of 15999 dwords between screen buffers
     `g_5368`/`g_5370` (pointer globals). The target's LOAD order (count→EBX, dst→EDX, src→EAX) needs C
