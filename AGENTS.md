@@ -204,10 +204,20 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-11)
-- **Coverage: 43/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 48/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
 - **Compiler = period Watcom C/C++ 10.0a via DOSBox** (`tools/wcc_dos.sh` / `tools/match10.sh`),
   **NOT** Open Watcom v2. Flags `-4s` (stack) or `-4r` (register) `-oneatx -zp8 -s -zq`.
   Full workflow + commands in the **Commands** and **Per-function matching loop** sections above.
+- 🎯 **FLAGS CALIBRATED (cont. 9) against a regression baseline** (`manifest/recipes.json` =
+  flags for all 48 matches, built by `tools/recipes.py`; `tools/caltest.py` substitutes a
+  candidate opt/packing into every recipe and reports how many still match). Results:
+  **`-oneatx` is PINNED** (keeps 48/48; `-ox` breaks 3, `-ot` 8, `-os` 17, so alternatives are
+  ruled out, not just untested). CPU **`-4`** (movsx in 0x26ba8 kills `-5`). Convention per-fn
+  (`-4s`/`-4r`/`-3s -of`, read from disasm). Stack-check off (`-s`, no probes seen). **PACKING is
+  NOT pinned: `-zp8`/`-zp4`/`-zp1` all keep 48/48** (no current match has a packing-sensitive
+  struct). ⇒ when matching a struct-heavy fn, TRY packing variants (it's the one open flag);
+  a struct fn that discriminates them would pin it. **Discipline: on GAME code a miss is the C,
+  not the flags (flags are constrained by the regression set) — vary the C, don't flag-hunt.**
 - 🔑 **FRAMED CLASS UNLOCKED (2026-07-11 cont. 7): use `-3s -of` (NOT `-of+`).** The old
   "framed lean-epilogue is blocked" note was a FLAG ERROR, earlier sweeps tested `-of+` (adds
   `89 ec` = mov esp,ebp) but never plain **`-of`**. Plain `-of` forces a frame with the LEAN
