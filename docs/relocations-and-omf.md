@@ -64,6 +64,36 @@ records (short for "fix up"). Each fixup entry says: at this byte offset, for th
 many bytes, there's an address that needs filling in. That's precisely the map we
 need.
 
+### What an OMF file looks like
+
+An OMF file isn't one blob, it's a sequence of **records**, one after another. Every
+record has the same simple wrapper:
+
+| Part | Size | What it is |
+|---|---|---|
+| Type | 1 byte | which kind of record this is |
+| Length | 2 bytes | how many bytes follow, including the checksum |
+| Content | varies | the record's payload, meaning depends on the type |
+| Checksum | 1 byte | a check byte |
+
+A typical object file for one function is a short list of these records, roughly in
+this order:
+
+| Record | What it holds |
+|---|---|
+| `THEADR` | the module's name |
+| `LNAMES`, `SEGDEF` | the segment names and definitions (`_TEXT` for code, and so on) |
+| `PUBDEF` | the names this file provides (our function) |
+| `EXTDEF` | the names this file needs from elsewhere (functions it calls) |
+| `LEDATA` | the actual machine-code bytes |
+| `FIXUPP` | the relocations for that code: where each blank is, and how big |
+| `MODEND` | end of module |
+
+The two that matter to us are **`LEDATA`**, which carries the code, and **`FIXUPP`**,
+which lists every relocation and the exact byte range it covers. Reading those two
+is all our tool needs to line our bytes up against the original and blank out the
+relocations correctly.
+
 ## What we built
 
 At first our comparison used a shortcut. Unfilled relocations usually show up as
