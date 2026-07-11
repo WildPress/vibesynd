@@ -37,6 +37,13 @@ N, B, MN, MB = agg(lambda f: True)
 LN, LB, LMN, LMB = agg(lambda f: f["addr"] in lib)
 GN, GB, GMN, GMB = agg(lambda f: f["addr"] not in lib)
 
+if "--badge-url" in sys.argv:
+    # static shields.io badge URL (works on private repos, unlike the endpoint kind).
+    import urllib.parse
+    msg = urllib.parse.quote(f"{pct(GMB, GB):.2f}% bytes | {GMN}/{GN} fns", safe="")
+    print(f"https://img.shields.io/badge/game%20matched-{msg}-blue")
+    sys.exit(0)
+
 if "--json" in sys.argv:
     print(json.dumps({
         "overall": {"functions": N, "matched_functions": MN, "bytes": B, "matched_bytes": MB,

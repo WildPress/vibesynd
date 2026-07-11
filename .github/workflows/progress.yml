@@ -1,0 +1,44 @@
+name: Update progress badge
+
+# Rewrites the progress badge in the README from the manifest, so it tracks
+# coverage automatically. A static shields.io badge (works on a private repo,
+# unlike the endpoint kind). Triggered only by manifest changes; the commit it
+# makes touches only the README, so it can't re-trigger itself.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'manifest/functions.json'
+      - 'manifest/library_functions.json'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  badge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update the README badge
+        run: |
+          set -euo pipefail
+          url="$(python3 tools/score.py --badge-url)"
+          python3 - "$url" <<'PY'
+          import re, sys
+          url = sys.argv[1]
+          s = open("README.md", encoding="utf-8").read()
+          block = f"<!--PROGRESS-->![game matched]({url})<!--/PROGRESS-->"
+          s = re.sub(r"<!--PROGRESS-->.*?<!--/PROGRESS-->", block, s, flags=re.S)
+          open("README.md", "w", encoding="utf-8").write(s)
+          PY
+          if git diff --quiet README.md; then
+            echo "Badge unchanged."
+          else
+            git config user.name  "badge-bot"
+            git config user.email "badge-bot@users.noreply.github.com"
+            git add README.md
+            git commit -m "chore: update progress badge [skip ci]"
+            git push
+          fi
