@@ -37,6 +37,19 @@ reconstructed that function correctly. A red light, with the first differing byt
 pointed out, tells you your C is not quite what the original author wrote, and
 often hints at how.
 
+The whole thing is a loop, one function at a time:
+
+```mermaid
+flowchart TD
+    A[Read the original function's disassembly] --> B[Write C that should match]
+    B --> C[Compile it with the period Watcom compiler]
+    C --> D[Disassemble our compiled result]
+    D --> E{Bytes identical to the original?}
+    E -->|Yes| F[Matched: record it and move on]
+    E -->|No| G[Our C is wrong: the first differing byte is the clue]
+    G --> B
+```
+
 ## Two phases
 
 1. **Now: match.** Rebuild the game as C that compiles to the original bytes. When
