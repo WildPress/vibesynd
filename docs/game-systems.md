@@ -64,6 +64,12 @@ An honest, short list. It'll grow.
   byte short. See the [journal](journal.md).
 - **A per-object status update** (`0x2d998`) — recomputes an object's state code from
   its flags, the function that led us to the 9.5 compiler.
+- **A chain-length counter** (`0x377b8`) — given an object, it walks a linked chain
+  starting from a 16-bit id in one of its fields, following a link at each node, and
+  returns how many nodes are in the chain. The classic shape of "count the items in a
+  list", so it's likely counting something attached to an object (inventory, a queue,
+  or a group). Which one we'll know from its callers. It's byte-matched, and it's the
+  function that cracked the [loop-rotation wall](journal.md).
 - **The runtime library** — dozens of functions in the top region are Watcom's own
   `strcpy`, `tolower`, `fopen`, and so on. Not game systems, but worth knowing they're
   accounted for. See [game vs library](game-vs-library.md).

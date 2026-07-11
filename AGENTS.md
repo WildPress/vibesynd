@@ -218,7 +218,24 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-11)
-- **Coverage: 56/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 57/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- 🔓 **LOOP-ROTATION WALL CRACKED (cont. 11): `0x377b8` matched with `-4s -or -s -zq`.** A
+  chain-length counter (while-loop over a linked list). The main-game `-oneatx` bundle ROTATES
+  loops (test at bottom); the original has the UN-rotated form (test at top, `jmp` back). This
+  unit wants **lighter opt** (like the `0x39xxx` block). Three levers combined: (1) drop `-oneatx`
+  → `-or` alone gives top-test + fixes the reg swap (id→EAX, count→EDX) + gets the inc/mov
+  schedule; (2) an explicit pointer local (`node = base + id`) keeps the address in two steps
+  (`add`+`mov`, not a folded `[reg+disp]`); (3) the original's redundant entry-guard test comes
+  from an **`if (cond) while (cond) {}`** shape the light optimiser doesn't fold. Recipe recorded
+  in `recipes.json`; regression 49/49. ⇒ **loop rotation IS steerable** (opt level + loop form),
+  unlike the pure register tie-break in `0x33fb8`.
+- 🧱 **`0x33fb8` (map passability) parked at 99%**, one byte off, a pure register tie-break
+  (base in EDX+`lea` vs EBX+`add`). Tried 7 C reformulations, none flip it. Deterministic in
+  Watcom but not reachable from portable C. Documented in `docs/register-allocation.md` (worked
+  example) + journal. This is the genuinely-hard class; don't rabbit-hole it.
+- ⚠ **`0x36168` outlier: saves EBX without using it** (push ebx / … / pop ebx wrapping a body
+  that never touches ebx). `-4s` gives the exact body but no wrapper; `-4r` tail-calls. Likely an
+  optimised-away local in the original source. Parked as a curiosity, not representative.
 - 🔴🎯 **COMPILER = Watcom 9.5b, NOT 10.0a (cont. 10 — CORRECTS cont. 8).** Use
   **`tools/wcc_95.sh` / `tools/match95.sh`** as the PRIMARY compiler. Same flags: `-4s`/`-4r`
   `-oneatx -zp8 -s -zq` (per-function convention). **Proof:** 9.5 matches ALL 48 regression

@@ -216,3 +216,51 @@ register-allocation cases until we find a way to crack those.
 Still a win of a kind: we understood a real game system function, even though its
 bytes aren't matched yet. That understanding goes in
 [how the game works](game-systems.md).
+
+## FUN_000377b8 — a chain counter that cracked the loop wall
+
+After the register-allocation wall we needed a win, so I went looking for a clean
+function with no calls, and found this one. It walks a linked chain and counts how
+long it is. It reads a 16-bit id from a field on the object passed in, and while
+that id isn't zero it looks the node up in a table, follows the link stored at the
+node's `+0x1c`, and counts one more hop. When the id runs out, it returns the count.
+
+The first attempt was the obvious C, a `while` loop with `count++` inside, compiled
+with our usual `-oneatx` optimisation. It came out badly wrong, and the diff showed
+three separate problems stacked on top of each other. The registers were swapped,
+the original kept the id in EAX and the count in EDX and ours did the opposite. The
+loop was shaped differently, the original tested the condition at the top and jumped
+back up, ours tested at the bottom. And the address arithmetic was folded together
+where the original kept it in two steps. Three walls at once.
+
+I unpicked them one at a time, and each fix taught something.
+
+The loop shape came first. Our `-oneatx` build had *rotated* the loop, moving the
+test to the bottom, which is a normal optimisation but not what the original did. The
+original's loop tests at the top with an unconditional jump back, the un-rotated
+form, which is what you get with lighter optimisation. Dropping from the full
+`-oneatx` bundle to a plainer setting brought the top-test shape back, and as a bonus
+the register swap fixed itself, because with the lighter optimiser the id naturally
+landed in EAX like the original.
+
+That left two small things. The original does the address in two instructions, load
+the table base then read the link, so I gave it a named pointer local instead of one
+folded expression, and the two steps came back. And there was one stubborn ordering
+difference, the original increments the counter *before* reading the next link, ours
+did it after. That's a scheduling choice, and it turned out to be sensitive to the
+exact optimisation flag. Walking through the reorder options, `-or` put the increment
+in the right place.
+
+There was one more subtlety worth recording. Even at the lighter setting, the
+original has what looks like a redundant test, it checks the id once before the loop
+and again at the top of the loop, two identical tests in a row. Our plain `while`
+only produced one. That shape comes from an `if` wrapped around the `while`, a guard
+the compiler didn't fold away, so writing the C that way, `if (id) while (id) {...}`,
+reproduced it exactly.
+
+With the top-test loop, the explicit pointer local, the `if` guard, and the `-or`
+flag, it matched byte for byte. The lesson is the useful one, the loop-rotation wall
+isn't a dead end like the pure register tie-break in `0x33fb8`. It responds to two
+levers we can actually pull, the optimisation level and the way the loop is written
+in C. This unit, like the `0x39xxx` block, wants lighter optimisation than the main
+game, and the byte diff is what tells us so. **57 of 500.**

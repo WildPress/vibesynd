@@ -35,6 +35,53 @@ allocation hangs on something subtle that's hard to express in source. That's th
 wall: the logic is right, the behaviour is right, but the compiler parked a value
 in EBX where the original used ESI, and everything downstream shifts.
 
+## A worked example: one byte apart
+
+Here's the wall in its purest form. The map passability check at `0x33fb8` (see
+[how the game works](game-systems.md)) reconstructs to **136 bytes against the
+original's 137**, and every byte matches except one region in the middle. The whole
+disagreement is a single register.
+
+At that point the function has a table index in EAX and needs the address of a table
+slot, `&g_5358[index]`, to read the base offset stored there. Both versions compute
+the same address and both leave it in EBX. They just get there differently.
+
+The original loads the table base into EDX, then folds in the scaled index with a
+three-register `lea`:
+
+```
+mov edx, [g_5358]        ; base into a scratch register
+lea eax, [eax*4]         ; scale the index (4 bytes per int)
+lea ebx, [edx+eax]       ; ebx = base + index  (3 bytes)
+```
+
+Ours loads the base straight into EBX and adds the index in place:
+
+```
+mov ebx, [g_5358]        ; base into ebx directly
+lea eax, [eax*4]         ; scale the index
+add ebx, eax             ; ebx = base + index  (2 bytes)
+```
+
+Same address in EBX at the end, same behaviour, but `add ebx,eax` is one byte
+shorter than `lea ebx,[edx+eax]`, and that's the whole size difference. The original
+kept the base in a separate scratch register (EDX) and combined into a third. Ours
+reused EBX as both source and destination. One byte, one register.
+
+The honest part: we couldn't move it. We tried seven structurally different ways of
+writing the same C, swapping the order of the two operands being added, swapping the
+order inside the index expression, introducing an explicit pointer local, hoisting
+the divide into its own variable, retyping the table as a pointer-to-pointer, and
+pinning the base in a named local. Every single one still put the base in EBX. A few
+made the diff worse by shifting it earlier. None produced the EDX form.
+
+That tells us something precise about the wall. The compiler is deterministic, so the
+EDX choice isn't luck, some C shape *does* produce it, the original's did. But it
+isn't reachable by the ordinary reshufflings that fix most allocation mismatches. So
+this function sits at ninety-nine percent, understood completely and wrong by one
+byte, parked until we either find the exact C shape or decide the last byte isn't
+worth it.
+
 ## The pattern that predicts success
 
 Here's the useful rule we found. It comes down to how much *freedom* the compiler
