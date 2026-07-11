@@ -83,25 +83,43 @@ def main():
     off = int(f["addr"], 16) - base
     target = open(SEG, "rb").read()[off:off + f["size"]]
 
+    import random
     ast = c_parser.CParser().parse(strip_comments(open(f"src/{name}.c").read()))
-    sites = []; c = Collect(); c.visit(ast); sites = c.sites
+    c = Collect(); c.visit(ast); sites = c.sites          # commutative-swap axes
+    fn = next(x for x in ast.ext if isinstance(x, c_ast.FuncDef))
+    body = fn.body                                        # statement-reorder axis
+    stmts = list(body.block_items or [])
+    k = len(stmts)
     gen = c_generator.CGenerator()
-    n = len(sites)
-    combos = list(itertools.product([0, 1], repeat=n))
-    if len(combos) > mx:
-        combos = combos[:mx]
-    print(f"{name}: {n} commutative sites -> {2**n} variants "
-          f"(testing {len(combos)}), target={len(target)}B", flush=True)
 
-    # render each combo to a source string (main process owns the AST)
-    def render(combo):
-        for i, s in enumerate(combo):
+    # commutative combos (each site: swap / no-swap)
+    comm = list(itertools.product([0, 1], repeat=len(sites)))
+    # statement orderings: exhaustive if small, else identity + random samples
+    if k <= 6:
+        orders = list(itertools.permutations(range(k)))
+    else:
+        random.seed(0)
+        orders = [tuple(range(k))] + [tuple(random.sample(range(k), k)) for _ in range(720)]
+    variants = [(cc, so) for so in orders for cc in comm]
+    random.seed(1); random.shuffle(variants)
+    if len(variants) > mx:
+        variants = variants[:mx]
+    print(f"{name}: {len(sites)} commutative sites x {len(orders)} statement orders "
+          f"-> {len(comm)*len(orders)} variants (testing {len(variants)}), "
+          f"target={len(target)}B", flush=True)
+
+    def render(v):
+        cc, so = v
+        for i, s in enumerate(cc):
             if s: sites[i].left, sites[i].right = sites[i].right, sites[i].left
+        body.block_items = [stmts[j] for j in so]
         out = gen.visit(ast)
-        for i, s in enumerate(combo):
+        body.block_items = stmts
+        for i, s in enumerate(cc):
             if s: sites[i].left, sites[i].right = sites[i].right, sites[i].left
         return out
-    sources = [(i, render(cb)) for i, cb in enumerate(combos)]
+    combos = variants                                    # keep name for the reporting code
+    sources = [(i, render(v)) for i, v in enumerate(variants)]
 
     if not os.path.isdir("/tmp/wat"):
         subprocess.run("cp -r /work/toolchain/watcom95 /tmp/wat", shell=True)
