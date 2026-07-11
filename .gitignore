@@ -1,7 +1,3 @@
-# The legacy FreeSynd/VibeSynd port lives here for reference but is NOT part of
-# this (matching-decompilation) repository. It keeps its own git history inside.
-legacy/
-
 # The original copyrighted binary and everything derived directly from it
 # is NEVER committed. Standard matching-decomp hygiene.
 inputs/

@@ -6,13 +6,15 @@
 > Log** sections. This is intentionally NOT stored in Claude's global memory (other
 > agents run on this machine); it lives in the repo.
 
-> **⚠ LAYOUT CHANGED 2026-07-10.** The decomp is now the **repo root**
-> (`C:\Users\James\freesynd`), its own fresh git repo. The old FreeSynd/VibeSynd port
-> was moved into `legacy/` (git-ignored; keeps its own `.git` + remote). **Any
-> `reverse/` prefix in older notes below now means the repo root** — e.g. old
-> `reverse/tools/` is now `tools/`, `reverse/ghidra` is now `ghidra`, and the WSL path
-> is `/mnt/c/Users/James/freesynd` (no `/reverse`). Commands/paths in this doc have
-> mostly been updated; if you hit a stale `reverse/`, drop it.
+> **⚠ REPO = `vibesynd` (2026-07-11).** This decomp is the repo root
+> (`C:\Users\James\freesynd`) and its GitHub remote is now
+> **`github.com/WildPress/vibesynd`** (main = decomp; private). The old
+> FreeSynd/VibeSynd *port* that used to sit in `legacy/` has been removed from this
+> machine; its committed history is parked on the remote branch
+> **`freesynd-port-archive`** (safe to delete once no longer wanted). This project
+> no longer has any FreeSynd relation. **Any `reverse/` prefix in older notes below
+> means the repo root** (old `reverse/tools/` is now `tools/`, etc.); WSL path is
+> `/mnt/c/Users/James/freesynd`.
 
 ## Goal
 
@@ -20,9 +22,9 @@ Produce a **matching decompilation** of the original 1993/95 DOS *Syndicate*
 executable: C source that, compiled with the period toolchain, produces
 **byte-identical machine code** to the original binary — one function at a time.
 
-This is a *different discipline* from the parent VibeSynd/FreeSynd fork (which is a
-behavioural reimplementation). Here the **original binary's assembly is the source
-of truth**, and success = zero-diff parity, tracked in a coverage manifest.
+This is a *different discipline* from a behavioural reimplementation (the abandoned
+FreeSynd-style port). Here the **original binary's assembly is the source of truth**,
+and success = zero-diff parity, tracked in a coverage manifest.
 Video/DOSBox footage is for **orientation only** (understanding what a function is
 for, prioritising), never the parity signal.
 
