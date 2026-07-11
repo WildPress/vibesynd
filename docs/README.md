@@ -30,6 +30,8 @@ that it could be ported to a modern machine with real understanding of every lin
 If the ideas are new, read them in roughly this order. Each page defines its terms
 as it goes.
 
+- **[The CPU, registers, and instructions](cpu-basics.md)** — the foundation the
+  rest sits on. Come back here whenever a register or instruction is unfamiliar.
 - **[Matching decompilation](matching-decompilation.md)** — the goal, and why
   byte-for-byte rather than just "works the same".
 - **[Stack frames](stack-frames.md)** — framed vs frameless functions, and what a

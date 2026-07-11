@@ -9,10 +9,11 @@ passed into a function, its local variables, and bits of saved state. That
 somewhere is the **stack**, a region of memory that grows and shrinks as functions
 call each other.
 
-There's a CPU register called **ESP**, the stack pointer, that always points at
-the current top of the stack. A register is just a tiny, extremely fast storage
-slot inside the CPU itself. The x86 chip this game runs on has a handful of them,
-with names like EAX, EBX, ECX, EDX, ESI, EDI, EBP, and ESP.
+There's a CPU register called [**ESP**](cpu-basics.md), the stack pointer, that
+always points at the current top of the stack. A register is just a tiny, extremely
+fast storage slot inside the CPU itself. The x86 chip this game runs on has a
+handful of them, with names like EAX, EBX, ECX, EDX, ESI, EDI, EBP, and ESP. The
+[CPU basics](cpu-basics.md) page has the full list and what each one is for.
 
 The catch is that ESP moves around while a function runs. Every time the function
 stashes something on the stack, ESP shifts. So if the function wants to reach
@@ -22,8 +23,8 @@ to keep track of.
 ## What a frame is
 
 A **stack frame** is a fix for that awkwardness. At the very start, the function
-grabs a second register, **EBP** (the base pointer), and pins it to the stack
-position at that moment:
+grabs a second register, [**EBP**](cpu-basics.md) (the base pointer), and pins it to
+the stack position at that moment:
 
 ```
 push ebp        ; save whatever the caller had in EBP

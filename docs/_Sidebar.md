@@ -2,6 +2,10 @@
 
 - [Home](Home)
 
+**Foundations**
+
+- [The CPU & registers](cpu-basics)
+
 **Concepts**
 
 - [Matching decompilation](matching-decompilation)

@@ -5,10 +5,10 @@ understanding why.
 
 ## What registers are, again
 
-A **register** is a tiny storage slot inside the CPU, much faster to use than
-memory. The x86 chip has only a handful of general-purpose ones: EAX, EBX, ECX,
-EDX, ESI, EDI, and EBP. A function juggles its values between these registers and
-memory as it runs.
+A [**register**](cpu-basics.md) is a tiny storage slot inside the CPU, much faster
+to use than memory. The x86 chip has only a handful of general-purpose ones: EAX,
+EBX, ECX, EDX, ESI, EDI, and EBP. A function juggles its values between these
+registers and memory as it runs.
 
 ## The allocation problem
 

@@ -30,9 +30,9 @@ would recognise as the ordinary way arguments get passed.
 ## Register calling
 
 In **register calling**, the caller puts the first few arguments directly into
-registers instead of the stack, which is faster because registers are quicker to
-reach than memory. Watcom's order is EAX, then EDX, then EBX, then ECX. So a
-function's first argument arrives in EAX, its second in EDX, and so on.
+[registers](cpu-basics.md) instead of the stack, which is faster because registers
+are quicker to reach than memory. Watcom's order is EAX, then EDX, then EBX, then
+ECX. So a function's first argument arrives in EAX, its second in EDX, and so on.
 
 ```
 ; no reading from the stack; the argument is already in EAX
