@@ -30,6 +30,10 @@ from omf import text_bytes_and_fixups
 SEG, MAN = "inputs/SYNDICAT_MAIN_OBJECT1.linear.bin", "manifest/functions.json"
 COMMUTATIVE = {"+", "*", "==", "!=", "&", "|", "^", "&&", "||"}
 ARITH = {"+", "-", "*", "/", "%", "<<", ">>", "&", "|", "^"}
+# types to try for introduced temps and for swapping existing scalar locals -- the
+# signedness/width choice drives movsx/movzx, sar/shr, mov al vs eax, etc.
+TYPES = ["int", "unsigned int", "unsigned char", "unsigned short",
+         "char", "short", "long", "unsigned"]
 PARSER = c_parser.CParser()
 GEN = c_generator.CGenerator()
 
@@ -81,30 +85,44 @@ def hoist_sites(body):
                 stack.append(ch)
     return out
 
-def make_int_decl(name, expr):
-    d = PARSER.parse(f"void __f(void){{ int {name} = {GEN.visit(expr)}; }}")
+def make_decl(name, expr, typ):
+    d = PARSER.parse(f"void __f(void){{ {typ} {name} = {GEN.visit(expr)}; }}")
     return d.ext[0].body.block_items[0]
 
-def apply_mutations(ast, comm_flags, hoist_flags, order_seed):
+def type_sites(body):
+    """IdentifierType nodes of scalar (non-pointer) local declarations -- swappable."""
+    out = []
+    for stmt in (body.block_items or []):
+        if isinstance(stmt, c_ast.Decl) and isinstance(stmt.type, c_ast.TypeDecl) \
+           and isinstance(stmt.type.type, c_ast.IdentifierType):
+            out.append(stmt.type.type)
+    return out
+
+def apply_mutations(ast, comm_flags, hoist_types, local_types, order_seed):
     body = body_of(ast)
     cs = comm_sites(ast)
     for i, on in enumerate(comm_flags):
         if on and i < len(cs):
             cs[i].left, cs[i].right = cs[i].right, cs[i].left
-    # temp hoists: build (index -> [decls]) then splice
+    # swap existing scalar local types
+    ts = type_sites(body)
+    for i, t in enumerate(local_types):
+        if t and i < len(ts):
+            ts[i].names = t.split()
+    # temp hoists (each site: None, or a type string to hoist as)
     hs = hoist_sites(body)
     pm = parent_map(ast)
     pre = {}
     tn = 0
-    for i, on in enumerate(hoist_flags):
-        if not on or i >= len(hs):
+    for i, typ in enumerate(hoist_types):
+        if not typ or i >= len(hs):
             continue
         si, node = hs[i]
         parent = pm.get(id(node))
         if parent is None:
             continue
         name = f"__t{tn}"; tn += 1
-        decl = make_int_decl(name, node)
+        decl = make_decl(name, node, typ)
         replace_child(parent, node, c_ast.ID(name=name))
         pre.setdefault(si, []).append(decl)
     items = body.block_items or []
@@ -170,25 +188,27 @@ def main():
     src0 = strip_comments(open(f"src/{name}.c").read())
     ast0 = PARSER.parse(src0)
     ncomm = len(comm_sites(ast0)); nhoist = len(hoist_sites(body_of(ast0)))
-    print(f"{name}: {ncomm} commutative sites, {nhoist} hoist sites; "
+    ntype = len(type_sites(body_of(ast0)))
+    print(f"{name}: {ncomm} commutative, {nhoist} hoist, {ntype} type sites; "
           f"sampling {N} variants, target={len(target)}B", flush=True)
 
     rng = random.Random(seed)
     seen, specs = set(), []
     # always include the identity variant first
-    specs.append((tuple([0]*ncomm), tuple([0]*nhoist), None))
+    specs.append((tuple([0]*ncomm), tuple([None]*nhoist), tuple([None]*ntype), None))
     while len(specs) < N:
         cf = tuple(rng.randint(0, 1) for _ in range(ncomm))
-        hf = tuple(1 if rng.random() < 0.25 else 0 for _ in range(nhoist))
+        hf = tuple(rng.choice(TYPES) if rng.random() < 0.2 else None for _ in range(nhoist))
+        lt = tuple(rng.choice(TYPES) if rng.random() < 0.25 else None for _ in range(ntype))
         od = rng.randint(0, 10**9) if rng.random() < 0.5 else None
-        key = (cf, hf, od)
+        key = (cf, hf, lt, od)
         if key in seen: continue
         seen.add(key); specs.append(key)
 
     def render(spec):
         a = copy.deepcopy(ast0)
         try:
-            apply_mutations(a, spec[0], spec[1], spec[2])
+            apply_mutations(a, spec[0], spec[1], spec[2], spec[3])
             return GEN.visit(a)
         except Exception:
             return "void __broken(void){}"
