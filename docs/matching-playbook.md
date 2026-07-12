@@ -26,6 +26,12 @@ Companion: `docs/object-model.md` (the pool/entity field map + global-table cata
 - **If match95 fails only on a length check**, the manifest `size` may be wrong (headless pass
   under-counted; e.g. 0x29c58 was 177 vs true 238). Confirm the extent with `get_function_by_address`
   and correct the manifest `size`.
+- **Inline jump-table blocks verification (switch fns).** Watcom co-locates a `switch`'s jump table
+  (+ entry-alignment pad) in the SAME object `.text` BEFORE the code, so match_reloc compares the
+  whole obj text against the target code window and the lengths can never equal — even when the code
+  is byte-EXACT. In the real binary the table lives in a far segment (`CS:[...+disp]`); on-disk the
+  fn is clean. No C spelling moves the table out of the compiled object. Such a fn reads as NEAR-MISS
+  but is effectively matched code we can't auto-verify; document, don't mark matched. (0x23038.)
 
 ## 1. Recipes (compile flags)
 
@@ -33,7 +39,8 @@ Companion: `docs/object-model.md` (the pool/entity field map + global-table cata
 |--------|------|
 | `-4s -oneatx -zp8 -s -zq` | **default** — stack-calling game code (< 0x39000) |
 | `-4r -oneatx -zp8 -s -zq` | `__fastcall`/register-calling fns; the `0x39xxx` region |
-| `-3s -of -oneatx -zp8 -s -zq` | framed runtime-library region (`0x3a000+`, non-leaf) |
+| `-3s -of -oneatx -zp8 -s -zq` | framed runtime-library region (`0x3a000+`, non-leaf), manual `push;mov;sub` frame |
+| `-3s -os -zp8 -s -zq` | `0x3a000+` fns whose prologue is `ENTER 0x2c,0`/`LEAVE` — `-os` emits ENTER where `-of` emits the manual frame (byte-0 divergence otherwise). Add `-ol` for two-step `mov al;movzx` loads. (0x3cc26) |
 | `-4s -or -zp8 -s -zq` | when -oneatx hoists a stack param into a callee-saved reg the target RE-READS each use (-or (reorder only) skips that hoist). e.g. 0x38fe8, 0x377b8 |
 | `-4s -ot -s -zq` (or `-oe/-or/-os`) | the occasional less-optimised unit (target bigger/un-folded than -oneatx) |
 
@@ -115,11 +122,42 @@ grind; the fuzzer permutes *source* and can't change the allocator's mind.
   also unrolls the counted loop; no flag gives align without unroll. (0x35ed8.)
 - **Cross-function tail-merge** — the fn's `return 0` jumps into an *adjacent* function's shared
   `xor eax,eax; ret` stub; unreachable when compiling one fn in isolation. (0x37818.)
+- **Intra-function tail-merge** — target shares ONE small `pop;pop;ret` (or `mov eax,-1; jmp END`)
+  epilogue across two exits (`eb<disp>` jmp to it); Watcom 9.5b DUPLICATES the 2-3 byte tail instead
+  of cross-jumping. Single-instruction near-miss; early-return / single-exit `int r` / explicit
+  `goto`-to-shared-return source forms and `-os`/`-ol`/`-oa`/`-ot`/`-oc`/`-oi` all fail to induce the
+  merge. Block-layout fuzzer might close it. (0x3d3e4 41/43, 0x3b99e 42/44.)
 - **Intrinsic won't inline** — target uses `rep movs`/`repne scasb` (inlined memcpy/strlen); our
   batch compile has no `<string.h>` on the include path and neither `-oi` nor `#pragma intrinsic`
   triggers it. (0x299c8, 0x17998.) NOTE: `_fmemset` DOES inline via `#pragma intrinsic(_fmemset)` + a far decl (0x28728) -- the wall is `strlen`/`memcpy`-specific, not universal.
 - **Scheduling / param-load order** — high-param-pressure fns where the exact instruction schedule
   (which param loads first) isn't source-reachable. (0x15e38.)
+- **No 64-bit integer type (compiler limit)** — Watcom 9.5b rejects `unsigned long long` (E1060) and
+  `__int64` (E1009). A target that does a true 64-bit muldiv (`mul ecx; div ebx` carrying EDX from
+  mul straight into div, no `xor edx`) is UNREACHABLE — with `unsigned int` Watcom always emits
+  `xor edx` (or strength-reduces the `*const`) before the unsigned `div`. (0x39495.)
+- **Cluster-wide dead callee-save** — some 0x39xxx fns wrap a frameless body in a lone dead
+  `push ebx`/`pop ebx` (EBX reserved across a call with nothing live) — a region-wide pessimistic
+  save. `-oneatx` saves no reg; `-od` saves ebx+esi+edi AND adds an ebp frame; never exactly one
+  frameless EBX save. Also toolchain tells `8b ec` vs our `89 e5` (mov ebp,esp), `mov eax,0` vs
+  `xor eax,eax` — the 0x39xxx region shares the RTL different-Watcom flavor for some fns. (0x39188.)
+- **Prologue reg-save-order (framed CLIB region 0x3a000+)** — a framed fn that ALSO saves a callee
+  reg has prologue `push ebx; push ebp; mov ebp,esp` (saved regs BEFORE the EBP frame; args at
+  `[EBP+0xc+]`). Watcom 9.5b at every optimized recipe (`-3s -of -oneatx` and all `-o*` variants,
+  `-3`/`-4`) emits frame-FIRST `push ebp; mov ebp,esp; push ebx`; only `-od` gives regs-first but
+  de-optimizes the body. Diverges at byte 0. Recognize: the target has `push <reg>` before
+  `push ebp`. PLAIN framed siblings (no saved reg, bare `push ebp; mov ebp,esp`) DO match with
+  `-3s -of`. (0x3db36, 0x3dbeb, 0x3d3e4, 0x3ca0d — bodies are byte-faithful but walled.)
+- **0x3a000+ framed runtime-library = toolchain-version mismatch (whole-region wall)** — the shipped
+  RTL objects were built with a DIFFERENT Watcom than our 9.5b. Two irreducible tells: (a) it
+  materialises the first call arg into EAX before pushing (`mov eax,[ebp+8]; push eax`) where our
+  9.5b pushes the memory operand (`push [ebp+8]`); (b) the prologue reg-save-order wall above. Both
+  are byte-0 / near-miss divergences no `-o*` recipe or `register` temp fixes. CONSEQUENCE: in the
+  0x3a000+ region the reliably-matchable shapes are bare **plain-frame leaves** (single `push ebp;
+  mov ebp,esp`, no saved reg, no guarded call materialising an arg) AND **ENTER-frame fns via `-3s
+  -os`** (0x3cc26); skip guarded-wrapper / saved-reg-before-frame fns (those hit the prologue wall).
+  (0x3c491 21/23, 0x3c479 21/24, 0x3c42d 28/32 all walled.) The 0x39xxx game region (`-4s`/`-4r`,
+  our own compiler) does NOT have this problem — mine there instead.
 
 ## 4. Object model (see docs/object-model.md)
 

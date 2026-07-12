@@ -224,10 +224,13 @@ the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intri
 method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 86/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
-  (cont. 13 also banked `0x22708`: a one-call region-zero. Idiom worth noting: a size arg compiled as
-  `mov eax,END; sub eax,START` is `g_END - g_START` (two distinct externs) — the subtraction is at
-  runtime because the linker can't fold two symbol addresses. Eleven banks this session.)
+- **Coverage: 106/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (Latest sweep probed the small-function vein in the **0x39000–0x3e500 runtime/RTL region**: banked
+  `0x39088` (`-4s`) and `0x3cc26` (`-3s -os` ENTER-frame). Bank rate there is LOW (~2/18) — that
+  region is largely a **different-Watcom toolchain-version wall** (arg→EAX-before-push, prologue
+  reg-save order, intra-fn tail-merge) plus hard compiler limits (no 64-bit int type; CLI/STI, DOS
+  int-21h and bswap asm idioms unreachable from headerless C). See `docs/matching-playbook.md` §3.
+  Mine the 0x39xxx game region (our own compiler) over the 0x3a000+ RTL.)
   (cont. 13 also banked `0x146f8` first-try: a `char`-returning eligibility test (guard chain, one call).
   Reminder: the decompiler's CONCAT31/uint3 "packed return" is usually noise for a fn that just sets AL —
   read the disasm; it's a plain `char` return. Ten banks this session; sweet-spot vein is productive.)
