@@ -94,9 +94,17 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   segment arg 16-bit as `mov cx`, but a 32-bit stack slot always gives `mov ecx`), emit the WHOLE
   body INCLUDING the `[ebp+N]` param loads as db bytes with `parm []` — `-d2` supplies the ebp frame
   and the params sit at `[ebp+8..]`, so the db `mov cx,[ebp+0x10]` matches exactly. Banked d_setvec
-  0x3b273 this way. LIMIT: fns with a rel32 `call` (position-dependent — db can't encode it; would
-  need a real `call <extern>` in the pragma) or frameless asm stubs (no `-d2` frame to hang the body
-  on) still need real externs/source — park those (tell, lseek, 0x3a37a bswap, 0x3cabb).
+  0x3b273 this way.
+- **call-in-pragma: mix `db` bytes with a real `call <extern>`.** For DOS-asm fns that call an
+  error handler etc., emit the body as `db` bytes but replace the `e8 xx xx xx xx` with a real
+  `"call FUN_<callee-abs-addr>"` string (declare it `extern`). The mini-asm emits a rel32 fixup to
+  the symbol, match_reloc masks it → RELOC-AWARE YES (EXACT will say NO on the masked call bytes,
+  which is fine). Compute the callee's absolute addr from `func_addr + call_off + 5 + rel32`. This
+  banked lseek 0x3a93b, tell 0x3a97c, open 0x3a579, qread 0x3d935 (all call the same DOS-error
+  handler 0x3c4b9), and the switch-char helper 0x3cbf9 (int21, no call). LIMIT: frameless asm stubs
+  (no `-d2` frame to hang the body on — 0x3a37a bswap, 0x3cabb stack-check, 0x3b1f6 _exit) and real
+  C fns with buffer logic (ftell, chktty, fgetc, fread, ioalloc — write real source, don't
+  db-transcribe compiled C; they carry register-role risk like the string fns) stay parked.
 
 - **Branch layout** — invert the `if`/`else` so the target's *fall-through* path comes first
   (matches its `JZ`/`JNZ` sense). For multi-way dispatch, use explicit `goto`s to mirror the exact
