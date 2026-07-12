@@ -66,6 +66,31 @@ apply its `WCC386*.A/B` to the matching-size base, then `cmp95b.sh` the walls (0
 Until 9.5c turns up, the register-role/address-fold/peephole walls stay unmatchable — bank the ~50%
 of functions that don't trip them; park the rest (playbook §3).
 
+## RESULT (cont. 16 cont.): 10.0a tested, 9.5c pinned as the target — but 9.5c is LOST
+
+Tested our staged **10.0a** compiler (via `tools/archive/wcc_dos.sh`, W32RUN under DOSBox) on walls
++ already-matched fns:
+- 0x34048: 10.0a emits **56B with the `add eax,imm32` accumulator form** (= target size; base 9.5
+  emits 54B imm8) — differs only at `xor dh,ah` vs `dh,dh`. So the `imm32` tell is **10.0-era**.
+- 0x35ed8: 10.0a **matches** (like 9.5).
+- BUT 0x13a98 + 0x146f8 (game fns that **9.5 matches**): 10.0a gives the WRONG size (50/43, 102/85)
+  — 10.0a **breaks** them. So the game code is NOT 10.0.
+
+Conclusion: the game code is **9.5-branch** (matches base 9.5 on most fns) yet carries a few
+**10.0-era codegen features** (imm32, address-unfold) that base 9.5 / 9.5b lack → it is **Watcom
+9.5c** (the last 9.5 patch, 1994, which back-ported Pentium codegen). This sits precisely between
+the 9.5b we built and the 10.0a we have.
+
+**9.5c is not obtainable.** Full archive.org Watcom index (advancedsearch): 8.5a, 9.01, 9.5(base),
+9.5b, 10.5, 10.6 — **no 9.5a, no 9.5c**. WinWorld 9.x page 404s; Vetusware has only 9.5b; every web
+search loops back to the 9.5b archive. 9.5c appears never to have been preserved separately.
+
+**Net:** base 9.5, 9.5b, and 10.0a all tested and rejected; the exact build (9.5c) is lost media.
+The ~50% register-role/address-fold/peephole-walled functions cannot be byte-matched until a 9.5c
+copy surfaces. Slim remaining leads: (a) a physical/un-indexed 9.5c disk someone dumps later —
+the `tools/wcc95b/` pipeline will build+test it in minutes; (b) 10.5/10.6 (available but LATER than
+10.0, so almost certainly further from the target — untested). Otherwise: bank the matchable ~50%.
+
 ## Remaining path to actually build the game's compiler
 
 1. Get the **532992-byte base 9.5 `wcc386.exe`** — install base 9.5 from the floppy images
