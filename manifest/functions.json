@@ -60,7 +60,7 @@
     {"addr": "0001b858", "name": "FUN_0001b858", "size": 165, "calls": 1, "data_refs": 9, "incoming": 0, "status": "unmatched", "match_pct": 0.0, "src": null},
     {"addr": "0001b908", "name": "FUN_0001b908", "size": 315, "calls": 1, "data_refs": 12, "incoming": 1, "status": "unmatched", "match_pct": 0.0, "src": null},
     {"addr": "0001ba48", "name": "FUN_0001ba48", "size": 171, "calls": 0, "data_refs": 10, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/FUN_0001ba48.c"},
-    {"addr": "0001bc28", "name": "FUN_0001bc28", "size": 1333, "calls": 1, "data_refs": 5, "incoming": 0, "status": "unmatched", "match_pct": 0.0, "src": null},
+    {"addr": "0001bc28", "name": "FUN_0001bc28", "size": 1334, "calls": 1, "data_refs": 5, "incoming": 0, "status": "unmatched", "match_pct": 0.0, "src": null},
     {"addr": "0001c168", "name": "FUN_0001c168", "size": 1, "calls": 0, "data_refs": 0, "incoming": 1, "status": "unmatched", "match_pct": 0.0, "src": null},
     {"addr": "0001c178", "name": "FUN_0001c178", "size": 119, "calls": 1, "data_refs": 20, "incoming": 0, "status": "matched", "match_pct": 100.0, "src": "src/FUN_0001c178.c"},
     {"addr": "0001ff98", "name": "FUN_0001ff98", "size": 113, "calls": 1, "data_refs": 4, "incoming": 0, "status": "matched", "match_pct": 100.0, "src": "src/FUN_0001ff98.c"},

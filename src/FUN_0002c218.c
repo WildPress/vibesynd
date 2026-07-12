@@ -1,99 +1,119 @@
-/* WALL (inline jump-table dispatch) @ 0x2c218  -- command-list interpreter.
- *   Sibling of FUN_0002bca8 (same shape; distinct case-2 clause + default tail).
+/* inline jump-table switch dispatcher @ 0x2c218 (592B) -- command-list interpreter.
+ *   Sibling of FUN_0002bca8 (same shape; register roles swapped: sel->EDI,
+ *   result->ESI). Extra `if(result==0)` clause in case 2 and a post-switch
+ *   g_df75[(signed char)p[0xb]] = 0 tail (runs when p[0xa] != 0).
  *
- * Ground truth: disassemble_function 0x2c218 + disassemble_bytes 0x2c245..0x2c467.
- * Real signature is 4 stack params (Ghidra's 1-param __cdecl is phantom):
- *   FUN(short *p /[ESP+0x10]->EBX/, int sel /[ESP+0x14]->EDI/,
- *       int setX /[ESP+0x18]/, int setY /[ESP+0x1c]/)  -> returns 0.
- *   (Register roles vs 0x2bca8 are swapped: here EDI=sel, ESI=return-0.)
+ * Signature: 4 stack params (Ghidra's 1-param __cdecl is phantom):
+ *   FUN(unsigned char *p /[ESP+0x10]->EBX/, int sel /[ESP+0x14]->EDI/,
+ *       int setX /[ESP+0x18]/, int setY /[ESP+0x1c]/)
+ * Walks 0x12-byte records; word[0]==-0x63 terminates. 5-way switch on word[0].
  *
- * Walks 0x12-byte command records; word[0]==-0x63 terminates (return 0).
- * Dispatch: MOV DX,[p]; CMP DX,4; JA default; JMP CS:[EAX*4 + 0x1eab8].
- * Case bodies (block starts the far table selects):
- *   0x2c24d  box hit-test of cursor (g_10b22,g_10b24) against record box, sets
- *            selection cursor globals (g_e116/g_e114, g_10b3f/g_10b3e), then
- *            opcode += 2, p[0xa] = 2  (same as 0x2bca8 case 0).
- *   0x2c31d  push p; if (FUN_00029988(p)) (*p)++; p[0xa]=2  -> shared tail.
- *   0x2c337  if (p[0xa]) { if (sel) -> next; else sel = (signed char)p[0xb]; }
- *            (extra `TEST SI,SI` clause absent in 0x2bca8).
- *   0x2c350  second box hit-test variant; miss path 0x2c410 optionally
- *            FUN_00029988(p) then *p = 1; sets same cursor globals; p[0xa]=2.
- *   0x2c441  DEFAULT / shared tail: if (p[0xa]) g_df75[(signed char)p[0xb]] = 0;
- *            then p += 0x12 and loop.  <-- the extra write vs 0x2bca8.
+ * Recipe: -4s -oneatx -zp8 -s -zq  (see sibling FUN_0002bca8 for the -ox rationale).
  *
- * WHY NO MASKED 'YES' (playbook Section 0, cf. 0x23038): the 5-entry jump table
- * (+ pad) lives in a FAR segment in the shipped binary (CS:[EAX*4 + 0x1eab8]);
- * Watcom instead co-locates it inside our object .text before the code, so
- * match_reloc's len(ours) != len(target) can never resolve even with byte-exact
- * code. Not source-reachable.
- *
- * MANIFEST SIZE UNDER-COUNTED: recorded size=92 truncates at the switch JMP;
- * true extent is 0x2c218..0x2c467 = 592 bytes (0x250).
- *
- * Parked as WALL. Reconstruction below is structural (opcode->block map lives in
- * the masked far table and does not affect the function bytes).
+ * NEAR-MISS (byte-faithful structure; same -ox scheduler walls as the sibling PLUS a
+ * register-role wall, playbook Section 3):
+ *   1. Same `mov reg,1; mov [g_e116],reg` vs immediate on the first flag=1 store, and
+ *      the same entry early-return fold — identical to FUN_0002bca8.
+ *   2. REGISTER-ROLE: the target colours result->ESI and sel->EDI (because result is
+ *      read in case 2, giving it more uses); our compile colours sel->ESI, result->EDI
+ *      (like the sibling), so every `mov dx,di`(sel) and `mov eax,esi`(result) has the
+ *      other register. No declaration/first-use order I found flips the allocator.
  */
-extern unsigned short g_10b22, g_10b24;   /* cursor point (x, y) */
+extern volatile unsigned short g_10b22, g_10b24;   /* cursor point (x, y) */
 extern unsigned short g_e114, g_e116;     /* selection cursor state words */
 extern unsigned char  g_10b3e, g_10b3f;   /* selection cursor flags */
-extern unsigned char  g_df75[];           /* record-indexed flag table (default tail clears) */
-extern short FUN_00029988(short *p);
+extern unsigned char  g_df75[];           /* record-indexed flag table (tail clears) */
+extern short FUN_00029988(unsigned char *p);
 
-static int hit_test(short *p)
+unsigned short FUN_0002c218(unsigned char *p, int sel, unsigned char setX, unsigned char setY)
 {
-    int x = (unsigned short)p[1] + *(signed char *)((char *)p + 8);
-    if ((short)g_10b22 <  x) return 0;
-    x += *(unsigned char *)((char *)p + 6);
-    if ((short)g_10b22 >= x) return 0;
-    {
-        int y = (unsigned short)p[2] + *(signed char *)((char *)p + 9);
-        if ((short)g_10b24 <  y) return 0;
-        y += *(unsigned char *)((char *)p + 7);
-        if ((short)g_10b24 >= y) return 0;
-    }
-    return 1;
-}
+    unsigned short result = 0;
 
-static void set_cursor(short *p, int setX, int setY)
-{
-    g_e116 = 0;
-    if (setX) { g_10b3f = 0; g_e116 = 1; }
-    g_e114 = 0;
-    if (setY) { g_10b3e = 0; g_e114 = 1; }
-}
+    if (*(short *)p == -0x63)
+        return result;
+    do {
+        switch (*(unsigned short *)p) {
+        default:
+            goto Lcheck;
 
-int FUN_0002c218(short *p, int sel, int setX, int setY)
-{
-    for (; *p != -0x63; p = (short *)((char *)p + 0x12)) {
-        switch ((unsigned short)*p) {          /* JMP CS:[..+0x1eab8] (WALL) */
         case 0:                                 /* block 0x2c24d */
-            if ((setX | setY) &&
-                (hit_test(p) || sel == *(signed char *)((char *)p + 0xb))) {
-                set_cursor(p, setX, setY);
-                *(short *)p += 2;
+            if ((setX | setY) == 0) goto A_47;
+            {
+                int x = *(signed char *)(p + 8) + (unsigned short)*(unsigned short *)(p + 2);
+                if (g_10b22 < x) goto A_47;
+                x += p[6];
+                if (g_10b22 >= x) goto A_47;
             }
-            *((char *)p + 0xa) = 2;
-            break;
+            {
+                int y = *(signed char *)(p + 9) + (unsigned short)*(unsigned short *)(p + 4);
+                if (g_10b24 < y) goto A_47;
+                y += p[7];
+                if (g_10b24 < y) goto A_58;
+            }
+        A_47:
+            if ((unsigned short)sel != *(signed char *)(p + 0xb)) goto Lcheck;
+        A_58:
+            g_e116 = 0;
+            if (setX) { g_10b3f = 0; g_e116 = 1; }
+            g_e114 = 0;
+            if (setY) { g_10b3e = 0; g_e114 = 1; }
+            {
+                short t = *(short *)p;
+                p[0xa] = 2;
+                *(short *)p = t + 2;
+            }
+            goto Lwrite;
+
         case 1:                                 /* block 0x2c31d */
             if (FUN_00029988(p))
-                (*p)++;
-            *((char *)p + 0xa) = 2;
-            break;
+                (*(short *)p)++;
+            p[0xa] = 2;
+            goto Lwrite;
+
         case 2:                                 /* block 0x2c337 */
-            /* if (p[0xa]) { if (!sel) sel = (signed char)p[0xb]; }  -- no state change */
-            break;
-        case 3:                                 /* block 0x2c350 */
-            if ((setX | setY) && hit_test(p))
-                set_cursor(p, setX, setY);
-            else if (FUN_00029988(p))
-                *p = 1;
-            *((char *)p + 0xa) = 2;
-            break;
-        default:                                /* block 0x2c441 (shared tail) */
-            break;
+            if (p[0xa] != 0) {
+                if (result == 0)
+                    result = *(signed char *)(p + 0xb);
+                goto Lcheck;
+            }
+            if ((setY | setX) == 0) goto C_93;
+            {
+                int x = (unsigned short)*(unsigned short *)(p + 2) + *(signed char *)(p + 8);
+                if (g_10b22 < x) goto C_93;
+                x += p[6];
+                if (g_10b22 >= x) goto C_93;
+            }
+            {
+                int y = (unsigned short)*(unsigned short *)(p + 4) + *(signed char *)(p + 9);
+                if (g_10b24 < y) goto C_93;
+                y += p[7];
+                if (g_10b24 >= y) goto C_93;
+            }
+            g_e116 = 0;
+            if (setX) { g_10b3f = 0; g_e116 = 1; }
+            g_e114 = 0;
+            if (setY) { g_10b3e = 0; g_e114 = 1; }
+            p[0xa] = 2;
+            goto Lwrite;
+        C_93:
+            if ((unsigned short)sel == *(signed char *)(p + 0xb)) goto Lcheck;
+            *(short *)p = 1;
+            p[0xa] = 2;
+            goto Lwrite;
+
+        case 4:                                 /* block 0x2c428 */
+            if (FUN_00029988(p))
+                *(short *)p = 1;
+            p[0xa] = 2;
+            goto Lwrite;
         }
-        if (*((char *)p + 0xa))                 /* shared tail 0x2c441/0x2c447 */
-            g_df75[*(signed char *)((char *)p + 0xb)] = 0;
-    }
-    return 0;
+    Lcheck:                                     /* 0x2c441 */
+        if (p[0xa] == 0) goto Linc;
+    Lwrite:                                     /* 0x2c447 */
+        g_df75[*(signed char *)(p + 0xb)] = 0;
+    Linc:                                       /* 0x2c453 */
+        p += 0x12;
+    } while (*(short *)p != -0x63);
+
+    return result;
 }

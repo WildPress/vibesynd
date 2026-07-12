@@ -25,7 +25,9 @@ Companion: `docs/object-model.md` (the pool/entity field map + global-table cata
   stale object was picked up.
 - **If match95 fails only on a length check**, the manifest `size` may be wrong (headless pass
   under-counted; e.g. 0x29c58 was 177 vs true 238). Confirm the extent with `get_function_by_address`
-  and correct the manifest `size`.
+  and correct the manifest `size`. NOTE its `Body: START - END` end is INCLUSIVE, so
+  `size = END - START + 1` (off-by-one here mis-splits the jump-table tail-compare by 1 byte —
+  0x1bc28 was 1333 vs true 1334).
 - **Inline jump-table switch fns — NOW VERIFIABLE.** Watcom co-locates a `switch`'s jump table
   (+ entry-alignment pad) in the SAME object `.text` BEFORE the code (`[table][pad][code]`), while the
   real binary keeps the table in a far segment (`CS:[...+disp]`) and the on-disk fn is clean code.
