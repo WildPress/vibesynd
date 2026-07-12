@@ -1,15 +1,23 @@
 /* frameless @ 0x269d8: advance a linked index through a table of 8-byte records.
-   g_5338 points to the record array; p[0x10] is the current record index. Set p[0x10]
-   to the record's "next" field (u16 at record+6), then return bit0 of the next
-   record's flag byte (record+5).
+   g_5338 points to the record array; p[0x10] is the current record index (u16).
+   Set p[0x10] to the record's "next" field (u16 at record+6), then return bit0 of
+   the (now-current) record's flag byte (record+5). The index is re-read from memory
+   each time (no CSE) exactly as the target does.
 
-   PARKED near-miss (NOT matched). The target does two things NO available flag combo
-   reproduces together: it caches g_5338 once in EBX (needs -oa alias relaxation) AND
-   materialises each element address via `LEA idx*8; ADD ebx; [+disp]` instead of
-   folding into SIB `[ebx+idx*8+disp]`. Every -oa-family recipe (-oneatx 42B, -oat 48B,
-   -oa 44B) FOLDS; every unfolding recipe (-ot/-or/-oi/no-opt, ~56-57B) reloads g_5338
-   twice (no caching). Likely a Watcom minor-version codegen difference. Kept as a
-   documented recipe-wall near-miss. */
+   PARKED near-miss (NOT matched) — register-role + SIB-fold wall (see playbook §3).
+   Two irreducible codegen differences vs our Watcom 9.5b, neither source-reachable:
+     1. Register roles: target keeps p in volatile EDX and caches the global g_5338
+        in the callee-saved EBX; our 9.5b always gives EBX to p (4 refs > g_5338's 2)
+        and puts g_5338 in a scratch reg. First diff is always at byte 0x2
+        (target mov edx,[esp+8] = ..54.. vs ours mov ebx,[esp+8] = ..5c..).
+     2. Address form: target UNFOLDS each element address as
+        `lea eax,[eax*8+0]; add eax,ebx; mov ..,[eax+disp]`; our 9.5b FOLDS it into a
+        single SIB `[base+idx*8+disp]`.
+   Tried: direct SIB, materialised record pointer, `base=g_5338` local, explicit
+   `i = idx*8` scaled-index temp — all fold to SIB (41-42B) and keep p in EBX.
+   Prior sweep also tried -oa/-oat/-oneatx (all fold) and -ot/-or/-oi/-od (all reload
+   g_5338 twice, no caching). Consistent with a Watcom minor-version codegen
+   preference; documented recipe-wall near-miss. */
 extern unsigned char *g_5338;
 unsigned short FUN_000269d8(unsigned char *p)
 {
