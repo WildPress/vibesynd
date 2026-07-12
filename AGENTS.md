@@ -242,6 +242,18 @@ method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated 
   (same class as 0x28ec8). Its twin 0x2d468 shares the idiom. Other dispatchers now decodable via
   lefix.py: 0x1a458 (45-entry, manifest size undercounts it), 0x2cf28, 0x2bee8, 0x2bbe8,
   0x37ad8/0x37d08, 0x2d0d8 — pick ones WITHOUT the g_5358 column lookup to dodge the register wall.)
+  (cont. 20 — dispatcher decodes CONTINUED; all semantics recovered but the entity-processing
+  cluster consistently hits register/hoist walls (structure byte-correct, ONE allocation choice off):
+  • 0x2bbe8 (anim ticker, size fixed 140→159) DECODED — dense 0..4 switch forces the jump table,
+    entry-guard do-while + ESI-hold + g_5348-pointer all match; parked 160/159 on the back-half
+    base-register swap (target base=EDX/accum=EAX, ours rotates to ECX/CX).
+  • 0x2ee18 (pool-A target-scan, find-valid-target) DECODED — eligibility flags mapped; parked on
+    a loop-invariant `di+8` HOIST wall: -oneatx spills it to a stack slot, target recomputes it
+    each iteration using all 4 callee-saved regs (`int di` gets the ebp alloc but keeps the spill).
+  LESSON: these decode 100% but the g_5358-column / base-register / LICM tie-breaks are genuine
+  walls — the lefix.py payoff is the SEMANTIC decode + case maps + size fixes, not the byte-match.
+  Untried non-dispatcher game fns (0x205f8/0x20728 menu-list twins, 0x33c38/0x33cf8 grid-hit
+  twins, 0x164c8, 0x2a288) remain the higher-yield vein — first-try hit rate there is high.)
   (cont. 18 — sweep continued: banked 0x28d08 (4-way zone probe, 289B first try), 0x2d228 (anim
   tick — part-3 lever PROVEN: inline re-reads make per-site CSE copy-temps in rotating regs and
   SUPPRESS tail-merge; a named local tail-merges), 0x12ca8 (session init — do NOT hand-unroll:
