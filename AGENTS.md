@@ -224,7 +224,17 @@ the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intri
 method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 111/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 119/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (cont. 16 — **RTL region cracked open.** RTL fingerprint (`tools/libname.py`) PROVED the compiler
+  is Watcom **9.5, small-model CLIB3S** — every `0x3a000+` C-runtime fn maps to a `95S` library
+  module (16 byte-identical), zero to 10.0a. We have the EXACT toolchain; the old "different-Watcom
+  version wall" below was a MISDIAGNOSIS. New leaf recipe `-3s -d2 -oneatx` (`-d2` forces the ebp
+  frame leaf RTL fns carry) banked labs/toupper/tolower/strchr/cenvarg/makepath/nibble-hex; the
+  `#pragma aux` replication technique (lift Watcom's own inline asm from OW `bld/clib`) banked
+  strcpy `0x3a8d7` byte-exact. `tools/libname.py`+`libtag.py` name the region's stdlib — 29 fns now
+  carry a `"lib"` tag in the manifest; the 21 still-unmatched (atol/strncmp/stricmp/strnicmp are
+  register-role near-misses, isatty/outp/lseek/tell are DOS-asm) are documented, not mystery code.
+  See `docs/matching-playbook.md` §1-2.)
   (`match_reloc.py` now verifies **inline jump-table `switch` dispatchers** — detects the co-located
   `[table][pad][code]` obj layout and compares the code tail with re-based fixups → `JUMP-TABLE-AWARE
   match`. Banked `0x23038`. This unlocks the whole switch-dispatcher class: write byte-faithful C +
@@ -233,8 +243,11 @@ method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated 
   (Latest sweeps: banked `0x39088`,`0x3cc26` (RTL region, `-3s -os` ENTER-frame) then `0x165f8`,
   `0x1ff98`,`0x1ba48`,`0x361a8` (game region). LOW yield on both — the residual small-fn vein is
   mostly walls. **Two systematic findings:** (1) the **0x39000–0x3e500 runtime/RTL region is a
-  different-Watcom toolchain-version wall** (arg→EAX-before-push, prologue reg-save order, intra-fn
-  tail-merge) + hard limits (no 64-bit int; CLI/STI, DOS int-21h, bswap idioms) — don't mine it.
+  different-Watcom toolchain-version wall** [SUPERSEDED cont.16 — it's 9.5/CLIB3S, OUR EXACT compiler;
+  see the coverage note above. Residual walls there (arg→EAX-before-push, prologue reg-save order,
+  intra-fn tail-merge) are register-role, NOT version] (arg→EAX-before-push, prologue reg-save order, intra-fn
+  tail-merge) + hard limits (no 64-bit int; CLI/STI, DOS int-21h, bswap idioms) — the DOS-asm fns are
+  genuine walls, but the plain-C and pragma-aux RTL fns ARE mineable (see playbook §1-2).
   (2) **Manifest sizes for switch-dispatcher & loop-align'd fns are badly UNDER-COUNTED** — the
   headless/Ghidra sweep truncates at the indirect `jmp CS:[..]` or a loop-align pad. Corrected 7 this
   session (0x23038→47, 0x16678→190, 0x18d18→1523, 0x1ba48→171, 0x1bc28→1333, 0x24b08→221,

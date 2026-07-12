@@ -23,6 +23,17 @@ Companion: `docs/object-model.md` (the pool/entity field map + global-table cata
   <FUN> "<flags>"`. The work dir is now isolated per-invocation, so parallel compiles are safe.
 - **If "ours" bytes look wildly wrong** (phantom DIV/loops), `rm -f build/<FUN>.obj` first — a
   stale object was picked up.
+- **No `\` in char/string literals.** A backslash literal (e.g. `'\\'`) makes the DOSBox-hosted
+  9.5 compile silently fail ("COMPILE FAILED (no OBJ)", empty log) — the byte gets mangled in the
+  DOS file copy. Use the numeric value instead (`92` for `\`, etc.). Cost me a match on 0x3e361.
+- **Compiler/RTL identity is settled: Watcom C/C++ 9.5, small-model `CLIB3S` (stack-calling).**
+  Proven by RTL fingerprint (`tools/libname.py`): every C-runtime fn in `0x3a000+` maps to a `95S`
+  library module (16 byte-identical), zero to 10.0a. We have the exact toolchain — remaining
+  register-role walls are NOT a wrong-version artifact, they're genuine 9.5 source/flag sensitivity.
+- **`0x3a000+` C-runtime functions are identifiable stdlib, not game code.** `tools/libname.py`
+  names each one's library module (strcpy, strncmp, atol, fread, fgetc…). The `-d2` leaf recipe
+  above matches the plain-C ones; ones with `int 21h`/`out`/`in` (isatty, outp, lseek, tell) are
+  hand-asm — park as `library:<module>`, don't grind them as mystery game code.
 - **If match95 fails only on a length check**, the manifest `size` may be wrong (headless pass
   under-counted; e.g. 0x29c58 was 177 vs true 238). Confirm the extent with `get_function_by_address`
   and correct the manifest `size`. NOTE its `Body: START - END` end is INCLUSIVE, so
@@ -45,6 +56,7 @@ Companion: `docs/object-model.md` (the pool/entity field map + global-table cata
 | `-4s -oneatx -zp8 -s -zq` | **default** — stack-calling game code (< 0x39000) |
 | `-4r -oneatx -zp8 -s -zq` | `__fastcall`/register-calling fns; the `0x39xxx` region |
 | `-3s -of -oneatx -zp8 -s -zq` | framed runtime-library region (`0x3a000+`, non-leaf), manual `push;mov;sub` frame |
+| `-3s -d2 -oneatx -zp8 -s -zq` | **LEAF runtime-library fns** (`0x3a000+`) that have a full `55 89 e5 … 5d c3` ebp frame yet call nothing. `-of` only frames *callers*, so leaves stay frameless (`8b 44 24 04`) and never match. `-d2` (full debug) FORCES the ebp frame on leaves; `-oneatx` keeps the body optimized so only the frame is added. The CLIB3S runtime was built `-d2`-optimized. Unlocked the C-runtime leaf class: labs 0x3aed8, toupper 0x3dce5, tolower 0x3da37, strchr 0x3e7f7, strcpy-variant 0x3dfcf, path-sep helper 0x3e361, nibble→hex 0x3b9ee. |
 | `-3s -os -zp8 -s -zq` | `0x3a000+` fns whose prologue is `ENTER 0x2c,0`/`LEAVE` — `-os` emits ENTER where `-of` emits the manual frame (byte-0 divergence otherwise). Add `-ol` for two-step `mov al;movzx` loads. (0x3cc26) |
 | `-4s -or -zp8 -s -zq` | when -oneatx hoists a stack param into a callee-saved reg the target RE-READS each use (-or (reorder only) skips that hoist). e.g. 0x38fe8, 0x377b8 |
 | `-4s -ot -s -zq` (or `-oe/-or/-os`) | the occasional less-optimised unit (target bigger/un-folded than -oneatx) |
@@ -53,6 +65,23 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
 `-4r`. When unsure, try both.
 
 ## 2. Levers (steer Watcom from C — these CLOSE near-misses)
+
+- **C-runtime functions: use Open Watcom's own source.** The `0x3a000+` region is CLIB3S
+  (Watcom 9.5, proven by RTL fingerprint). For any function `tools/libname.py` names (strcpy,
+  strncmp, atol, fread…), fetch the real source from GitHub `open-watcom/open-watcom-v2` under
+  `bld/clib/` (strings in `bld/clib/string/c/`, e.g. `strncmp.c`, `stricmp.c`, `strcpy.c`) and
+  translate it (headerless; `CHAR_TYPE`→`char`, `UCHAR_TYPE`→`unsigned char`, `NULLCHAR`→`0`,
+  `STRING('A')`→`'A'`). OW v2 differs subtly from 9.5, so expect to adjust (e.g. 9.5 increments
+  loop pointers at the BOTTOM, `++s;++t;`, where OW v2 uses inline `*s++`). Match with the leaf
+  recipe `-3s -d2 -oneatx`.
+- **HAND-ASM CLIB functions: replicate the `#pragma aux` verbatim.** Some CLIB funcs are inline
+  asm, not C (strcpy's 386-small path is `#pragma aux __strcpy`, a 2-byte-unrolled copy). A plain
+  C loop can NEVER match these (that's what walled 0x3a8d7). Instead lift the exact pragma from OW
+  `bld/clib/string/c/*.c` and call it. WORKS on 9.5 incl. `L1:`/`je short L2` labels. Put the whole
+  pragma on ONE physical line (no `\` continuations — DOSBox mangles backslashes). If the mini-asm
+  picks a shorter encoding than the target (e.g. `add eax,2` → `83 c0 02` but target has the
+  EAX-accumulator `05 02000000`), force the exact bytes with `db` directives (`"db 5" "db 2" "db 0"
+  "db 0" "db 0"`). This banked strcpy 0x3a8d7 byte-exact and generalizes to outp/memcpy/etc.
 
 - **Branch layout** — invert the `if`/`else` so the target's *fall-through* path comes first
   (matches its `JZ`/`JNZ` sense). For multi-way dispatch, use explicit `goto`s to mirror the exact

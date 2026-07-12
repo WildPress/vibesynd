@@ -5,9 +5,23 @@ abandonware, kept locally for the matching decompilation. The binaries are
 git-ignored (`toolchain/*`). Only this provenance file is tracked, so the identity
 of each download survives even if the local bits or the upstream mirror are lost.
 
-Two compilers are staged. **10.0a** is the primary one we match against. **9.5b** is
-kept for A/B tests (its provenance and the download steps are in `AGENTS.md`, session
-log cont. 8).
+Two compilers are staged: **9.5** and **10.0a**.
+
+**9.5 is the compiler the game was built with — this is now proven, not assumed.**
+An RTL fingerprint (`tools/libname.py`, session log cont. 16) shows every C-runtime
+function in the game's `0x3a000+` region maps to a **`CLIB3S` (9.5, stack-calling)**
+library module — 16 of them byte-identical, 35 matching 9.5 and **zero matching
+10.0a**. So *match all game/RTL code with 9.5* (`tools/wcc_95.sh`, `tools/match95.sh`).
+
+**10.0a is kept only for A/B curiosity, not for matching.** The earlier note that
+"10.0a is primary" was an artifact of A/B tests run on *trivial* functions, which make
+no register-allocation choices and therefore match across every Watcom version (see the
+OW-v2 caveat below) — they cannot distinguish 9.5 from 10.0a. Real library code, which
+does make register choices, distinguishes them 35-to-0 in 9.5's favour. Corollary: the
+remaining register-role/allocator walls are **not** a wrong-version artifact — we are on
+the exact compiler; they are genuine 9.5 sensitivity to source form and flags.
+
+9.5's provenance and download steps are in `AGENTS.md` (session log cont. 8).
 
 ## Canonical artifact (preserve this one)
 
@@ -49,7 +63,9 @@ Then compile with `tools/wcc_dos.sh <name>` (DOSBox plus WCC386.EXE via W32RUN).
   or `-3r`.
 - `BINB/WCC386.EXE` is a Win32 app that needs `W32RUN.EXE`, so put `C:\WATCOM\BIN` on
   the PATH.
-- Open Watcom v2 only agrees with 10.0a on functions that make no register-allocation
-  choices. On real code its register allocator diverges, so 10.0a is the compiler we
-  match against, not OW v2 (see `AGENTS.md`).
+- Open Watcom v2 only agrees with period Watcom on functions that make no register-
+  allocation choices. On real code its register allocator diverges, so a period DOS
+  compiler is what we match against, not OW v2 (see `AGENTS.md`). This same "trivial
+  functions match any version" effect is why 9.5-vs-10.0a had to be settled by an RTL
+  fingerprint on real library code rather than by A/B-testing simple functions.
 - This is the only durable copy, so keep an off-machine backup. Git won't hold it.
