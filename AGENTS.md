@@ -224,7 +224,7 @@ the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intri
 method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 129/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 130/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
   (cont. 16 — **RTL region cracked open.** RTL fingerprint (`tools/libname.py`) PROVED the compiler
   is Watcom **9.5, small-model CLIB3S** — every `0x3a000+` C-runtime fn maps to a `95S` library
   module (16 byte-identical), zero to 10.0a. We have the EXACT toolchain; the old "different-Watcom
