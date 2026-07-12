@@ -90,6 +90,9 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   set, suppressing a spurious `push/pop ebx` when the target uses EBX as unpreserved scratch. (0x180f8)
 - **`#pragma aux <FnName> aborts;`** — declare a noreturn callee (DOS exit / abort) so Watcom
   TAIL-JUMPS it (`jmp`) without restoring saved regs, matching the target. (0x18338)
+- **Duplicate vs goto-share a tail** — sometimes DUPLICATE the shared tail into BOTH branches
+  (not a `goto`): Watcom cross-jumps/tail-merges it AND defers the cdecl `add esp,N` to ONE merge
+  point, whereas `goto`-sharing forces eager per-branch pops. (0x36c78; opposite of the usual advice)
 - **Materialise a node pointer** — write `n = g_810e + id; n[0x1e]=…` (not inline `g_810e+id+0x1e`)
   to force `add ebx,0x810e; [ebx+0x1e]` instead of folding the base into the store disp. (0x37878)
 - **Inline vs named temp** — pasting a subexpression at each use forces Watcom to CSE it into a
