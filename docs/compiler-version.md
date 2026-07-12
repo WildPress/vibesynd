@@ -44,6 +44,28 @@ added Pentium tuning; our base **9.5 (1993)** predates it. Open Watcom v2 (conta
   So the 9.5b patch needs the **original 532992-byte base `wcc386.exe`** (the raw, un-bound
   compiler). We don't have that exact build.
 
+## RESULT (cont. 16): built + tested 9.5b — RULED OUT
+
+The patch pipeline **works** and is preserved in `toolchain/w95b_dl/`:
+- `WCC386D.A` / `WCC386D.B` are the 9.5b patches for OUR exact `wcc386.exe` (they expect size
+  **627702** — our bound build; `WCC3862`=532992 and `WCC386NT`=472576 are other bind variants).
+- `bpatch -p WCC386D.A` then `WCC386D.B` on our `WCC386.EXE` → **9.5b** (`level '.b'`, 628178 B),
+  saved to `toolchain/watcom95b/BIN/WCC386.EXE`. Build script: `toolchain/w95b_dl/build95b.sh`;
+  compile/compare with `toolchain/w95b_dl/test95b.sh` / `cmp95b.sh`.
+
+**9.5b does NOT match the walls.** On 0x20d18 it emits 34B (base 9.5 emits 43B; target is 52B) —
+its codegen *changed* but toward *smaller/more-folded*, while the target is *larger, loop-aligned,
+un-folded, callee-saved-base* (Pentium-scheduled). `-5s`/`-5r` on 9.5b change nothing here. Base 9.5
+and 9.5b are both ruled out; the remaining candidate is **9.5c** (the Pentium-scheduling release).
+
+**9.5c is not readily obtainable.** archive.org has only base 9.5 (floppies) + the 9.5b patch
+(`Watcom_C_9.5` c32_*.zip == `watcom-9.5b` Patch32.zip, byte-identical). No standalone 9.5c patch
+surfaced. If a 9.5c patch/install is found later, the pipeline above builds+tests it in minutes:
+apply its `WCC386*.A/B` to the matching-size base, then `cmp95b.sh` the walls (0x20d18, 0x34048).
+
+Until 9.5c turns up, the register-role/address-fold/peephole walls stay unmatchable — bank the ~50%
+of functions that don't trip them; park the rest (playbook §3).
+
 ## Remaining path to actually build the game's compiler
 
 1. Get the **532992-byte base 9.5 `wcc386.exe`** — install base 9.5 from the floppy images
