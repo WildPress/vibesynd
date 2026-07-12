@@ -4,13 +4,12 @@
 
 struct glyph { char a; char b; char c; char d; unsigned char w; char e; };
 
-int FUN_00036648(unsigned char *str, struct glyph *table, unsigned short param_3, signed char param_4)
+int FUN_00036648(unsigned char *str, struct glyph *table, int param_3, signed char param_4)
 {
     int acc = 0;
     while (*str != 0 && *str != 0x0a) {
-        int idx = param_3 + *str - 0x20;
-        unsigned short d = (unsigned short)table[idx].w + (short)param_4;
-        acc += d;
+        int idx = (unsigned short)param_3 + *str - 0x20;
+        acc += param_4 + (unsigned short)table[idx].w;
         str++;
     }
     return acc;
