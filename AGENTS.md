@@ -225,6 +225,23 @@ method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated 
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
 - **Coverage: 152/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (cont. 19 — **LE FIXUP TOOL FIXED + a project-wide finding.** New `tools/lefix.py` replaces the
+  broken `tools/archive/le_fixups.py`. Self-check PASSES 8688/8688 (stored placeholder dword ==
+  record target offset, zero mismatches). Usage: `lefix.py check` | `lefix.py src <manifest_hex>
+  [range]` | `lefix.py tgt <obj> <off_hex> [range]`. **BIG FINDING it proved:** the fixup tables
+  are spec-correct; it's `SYNDICAT_MAIN_OBJECT1.linear.bin` that is extracted **0x28b8 bytes (=
+  e_lfanew, the MZ/DOS4GW stub) INTO object 1** — the first 0x28b8 code bytes are MISSING from the
+  file, so every manifest address = true_obj1_offset + 0x10000 − 0x28b8. All 152 relative
+  byte-matches were unaffected (masking is relative). CONSEQUENCES: (a) the "sub-0x10000 callees"
+  (0xfa18, 0xfa88, 0xffc8, 0xe568, 0x10554…) are REAL functions living in the cut-off prefix,
+  addressable as manifest [0xd748, 0x10000); (b) the manifest `entry_point` at 0x2d85c size=1 is
+  bogus — the true LE entry obj1:+0x2d85c maps to manifest ~0x3afa4 (RTL cstart); (c) jump-table
+  operands are literals pointing at obj1:+0x1fxxx = manifest 0x2Fxxx, and their ENTRIES are
+  per-entry fixups readable with `lefix.py src`. **Cracked 0x2d5b8's 16-entry dispatcher**
+  (tile-type → {6,7,8,9,0xb,0xf}=blocked); parked at 264/259 on the g_5358 column register wall
+  (same class as 0x28ec8). Its twin 0x2d468 shares the idiom. Other dispatchers now decodable via
+  lefix.py: 0x1a458 (45-entry, manifest size undercounts it), 0x2cf28, 0x2bee8, 0x2bbe8,
+  0x37ad8/0x37d08, 0x2d0d8 — pick ones WITHOUT the g_5358 column lookup to dodge the register wall.)
   (cont. 18 — sweep continued: banked 0x28d08 (4-way zone probe, 289B first try), 0x2d228 (anim
   tick — part-3 lever PROVEN: inline re-reads make per-site CSE copy-temps in rotating regs and
   SUPPRESS tail-merge; a named local tail-merges), 0x12ca8 (session init — do NOT hand-unroll:
