@@ -218,7 +218,11 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 78/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 79/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (cont. 13 also banked `0x13ac8`, straightline field-init + 2 calls. Two levers worth remembering:
+  a two-STEP zero-extend `movzx di; and edi,0xffff` (target) vs our one-step `movzx edi` came from
+  writing the call arg as `(unsigned short)param` (byte->ushort->uint); and to split a field's LOAD
+  from its STORE the way the target scheduled it, introduce a named temp `t = obj[4]; ...; obj[3]=t;`.)
   (cont. 13 also banked `0x2d6c8`, twin of `0x2d738`: same projectile-step but obj[0x54] from a call
   and calling FUN_0002d468. TWO fixes got it: the decompiler invented phantom params — it's `(obj,dir)`
   not 4 args (fixed the stack offsets); and the return is `unsigned short` not int, giving `xor ah,ah`
