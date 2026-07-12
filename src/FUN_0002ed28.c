@@ -1,4 +1,11 @@
-/* 0x2ed28 -- kill/hit stat bookkeeping. b = pool record with target link at
+/* NEAR-MISS @ 0x2ed28 -- 228/230 structurally identical; PARKED on a
+ * register-role rotation wall. Target homes b->EBX, player->ECX, lo->EAX,
+ * n->EDX, hi->ECX(reuse); ours rotates b->EDX, player->EBX, ... from the very
+ * first param load, cascading into every encoding. Decl order, statement
+ * order (lo/n swap) and 3000 cpermute variants all keep the rotated form.
+ * Same class as parked 0x26bc8/0x2fbc8. Semantics fully decoded below.
+ *
+   0x2ed28 -- kill/hit stat bookkeeping. b = pool record with target link at
  * +0x16 (0 = none) and cause flags at +0x1c. n = g_810e + link. The player's
  * own 4 agents occupy pool-A records [g_8110 + c*0x5c, g_8110 + (c+4)*0x5c)
  * where c = first-agent index byte g_e551[g_10b16 * 0x417]. If n is an own
@@ -28,8 +35,8 @@ void FUN_0002ed28(unsigned char *b)
     if (*(unsigned short *)(b + 0x16) == 0)
         return;
     c = g_e551[g_10b16 * 0x417];
-    lo = g_8110 + c * 0x5c;
     n = g_810e + *(unsigned short *)(b + 0x16);
+    lo = g_8110 + c * 0x5c;
     if (n >= lo) {
         hi = g_8110 + (c + 4) * 0x5c;
         if (n < hi) {
