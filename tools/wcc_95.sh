@@ -14,7 +14,11 @@ src="src/${name}.c"
 command -v dosbox >/dev/null 2>&1 || { export DEBIAN_FRONTEND=noninteractive
   (apt-get update -qq && apt-get install -y -qq dosbox) >/dev/null 2>&1; }
 
-WORK="$ROOT/doswork_95c"; mkdir -p "$WORK"
+# Isolated per-invocation work dir in the container's local /tmp (NOT the shared
+# /work bind mount) so concurrent compiles never race on SRC.C/SRC.OBJ, and I/O
+# stays off the slow drvfs mount. Auto-removed on exit.
+WORK=$(mktemp -d "${TMPDIR:-/tmp}/dw95.XXXXXX")
+trap 'rm -rf "$WORK"' EXIT
 cp "$src" "$WORK/SRC.C"
 printf 'wcc386 %s -fo=SRC.OBJ SRC.C > BUILD.LOG\r\n' "$FLAGS" > "$WORK/GO.BAT"
 cat > "$WORK/dbx.conf" <<EOF
