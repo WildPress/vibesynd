@@ -1,0 +1,40 @@
+/* @ 0x00018958 (195B): open file, read 0x14-byte header, detect RNC magic.
+ * Returns big-endian uncompressed size (bytes 4..7) if "RNC\1", else file size,
+ * or -1 if open failed. */
+extern int  FUN_00018828(void *, int);
+extern void FUN_000188a8(int, void *, int);
+extern int  FUN_0003aea6(void *, void *, int);
+extern int  FUN_0003ab1a(int);
+extern void FUN_00018878(int);
+extern void FUN_0003ad66(int, void *);
+
+int FUN_00018958(void *fn)
+{
+    unsigned char buf[40];
+    char magic[5];
+    int h;
+    int r = -1;
+
+    magic[0] = 'R';
+    magic[1] = 'N';
+    magic[2] = 'C';
+    magic[3] = 1;
+    magic[4] = 0;
+
+    h = FUN_00018828(fn, 0x200);
+    if (h > 0) {
+        FUN_000188a8(h, buf, 0x14);
+        if (FUN_0003aea6(buf, magic, 4) == 0) {
+            r = buf[4];
+            r = (r << 8) + buf[5];
+            r = (r << 8) + buf[6];
+            r = (r << 8) + buf[7];
+        } else {
+            r = FUN_0003ab1a(h);
+        }
+        FUN_00018878(h);
+    } else {
+        FUN_0003ad66(0x164, fn);
+    }
+    return r;
+}
