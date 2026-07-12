@@ -79,6 +79,8 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   param makes the caller push a sign-/zero-extended 16-bit value.
 - **`volatile`** — mark a global `volatile` if the target RE-READS it each use where -oneatx would
   CSE it into one register (e.g. mouse/interrupt-updated coords).
+- **Signed vs unsigned `char`** — Watcom `char` is UNSIGNED (a `char` compare emits `JB`/`JAE`).
+  Use `(signed char)` to get the target's signed `JL`/`JGE`. (0x22ba8)
 - **`#pragma aux <FnName> modify [eax ecx edx ebx];`** — puts a callee-saved reg in the volatile
   set, suppressing a spurious `push/pop ebx` when the target uses EBX as unpreserved scratch. (0x180f8)
 - **Inline vs named temp** — pasting a subexpression at each use forces Watcom to CSE it into a
