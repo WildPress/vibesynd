@@ -218,7 +218,10 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 81/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 82/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (cont. 13 also banked `0x22708`: a one-call region-zero. Idiom worth noting: a size arg compiled as
+  `mov eax,END; sub eax,START` is `g_END - g_START` (two distinct externs) — the subtraction is at
+  runtime because the linker can't fold two symbol addresses. Eleven banks this session.)
   (cont. 13 also banked `0x146f8` first-try: a `char`-returning eligibility test (guard chain, one call).
   Reminder: the decompiler's CONCAT31/uint3 "packed return" is usually noise for a fn that just sets AL —
   read the disasm; it's a plain `char` return. Ten banks this session; sweet-spot vein is productive.)
