@@ -224,7 +224,17 @@ the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intri
 method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 147/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 152/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (cont. 18 — sweep continued: banked 0x28d08 (4-way zone probe, 289B first try), 0x2d228 (anim
+  tick — part-3 lever PROVEN: inline re-reads make per-site CSE copy-temps in rotating regs and
+  SUPPRESS tail-merge; a named local tail-merges), 0x12ca8 (session init — do NOT hand-unroll:
+  -oneatx auto-unrolls small do-whiles x4 and DOUBLES source unrolling), 0x14078 (net-sync msg
+  builder), 0x35b68 (save-game writer; mirror of 0x35c88). Parked 0x16318 (~95%, entry-order +
+  index-role windows). Dispatcher twins 0x2d468/0x2d5b8 fully decoded semantically but their
+  16-entry jump tables live at literal addresses 0x1fce0/0x1fe2c whose UNRELOCATED bytes are
+  code-like garbage — resolving them needs the full LE-relocation story; `tools/archive/
+  le_fixups.py`'s page mapping gives WRONG source addresses (its own "NB: fix pointer" comment;
+  case mappings it reports contradict matched-byte reality) — fix that tool before trusting it.)
   (cont. 17 — **untried-fn sweep is the productive vein.** Listing unmatched game-region fns with
   NO `src/` file (99 of them at session start) found 10 banks in one pass. Late additions:
   0x139a8 (kill-credit eligibility, first try — memory-homed char result + Watcom tail-duplicated
