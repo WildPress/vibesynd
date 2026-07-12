@@ -166,6 +166,40 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
 - **Inline vs named temp** — pasting a subexpression at each use forces Watcom to CSE it into a
   persistent (callee-saved) register with `xor eax,eax; mov ax,bx`; a named local instead keeps it
   in a scratch reg zero-extended in place (`and eax,0xffff`). Also drop redundant `(int)` casts.
+- **`__interrupt __far` handler ⇒ `push cs`** — an interrupt-vector install whose target bytes are
+  `0e 68 <ofs>` (push cs; push offset) is passing a near function as a FAR pointer. Declare the
+  handler `extern void __interrupt __far H(void);` and the installee param `void (__interrupt
+  __far *)(void)`; a plain cast route materialises CS via EAX instead. A 6-byte far-ptr GLOBAL
+  (`void (__far *g)(void)` at ofs/ofs+4) assigned from a DX:EAX-returning callee stores DX first,
+  then EAX. (0x254a8)
+- **memcpy intrinsic** — prototype memcpy yourself + `#pragma intrinsic(memcpy)` reproduces the
+  inline `mov eax,ecx; shr ecx,2; F2 rep movsd; mov cl,al; and cl,3; F2 rep movsb` block (note
+  Watcom's REPNE F2 prefix, not F3) wrapped in push edi/pop edi. (0x17998)
+- **volatile split (read vs write)** — `volatile` on an extern byte global does TWO things: the
+  read becomes a direct `cmp byte [mem],imm` (instead of an eager load into a reg), AND its
+  post-call STORE schedules cleanup-first (`add esp,N` before the `xor reg,reg`). If the target
+  mixes idioms per site (cmp-mem read but xor-first store), declare a volatile extern for the
+  reads and a SECOND non-volatile extern alias name for the writes — alias symbols are free since
+  the differ masks fixups. (0x35638)
+- **Two stores tail-merge, widen duplicated** — target shape `widen; mov dl,1; …; jmp M / widen;
+  xor dl,dl; M: mov [reg+disp],dl` = TWO literal stores (`arr[i]=1;` / `arr[i]=0;`) whose final
+  store instruction tail-merged — do NOT write a shared `arr[i]=v` (that emits ONE widen). The
+  merge only fires if both arms pick the same value reg: inline the sibling byte expression
+  (see inline-vs-named) so it CSEs into CH and frees DL for both arms. (0x279f8)
+- **Based-pointer `:>` for far memory** — Watcom `sel :> (uchar *)off` = MK_FP. Do arithmetic on
+  the FAR pointer (`p + 6`, `fp + 0x40`), not on the offset before construction, to fold into the
+  displacement (`gs:[eax+6]` vs `lea`/`add`). A far-ptr LOCAL whose segment register gets
+  re-pointed mid-sequence is loaded SPLIT (`mov bx,[g+4]; mov eax,[g]`) with the selector
+  shadowed in BX; read the selector as a value via `*((unsigned short *)&g + 2)` and it CSEs onto
+  that BX (widen `xor edx,edx; mov dx,bx`). Do NOT use i86.h's FP_SEG pragma (parm [eax dx]
+  re-homes the selector to DX). A fresh far deref after a call re-materialises with `lgs`. (0x28628)
+- **Nested call inside an outer arg** — `outer(f(inner(x)) …, y)` makes Watcom push `y` EARLY
+  (before evaluating arg1's inner call), then split the cdecl cleanups oddly (`add esp,4` after
+  the inner call, `add esp,8` after the outer). If target cleanups look misaligned with your call
+  boundaries, an arg you attributed to the inner call may belong to the outer one. (0x30508)
+- **`&= ~C` on a signed short lvalue** — compound `*(short *)(p+0xa) &= ~0x208;` keeps the value
+  in ESI and emits the SIGN-EXTENDED 32-bit mask (`and esi,0xfffffdf7`); an unsigned type or a
+  named temp folds the mask to `0x0000fdf7` and re-homes to EAX. (0x30508)
 
 ## 3. Walls (recognize, then PARK — not source-reachable)
 
@@ -176,6 +210,11 @@ grind; the fuzzer permutes *source* and can't change the allocator's mind.
   (EAX vs EDX / ESI vs EBX), cascading into encodings (`cwde`↔`movsx`, `lea`↔`add`, `test al`↔`test
   dl`, `cmp ax`↔`cmp dx`). Every C spelling + the fuzzer converge to the wrong reg. (0x34048, 0x34088
   CMP-modrm, 0x2dd48, 0x36d18, 0x183e8 via LICM.)
+- **uchar widen-form (xor-first vs mov+and)** — widening a byte for an int arg: a NAMED char local
+  gets `xor eax,eax; mov al,dl` (5B); a compiler CSE temp gets `mov al,ch; and eax,0xff` (8B,
+  and-form). When the target used and-form on a value that must be a genuine named local (e.g. a
+  loop-carried status byte), no spelling flips it — 12 tried (casts, K&R promotion, param types,
+  &0xff, second variable). Park if this is the only diff. (0x28628, 132/135)
 - **CSE / loop-invariant-hoist wall** — -oneatx re-reads-once (CSE) a value the target reads twice,
   or hoists a loop-invariant global load into a callee-saved reg the target reloads each iteration;
   lighter recipes change too much else. (0x26da8, 0x269d8, 0x20568, 0x1b858, 0x1b798.)

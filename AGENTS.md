@@ -224,7 +224,22 @@ the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intri
 method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 130/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 145/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (cont. 17 — **untried-fn sweep is the productive vein.** Listing unmatched game-region fns with
+  NO `src/` file (99 of them at session start) found 8 banks in one pass: 0x15e08 (const forwarder,
+  manifest size was under-counted 19→33), 0x254a8 (kbd hook installer — `__interrupt __far` handler
+  ⇒ `push cs`), 0x17998 (buffered-read helper — memcpy intrinsic F2-rep + `modify [eax ecx edx
+  ebx]`, size 55→86), 0x188e8 (file loader, first try), 0x35c88 (name-record reader, first try),
+  0x35638 (message-line setter — NEW volatile-read + non-volatile-write-ALIAS scheduling lever),
+  0x279f8 (slot scanner — inline lever ⇒ CH CSE + DL freed ⇒ two stores tail-merge), 0x30508
+  (entity update — nested-call-in-arg cleanup split, `&= ~C` signed-short mask). Parked 0x28628
+  at 132/135 on a NEW wall: uchar widen-form (named local ⇒ xor-first; CSE temp ⇒ mov+and).
+  All new levers + the wall are in `docs/matching-playbook.md` §2/§3. Far-pointer vocabulary
+  established: `:>` based ptrs, split-load w/ BX selector shadow, lgs re-materialisation —
+  the DPMI/far-memory fns (0x27d88, 0x27a88, 0x28558, 0x28b88 region) are now approachable.
+  Manifest gotchas found: `caseD_0` @0x166b8 is a mis-carve INSIDE 0x16678 (skip it); switch
+  dispatchers 0x149e8/0x1a458/0x2cf28/0x2bee8/0x2bbe8/0x33e78/0x37ad8/0x37d08 remain the big
+  deferred class (remote jump tables at 0x15920/0x1e480/0x1e788/0x1f784/0x26718/0x2a340/0x2a568).)
   (cont. 16 — **RTL region cracked open.** RTL fingerprint (`tools/libname.py`) PROVED the compiler
   is Watcom **9.5, small-model CLIB3S** — every `0x3a000+` C-runtime fn maps to a `95S` library
   module (16 byte-identical), zero to 10.0a. We have the EXACT toolchain; the old "different-Watcom
