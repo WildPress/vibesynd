@@ -83,6 +83,8 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   Use `(signed char)` to get the target's signed `JL`/`JGE`. (0x22ba8)
 - **`#pragma aux <FnName> modify [eax ecx edx ebx];`** — puts a callee-saved reg in the volatile
   set, suppressing a spurious `push/pop ebx` when the target uses EBX as unpreserved scratch. (0x180f8)
+- **`#pragma aux <FnName> aborts;`** — declare a noreturn callee (DOS exit / abort) so Watcom
+  TAIL-JUMPS it (`jmp`) without restoring saved regs, matching the target. (0x18338)
 - **Inline vs named temp** — pasting a subexpression at each use forces Watcom to CSE it into a
   persistent (callee-saved) register with `xor eax,eax; mov ax,bx`; a named local instead keeps it
   in a scratch reg zero-extended in place (`and eax,0xffff`). Also drop redundant `(int)` casts.
