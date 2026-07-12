@@ -34,6 +34,7 @@ Companion: `docs/object-model.md` (the pool/entity field map + global-table cata
 | `-4s -oneatx -zp8 -s -zq` | **default** — stack-calling game code (< 0x39000) |
 | `-4r -oneatx -zp8 -s -zq` | `__fastcall`/register-calling fns; the `0x39xxx` region |
 | `-3s -of -oneatx -zp8 -s -zq` | framed runtime-library region (`0x3a000+`, non-leaf) |
+| `-4s -or -zp8 -s -zq` | when -oneatx hoists a stack param into a callee-saved reg the target RE-READS each use (-or (reorder only) skips that hoist). e.g. 0x38fe8, 0x377b8 |
 | `-4s -ot -s -zq` (or `-oe/-or/-os`) | the occasional less-optimised unit (target bigger/un-folded than -oneatx) |
 
 Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; params from ECX/EDX →
