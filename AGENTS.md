@@ -218,12 +218,15 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 76/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 77/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
   (cont. 13 mapped the weapons/combat subsystem — see the 🔫 entry below — then a broad sweet-spot hunt
-  banked 6 loop/memory + branchy fns: copy pair `0x35538`/`0x35588`, VGA blit `0x355d8`, grid fill
-  `0x1a8c8`, table writer `0x35f28`. Loop/memory/branchy shapes match FAR more reliably than arithmetic
-  leaves. LEVER that keeps recurring: fix branch LAYOUT by inverting the if/else (put the target's
-  fall-through path first); fix load/register order via decl order or the permuter's statement-reorder.)
+  banked 6 loop/memory/branchy/call fns: copy pair `0x35538`/`0x35588`, VGA blit `0x355d8`, grid fill
+  `0x1a8c8`, table writer `0x35f28`, projectile-step `0x2d738` (uses the `g_ab60`/`g_ad60` direction
+  tables + a 4-arg cdecl call — matched first try). Loop/memory/branchy/simple-call shapes match FAR
+  more reliably than arithmetic leaves. LEVERS: fix branch LAYOUT by inverting the if/else (target's
+  fall-through path first); fix load/register order via decl order or the permuter's statement-reorder.
+  WALL SIGNATURE to stop early on: target is LESS optimised than -oneatx (re-reads a value we CSE-merge,
+  or uses add-in-place where we fold the address) AND no lighter recipe splits it — e.g. 0x26da8, 0x269d8.)
 - 🧵 **BANKED loop/memory fns (cont. 13): the copy family + a grid fill.** These match clean:
   - `0x35538` + `0x35588`: unrolled-x3 `*dst++=*src++` copy of 15999 dwords between screen buffers
     `g_5368`/`g_5370` (pointer globals). The target's LOAD order (count→EBX, dst→EDX, src→EAX) needs C
