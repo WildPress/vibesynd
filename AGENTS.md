@@ -218,7 +218,10 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 79/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 80/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (cont. 13 also banked `0x13bc8` first-try: pool linked-list walk following node[0x1c] while node[0x19]
+  != 1, storing the terminal id (node - g_810e) — the classic `extern unsigned char g_810e[]` + ptrdiff
+  idiom. Confirms: pool linked-list walks are reliable matches.)
   (cont. 13 also banked `0x13ac8`, straightline field-init + 2 calls. Two levers worth remembering:
   a two-STEP zero-extend `movzx di; and edi,0xffff` (target) vs our one-step `movzx edi` came from
   writing the call arg as `(unsigned short)param` (byte->ushort->uint); and to split a field's LOAD
