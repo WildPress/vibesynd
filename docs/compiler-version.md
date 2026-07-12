@@ -91,6 +91,27 @@ copy surfaces. Slim remaining leads: (a) a physical/un-indexed 9.5c disk someone
 the `tools/wcc95b/` pipeline will build+test it in minutes; (b) 10.5/10.6 (available but LATER than
 10.0, so almost certainly further from the target — untested). Otherwise: bank the matchable ~50%.
 
+## Every obtainable Watcom tested — 9.5c confirmed as lost media
+
+Full matrix (all against the SAME criterion: must match the fns we already match AND the walls):
+
+| version | obtainable? | result |
+|---|---|---|
+| 8.5a | archive.org | earlier than 9.5 — wrong branch, untested (would break 9.5-matched fns) |
+| 9.01 | archive.org (7MB) | earlier than 9.5; compiler set up differently, compile failed; wrong direction |
+| **9.5 base** | HAVE | matches most fns, NOT the imm32/unfold walls |
+| **9.5b** | BUILT via bpatch | same walls as base; ruled out |
+| **9.5c** | **NOT PRESERVED** | **the target** — matches most fns + the walls; no copy exists online |
+| **10.0a** | HAVE | produces the imm32 tell but BREAKS 9.5-matched fns (0x13a98/0x146f8) — too late |
+| 10.5 | archive.org (119MB) | Win95/NT-hosted PE compiler — not DOS-runnable under DOSBox; later than 10.0a anyway |
+| 10.6 | no download in archive item | — |
+
+The game compiler is bracketed: **9.5b (before) < 9.5c (game) < 10.0a (after)**. 9.5c is the only build
+that would match, and it is lost media (never dumped separately; archive.org's "9.5c" mentions are
+item-description text, not files). Nothing further out (9.01/8.5a earlier, 10.x later) can substitute
+— they diverge on the fns we already match. **Investigation closed: the ~50% walled fns are
+un-matchable until a 9.5c copy surfaces; the `tools/wcc95b/` pipeline will test it instantly.**
+
 ## Remaining path to actually build the game's compiler
 
 1. Get the **532992-byte base 9.5 `wcc386.exe`** — install base 9.5 from the floppy images
