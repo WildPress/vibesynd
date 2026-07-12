@@ -200,6 +200,15 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
 - **`&= ~C` on a signed short lvalue** — compound `*(short *)(p+0xa) &= ~0x208;` keeps the value
   in ESI and emits the SIGN-EXTENDED 32-bit mask (`and esi,0xfffffdf7`); an unsigned type or a
   named temp folds the mask to `0x0000fdf7` and re-homes to EAX. (0x30508)
+- **Inline vs named, part 3: in-place op vs copy-temp (and tail-merge suppression)** — a NAMED
+  local is operated on IN PLACE (`inc edx` on its home reg) and identical branch tails then
+  tail-merge into one copy; an INLINE re-read of the same memory CSEs onto the loaded reg but
+  each use site gets a FRESH copy-temp (`mov eax,edx; inc eax`, next site edi, next esi) so
+  identical-looking case bodies do NOT merge. When the target shows per-branch copies in
+  rotating registers where you'd write one shared statement, inline the expression at every
+  site (`*(short*)(p+0x14) = *(short*)(p+0x14) + 1;` — the loads still CSE, only the temps
+  split). Same principle as the widen-form wall: named local ⇒ in-place/xor-first codegen,
+  CSE temp ⇒ copy/and-form codegen. (0x2d228; cf. 0x279f8, 0x28628)
 
 ## 3. Walls (recognize, then PARK — not source-reachable)
 
