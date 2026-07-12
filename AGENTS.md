@@ -218,7 +218,7 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 82/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 83/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
   (cont. 13 also banked `0x22708`: a one-call region-zero. Idiom worth noting: a size arg compiled as
   `mov eax,END; sub eax,START` is `g_END - g_START` (two distinct externs) — the subtraction is at
   runtime because the linker can't fold two symbol addresses. Eleven banks this session.)
