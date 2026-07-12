@@ -117,7 +117,7 @@ grind; the fuzzer permutes *source* and can't change the allocator's mind.
   `xor eax,eax; ret` stub; unreachable when compiling one fn in isolation. (0x37818.)
 - **Intrinsic won't inline** — target uses `rep movs`/`repne scasb` (inlined memcpy/strlen); our
   batch compile has no `<string.h>` on the include path and neither `-oi` nor `#pragma intrinsic`
-  triggers it. (0x299c8, 0x17998.)
+  triggers it. (0x299c8, 0x17998.) NOTE: `_fmemset` DOES inline via `#pragma intrinsic(_fmemset)` + a far decl (0x28728) -- the wall is `strlen`/`memcpy`-specific, not universal.
 - **Scheduling / param-load order** — high-param-pressure fns where the exact instruction schedule
   (which param loads first) isn't source-reachable. (0x15e38.)
 
