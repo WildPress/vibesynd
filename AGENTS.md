@@ -218,7 +218,12 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 77/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 78/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (cont. 13 also banked `0x2d6c8`, twin of `0x2d738`: same projectile-step but obj[0x54] from a call
+  and calling FUN_0002d468. TWO fixes got it: the decompiler invented phantom params — it's `(obj,dir)`
+  not 4 args (fixed the stack offsets); and the return is `unsigned short` not int, giving `xor ah,ah`
+  not `and eax,0xff`. LESSON: when a param's stack offset is too high, drop decompiler-invented params;
+  when the only diff is the final zero-extend width, change the return type.)
   (cont. 13 mapped the weapons/combat subsystem — see the 🔫 entry below — then a broad sweet-spot hunt
   banked 6 loop/memory/branchy/call fns: copy pair `0x35538`/`0x35588`, VGA blit `0x355d8`, grid fill
   `0x1a8c8`, table writer `0x35f28`, projectile-step `0x2d738` (uses the `g_ab60`/`g_ad60` direction
