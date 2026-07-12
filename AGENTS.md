@@ -217,6 +217,12 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 
 ## Current Status  (update every session)
 
+### 📘 MATCHING PLAYBOOK: read `docs/matching-playbook.md` FIRST
+Consolidated, living reference for every match: recipes, the full lever catalogue (branch-layout,
+return-width, sign/zero-extend, symbols-not-literals, loop-form, volatile, `#pragma aux modify`, ...),
+the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intrinsic-inline), and the
+method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
+
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
 - **Coverage: 86/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
   (cont. 13 also banked `0x22708`: a one-call region-zero. Idiom worth noting: a size arg compiled as
