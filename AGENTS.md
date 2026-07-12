@@ -224,9 +224,15 @@ the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intri
 method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 145/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 147/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
   (cont. 17 — **untried-fn sweep is the productive vein.** Listing unmatched game-region fns with
-  NO `src/` file (99 of them at session start) found 8 banks in one pass: 0x15e08 (const forwarder,
+  NO `src/` file (99 of them at session start) found 10 banks in one pass. Late additions:
+  0x139a8 (kill-credit eligibility, first try — memory-homed char result + Watcom tail-duplicated
+  returns came out naturally) and 0x2de18 (launch setup, first try — 4-case compare-tree switch,
+  memory-homed d local). Late parks: 0x2ed28 (kill-stat bookkeeping, 228/230, register-role
+  rotation from the first param load) and 0x2e408 (homing step, 222/240 — the 0x2d6c8-idiom
+  direction block rotates ECX↔ESI here though the same C matched in 0x2d6c8; the do-while join
+  shifts Watcom's value numbering). First 8 banks: 0x15e08 (const forwarder,
   manifest size was under-counted 19→33), 0x254a8 (kbd hook installer — `__interrupt __far` handler
   ⇒ `push cs`), 0x17998 (buffered-read helper — memcpy intrinsic F2-rep + `modify [eax ecx edx
   ebx]`, size 55→86), 0x188e8 (file loader, first try), 0x35c88 (name-record reader, first try),
