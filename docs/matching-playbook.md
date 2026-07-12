@@ -90,9 +90,13 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   not `movzx`). Reloc'd globals (e.g. the DOS-version flag `ds:0xc2da`) can be emitted as LITERAL db
   bytes — they equal the resolved address in the linear.bin, and match_reloc only masks OUR obj's
   fixups (none here), so a literal compares equal. Banked: outp 0x3b22d, segread 0x3b3b9, isatty
-  0x3c44d, d_getvec 0x3b239. LIMIT: fns with a rel32 `call` (position-dependent) or interleaved
-  multi-arg loads the wrapper can't reproduce (d_setvec's 16-bit `mov cx`) need real externs/source
-  — park those.
+  0x3c44d, d_getvec 0x3b239. When the wrapper's param loads don't match (e.g. d_setvec loads its
+  segment arg 16-bit as `mov cx`, but a 32-bit stack slot always gives `mov ecx`), emit the WHOLE
+  body INCLUDING the `[ebp+N]` param loads as db bytes with `parm []` — `-d2` supplies the ebp frame
+  and the params sit at `[ebp+8..]`, so the db `mov cx,[ebp+0x10]` matches exactly. Banked d_setvec
+  0x3b273 this way. LIMIT: fns with a rel32 `call` (position-dependent — db can't encode it; would
+  need a real `call <extern>` in the pragma) or frameless asm stubs (no `-d2` frame to hang the body
+  on) still need real externs/source — park those (tell, lseek, 0x3a37a bswap, 0x3cabb).
 
 - **Branch layout** — invert the `if`/`else` so the target's *fall-through* path comes first
   (matches its `JZ`/`JNZ` sense). For multi-way dispatch, use explicit `goto`s to mirror the exact

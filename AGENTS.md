@@ -224,7 +224,7 @@ the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intri
 method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 123/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 124/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
   (cont. 16 — **RTL region cracked open.** RTL fingerprint (`tools/libname.py`) PROVED the compiler
   is Watcom **9.5, small-model CLIB3S** — every `0x3a000+` C-runtime fn maps to a `95S` library
   module (16 byte-identical), zero to 10.0a. We have the EXACT toolchain; the old "different-Watcom
@@ -232,7 +232,7 @@ method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated 
   frame leaf RTL fns carry) banked labs/toupper/tolower/strchr/cenvarg/makepath/nibble-hex; the
   `#pragma aux` replication technique (lift Watcom's own inline asm from OW `bld/clib`) banked
   strcpy `0x3a8d7`; the same pragma-aux + db-transcription banked the DOS/port asm fns outp
-  `0x3b22d`, segread `0x3b3b9`, isatty `0x3c44d`, d_getvec `0x3b239` (see playbook §2). 12 RTL fns
+  `0x3b22d`, segread `0x3b3b9`, isatty `0x3c44d`, d_getvec `0x3b239`, d_setvec `0x3b273` (see playbook §2). 13 RTL fns
   banked total. `tools/libname.py`+`libtag.py` name the region's stdlib — 29 fns carry a `"lib"` tag;
   the still-unmatched split into register-role near-misses (atol/strncmp/stricmp/strnicmp — atol
   confirmed a wall by a 33k-variant permuter search) and complex/call-having DOS+buffered-I/O fns

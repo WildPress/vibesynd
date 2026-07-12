@@ -323,7 +323,7 @@
     {"addr": "0003b1f6", "name": "FUN_0003b1f6", "size": 22, "calls": 1, "data_refs": 1, "incoming": 0, "status": "unmatched", "match_pct": 0.0, "src": null},
     {"addr": "0003b22d", "name": "FUN_0003b22d", "size": 12, "calls": 0, "data_refs": 2, "incoming": 2, "status": "matched", "match_pct": 100.0, "src": "src/FUN_0003b22d.c", "lib": "95S:outp"},
     {"addr": "0003b239", "name": "FUN_0003b239", "size": 58, "calls": 0, "data_refs": 3, "incoming": 3, "status": "matched", "match_pct": 100.0, "src": "src/FUN_0003b239.c", "lib": "95S:d_getvec"},
-    {"addr": "0003b273", "name": "FUN_0003b273", "size": 55, "calls": 0, "data_refs": 5, "incoming": 4, "status": "unmatched", "match_pct": 0.0, "src": null},
+    {"addr": "0003b273", "name": "FUN_0003b273", "size": 55, "calls": 0, "data_refs": 5, "incoming": 4, "status": "matched", "match_pct": 100.0, "src": "src/FUN_0003b273.c"},
     {"addr": "0003b2aa", "name": "FUN_0003b2aa", "size": 11, "calls": 0, "data_refs": 1, "incoming": 0, "status": "unmatched", "match_pct": 0.0, "src": null},
     {"addr": "0003b2b5", "name": "FUN_0003b2b5", "size": 113, "calls": 2, "data_refs": 10, "incoming": 1, "status": "unmatched", "match_pct": 0.0, "src": null},
     {"addr": "0003b326", "name": "FUN_0003b326", "size": 147, "calls": 2, "data_refs": 12, "incoming": 1, "status": "unmatched", "match_pct": 0.0, "src": null},
