@@ -1,6 +1,28 @@
 # Compiler-version investigation (the wall on reaching 500/500)
 
-## Conclusion
+## FINAL RESULT (cont. 16) — CORRECTION: 9.5c found + built, but it is NOT the wall-breaker
+
+**9.5c WAS obtainable** (earlier "lost media" claim was wrong): archive.org `Watcom_C_9.5`'s
+`c32_c.zip` is the June-1994 **.C patch** (`APPLYC.BAT`, `WCC386D.C`, level `.c`). Built it by
+chaining `bpatch` A→B→C on our base `WCC386.EXE` → `toolchain/watcom95c/BIN/WCC386.EXE`
+(628286 B, "patched to level '.c'"). Compile driver: `tools/wcc95b/wcc_95c.sh`.
+
+**But 9.5c does NOT unlock the walls.** It is byte-identical to base 9.5 on every wall (0x34048:
+same `xor dh,dh` + imm8, NOT the target's `xor dh,ah` + imm32) and it **unlocked 0 of 44** parked
+near-misses (tested `-4s` and `-5s`). It also doesn't regress the matched fns. So the entire 9.5
+progression — **9.5 = 9.5b = 9.5c** — behaves the same on these functions.
+
+**Conclusion reversed:** the register-role/address-fold/peephole walls are **NOT a 9.5 patch-level
+artifact.** The `imm32` tell appears only in **10.0a**, which breaks other functions. So no obtainable
+Watcom (9.5/9.5b/9.5c/10.0a) matches BOTH the 133 already-matched fns AND the walls. This means the
+walls are either (a) a 10.0-*base* compiler we haven't tried (unlikely to be clean — 10.0a already
+regresses), or (b) genuinely source-reachable with forms the bounded agents/permuters didn't find —
+i.e. NOT proven to be compiler-locked after all. Either way, the version hunt is closed: no available
+compiler is the answer. Bank the matchable functions; treat the walls as hard-but-possibly-source-
+reachable, not as a definitively-lost-compiler blocker.
+
+---
+## (superseded) original conclusion
 
 The game's **RUNTIME LIBRARY** is Watcom C/C++ **9.5, small-model CLIB3S** (proven byte-identical
 by `tools/libname.py` — see the RTL work). But the game's **CODE** was compiled by a **different
