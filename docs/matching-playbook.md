@@ -80,6 +80,10 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   param makes the caller push a sign-/zero-extended 16-bit value.
 - **`volatile`** — mark a global `volatile` if the target RE-READS it each use where -oneatx would
   CSE it into one register (e.g. mouse/interrupt-updated coords).
+- **AND-immediate width** — `x &= ~0x208` emits the sign-extended `and edi,0xfffffdf7`; `x &= 0xfdf7`
+  emits `0x0000fdf7`. Match the target's immediate by choosing `& ~mask` vs `& mask`. (0x30708)
+- **Reuse a CMP for a cluster** — write the 2nd test as `c <= 2` (not `c < 3`) so Watcom reuses the
+  prior `cmp si,2` as `jbe` instead of a fresh compare. (0x30708)
 - **Signed vs unsigned `char`** — Watcom `char` is UNSIGNED (a `char` compare emits `JB`/`JAE`).
   Use `(signed char)` to get the target's signed `JL`/`JGE`. (0x22ba8)
 - **`#pragma aux <FnName> modify [eax ecx edx ebx];`** — puts a callee-saved reg in the volatile
