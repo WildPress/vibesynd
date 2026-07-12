@@ -164,3 +164,26 @@ by chaining `bpatch` on our base `WCC386.EXE` (drivers: `tools/wcc95b/wcc_95{a,b
 Definitive: the a/b/c patches are correctness fixes (per their READMEs) that don't change these
 codegen paths. NO 9.5 build produces the target's `xor dh,ah`/`imm32`/unfold/loop-align. The version
 theory is dead; the walls are not a 9.5-patch artifact.
+
+## 10.0 tested (cont. 16) — same compiler as 10.0a; walls are NOT compiler-locked
+
+Downloaded plain **Watcom 10.0** (`archive.org/Watcom_C_10.0`, 289MB ISO). Its `WCC386.EXE` is
+**byte-identical** to our 10.0a's (md5 `f073a37c…`, 541364 B) — the "a" patch never touched the C
+code generator, so **10.0 == 10.0a** for compilation.
+
+Concrete bytes (10.0 = 10.0a):
+- 0x13a98 (9.5 MATCHES it): target uses compact `test [eax+0xb],bl` (`84 58 0b`); 10.0 EXPANDS to
+  `mov al,[eax+0xb]; and al,bl; and eax,0xff` → wrong size. **10.0 breaks a 9.5-matched fn ⇒ game
+  code is 9.5-branch, not 10.0.**
+- 0x34048: 10.0 emits `xor dh,dh` + `add eax,imm8` (`83 c0 20`) — SAME as 9.5, NOT the target's
+  `xor dh,ah` + `add eax,imm32` (`05 20 00 00 00`).
+
+CORRECTION: an earlier note here claimed 10.0a produced the `imm32` tell — that was a hex misread.
+**No compiler tested (9.5 / 9.5a / 9.5b / 9.5c / 10.0 / 10.0a) produces the target's wall bytes.**
+
+### Final, verified conclusion
+The walls are NOT a compiler-version artifact. Game code is 9.5-branch; every 9.5 level is identical
+on the walls; 10.0 breaks 9.5-matched fns. Since NO available Watcom emits the `xor dh,ah`/`imm32`/
+unfold/loop-align forms, those bytes are almost certainly **source-form driven** (a specific C
+construct), i.e. the near-misses are hard-but-source-reachable, not blocked by a lost compiler. The
+compiler hunt is closed; effort returns to source.
