@@ -224,7 +224,12 @@ the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intri
 method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 110/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 111/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (`match_reloc.py` now verifies **inline jump-table `switch` dispatchers** — detects the co-located
+  `[table][pad][code]` obj layout and compares the code tail with re-based fixups → `JUMP-TABLE-AWARE
+  match`. Banked `0x23038`. This unlocks the whole switch-dispatcher class: write byte-faithful C +
+  ensure the manifest `size` is the true extent, and it verifies. Larger dispatchers 0x18d18/0x1bc28/
+  0x2bca8/0x2c218/0x24b08 are now verifiable TARGETS — need real matching work, code not yet exact.)
   (Latest sweeps: banked `0x39088`,`0x3cc26` (RTL region, `-3s -os` ENTER-frame) then `0x165f8`,
   `0x1ff98`,`0x1ba48`,`0x361a8` (game region). LOW yield on both — the residual small-fn vein is
   mostly walls. **Two systematic findings:** (1) the **0x39000–0x3e500 runtime/RTL region is a

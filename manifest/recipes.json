@@ -402,5 +402,9 @@
  "FUN_000361a8": {
   "addr": "000361a8",
   "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "FUN_00023038": {
+  "addr": "00023038",
+  "flags": "-4s -oneatx -zp8 -s -zq"
  }
 }

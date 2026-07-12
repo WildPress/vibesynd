@@ -26,12 +26,15 @@ Companion: `docs/object-model.md` (the pool/entity field map + global-table cata
 - **If match95 fails only on a length check**, the manifest `size` may be wrong (headless pass
   under-counted; e.g. 0x29c58 was 177 vs true 238). Confirm the extent with `get_function_by_address`
   and correct the manifest `size`.
-- **Inline jump-table blocks verification (switch fns).** Watcom co-locates a `switch`'s jump table
-  (+ entry-alignment pad) in the SAME object `.text` BEFORE the code, so match_reloc compares the
-  whole obj text against the target code window and the lengths can never equal — even when the code
-  is byte-EXACT. In the real binary the table lives in a far segment (`CS:[...+disp]`); on-disk the
-  fn is clean. No C spelling moves the table out of the compiled object. Such a fn reads as NEAR-MISS
-  but is effectively matched code we can't auto-verify; document, don't mark matched. (0x23038.)
+- **Inline jump-table switch fns — NOW VERIFIABLE.** Watcom co-locates a `switch`'s jump table
+  (+ entry-alignment pad) in the SAME object `.text` BEFORE the code (`[table][pad][code]`), while the
+  real binary keeps the table in a far segment (`CS:[...+disp]`) and the on-disk fn is clean code.
+  `match_reloc.py` now DETECTS this (a leading run of >=4 consecutive 4-byte fixups at obj offset 0 =
+  the table) and compares only the code TAIL (`ob[-size:]`) with re-based fixups, printing
+  `JUMP-TABLE-AWARE match : YES`. Byte-equality is still fully enforced (a wrong split fails, never
+  false-matches). So switch dispatchers are matchable like any other fn — write byte-faithful C and
+  it verifies. (0x23038 banked this way.) Prereq: the manifest `size` must be the TRUE extent (these
+  fns are almost always under-counted — the headless sweep truncates at the indirect `jmp CS:[..]`).
 
 ## 1. Recipes (compile flags)
 
