@@ -224,13 +224,17 @@ the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intri
 method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 106/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
-  (Latest sweep probed the small-function vein in the **0x39000–0x3e500 runtime/RTL region**: banked
-  `0x39088` (`-4s`) and `0x3cc26` (`-3s -os` ENTER-frame). Bank rate there is LOW (~2/18) — that
-  region is largely a **different-Watcom toolchain-version wall** (arg→EAX-before-push, prologue
-  reg-save order, intra-fn tail-merge) plus hard compiler limits (no 64-bit int type; CLI/STI, DOS
-  int-21h and bswap asm idioms unreachable from headerless C). See `docs/matching-playbook.md` §3.
-  Mine the 0x39xxx game region (our own compiler) over the 0x3a000+ RTL.)
+- **Coverage: 110/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (Latest sweeps: banked `0x39088`,`0x3cc26` (RTL region, `-3s -os` ENTER-frame) then `0x165f8`,
+  `0x1ff98`,`0x1ba48`,`0x361a8` (game region). LOW yield on both — the residual small-fn vein is
+  mostly walls. **Two systematic findings:** (1) the **0x39000–0x3e500 runtime/RTL region is a
+  different-Watcom toolchain-version wall** (arg→EAX-before-push, prologue reg-save order, intra-fn
+  tail-merge) + hard limits (no 64-bit int; CLI/STI, DOS int-21h, bswap idioms) — don't mine it.
+  (2) **Manifest sizes for switch-dispatcher & loop-align'd fns are badly UNDER-COUNTED** — the
+  headless/Ghidra sweep truncates at the indirect `jmp CS:[..]` or a loop-align pad. Corrected 7 this
+  session (0x23038→47, 0x16678→190, 0x18d18→1523, 0x1ba48→171, 0x1bc28→1333, 0x24b08→221,
+  0x2bca8→550, 0x2c218→592). **`0x1ba48` was byte-EXACT and only the wrong size blocked it** — other
+  such fns may be recoverable by size-fix alone. See `docs/matching-playbook.md`.)
   (cont. 13 also banked `0x146f8` first-try: a `char`-returning eligibility test (guard chain, one call).
   Reminder: the decompiler's CONCAT31/uint3 "packed return" is usually noise for a fn that just sets AL —
   read the disasm; it's a plain `char` return. Ten banks this session; sweet-spot vein is productive.)

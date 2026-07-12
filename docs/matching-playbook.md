@@ -102,6 +102,10 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   point, whereas `goto`-sharing forces eager per-branch pops. (0x36c78; opposite of the usual advice)
 - **Materialise a node pointer** — write `n = g_810e + id; n[0x1e]=…` (not inline `g_810e+id+0x1e`)
   to force `add ebx,0x810e; [ebx+0x1e]` instead of folding the base into the store disp. (0x37878)
+- **Nested-call arg overlap** — when an inner call's result feeds an outer call, Watcom OVERLAPS
+  their pushed stack args (shares the trailing ones) and cleans up with one `add esp,N` sized for the
+  union. Reproduce by giving the inner callee the extra trailing arg(s) it appears to "share" so the
+  cleanup width matches (e.g. inner `FUN_x(...,0xc)` makes the merged pop `add esp,0x14`). (0x361a8)
 - **Inline vs named temp** — pasting a subexpression at each use forces Watcom to CSE it into a
   persistent (callee-saved) register with `xor eax,eax; mov ax,bx`; a named local instead keeps it
   in a scratch reg zero-extended in place (`and eax,0xffff`). Also drop redundant `(int)` casts.
@@ -136,6 +140,11 @@ grind; the fuzzer permutes *source* and can't change the allocator's mind.
   `__int64` (E1009). A target that does a true 64-bit muldiv (`mul ecx; div ebx` carrying EDX from
   mul straight into div, no `xor edx`) is UNREACHABLE — with `unsigned int` Watcom always emits
   `xor edx` (or strength-reduces the `*const`) before the unsigned `div`. (0x39495.)
+- **Push imm8-vs-imm32 peephole threshold** — target encodes a small `push <const>` as imm32
+  (`68 70 00 00 00`) where our Watcom 9.5b always emits the sign-extended imm8 (`6a 70`). Body can be
+  byte-faithful with all relocs aligned and this single 3-byte push be the only diff. Not
+  source-reachable (8 source forms × 7 recipes all give `6a`); a micro-version peephole difference.
+  (0x16678 187/190.)
 - **Cluster-wide dead callee-save** — some 0x39xxx fns wrap a frameless body in a lone dead
   `push ebx`/`pop ebx` (EBX reserved across a call with nothing live) — a region-wide pessimistic
   save. `-oneatx` saves no reg; `-od` saves ebx+esi+edi AND adds an ebp frame; never exactly one
