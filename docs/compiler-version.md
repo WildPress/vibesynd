@@ -147,3 +147,20 @@ un-matchable until a 9.5c copy surfaces; the `tools/wcc95b/` pipeline will test 
 
 Until then: keep banking the ~50% of functions that don't trip these codegen paths; park the rest
 as documented near-misses (register-role / address-fold / tail-merge / peephole walls, playbook §3).
+
+## Side-by-side proof (cont. 16): built + tested 9.5 / 9.5a / 9.5b / 9.5c — ALL identical on walls
+
+Built every 9.5 patch level from archive.org `Watcom_C_9.5` (`c32_a`→A, `c32_b`→B, `c32_c`→C)
+by chaining `bpatch` on our base `WCC386.EXE` (drivers: `tools/wcc95b/wcc_95{a,b,c}.sh`):
+
+```
+0x34048  target : ...30 e6 ... 05 20 00 00 00 ...   (xor dh,ah + add eax,imm32)
+         base9.5: ...30 f6 ... 83 c0 20 ...          (xor dh,dh + add eax,imm8)
+         9.5a/b/c: IDENTICAL to base 9.5
+0x20d18  target : 53 56 ... esi + unfold + loop-align nops (52B)
+         base/9.5a: fold (44B) ; 9.5b/9.5c: fold (34B) — none match
+```
+
+Definitive: the a/b/c patches are correctness fixes (per their READMEs) that don't change these
+codegen paths. NO 9.5 build produces the target's `xor dh,ah`/`imm32`/unfold/loop-align. The version
+theory is dead; the walls are not a 9.5-patch artifact.
