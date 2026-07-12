@@ -264,6 +264,10 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
   table at pointer `g_5338`. Target caches g_5338 once in EBX (needs -oa) AND materialises each element
   address via `LEA idx*8; ADD ebx` instead of folding into SIB — no available flag does both (every
   -oa recipe folds; every unfolding recipe reloads g_5338 twice). Likely a Watcom minor-version thing.
+- 🧬 **OBJECT MODEL + BULLFROG STYLE: see `docs/object-model.md`** (cont. 13) — the pool-A entity
+  field map (health `+0x54`, type/frame `+0x19`, links `+0x0`/`+0x2`/`+0x1c`, coords `+0x4/6/8`, etc.),
+  the 3-pool memory layout, the global table catalogue, and the type/return conventions, ALL derived
+  from the 85 matched fns. Read it before writing a new pool/entity function so the first compile lands.
 - 🧰 **TOOLCHAIN INDEX: see `tools/README.md`** (primary workflow + every active tool). The fuzzer
   `tools/cpermute.py` is now heavily commented — read its header for how the permuter works in detail.
   Superseded/one-off scripts (old W10 pipeline, pre-cpermute permuters, LE-unpack) are moved to
