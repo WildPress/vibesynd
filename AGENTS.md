@@ -218,7 +218,10 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ## Current Status  (update every session)
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 80/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 81/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (cont. 13 also banked `0x146f8` first-try: a `char`-returning eligibility test (guard chain, one call).
+  Reminder: the decompiler's CONCAT31/uint3 "packed return" is usually noise for a fn that just sets AL —
+  read the disasm; it's a plain `char` return. Ten banks this session; sweet-spot vein is productive.)
   (cont. 13 also banked `0x13bc8` first-try: pool linked-list walk following node[0x1c] while node[0x19]
   != 1, storing the terminal id (node - g_810e) — the classic `extern unsigned char g_810e[]` + ptrdiff
   idiom. Confirms: pool linked-list walks are reliable matches.)
