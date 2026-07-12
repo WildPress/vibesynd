@@ -82,6 +82,17 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   picks a shorter encoding than the target (e.g. `add eax,2` → `83 c0 02` but target has the
   EAX-accumulator `05 02000000`), force the exact bytes with `db` directives (`"db 5" "db 2" "db 0"
   "db 0" "db 0"`). This banked strcpy 0x3a8d7 byte-exact and generalizes to outp/memcpy/etc.
+- **DOS/port asm fns: replicate as a `#pragma aux` wrapper, db-transcribe the body.** For the
+  small hand-asm RTL fns (`out dx,al`, `int 21h`, `mov Sreg`), write `extern T __f(...); #pragma aux
+  __f = <body> parm[..] value[..] modify exact[..]; T FUN_x(..){ return __f(..); }` and let `-d2`
+  add the frame + param loads. Emit the body as `db` bytes (the mini-asm rejects some mnemonics,
+  e.g. `mov eax,cs`; db is universal). Pass byte args in the 8-bit reg (`parm [al]` → `mov al,[..]`
+  not `movzx`). Reloc'd globals (e.g. the DOS-version flag `ds:0xc2da`) can be emitted as LITERAL db
+  bytes — they equal the resolved address in the linear.bin, and match_reloc only masks OUR obj's
+  fixups (none here), so a literal compares equal. Banked: outp 0x3b22d, segread 0x3b3b9, isatty
+  0x3c44d, d_getvec 0x3b239. LIMIT: fns with a rel32 `call` (position-dependent) or interleaved
+  multi-arg loads the wrapper can't reproduce (d_setvec's 16-bit `mov cx`) need real externs/source
+  — park those.
 
 - **Branch layout** — invert the `if`/`else` so the target's *fall-through* path comes first
   (matches its `JZ`/`JNZ` sense). For multi-way dispatch, use explicit `goto`s to mirror the exact

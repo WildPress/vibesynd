@@ -224,16 +224,19 @@ the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intri
 method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 119/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 123/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
   (cont. 16 — **RTL region cracked open.** RTL fingerprint (`tools/libname.py`) PROVED the compiler
   is Watcom **9.5, small-model CLIB3S** — every `0x3a000+` C-runtime fn maps to a `95S` library
   module (16 byte-identical), zero to 10.0a. We have the EXACT toolchain; the old "different-Watcom
   version wall" below was a MISDIAGNOSIS. New leaf recipe `-3s -d2 -oneatx` (`-d2` forces the ebp
   frame leaf RTL fns carry) banked labs/toupper/tolower/strchr/cenvarg/makepath/nibble-hex; the
   `#pragma aux` replication technique (lift Watcom's own inline asm from OW `bld/clib`) banked
-  strcpy `0x3a8d7` byte-exact. `tools/libname.py`+`libtag.py` name the region's stdlib — 29 fns now
-  carry a `"lib"` tag in the manifest; the 21 still-unmatched (atol/strncmp/stricmp/strnicmp are
-  register-role near-misses, isatty/outp/lseek/tell are DOS-asm) are documented, not mystery code.
+  strcpy `0x3a8d7`; the same pragma-aux + db-transcription banked the DOS/port asm fns outp
+  `0x3b22d`, segread `0x3b3b9`, isatty `0x3c44d`, d_getvec `0x3b239` (see playbook §2). 12 RTL fns
+  banked total. `tools/libname.py`+`libtag.py` name the region's stdlib — 29 fns carry a `"lib"` tag;
+  the still-unmatched split into register-role near-misses (atol/strncmp/stricmp/strnicmp — atol
+  confirmed a wall by a 33k-variant permuter search) and complex/call-having DOS+buffered-I/O fns
+  (d_setvec/tell/lseek/fgetc/fread/…) left as documented library code, not mystery game code.
   See `docs/matching-playbook.md` §1-2.)
   (`match_reloc.py` now verifies **inline jump-table `switch` dispatchers** — detects the co-located
   `[table][pad][code]` obj layout and compares the code tail with re-based fixups → `JUMP-TABLE-AWARE
