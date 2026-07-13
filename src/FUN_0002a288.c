@@ -43,7 +43,30 @@
  * xor-eax + mov edi,0x810e + add (uint id1 fixes the form but rotates
  * p->EDI); div quotient EDX vs EBP; case-body y-reg EDX vs ECX and
  * movsx bx copy alternating ecx/edx vs uniform ecx; case-c/send-final
- * 4b10 operand roles rotated. Recipe: -4s -oneatx -zp8 -s -zq. */
+ * 4b10 operand roles rotated. Recipe: -4s -oneatx -zp8 -s -zq.
+ *
+ * cont.24 CROSS-JUMP-LAW RETRY (deadlock re-confirmed, now precisely
+ * localised): applying the cross-jump law to the st5 blocks -- spell every
+ * 5-path `goto st5;` and one `st5: state=5;` fall-through, with a single
+ * shared st5 label physically inside block1 (state=6 arms `goto disp;`) --
+ * REPRODUCES THE TARGET CFG EXACTLY: 6-first, ONE shared `mov esi,5;jmp`
+ * at the block1 position, jumped into from all 4 sites (block1 tid==0 +
+ * call-false forward, block2 dx==0 + call-false BACKWARD, matching target's
+ * je 0xd2 x4). So the LAYOUT half of the deadlock IS solvable by exit-form.
+ * BUT the coloring half is unbroken and its cause is now pinned: the
+ * required BACKWARD st5 edge from block2 into block1 forces Watcom to
+ * promote p into a callee-saved reg (ESI) -- seen at the VERY FIRST insn
+ * (movsx esi,g_10b16 vs target's movsx ecx), evicting state->EDI and
+ * rotating e1->ECX (a full state/p/e1 3-cycle vs target ESI/ECX/EDI). The
+ * chain form leaves p in volatile ECX (correct) precisely BECAUSE it lacks
+ * that backward join. state=int (cont.21 derank lever, to steal ESI back)
+ * did NOT flip it -- the goto backward-edge dominates promotion regardless
+ * of state's type. So: chain form = correct coloring + wrong layout
+ * (localised st5 diff, matches ~all entry/dispatch bytes = better
+ * near-miss, KEPT); goto form = correct layout + full register rotation
+ * (worse byte score). Genuine allocator wall (register-role 3-cycle, cf.
+ * 0x34048/0x19318) coupled to the layout; not source-reachable, not
+ * fuzzer-reachable (fuzzer permutes source, can't change the allocator). */
 extern unsigned char g_52ff;
 extern unsigned short g_5390;
 extern short g_10b16;
