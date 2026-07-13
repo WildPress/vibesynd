@@ -1,19 +1,28 @@
-/* PARKED near-miss (NOT matched, 177/185 masked, first diff 0x7c) -- two
-   canonicalization-proof diffs, everything else byte-exact incl. the GS-homed
-   selector, split zero-offset regs (EBX deref / ESI return), word spill of GS
-   to [esp+0x38] and dword reload for the DX:EAX far return:
-   (a) target hoists the test's `mov dx,gs` ABOVE `test ecx` (8cea 85c9 7505);
-       our 9.5b always sinks the sreg copy into the || second arm (85c9 7507
-       8cea). Tried: named temp t=sel, t=(ushort)out[3] CSE spelling, explicit
-       two-if goto CFG -- all fold to the same bytes.
-   (b) fmemset dst offset: target fresh `xor edi,edi` (31ff); ours copies p's
-       zero reg `mov edi,ebx` (89df). A fresh `sel :> 0` arg gives 31ff but
-       flips sel out of GS entirely (>=2 explicit :> constructions from sel
-       re-home it to EDX/EBX -- see (c) below); q=p copy folds back to 89df.
-   KEY LEVER FOUND (playbook-worthy): the selector keeps its GS home only while
-   it feeds exactly ONE `:>` construction; every deref/copy must then go
-   through that far pointer. The returned copy `r = p` yields the word spill
-   `mov [esp+0x38],gs` + xor esi + dword reload tail exactly.
+/* PARKED near-miss (NOT matched, ours 183B vs target 185B, first diff 0x6f)
+   -- improved from the old 177/185 park by typing the selector as __segment.
+   That fixed old residue (b): fmemset dst offset is now a fresh `xor edi,edi`
+   (31ff), and the frame is back to 0x3c with in/out slots right (NOTE: with
+   __segment sel the arrays had to be declared out-then-in to keep in at
+   base+0 -- __segment changed Watcom's local ordering vs the ushort version).
+   ONE residue left, worth exactly the 2 missing bytes plus knock-on forms:
+   sel's home. Target homes sel ONLY in GS: direct `mov gs,[esp+0x28]`
+   (8e6c2428), spills gs itself (8c6c2438), and re-reads `mov dx,gs` (8cea)
+   twice -- hoisted above `test ecx` in the || test, and again at the fmemset
+   site before 31ff. Ours homes the value in EDX: `mov edx,[esp+0x28]` +
+   `mov gs,dx` (8b542428 8eea), dword spill 89542438, and dx is simply reused
+   at both sites (no 8cea at all). Also p/r zero regs come out swapped
+   (store gs:[esi+0x40] / return eax=ebx; target is ebx/esi) -- probably
+   downstream of the same home choice. Tried and failed to break the EDX home:
+   (__segment)out[3] and *(__segment *)(out+3) both load via edx; swapping
+   p/r declaration order is a no-op; (__segment)p casts at the use sites
+   catastrophically re-read the word through a far pointer to the stack
+   (214B). All-inline `sel :> 0` at every site (the 0x28558 lever) loses GS
+   entirely (sel -> EBX GPR, 171B); with plain ushort sel, GS survives only
+   ONE construction (old finding, still true). Next idea: find a spelling
+   whose initial load has no GPR use at all so 9.5b picks the 8e6c2428 form,
+   e.g. volatile-ish read, or force edx pressure across the region.
+   OLD residue (a) is subsumed: the hoisted-8cea shape is what the GS-only
+   home produces; it is not a separate scheduling quirk.
 
    FUN_00027f08 @ 0x27f08 - DPMI (int 0x31, AX=0x100) allocate a 5-paragraph
    DOS memory block, zero its first 0x42 bytes through the returned selector,
@@ -32,9 +41,11 @@ extern void __far *_fmemset(void __far *dst, int c, unsigned n);
 
 unsigned char __far *FUN_00027f08(void)
 {
-    int in[7];
     int out[7];
-    unsigned short sel;
+    int in[7];
+    __segment sel;
+    unsigned char __far *p;
+    unsigned char __far *r;
 
     FUN_0003aaf8(in, 0, 0x1c);
     FUN_0003aaf8(out, 0, 0x1c);
@@ -45,10 +56,12 @@ unsigned char __far *FUN_00027f08(void)
         FUN_000289a8(g_376c, 0x1c7, -2);
         return 0;
     }
-    sel = (unsigned short)out[3];
+    sel = *(__segment *)(out + 3);
+    p = sel :> (unsigned char *)0;
+    r = p;
     if (out[6] != 0 || sel != 0) {
         _fmemset(sel :> (unsigned char *)0, 0, 0x42);
-        *(unsigned short __far *)((sel :> (unsigned char *)0) + 0x40) = (unsigned short)out[0];
+        *(unsigned short __far *)(p + 0x40) = (unsigned short)out[0];
     }
-    return sel :> (unsigned char *)0;
+    return r;
 }

@@ -1,13 +1,19 @@
-/* NEAR-MISS @ 0x16318 -- ~95%; PARKED on two register-role windows.
- * (1) Entry order: target loads g_10b16 into SI before the param byte
- * (mov ch,[esp+0x10]); ours always hoists the param load first -- volatile on
- * g_10b16, decl order, and a gg copy-local all fail to flip it.
- * (2) The g*19+i index chain homes the multiply in EDX/i in EAX in the
- * target, EAX/EDX in ours; commutes, g*20-g respelling, and 2500 cpermute
- * variants keep the rotated form (best 242/287 alignment). Everything else
- * matches masked, including the inline compound drift/clamp (part-3 lever:
- * copy-temps in EDI/EDX for the +-2 branches came from inlining the memory
- * expression; a named w gave in-place ops and lost push edi).
+/* NEAR-MISS @ 0x16318 -- 280/287 masked (was ~242/287); PARKED on ONE window:
+ * entry order. Target loads g_10b16 into SI BEFORE the param byte
+ * (mov ch,[esp+0x10]); ours always emits the param load first. Failed flips
+ * (this session + prior): volatile on/off (non-volatile SINKS the SI load to
+ * first use mid-chain -- worse), decl order, statement-vs-initializer form,
+ * gg copy-local, save-first compare (flips the cmp to 39c6 cmp si,ax; target
+ * 39f0 needs the table value as source LHS), and the -or recipe (skips no
+ * such hoist here; shl-multiplies, 273B, still param-first). Entry-scheduler
+ * internal -- same family as the 0x264a8/0x35d08 walls.
+ * The OLD window (2) is CLOSED by the cont.21 named-temp lever: a block-scoped
+ * `unsigned int idx = g * 19 + i;` homes the index in EAX and the multiply
+ * chain in EDX exactly like the target (8d149d/01da/31c0/8d1495/88c8/29da),
+ * killing ours' mov edx,ebx / xor edx,ebx zeroing quirk (-2B). Note the
+ * inverse ordering: `t = i;` alone SPILLS t and loses push edi; the single
+ * whole-index temp is the correct granularity. (unsigned int)i casts and
+ * i/g*19 commutes are byte-inert.
  *
    0x16318 -- research funding tick for group g. Records are 10 bytes at
  * 0x539c: word +0 funding, byte +2 owner, byte +3 rate. If we own g
@@ -24,13 +30,15 @@ extern unsigned char g_b069[];
 
 void FUN_00016318(unsigned char g)
 {
-    short save = g_10b16;
     unsigned char i;
+    short save;
 
+    save = g_10b16;
     if (g_539e[g * 10] == save) {
         for (i = 0; i != 8; i++) {
-            if (g_b069[i + g * 19] != 0
-                && g_539e[g_b069[i + g * 19] * 10] != save)
+            unsigned int idx = g * 19 + i;
+            if (g_b069[idx] != 0
+                && g_539e[g_b069[idx] * 10] != save)
                 *(short *)(g_539c + g * 10) += 2;
         }
     }

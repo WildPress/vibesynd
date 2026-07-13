@@ -1,9 +1,15 @@
-/* NEAR-MISS @ 0x2ed28 -- 228/230 structurally identical; PARKED on a
- * register-role rotation wall. Target homes b->EBX, player->ECX, lo->EAX,
- * n->EDX, hi->ECX(reuse); ours rotates b->EDX, player->EBX, ... from the very
- * first param load, cascading into every encoding. Decl order, statement
- * order (lo/n swap) and 3000 cpermute variants all keep the rotated form.
- * Same class as parked 0x26bc8/0x2fbc8. Semantics fully decoded below.
+/* NEAR-MISS @ 0x2ed28 -- PARKED on a register-role rotation wall, improved
+ * cont.21: `unsigned int c` (full-width temp lever) closed the widen-form gap
+ * (and-form `mov bl;and ebx,0xff` -> target's xor-form `xor;mov cl`) and the
+ * length now matches 230/230; ALL 36 remaining diff bytes are pure reg
+ * encodings from one rotation seeded at the first param load (0x2: target
+ * b->EBX, ours b->EDX; then c/temp ECX<->EBX, n EDX<->EAX, lo/hi rotate).
+ * cont.21 levers tried and rejected: register-resident param copy (`bb = b`
+ * first-statement AND post-guard both SPLIT b across EDX+ESI, extra push,
+ * worse); named `int w = g_10b16` temp (byte-inert); lo/n statement swap
+ * under the new allocator state (byte-inert). Decl order + 3000 cpermute
+ * variants on the old form also kept the rotation. Same class as parked
+ * 0x26bc8/0x2fbc8. Semantics fully decoded below.
  *
    0x2ed28 -- kill/hit stat bookkeeping. b = pool record with target link at
  * +0x16 (0 = none) and cause flags at +0x1c. n = g_810e + link. The player's
@@ -27,14 +33,16 @@ extern unsigned char g_10afa;
 
 void FUN_0002ed28(unsigned char *b)
 {
-    unsigned char c;
+    int w;
+    unsigned int c;
     unsigned char *lo;
     unsigned char *n;
     unsigned char *hi;
 
     if (*(unsigned short *)(b + 0x16) == 0)
         return;
-    c = g_e551[g_10b16 * 0x417];
+    w = g_10b16;
+    c = g_e551[w * 0x417];
     n = g_810e + *(unsigned short *)(b + 0x16);
     lo = g_8110 + c * 0x5c;
     if (n >= lo) {

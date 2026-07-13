@@ -249,6 +249,41 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   re-reads through `*(volatile unsigned short *)node` — exactly those loads split; nothing else
   changes. Pointer-deref variant of the volatile-read lever. (0x26c78; likely un-parks 0x26da8's
   CSE component.)
+- **goto-fail merge into a guard body (cont. 21)** — when the target shares ONE `xor eax; jmp`
+  return-0 stub jumped into from multiple guards, write `goto fail;` with the `fail:` label
+  placed INSIDE another guard's if-body — reproduces the shared stub instead of duplicated
+  epilogues. (0x2e408, closed the whole back half.)
+- **Addend position is value-numbering-significant (cont. 21)** — in `base + (product)` vs
+  `(product) + base` arg expressions, the ADDEND's position flips a 2-cycle register allocation
+  (ESI↔ECX) even where commuting the multiply itself is byte-inert. Try addend-first on ONE
+  operand at a time — the same swap on a sibling arg can degrade a `cwde` to `movsx`. (0x2e408)
+- **Dead `test reg,reg` before an unconditional set (cont. 21)** — the target shape
+  `test ebp,ebp; mov bl,1` with no branch between comes from `r = out ? 1 : 1;` (or
+  `if (out) r = 1; else r = 1;`): Watcom cross-jumps the two identical arms, deletes the
+  jcc-to-next, and the test survives. (0x363d8)
+- **ushort locals: demanded-bits narrowing + promotion derank (cont. 21)** — `unsigned short`
+  locals activate dword slot ops with dirty upper16, half-clear widens (`mov al,X; xor ah,ah`),
+  and the `xor ah,dh` known-equal-clear trick; AND they are DERANKED from callee-saved promotion
+  (int-typed locals steal ESI/EDI; ushort ones stay in slots). ushort vs int-with-casts params
+  also flip the evaluated load order of `a + b` slot reads, and a callee DECLARED with ushort
+  params reproduces the `mov ax,dx; and eax,0xffff` truncating arg push. Use ushort typing to
+  steer which values get registers. (0x363d8, 0x26778 — `int two = 2;` named constant homing in
+  EBP was load-bearing in the latter.)
+- **Inline far-pointer construction per use site (cont. 21, MATCHED 0x28558)** — when the target
+  re-arms GS from the PARAM SLOT at each far access (`mov gs,[esp+N]` before each deref) and
+  never spills a selector: construct the far pointer INLINE at every use —
+  `(sel :> (unsigned char *)off)[k]`, and pass `sel :> (unsigned char *)off` directly in call-arg
+  position (the seg push widens from the just-armed GS). A NAMED far local (`p = sel :> off`)
+  spills its selector half to a frame slot and rotates other registers (extra push). Complements
+  (does not contradict) the GS-home rules below — pick by what the target does: slot re-arms ⇒
+  inline constructions; `mov dx,gs` value reads ⇒ one named far pointer.
+- **`__segment`-typed selector locals (cont. 21)** — a local declared `__segment` (e.g.
+  `__segment sel = *(__segment *)(out + 3);`) tolerates MULTIPLE `:>` constructions without
+  re-homing the selector to a GPR (a plain ushort tolerates only one), and a fresh inline
+  `sel :> (unsigned char *)0` arg produces the fresh `xor edi,edi` zero-offset. Side effect:
+  `__segment` locals change stack-layout ordering (re-steer arrays by decl order after). Still
+  unsolved: forcing the direct memory→sreg load (`mov gs,[esp+N]`) when the value ALSO has word
+  uses — ours homes it in EDX + `mov gs,dx`. (0x27f08, improved 177→183/185.)
 - **Far-pointer selector GS-home rules (cont. 21, 0x27f08)** — a selector local keeps its
   segment-register home (direct `mov gs,[mem]` load, value reads via `mov dx,gs`, word spills)
   ONLY while it feeds exactly ONE `:>` far-pointer construction; a second explicit `sel :> …`
@@ -258,6 +293,23 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   DS-based far global (`extern uchar __far *g;` assigned from a near pointer) emits the target's
   `mov [g+4],ds; mov [g],eax` pair and `lgs` re-materialisation at each use. (0x35d08 confirms.)
 
+- **Anonymous global deref => and-form widen (cont. 21 retry; UN-PARKED the 0x28628 widen wall)** —
+  the and-form byte widen (`mov al,dl; and eax,0xff`) fires ONLY when the pushed value is an
+  anonymous compiler-owned CSE temp; ANY named local (even block-scoped, even a full-width
+  `unsigned int t = st;` + `(unsigned char)t`, which gives xor+mov+AND all three) yields xor-form.
+  For a busy-wait status byte, write EVERY read directly through the far-ptr GLOBAL
+  (`while (g_fp[0x31] == 0xff); if (g_fp[0x31] != 0 && …) f(…, g_fp[0x31]);`, non-volatile): the
+  lgs hoists, the byte load stays in-loop in DL, post-loop uses CSE onto DL anonymously =>
+  and-form. A LOCAL POINTER COPY `q = g_fp` with the same unnamed reads instead gives a peeled
+  cmp-mem loop + fresh post-loop load — the direct-global spelling is load-bearing. Route any
+  read that must NOT CSE (e.g. a fresh post-call re-read at return) through a second alias
+  symbol. (0x28628 MATCHED 135/135.)
+- **Whole-index named temp granularity (cont. 21 retry, 0x16318)** — when a `tbl[i + g*19]` chain
+  has the multiply/index register roles rotated (plus a `mov edx,ebx; xor edx,ebx` zeroing quirk,
+  +2B), a block-scoped `unsigned int idx = g * 19 + i;` used at both sites homes the index in EAX
+  and the multiply chain in EDX like the target. Granularity matters BOTH ways: `t = i;` alone
+  spills t and wrecks EDI; casts and +-commutes are byte-inert. Closed the 0x16318 loop window
+  (242→280/287; residue is a 2-instruction entry-order swap, entry-scheduler wall family).
 - **Byte-cast forces byte test (cont. 21)** — `(unsigned char)(node[0xb] & t)` emits the byte
   `test [eax+0xb],dl`; without the cast Watcom zero-extends both operands and emits a dword test.
   (0x128b8)
@@ -297,9 +349,10 @@ grind; the fuzzer permutes *source* and can't change the allocator's mind.
   CMP-modrm, 0x2dd48, 0x36d18, 0x183e8 via LICM.)
 - **uchar widen-form (xor-first vs mov+and)** — widening a byte for an int arg: a NAMED char local
   gets `xor eax,eax; mov al,dl` (5B); a compiler CSE temp gets `mov al,ch; and eax,0xff` (8B,
-  and-form). When the target used and-form on a value that must be a genuine named local (e.g. a
-  loop-carried status byte), no spelling flips it — 12 tried (casts, K&R promotion, param types,
-  &0xff, second variable). Park if this is the only diff. (0x28628, 132/135)
+  and-form). NO LONGER a hard wall when the value comes from MEMORY: respell the source so the
+  value is never named — read it inline through the global at every use (see the cont.21-retry
+  anonymous-global-deref lever in §2; 0x28628 MATCHED this way). Still a wall only if the value is
+  genuinely computed/loop-carried with no memory home to re-read.
 - **CSE / loop-invariant-hoist wall** — -oneatx re-reads-once (CSE) a value the target reads twice,
   or hoists a loop-invariant global load into a callee-saved reg the target reloads each iteration;
   lighter recipes change too much else. (0x26da8, 0x269d8, 0x20568, 0x1b858, 0x1b798.)

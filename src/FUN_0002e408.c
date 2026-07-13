@@ -1,11 +1,19 @@
-/* NEAR-MISS @ 0x2e408 -- 222/240; PARKED on a register-role tie-break. The
- * g_ab60/g_ad60 direction block (byte-identical idiom to the MATCHED 0x2d6c8,
- * same C) allocates the y-product to ESI here instead of the target's ECX
- * (w6 then lands in ECX instead of ESI), cascading ~18 bytes. Same entry
- * context (ebx=p, edi=i, d memory-homed); do-while/for restructure, operand
- * commutes and 2000 cpermute variants all keep the rotated form -- the
- * do-while loop join changes Watcom's internal value numbering vs 0x2d6c8's
- * straight-line body. Guards already share one return-0 stub (|| form).
+/* NEAR-MISS @ 0x2e408 -- 231/240 (was 222/240); PARKED on the last x-product
+ * register-role tie-break. cont.21 levers that CLOSED ground: (1) goto-fail
+ * merge -- `goto fail;` from the quadrant guard into a `fail:` label INSIDE
+ * the fuel-guard if-body reproduces the target's shared `xor eax; jmp` stub
+ * between the guards and the tail (jne 0x12 into it), killing ours'
+ * duplicated full epilogue; length now 240/240 and everything from the call
+ * to the end matches except 2 bytes. (2) ADDEND-FIRST operand swap on the y
+ * arg (`*(short*)(p+6) + (g_ad60[..]*p[0x54] >> 8)`) flips the y-product
+ * ESI->ECX / w6 ECX->ESI 2-cycle to the target's allocation -- addend
+ * position is value-numbering-significant where the multiply commute is
+ * inert. The SAME swap on the x arg does NOT flip its cycle (it instead
+ * degrades the (short) cast to `movsx eax,dx`); all 4 add/mul spelling
+ * combos keep `imul edx,eax` (0x3e: target c2 = x-prod stays EAX) plus the
+ * coupled w4 EDX/EAX, sar-order bytes (0x46-0x4a,0x4d) and the final d
+ * re-read AH/AL pair (0xce,0xd1 -- target `mov ah,[esp]; cmp ah,[ebx+0x1a]`).
+ * 9 diff bytes, one allocator 2-cycle. Guards share one return-0 stub.
  *
    0x2e408 -- homing step. Tries up to 4 headings d = dir+step, d-step, ...
  * probing 0x2d468 with the g_ab60/g_ad60 direction step (the 0x2d6c8 idiom).
@@ -30,7 +38,7 @@ int FUN_0002e408(unsigned char *p, char step)
     do {
         if ((short)FUN_0002d468(
                 (short)((g_ab60[(unsigned char)d] * p[0x54] >> 8) + *(short *)(p + 4)),
-                (short)((g_ad60[(unsigned char)d] * p[0x54] >> 8) + *(short *)(p + 6)),
+                (short)(*(short *)(p + 6) + (g_ad60[(unsigned char)d] * p[0x54] >> 8)),
                 *(short *)(p + 8), p) != 0)
             break;
         d -= step;
@@ -41,10 +49,12 @@ int FUN_0002e408(unsigned char *p, char step)
             (short)(*(short *)(p + 0x30) - *(short *)(p + 6)))
         < *(unsigned short *)(p + 0x1e)) {
         if ((char)(p[0x5a] - step) != d && (char)(p[0x5a] + 0x80) != d)
-            return 0;
+            goto fail;
     }
-    if (--*(unsigned short *)(p + 0x42) == 0 || p[0x59] == 0)
+    if (--*(unsigned short *)(p + 0x42) == 0 || p[0x59] == 0) {
+    fail:
         return 0;
+    }
     if (d != p[0x1a])
         p[0x59]--;
     else

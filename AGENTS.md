@@ -224,7 +224,23 @@ the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intri
 method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-13)
-- **Coverage: 156/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 162/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (cont. 21 FINAL — session total +10: 0x33c38/0x33cf8/0x164c8/0x265d8 (first wave, see below),
+  then 0x179f8 (container-size scan; aux-modify + REVERSE-decl frame order), 0x272b8 (multiplayer
+  sync barrier — the permuter's FIRST register-tie crack, 1 success in ~12 runs: its value is
+  usually confirming walls, occasionally closing 2-byte ones), 0x284a8 (NetBIOS send, `-4s -or`
+  recipe + hand pragma-aux _fmemcpy), 0x2fca8 (438B arrival/attach — named-base g_5358 lever),
+  0x28558 (NetBIOS receive — NEW inline-far-construction lever: build `sel :> off` at EVERY use,
+  named far locals spill their selector), 0x28628 (RETRY of an old park — anonymous-global-deref
+  form beats named/full-width temps for the and-form widen). RETRY SWEEP of parks with cont.21
+  levers improved but didn't close: 0x27f08 183/185 (`__segment` local lever), 0x28118 256/258
+  (assignment-in-arg staging), 0x2ed28 230-length-exact, 0x2e408 231/240 (goto-fail merge +
+  addend-position levers), 0x16318 280/287 (whole-index temp), 0x2d5b8 ~10B residue (g_5358 as
+  POINTER VARIABLE decl flipped roles; slot-lea + in-place deref + volatile tail all correct).
+  Word-wrap engine 0x363d8 517/523 decoded fully (dead `test ebp,ebp` = `r = out ? 1 : 1;`
+  cross-jump artifact; ushort demanded-bits narrowing + promotion-derank levers). recipes.json
+  REGENERATED on match95 (162 entries; recipes.py fixed: was still calling match10.sh, now also
+  accepts the JUMP-TABLE-AWARE success string). All new levers/walls in playbook §2/§3.)
   (cont. 21 — **MULTI-AGENT SWEEP of the untried vein + 4 banks.** Orchestrated parallel subagents
   (2 fns each, ≤10 compiles, no permuter/mark) while the main session serialized permuter runs.
   BANKED: 0x33c38+0x33cf8 (grid-hit twins — NEW LEVER: inline `(short)(y&0x7f00)` in the loop body

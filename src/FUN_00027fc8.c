@@ -10,6 +10,20 @@
    at the if-load; o init `mov ebp,[esp+0x18]` vs our CSE copy `mov ebp,eax`; site-1 pair
    copy `mov ecx,ebp`. 10 spellings tried (named q vs inline p+0x1a, short/int r, far local
    m everywhere, (__segment) inline vs named, &p alias reads, decl-order swaps).
+   RETRY (inline-construction lever from matched 0x28558) also failed, +5 spellings:
+   (1) split (off,sel) params w/ sel :> (unsigned char *)off at every site -- WRONG
+   SHAPE for this fn: target does `lgs ecx,[esp+0x18]`, i.e. a genuine 8-byte far-ptr
+   param rematerialized whole, and the split loses the `sub esp,4` sel spill slot
+   (311B, diff@0x4). (2) drop the volatile on the busy-wait, (3) short r (hoping
+   movsx ecx,ax), (4) inline offset `(sel :> (unsigned char *)p)[0x31]` at all 3
+   middle sites -- ALL THREE compile BYTE-IDENTICAL to this parked 324B output
+   (Watcom canonicalizes them); `((__segment)p :> ...)` inline is a syntax error
+   (:> wants a named segment lvalue). (5) -or recipe restructures the whole fn
+   (lea-based, no spill slot, 314B) -- -oneatx confirmed. Target evidence recap:
+   site-1 arg staging is `mov ebx,[esp+0x20]; mov ebp,[esp+0x18]` INSIDE the arg
+   eval (no CSE from the busy-wait lgs), every scratch in 0xa1..0x140 is ECX/EDX
+   with EAX only at -99 and the final widen; ours mirrors the shape exactly one
+   register off (EAX-first). Genuine allocator-state wall; fuzzer/cpermute may close.
    Recipe: -4s -oneatx -zp8 -s -zq
 
    FUN_00027fc8 @ 0x27fc8 - submit a named command through the real-mode mailbox block.
