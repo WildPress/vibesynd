@@ -182,3 +182,18 @@ Phases: (1) nested 0x60×0x80 tile grid, column lookup + fixed-point corner proj
 draw; (2) grid-cell entity chains (g_810e+id, 0x12c cap) → type-dispatched blips; (3) two 0x18d18
 blip loops + conditional 0x19318 + 8× stride-14 objective-marker records at 0x1be3a. Callees:
 0x3fb40/0x3f4b4/0x3f636/0x18d18(×2)/0x19318 (matched: 0x18d18, 0x19318).
+
+## Mission-cursor target-action resolver — `FUN_0002ad58` @ 0x2ad58 (cont. 25 decode)
+
+**TRUE SIZE 3694 (0x2ad58–0x2bbc5; manifest was 1737, fixed). Calls 8 not 4.** Resolves what the
+mission cursor points at and writes an action order into `ushort *p` (p[0]=x/id, p[2]=y, p[4]=z,
+p[0xd]=action-code; returns int via [esp] slot). Co-located 20-byte jump table at 0x2ad44 (literal
+0x1d5fc + 0xd748): `switch(g_e120)` 5 entries → 3 targets (case0→return 0; 1,2→0x2b44c; 3,4,default
+→0x2b91e). Sequence: input-mode gates (g_e285/e2a4/e296/e297/e2a3 + g_10b45 → action 2/0x10/0x17),
+selection from g_e286-9 into g_e124, already-selected fast path, 4-ped-block shootable-target scan,
+move/attack order build (0x2c468 field-copy + 0x1ba48 cursor-line-draw), fresh-target pick via the
+R/G/B reticle-ramp interpolators (0x2d7a8/0x2d808) + g_ab60/g_ad60, adjacency/LOS, cursor clamp to
+scroll bounds (g_5390/5392/52f8) into reticle window g_10b1c/1e/20, final g_e120 dispatch. DOUBLY
+WALLED: indexes the 0x417-stride agent template records (g_e551/e552 via idx=g_10b16) AND the
+g_810e pool (0x5c stride) ~12× each with mixed and-form/movsx byte loads; directly calls the parked
+register-wall FUN_0002d7a8. Park (decode-only).
