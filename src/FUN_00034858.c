@@ -13,6 +13,32 @@
  *    blocked-tile map (g_5358 column table -> g_10ac0 class) and drop on a block,
  *    then accumulate + commit as above.
  * Recipe: -4s -oneatx -zp8 -s -zq
+ *
+ * PARKED near-miss ~74-77% (963B vs 964B). SEMANTICS BYTE-CORRECT: the prologue
+ * (31B) is byte-identical, the type-5/6 mode's whole call/arith sequence is
+ * byte-correct bar the spill below, and the "otherwise" mode is byte-IDENTICAL
+ * through offset 0x54 (the FUN_00034198 setup+call) with the g_5358 blocked-tile
+ * lookup structurally exact (in-place `add`, correct idiv/%0x6000, /256, *128,
+ * /128 tile math). Multiple INDEPENDENT register-role / encoding walls (playbook
+ * s3), no one of which is source-reachable:
+ *   1. type-5/6 dxa/dya spill (block-A first diff 0x1b). Target keeps dxa (1st
+ *      labs) in EDI and slot-homes dya, so the x-branch ends `mov eax,edi` (2B);
+ *      the `(short)` cast needed for the 16-bit `cmp di,word[esp]` forces -oneatx
+ *      to spill dxa to the slot and reload it (`mov eax,[esp]`, 3B) + eager pop.
+ *      Without the cast dxa DOES stay in EDI, but the compare becomes 32-bit.
+ *      volatile-dya / &dya / register / decl-order / operand-swap / -or/-ot/-oa/
+ *      -oc all fail (each flips one byte the other way or diverges elsewhere).
+ *   2. facing switch (block-B first structural diff 0x54): target dispatches with
+ *      a NEAR `0f82` jc where our -oneatx emits the rel8 `72` that fits (a Watcom
+ *      jump-encoding peephole, same class as the push imm8/imm32 wall); case-body
+ *      reorder to the target's physical order fixes the dispatch but breaks the
+ *      case-0/0x80 g_10b28 cross-jump (+5B), so the two are mutually exclusive.
+ *   3. g_5358 column lookup: byte-structurally identical to target AFTER the
+ *      `base += index` in-place lever (gives `add edi,eax` not `lea`), residual is
+ *      a consistent EDI<->ECX register-role swap of the divisor/row/base triangle
+ *      -- the exact FUN_0002d5b8 / FUN_00033e78 g_5358 column register wall.
+ *   4. tile-class widen: target `xor edx,edx; mov dl,[eax]` vs ours `mov al;
+ *      and eax,0xff` (uchar and-form vs xor-first; FUN_0002d5b8 wall).
  */
 extern short g_10b28;
 extern short g_10b2a;
@@ -42,17 +68,16 @@ void FUN_00034858(unsigned char *p1, unsigned char *p2)
     if (p2[0x19] == 5 || p2[0x19] == 6) {
         int dxa = FUN_0003aed8((*(short *)(p1 + 0x2e) >> 8) - (g_10b28 >> 8));
         int dya = FUN_0003aed8((*(short *)(p1 + 0x30) >> 8) - (g_10b2a >> 8));
-        int *pdya = &dya;
         unsigned short steps;
 
-        if ((short)dxa > (short)*pdya) {
+        if ((short)dxa > (short)dya) {
             p2[0x29] = FUN_0004d221((short)(*(short *)(p1 + 0x2e) - g_10b28), 0);
             g_10b2a = FUN_00034048(g_10b2a, 0x80);
             steps = dxa;
         } else {
             p2[0x29] = FUN_0004d221(0, (short)(*(short *)(p1 + 0x30) - g_10b2a));
             g_10b28 = FUN_00034048(g_10b28, 0x80);
-            steps = *pdya;
+            steps = dya;
         }
 
         switch (steps) {
@@ -126,9 +151,8 @@ void FUN_00034858(unsigned char *p1, unsigned char *p2)
             int col = (g_10b28 & 0xff00) / 256;
             char **base = g_5358;
             int index = col + row * 128;
-            char **slot = base + index;
-            unsigned char tile = *(unsigned char *)((g_10b2c - 1) / 128 + (int)*slot);
-            if (g_10ac0[tile] != 0)
+            base += index;
+            if (g_10ac0[*(unsigned char *)((g_10b2c - 1) / 128 + (int)*base)] != 0)
                 FUN_0002d998(p1);
         }
 
