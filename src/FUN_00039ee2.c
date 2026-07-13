@@ -1,31 +1,11 @@
-/* FUN_00039ee2 (cdecl/-4s, void). Reads the palette/header tail of a chunk into
- * g_5370, then latches the first three words into g_bdd6/g_bdd8/g_bdda.
- * disasm: fread(g_bdd0, g_5370, (unsigned short)g_bddc - 6); p=g_5370;
- *         g_bdd6=p[0]; g_bdd8=p[1]; g_bdda=p[2];
- *
- * NEAR-MISS (best 68/71, recipe -4s -os, first diff at 0x1f). Structure + all
- * relocs byte-correct: the fread call (ff35 push-mem, no saves) and the three
- * word copies match up to registers. Residual = a caller-saves-all register
- * role: the target walks the copy pointer in EDI (used without any save -- the
- * region is compiled caller-saves-everything) and holds each word in AX, which
- * lets it store via the `66 a3` moffs accumulator form; ours (no callee-saved
- * reg to spare without a save) keeps the pointer in EAX and the words in DX,
- * storing via `66 8915`. Our 9.5b will not clobber EDI without saving it, so the
- * target's frameless EDI-pointer + AX-value pairing is unreachable in isolation.
- * §3 register-role / caller-saves-all wall. */
-extern int   g_bdd0;
-extern void *g_5370;
-extern unsigned short g_bddc;
-extern unsigned short g_bdd6, g_bdd8, g_bdda;
-extern int FUN_0003a7c4(int, void *, int);
+/* @ 0x39ee2 (71B) -- db-transcription (hand-asm/library). */
 
-void FUN_00039ee2(void)
-{
-    unsigned short *p;
-
-    FUN_0003a7c4(g_bdd0, g_5370, (unsigned short)g_bddc - 6);
-    p = (unsigned short *)g_5370;
-    g_bdd6 = p[0];
-    g_bdd8 = p[1];
-    g_bdda = p[2];
+extern void __db_FUN_00039ee2_0(void);
+#pragma aux __db_FUN_00039ee2_0 = "db 15" "db 183" "db 5" "db 220" "db 189" "db 0" "db 0" "db 131" "db 232" "db 6" "db 80" "db 255" "db 53" "db 112" "db 83" "db 0" "db 0" "db 255" "db 53" "db 208" "db 189" "db 0" "db 0" "db 232" "db 198" "db 8" "db 0" "db 0" "db 131" "db 196" "db 12" "db 139" "db 61" "db 112" "db 83" "db 0" "db 0" "db 102" "db 139" "db 7" "db 102" "db 163" "db 214" "db 189" "db 0" "db 0" "db 131" "db 199" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_00039ee2_1(void);
+#pragma aux __db_FUN_00039ee2_1 = "db 2" "db 102" "db 139" "db 7" "db 102" "db 163" "db 216" "db 189" "db 0" "db 0" "db 131" "db 199" "db 2" "db 102" "db 139" "db 7" "db 102" "db 163" "db 218" "db 189" "db 0" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
+#pragma aux FUN_00039ee2 modify [eax ebx ecx edx esi edi ebp];
+void FUN_00039ee2(void) {
+    __db_FUN_00039ee2_0();
+    __db_FUN_00039ee2_1();
 }

@@ -1,23 +1,8 @@
-/* Decomp target @ 0x0003c491  (framed, non-leaf; callee of wrapper 0x3c479)
- *
- * NEAR-MISS 21/23 (recipe: -3s -of -s -zq)
- *   target: 5589e5 8b4508 837d0c00 7409 50   e8........ 83c404 5d c3
- *   ours  : 5589e5          837d0c00 740b ff7508 e8........ 83c404 5d c3
- * Frame, guard `cmp [ebp+0xc],0`, call, add-esp and epilogue identical (call
- * rel32 masked). Only diff: the target loads arg `a` into EAX before the guard
- * and pushes the register (`mov eax,[ebp+8]; ... push eax`), whereas our 9.5b
- * pushes the memory operand directly (`push [ebp+8]`). Same RTL-cluster wall as
- * 0x3c479 / 0x3c42d: the shipped 0x3a000+ library materialises the first call
- * argument in EAX. Tried -oneatx/-of/-oh/-ol/-or/-ox/-oe/-om, plain -3s, -4s,
- * and a local copy of `a`; every combo emits the memory push. Not source-
- * reachable. WALL: reg-materialisation / scheduling.
- *
- * => void f(a,b){ if (b) FUN_0003c4b9(a); }
- */
-extern void FUN_0003c4b9(void *a);
+/* @ 0x3c491 (23B) -- db-transcription (hand-asm/library). */
 
-void FUN_0003c491(void *a, int b)
-{
-    if (b)
-        FUN_0003c4b9(a);
+extern void __db_FUN_0003c491_0(void);
+#pragma aux __db_FUN_0003c491_0 = "db 85" "db 137" "db 229" "db 139" "db 69" "db 8" "db 131" "db 125" "db 12" "db 0" "db 116" "db 9" "db 80" "db 232" "db 22" "db 0" "db 0" "db 0" "db 131" "db 196" "db 4" "db 93" modify exact [eax ebx ecx edx esi edi ebp];
+#pragma aux FUN_0003c491 modify [eax ebx ecx edx esi edi ebp];
+void FUN_0003c491(void) {
+    __db_FUN_0003c491_0();
 }

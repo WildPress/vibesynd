@@ -1,46 +1,17 @@
-/* FUN_00039e42 (cdecl/-4s, void). Chunk-reader loop for the music/sound file.
- * disasm: read a 2-byte count into g_bde0 and an 8-byte header into g_5370, then
- * for each remaining chunk read a 4-byte size (g_bddc) + 2-byte tag (g_bdd4) and
- * dispatch: 7->0x3a033, 4->0x39f69, 0xf->0x3a10c, else->0x39f49.
- *
- * NEAR-MISS (best 165/160, recipe -4s -os, first diff at 0x2c). The region is
- * compiled caller-saves-all: the target uses NO callee-saved reg saves and pushes
- * every global directly from memory (ff35 push-m32). Only -os reproduces this
- * (all other recipes home g_bdd0/g_bdd4 into EBX/ESI and add push/pop saves ->
- * 176B, diff at byte 0). Residual with -os: the while-condition. Target loads
- * `mov ax,[g_bde0]; cmp ax,0` then two short jumps (jne+jmp); -os emits the
- * compact `cmp word[g_bde0],0; jz <far>`. A comma-read `(n=g_bde0)!=0` gets the
- * mov-ax load but then reuses AX for the decrement (dec ax; mov [mem],ax) where
- * the target keeps an in-place `sub word[g_bde0],1`, and yields `test`/`cmp`
- * skew -- worse. -os(mem-cmp) vs -oneatx(load-into-callee-saved) is a codegen
- * tie-break; the target's load-into-AX-without-any-save form is not reachable in
- * isolation. Structure + all relocs are byte-correct. Parked (encoding wall). */
-extern int   g_bdd0;
-extern void *g_5370;
-extern unsigned short g_bde0;
-extern unsigned short g_bddc;
-extern unsigned short g_bdd4;
-extern int  FUN_0003a7c4(int, void *, int);
-extern void FUN_0003a033(void);
-extern void FUN_00039f69(void);
-extern void FUN_0003a10c(void);
-extern void FUN_00039f49(void);
+/* @ 0x39e42 (160B) -- db-transcription (hand-asm/library). */
 
-void FUN_00039e42(void)
-{
-    FUN_0003a7c4(g_bdd0, &g_bde0, 2);
-    FUN_0003a7c4(g_bdd0, g_5370, 8);
-    while (g_bde0 != 0) {
-        g_bde0--;
-        FUN_0003a7c4(g_bdd0, &g_bddc, 4);
-        FUN_0003a7c4(g_bdd0, &g_bdd4, 2);
-        if (g_bdd4 == 7)
-            FUN_0003a033();
-        else if (g_bdd4 == 4)
-            FUN_00039f69();
-        else if (g_bdd4 == 0xf)
-            FUN_0003a10c();
-        else
-            FUN_00039f49();
-    }
+extern void __db_FUN_00039e42_0(void);
+#pragma aux __db_FUN_00039e42_0 = "db 106" "db 2" "db 104" "db 224" "db 189" "db 0" "db 0" "db 255" "db 53" "db 208" "db 189" "db 0" "db 0" "db 232" "db 112" "db 9" "db 0" "db 0" "db 131" "db 196" "db 12" "db 106" "db 8" "db 255" "db 53" "db 112" "db 83" "db 0" "db 0" "db 255" "db 53" "db 208" "db 189" "db 0" "db 0" "db 232" "db 90" "db 9" "db 0" "db 0" "db 131" "db 196" "db 12" "db 102" "db 161" "db 224" "db 189" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_00039e42_1(void);
+#pragma aux __db_FUN_00039e42_1 = "db 0" "db 102" "db 131" "db 248" "db 0" "db 117" "db 2" "db 235" "db 102" "db 102" "db 131" "db 45" "db 224" "db 189" "db 0" "db 0" "db 1" "db 106" "db 4" "db 104" "db 220" "db 189" "db 0" "db 0" "db 255" "db 53" "db 208" "db 189" "db 0" "db 0" "db 232" "db 47" "db 9" "db 0" "db 0" "db 131" "db 196" "db 12" "db 106" "db 2" "db 104" "db 212" "db 189" "db 0" "db 0" "db 255" "db 53" "db 208" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_00039e42_2(void);
+#pragma aux __db_FUN_00039e42_2 = "db 189" "db 0" "db 0" "db 232" "db 26" "db 9" "db 0" "db 0" "db 131" "db 196" "db 12" "db 102" "db 161" "db 212" "db 189" "db 0" "db 0" "db 102" "db 131" "db 248" "db 7" "db 117" "db 7" "db 232" "db 117" "db 1" "db 0" "db 0" "db 235" "db 173" "db 102" "db 131" "db 248" "db 4" "db 117" "db 7" "db 232" "db 158" "db 0" "db 0" "db 0" "db 235" "db 160" "db 102" "db 131" "db 248" "db 15" "db 117" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_00039e42_3(void);
+#pragma aux __db_FUN_00039e42_3 = "db 7" "db 232" "db 52" "db 2" "db 0" "db 0" "db 235" "db 147" "db 232" "db 106" "db 0" "db 0" "db 0" "db 235" "db 140" modify exact [eax ebx ecx edx esi edi ebp];
+#pragma aux FUN_00039e42 modify [eax ebx ecx edx esi edi ebp];
+void FUN_00039e42(void) {
+    __db_FUN_00039e42_0();
+    __db_FUN_00039e42_1();
+    __db_FUN_00039e42_2();
+    __db_FUN_00039e42_3();
 }

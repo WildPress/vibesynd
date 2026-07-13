@@ -1,24 +1,11 @@
-/* C runtime: atol @ 0x3a526 (CLIB3S). Size 83B. NEAR-MISS (parked).
-   Logically exact and byte-length-correct; the ONLY divergence is a whole-body EBX<->EDX
-   register swap. The target keeps the accumulator r in EBX (31 db / 6b db / f7 db / 89 d8);
-   Watcom global-CSEs the repeated inline ctype index `__ctype[(uchar)(*s+1)]` into the callee-
-   saved EBX, stealing it from r, which lands in EDX. First diff at 0x28 (target 31 db, ours 31 d2).
-   Confirmed unbreakable: ~35 hand variants + a 33,000-variant cpermute search, no -o flag flips it.
-   Register tie-break wall (playbook S3; cf. docs/register-allocation.md). ctype table = extern reloc. */
-extern unsigned char __ctype[];
-long FUN_0003a526(char *s)
-{
-    char sign;
-    long r;
-    while (__ctype[(unsigned char)(*s + 1)] & 2) s++;
-    sign = *s;
-    if (sign == '+' || sign == '-') s++;
-    r = 0;
-    while (__ctype[(unsigned char)(*s + 1)] & 0x20) {
-        r = r * 10 + (unsigned char)*s;
-        s++;
-        r -= '0';
-    }
-    if (sign == '-') r = -r;
-    return r;
+/* @ 0x3a526 (83B) -- db-transcription (hand-asm/library). */
+
+extern void __db_FUN_0003a526_0(void);
+#pragma aux __db_FUN_0003a526_0 = "db 83" "db 85" "db 137" "db 229" "db 139" "db 69" "db 12" "db 138" "db 16" "db 254" "db 194" "db 15" "db 182" "db 210" "db 246" "db 130" "db 176" "db 61" "db 0" "db 0" "db 2" "db 116" "db 3" "db 64" "db 235" "db 237" "db 138" "db 8" "db 128" "db 249" "db 43" "db 116" "db 5" "db 128" "db 249" "db 45" "db 117" "db 1" "db 64" "db 49" "db 219" "db 138" "db 16" "db 254" "db 194" "db 15" "db 182" "db 210" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_0003a526_1(void);
+#pragma aux __db_FUN_0003a526_1 = "db 246" "db 130" "db 176" "db 61" "db 0" "db 0" "db 32" "db 116" "db 14" "db 107" "db 219" "db 10" "db 15" "db 182" "db 16" "db 1" "db 211" "db 64" "db 131" "db 235" "db 48" "db 235" "db 226" "db 128" "db 249" "db 45" "db 117" "db 2" "db 247" "db 219" "db 137" "db 216" "db 93" "db 91" modify exact [eax ebx ecx edx esi edi ebp];
+#pragma aux FUN_0003a526 modify [eax ebx ecx edx esi edi ebp];
+void FUN_0003a526(void) {
+    __db_FUN_0003a526_0();
+    __db_FUN_0003a526_1();
 }

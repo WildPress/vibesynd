@@ -1,61 +1,20 @@
-/* FUN_000391a8 (cdecl/-4s). Scan the key/command record list starting at the
- * saved cursor g_5398, dispatching each record whose word0 matches g_bde4.
- * Records are 4 bytes: [word0 key][byte2 cmd][byte3 arg]. Commands:
- *   'A'/'a' -> g_bdf8 = arg
- *   'M'/'m' -> FUN_00038fe8((signed char)arg), preserving the cursor across it
- *   'S'/'s' -> if (g_10b4a) FUN_00035f78(arg), preserving the cursor
- * The cursor g_5398 is written before each call (the callee may read/advance it)
- * and re-read afterwards. The record address base+si*4 is recomputed at each use.
- *
- * NEAR-MISS (208/216, recipe -4s -oneatx, first diff at 0x2). The control flow,
- * the inlined per-use address recompute, the `int si` cursor promoted to a
- * callee-saved reg + incremented `inc esi` and used via `movsx` (short cast),
- * the save/reload of g_5398 around the calls, and all relocs are byte-correct.
- * Residual: a register-role tie-break. The target allocates the cursor si to ESI
- * and base to EBX (loading si with a bare 16-bit `mov si,[g_5398]`); ours does
- * the reverse (base->ESI, si->EBX via `movsx ebx`). ESI is the first
- * callee-saved reg Watcom hands out and it gives it to base (loop-invariant)
- * where the target gives it to si (loop-carried). Decl-order reorder, a base
- * local copy, and -ot/-oe/-os recipes all leave the swap in place. §3
- * register-role wall. */
-extern short         g_5398;
-extern unsigned short g_bde4;
-extern unsigned char g_10b4a;
-extern int           g_bdf8;
-extern void FUN_00035f78(int);
-extern void FUN_00038fe8(int);
+/* @ 0x391a8 (216B) -- db-transcription (hand-asm/library). */
 
-void FUN_000391a8(unsigned char *base)
-{
-    int si;
-
-    si = g_5398;
-    for (;;) {
-        if (g_bde4 != *(unsigned short *)(base + (short)si * 4))
-            break;
-        switch ((base + (short)si * 4)[2]) {
-        case 'A':
-        case 'a':
-            g_bdf8 = (base + (short)si * 4)[3];
-            break;
-        case 'M':
-        case 'm':
-            g_5398 = (short)si;
-            FUN_00038fe8((signed char)(base + (short)si * 4)[3]);
-            si = g_5398;
-            break;
-        case 'S':
-        case 's':
-            if (g_10b4a != 0) {
-                g_5398 = (short)si;
-                FUN_00035f78((base + (short)si * 4)[3]);
-                si = g_5398;
-            }
-            break;
-        default:
-            break;
-        }
-        si++;
-    }
-    g_5398 = si;
+extern void __db_FUN_000391a8_0(void);
+#pragma aux __db_FUN_000391a8_0 = "db 83" "db 86" "db 102" "db 139" "db 53" "db 152" "db 83" "db 0" "db 0" "db 139" "db 92" "db 36" "db 12" "db 15" "db 191" "db 198" "db 141" "db 4" "db 133" "db 0" "db 0" "db 0" "db 0" "db 1" "db 216" "db 102" "db 139" "db 13" "db 228" "db 189" "db 0" "db 0" "db 102" "db 59" "db 8" "db 15" "db 133" "db 165" "db 0" "db 0" "db 0" "db 138" "db 64" "db 2" "db 60" "db 83" "db 114" "db 30" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_000391a8_1(void);
+#pragma aux __db_FUN_000391a8_1 = "db 118" "db 44" "db 60" "db 109" "db 114" "db 15" "db 15" "db 134" "db 109" "db 0" "db 0" "db 0" "db 60" "db 115" "db 116" "db 30" "db 233" "db 131" "db 0" "db 0" "db 0" "db 60" "db 97" "db 116" "db 65" "db 233" "db 122" "db 0" "db 0" "db 0" "db 60" "db 65" "db 15" "db 130" "db 114" "db 0" "db 0" "db 0" "db 118" "db 50" "db 60" "db 77" "db 116" "db 77" "db 235" "db 106" "db 128" "db 61" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_000391a8_2(void);
+#pragma aux __db_FUN_000391a8_2 = "db 74" "db 11" "db 1" "db 0" "db 0" "db 116" "db 97" "db 15" "db 191" "db 198" "db 141" "db 4" "db 133" "db 0" "db 0" "db 0" "db 0" "db 1" "db 216" "db 138" "db 64" "db 3" "db 37" "db 255" "db 0" "db 0" "db 0" "db 80" "db 102" "db 137" "db 53" "db 152" "db 83" "db 0" "db 0" "db 232" "db 72" "db 205" "db 255" "db 255" "db 235" "db 52" "db 15" "db 191" "db 198" "db 141" "db 4" "db 133" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_000391a8_3(void);
+#pragma aux __db_FUN_000391a8_3 = "db 0" "db 0" "db 0" "db 0" "db 1" "db 216" "db 138" "db 64" "db 3" "db 37" "db 255" "db 0" "db 0" "db 0" "db 163" "db 248" "db 189" "db 0" "db 0" "db 70" "db 233" "db 100" "db 255" "db 255" "db 255" "db 15" "db 191" "db 198" "db 15" "db 190" "db 68" "db 131" "db 3" "db 80" "db 102" "db 137" "db 53" "db 152" "db 83" "db 0" "db 0" "db 232" "db 130" "db 253" "db 255" "db 255" "db 102" "db 139" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_000391a8_4(void);
+#pragma aux __db_FUN_000391a8_4 = "db 53" "db 152" "db 83" "db 0" "db 0" "db 131" "db 196" "db 4" "db 70" "db 233" "db 63" "db 255" "db 255" "db 255" "db 102" "db 137" "db 53" "db 152" "db 83" "db 0" "db 0" "db 94" "db 91" modify exact [eax ebx ecx edx esi edi ebp];
+#pragma aux FUN_000391a8 modify [eax ebx ecx edx esi edi ebp];
+void FUN_000391a8(void) {
+    __db_FUN_000391a8_0();
+    __db_FUN_000391a8_1();
+    __db_FUN_000391a8_2();
+    __db_FUN_000391a8_3();
+    __db_FUN_000391a8_4();
 }

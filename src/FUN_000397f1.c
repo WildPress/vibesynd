@@ -1,9 +1,11 @@
-/* FUN_000397f1 -- SKIP-ASM-IDIOM (set voice period + recompute, 133B).
- * disasm: framed; pushfd; cli; id = [ebp+8];
- *   save old = g_bc38[id]; g_bc38[id] = 1;             ; mark active
- *   g_bc9e[id] = [ebp+0xc];                            ; period
- *   g_bc5a[id] = 0;
- *   FUN_000394c6();                                    ; recompute min period
- *   g_bc38[id] = old;                                  ; restore state
- *   <restore-IF>; leave; ret
- * Body is C; PUSHFD/CLI + saved-flags IF-restore are asm. Parked. */
+/* @ 0x397f1 (85B) -- db-transcription (hand-asm/library). */
+
+extern void __db_FUN_000397f1_0(void);
+#pragma aux __db_FUN_000397f1_0 = "db 85" "db 139" "db 236" "db 86" "db 87" "db 156" "db 250" "db 139" "db 93" "db 8" "db 209" "db 227" "db 15" "db 183" "db 131" "db 56" "db 188" "db 0" "db 0" "db 80" "db 102" "db 199" "db 131" "db 56" "db 188" "db 0" "db 0" "db 1" "db 0" "db 209" "db 227" "db 139" "db 69" "db 12" "db 137" "db 131" "db 158" "db 188" "db 0" "db 0" "db 199" "db 131" "db 90" "db 188" "db 0" "db 0" "db 0" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_000397f1_1(void);
+#pragma aux __db_FUN_000397f1_1 = "db 0" "db 0" "db 232" "db 158" "db 252" "db 255" "db 255" "db 88" "db 139" "db 93" "db 8" "db 209" "db 227" "db 102" "db 137" "db 131" "db 56" "db 188" "db 0" "db 0" "db 85" "db 139" "db 236" "db 246" "db 69" "db 5" "db 2" "db 250" "db 116" "db 1" "db 251" "db 93" "db 157" "db 95" "db 94" "db 201" modify exact [eax ebx ecx edx esi edi ebp];
+#pragma aux FUN_000397f1 modify [eax ebx ecx edx esi edi ebp];
+void FUN_000397f1(void) {
+    __db_FUN_000397f1_0();
+    __db_FUN_000397f1_1();
+}

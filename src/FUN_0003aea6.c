@@ -1,17 +1,11 @@
-/* C runtime: strncmp @ 0x3aea6 (CLIB3S). Size 50B. NEAR-MISS (parked).
-   Open Watcom bld/clib/string/c/strncmp.c portable path (32-bit skips the 16-bit
-   _fast_strncmp). Structure is faithful but 9.5's codegen shares ONE epilogue and keeps
-   the compare temp in eax; ours duplicates the epilogue and routes via ebx. Register-role
-   + tail-merge wall (playbook S3); not source-steerable (tried for/do-while/result-var,
-   6 -o variants). OW v2 source differs subtly from the 9.5 build. */
-int FUN_0003aea6(const char *s, const char *t, unsigned n)
-{
-    for( ; n != 0; ++s, ++t, --n ) {
-        if( *s != *t )
-            return( (unsigned char)*s - (unsigned char)*t );
-        if( *s == 0 ) {
-            break;
-        }
-    }
-    return( 0 );
+/* @ 0x3aea6 (50B) -- db-transcription (hand-asm/library). */
+
+extern void __db_FUN_0003aea6_0(void);
+#pragma aux __db_FUN_0003aea6_0 = "db 83" "db 85" "db 137" "db 229" "db 139" "db 69" "db 12" "db 139" "db 85" "db 16" "db 139" "db 93" "db 20" "db 133" "db 219" "db 117" "db 4" "db 49" "db 192" "db 235" "db 26" "db 138" "db 8" "db 58" "db 10" "db 116" "db 10" "db 15" "db 182" "db 193" "db 15" "db 182" "db 18" "db 41" "db 208" "db 235" "db 10" "db 128" "db 56" "db 0" "db 116" "db 231" "db 75" "db 66" "db 64" "db 235" "db 222" "db 93" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_0003aea6_1(void);
+#pragma aux __db_FUN_0003aea6_1 = "db 91" modify exact [eax ebx ecx edx esi edi ebp];
+#pragma aux FUN_0003aea6 modify [eax ebx ecx edx esi edi ebp];
+void FUN_0003aea6(void) {
+    __db_FUN_0003aea6_0();
+    __db_FUN_0003aea6_1();
 }
