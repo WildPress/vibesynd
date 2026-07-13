@@ -224,7 +224,25 @@ the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intri
 method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-13)
-- **Coverage: 169/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 172/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (cont. 23 — +3: 0x28b88 (mouse-driver INT 33h init — FP_SEG empty-pragma transcription, i86.h
+  `parm caller [eax dx] value [dx]`), 0x2d9e8 (853B squad-interference test — volatile-alias
+  extern also pins ENTRY-LOAD SCHEDULING, not just re-reads; compound `*=` in-place imul; named
+  double-read temps can REGRESS), 0x29ad8 (372B status-line dispatcher — **CROSS-JUMP LAW**:
+  -oneatx merges identical per-case call tails ONLY if every arm exits via break/fall-out; spell
+  N-1 arms `goto hit` + ONE arm break-falling-into-`hit:` to reproduce a merged block. 6-test
+  battery, playbook §2). cpermute is now JUMP-TABLE-AWARE (same table-split as match_reloc).
+  BIG PARKS with full decodes + true sizes fixed: 0x2a288 1427B ~83% (radar state machine,
+  coloring/layout deadlock), 0x11d68 2881B (find-blocker megafn — manifest was 337! both tables
+  resolved; full-case-coverage forces un-rebased tables; 0x11e3c IS code, old data-note was about
+  the runtime addr), 0x12da8 1188B ~92% (equip-template builder), 0x223c8 724B 96% (re-equip;
+  imul+add vs mov-base codegen-choice wall), 0x33568 864/866 (funding commit; anti-correlated
+  role parity), 0x20018 307/314, 0x19318 589/585, 0x28228/0x28368 (the DPMI EAX↔ECX cascade wall
+  now has FOUR sibling data points — 0x27fc8/0x28118/0x28228/0x28368; volatile-alias does NOT
+  transfer within the family, reg-form `=1` stores are register-availability-driven). Remaining
+  untried: ~28 game fns (mostly 600B+ / the 0x34xxx weapons cluster / megafns 0x18d18 0x1bc28
+  0x21658 0x23158 0x133a8) — the sweet-spot vein is exhausted; future sessions live in big-fn
+  and near-miss-closing territory.)
   (cont. 22 — **THE DISPATCHER CLASS + OLD-WALL RETRY WAVE: +7 more.** BANKED: 0x33fb8 (the
   legendary cont.11 one-byte park — the tail was SWITCH lowering (`jb` targets differ from &&-chain)
   + base-decl-POSITION lever), 0x28ec8 (g_5358 column wall, 0x2fca8 lever set first rewrite),

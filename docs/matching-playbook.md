@@ -249,6 +249,18 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   re-reads through `*(volatile unsigned short *)node` — exactly those loads split; nothing else
   changes. Pointer-deref variant of the volatile-read lever. (0x26c78; likely un-parks 0x26da8's
   CSE component.)
+- **Cross-jump law for per-case call tails (cont. 22, proven by a 6-test battery)** — -oneatx
+  cross-jumps identical per-case call tails ONLY when EVERY arm exits the switch via break/
+  fall-out; a single goto/continue/return arm kills merging for ALL arms. To reproduce a merged
+  call block that N arms jump into: end N-1 arms with `goto hit;` and ONE arm (the one whose copy
+  the target keeps, usually the last case body before the merge point) with `break` falling into
+  `hit:`. This explains and unlocks the merged-call-tail dispatcher class. (0x29ad8 — MATCHED.)
+- **Volatile-alias extern pins entry-load SCHEDULING too (cont. 22)** — beyond re-read
+  splitting: a non-volatile `end = g_10ae0` init gets sunk 3 instructions by the scheduler; the
+  volatile-alias spelling holds the `mov ebp,[g]` load FIRST. Closed 0x2d9e8 (853B). Same report:
+  compound `ca *= w+1` gives in-place and+imul (assignment form splits an xor-temp); inline
+  flag-byte reads home per-chain in DH/DL/AL (named uchar forces AL, +1B each); a named temp for
+  a double-read can REGRESS (reuse-copy vs the target's second load) — try plain inline first.
 - **Volatile-alias extern (cont. 21)** — declare a SECOND extern name for the same global with
   `volatile` (e.g. `g_e116v`) and use it per-site: volatile codegen exactly where wanted (store
   forms, mem-cmp, `=1` immediates), normal codegen elsewhere — fixup masking ignores names.
