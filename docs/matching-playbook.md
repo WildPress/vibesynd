@@ -93,6 +93,18 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   picks a shorter encoding than the target (e.g. `add eax,2` → `83 c0 02` but target has the
   EAX-accumulator `05 02000000`), force the exact bytes with `db` directives (`"db 5" "db 2" "db 0"
   "db 0" "db 0"`). This banked strcpy 0x3a8d7 byte-exact and generalizes to outp/memcpy/etc.
+- **Frameless hand-asm CLIB WITH a call (cont. 25) — the missing recipe.** A frameless
+  stack-calling CLIB stub that reads `[esp+N]` itself and tail-calls a core (e.g. memset →
+  aligned-fill core) matches as a db-transcribed `#pragma aux` (whole body incl. the real masked
+  `call`) inlined into a frameless wrapper compiled WITHOUT `-d2` (`-3s -oneatx -zp8 -s -zq`). The
+  pragma reading `[esp+N]` directly yields a standalone frameless symbol. (0x3aaf8 memset.)
+- **regs-first prologue via full-db pragma + `-d2` (cont. 25) — sidesteps the reg-save-order wall.**
+  A CLIB fn whose prologue is `push ebx; push esi; push ebp; mov ebp,esp` (saved regs BEFORE the
+  frame — the §3 reg-save-order wall for normal C) DOES match when the saves come from the pragma's
+  `modify [ebx esi]` list and `-d2` emits them regs-first before the frame. `-od` fails (adds edi +
+  sub esp + heavy epilogue). So full-db pragma body + `-d2` reaches this prologue that plain C can't.
+  (0x3a89d close: `int 21h` AH=0x3e + carry-to-sign + errno.) Also: `-3s -d2` gives the target's
+  `LEAVE` (`c9 c3`) where `-of` gives the heavy `89 ec 5d c3` — `-d2` is the LEAVE-frame recipe.
 - **DOS/port asm fns: replicate as a `#pragma aux` wrapper, db-transcribe the body.** For the
   small hand-asm RTL fns (`out dx,al`, `int 21h`, `mov Sreg`), write `extern T __f(...); #pragma aux
   __f = <body> parm[..] value[..] modify exact[..]; T FUN_x(..){ return __f(..); }` and let `-d2`

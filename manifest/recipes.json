@@ -698,5 +698,21 @@
  "FUN_00020158": {
   "addr": "00020158",
   "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003adb2": {
+  "addr": "0003adb2",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003ad66": {
+  "addr": "0003ad66",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003aaf8": {
+  "addr": "0003aaf8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003a89d": {
+  "addr": "0003a89d",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
  }
 }
