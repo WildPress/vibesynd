@@ -493,6 +493,14 @@ slice; going further is against the evidence. PARK these, don't build for them.
   de-optimizes the body. Diverges at byte 0. Recognize: the target has `push <reg>` before
   `push ebp`. PLAIN framed siblings (no saved reg, bare `push ebp; mov ebp,esp`) DO match with
   `-3s -of`. (0x3db36, 0x3dbeb, 0x3d3e4, 0x3ca0d — bodies are byte-faithful but walled.)
+  **ALSO IN THE GAME REGION (cont. 25):** a call-heavy game fn whose params must stay
+  MEMORY-HOMED across esp-in-flux nested-call cleanups gets a regs-first EBP frame in the ORIGINAL
+  (`push ebx;esi;edi;ebp; mov ebp,esp; sub esp,N`), but our 9.5b tracks the esp deltas and goes
+  FRAMELESS (promoting the param into ESI). Only `-od` reproduces the exact prologue and it
+  de-optimizes the body — same mutual-exclusion as the CLIB region. Recognize: target has
+  `push ebp; mov ebp,esp` (89 e5) after the reg saves and re-reads a param from `[ebp+N]` at sites
+  straddling call cleanups; first diff at byte ~4. Confirm with `-od` (exact prologue, wrong body).
+  (0x25d58 — full decode, walled.)
 - **0x3a000+ framed runtime-library = toolchain-version mismatch (whole-region wall)** — the shipped
   RTL objects were built with a DIFFERENT Watcom than our 9.5b. Two irreducible tells: (a) it
   materialises the first call arg into EAX before pushing (`mov eax,[ebp+8]; push eax`) where our
