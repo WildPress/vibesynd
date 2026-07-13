@@ -401,6 +401,27 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
 If the structure is byte-correct and only ONE of these remains, stop and park with a note. Do not
 grind; the fuzzer permutes *source* and can't change the allocator's mind.
 
+**WALL TAXONOMY (cont. 25 — investigated the "register-search" question; this is the honest map).**
+The parked near-misses split into THREE classes, and only one is even theoretically source-reachable:
+1. **Encoding tie-break (NOT register — most common, misfiled for ages).** Watcom's instruction
+   ENCODER, not its allocator, picks the byte form: accumulator `05 imm32` vs `83 c0 imm8` for
+   `add eax,imm` (asymmetric with the `sub` path even in the SAME fn), `xor dh,ah` cross-byte vs
+   `xor dh,dh` self-zero, push imm8-vs-imm32. **0x34048's register role was actually SOLVED** — its
+   residual is pure encoding. NO source transform and NO register search can move these; the encoder
+   is fixed. Verified: 20000 combined cpermute variants (incl. decl-perm) leave 0x34048 at 50/56.
+2. **Accumulator-selection register tie.** `add edx,eax` vs `add eax,edx` for `mem + reg` — which
+   reg is the accumulator holding the running sum. Commutative swap RE-canonicalises (often worse);
+   no C construct forces the accumulator. Some are permuter-reachable when a swap happens to flip it
+   (0x272b8 cracked), most are not (0x2d0d8 — same class, not reachable). 
+3. **Per-body register-pressure VARIATION.** One fn reads the same value 2-3 different ways in
+   different bodies (`movsx eax/edx,[edx/eax+0xb6]` ×3 in 0x23158) because each body's surrounding
+   pressure differs. Inherently NOT reproducible from a uniform C spelling — it reflects the
+   original's per-body source structure we can't recover. Whole template family (0x223c8, 0x12da8,
+   0x23158) parked here.
+CONCLUSION: a "register-allocation-aware search" targets only class 2, and even there the
+accumulator choice isn't a source-level knob. The decl-perm tool (cont. 24) was the reachable
+slice; going further is against the evidence. PARK these, don't build for them.
+
 - **Register-role tie-break** — identical instructions, but a value lives in a different register
   (EAX vs EDX / ESI vs EBX), cascading into encodings (`cwde`↔`movsx`, `lea`↔`add`, `test al`↔`test
   dl`, `cmp ax`↔`cmp dx`). Every C spelling + the fuzzer converge to the wrong reg. (0x34048, 0x34088
