@@ -488,6 +488,22 @@ grind; the fuzzer permutes *source* and can't change the allocator's mind.
   assignment-in-condition all fail to suppress it. Companion: ours tail-MERGES identical 7-byte
   `xor eax,eax; pops; ret` guards into one far block where the target duplicates them inline —
   also not steerable. (0x35d08 338/346.)
+- **Loop-split march: gap-hoist vs anti-interleave are mutually exclusive (cont. 25)** — a
+  fn with TWO byte-identical physical copies of a march loop (phase-1 with a trailing collision
+  CALL, phase-2 a plain continuation after the break) where each copy's accumulator load must be
+  hoisted into a `shl/sar` latency gap (`shl edx,8; movsx eax,g; sar edx,8`). Phase-2 (no trailing
+  call) gets the clean per-statement schedule from a plain non-volatile `+=` and matches exactly;
+  phase-1's trailing call frees the scratch regs and lets -oneatx INTERLEAVE the two marches
+  (loads the 2nd table straight into the index reg, `movsx edx,[edx*2+t]` 8B, vs `movsx eax; mov
+  edx,eax` 10B — 2B short). `volatile` on the accumulator global blocks the interleave (restores
+  length + the `mov edx,eax` form) but, as a hard scheduling barrier, PINS the load to program
+  order AFTER `sar` (one instr late) in BOTH copies. So you get either hoisted-but-interleaved
+  (plain +=) or barrier-pinned-late (volatile) — never both, because the gap-fill needs a
+  reorderable load and anti-interleave needs a barrier. A volatile-ALIAS used in only one copy does
+  NOT work (the barrier must be the SAME symbol in both copies to interact with the call's read of
+  it). Levers that DID land here: callee param `short` for the `xor;mov al;cwde` arg widen; tail
+  floor compare spelled `a < b/2` for the `cmp edx,eax; jge` orientation. (0x34198 PARKED 453/453B
+  95.4%, first diff 0x77; two-loop source, phase-2 exact. Same class as 0x34608's cross-jump wall.)
 - **Entry-scheduler load batching (cont. 21)** — ours batches all entry loads (param + globals)
   at the top and loads a byte global into AH for a `test` where the target compares memory
   directly (`cmp byte [mem],0`) mid-sequence; ours also value-numbers a loop's `-1` into CH
