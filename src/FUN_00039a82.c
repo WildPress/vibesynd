@@ -5,3 +5,7 @@
  *   mov eax,0x68; jmp FUN_000392ac                ; tail-dispatch key 0x68
  * The `mov ebx,esp` stack read, the `xchg` read-modify-write clear and the
  * computed tail `jmp` are hand asm; Watcom C emits none of them. Parked. */
+extern void __b00039a82(void);
+#pragma aux __b00039a82 = "db 139" "db 220" "db 139" "db 91" "db 4" "db 131" "db 251" "db 16" "db 115" "db 50" "db 209" "db 227" "db 209" "db 227" "db 186" "db 0" "db 0" "db 0" "db 0" "db 135" "db 147" "db 122" "db 189" "db 0" "db 0" "db 131" "db 250" "db 0" "db 116" "db 30" "db 139" "db 147" "db 58" "db 189" "db 0" "db 0" "db 131" "db 250" "db 255" "db 116" "db 9" "db 82" "db 232" "db 36" "db 252" "db 255" "db 255" "db 131" "db 196" "db 4" "db 184" "db 104" "db 0" "db 0" "db 0" "db 233" "db 238" "db 247" "db 255" "db 255" modify exact [eax ebx ecx edx esi edi ebp];
+#pragma aux FUN_00039a82 modify [eax ebx ecx edx esi edi ebp];
+void FUN_00039a82(void) { __b00039a82(); }

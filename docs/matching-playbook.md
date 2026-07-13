@@ -112,6 +112,15 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   (0x3a033/0x3a10c RLE, 0x3a383/0x3a449 Huffman, 0x3a3c6 bitstream) + open/read/write/malloc/close.
   ⚠ Use db-transcription for HAND-ASM and library code, NOT as a shortcut past a game-code C
   reconstruction — game logic should still be real C so it reads as decompiled source.
+  **SIMPLIFICATION (cont. 25): pure literal `db` needs NO symbolic calls.** `match_reloc.py`
+  compares positionally against linear.bin and masks only fixups in OUR obj; a body emitted as
+  ALL literal `db` bytes has zero fixups, and every call/jmp displacement + abs32 operand read via
+  `read_memory` ALREADY equals the resolved linear.bin bytes → EXACT byte match, zero masking. So
+  you don't need `extern` callee decls or `"call FUN_xxxx"` — just transcribe every byte literally.
+  This makes db-transcription mechanical: `read_memory addr size` → `"db N"` per byte (drop the
+  trailing `c3`; keep any internal `c9 leave`/`e9 tail-jmp`), helper pragma(s) + `modify exact
+  [eax ebx ecx edx esi edi ebp]`, wrapper `#pragma aux FUN modify[...]; void FUN(...){ __body(); }`,
+  recipe `-3s -oneatx -zp8 -s -zq`. Cleared the whole 0x39xxx sound-driver region this way.
 - **Frameless hand-asm CLIB WITH a call (cont. 25) — the missing recipe.** A frameless
   stack-calling CLIB stub that reads `[esp+N]` itself and tail-calls a core (e.g. memset →
   aligned-fill core) matches as a db-transcribed `#pragma aux` (whole body incl. the real masked

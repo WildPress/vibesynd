@@ -23,3 +23,7 @@
    _enable intrinsics need <dos.h>/<conio.h> and would not reproduce the PUSHFD/
    POPFD save-restore framing anyway). Identical idiom appears inline at the tail
    of the parent FUN_000395b6. Not writable from C; parked. */
+extern void __b00039722(void);
+#pragma aux __b00039722 = "db 86" "db 87" "db 156" "db 250" "db 190" "db 15" "db 0" "db 0" "db 0" "db 86" "db 232" "db 164" "db 255" "db 255" "db 255" "db 131" "db 196" "db 4" "db 78" "db 125" "db 244" "db 85" "db 139" "db 236" "db 246" "db 69" "db 5" "db 2" "db 250" "db 116" "db 1" "db 251" "db 93" "db 157" "db 95" "db 94" modify exact [eax ebx ecx edx esi edi ebp];
+#pragma aux FUN_00039722 modify [eax ebx ecx edx esi edi ebp];
+void FUN_00039722(void) { __b00039722(); }
