@@ -9,12 +9,29 @@
  * frame changed, look up sprite g_5348[frame] into word +0xc and store frame to
  * +0xe; draw via 0x1b798(sprite, x=+2, y=+4).
  *
- * Structure, the dense-0..4 jump table, the entry-guard do-while loop, the ESI
- * old-frame hold, and the g_5348 pointer-materialise ALL match. PARKED on the
- * back-half register tie-break: the target builds base in EDX and accumulates
- * the frame in EAX (mov edx,0xd4; add eax,edx; sprite base ECX, result DX);
- * every C form here rotates that to ECX/CX. Inlining base/old flips ESI->EDI
- * instead. Same class as 0x2d5b8 / 0x28ec8. Recipe: -4s -oneatx -zp8 -s -zq
+ * cont.21 RETRY DATA (7 compiles): the back-half rotation is a demanded-bits
+ * vs fold-direction either/or, plus three independent 1-2 byte diffs:
+ * - `unsigned int a = sw + base;` + `(ushort)a` uses (full-width-temp lever)
+ *   DOES flip the sum fold to EAX and fixes the ENTIRE downstream rotation
+ *   (base=EDX `bad4000000/66035310`, `01d0` add eax,edx, idx=EDX, ptr=ECX
+ *   `8b0d`, stores `6689530c/6689430e` all == target) -- BUT the int temp
+ *   demands 32 bits, so Watcom materialises the ushort base widen
+ *   `81e2ffff0000` (target has none: it exploits mov edx,imm32 known-zero
+ *   upper16), AND old demotes ESI->CX dropping push esi. ushort `a` (this
+ *   file) avoids the widen (demanded-16) but folds into base's ECX instead.
+ *   sw-as-destination `sw = (ushort)(sw+base)` gives base=EDX + 16-bit add +
+ *   eax widen. Split `a = sw; a += base;` regresses (3rd push). Commute and
+ *   inline-base are byte-inert.
+ * - old-in-ESI comes ONLY from the top-of-block decl-init (crosses the
+ *   dispatch); any later assignment homes it in CX. Target has the SAME
+ *   `668b730e` bytes but scheduled late (after `add dx,[ebx+0x10]`) -- ours
+ *   always schedules it right after the dec. Not source-reachable so far.
+ * - entry guard: target DUPLICATES the 3-byte epilogue (`7503 5e5bc3`); ours
+ *   always far-jz to the shared one (`0f84 8b000000`). `if(==-99) return;`
+ *   and `if(!=-99) goto body; return; body:` both still merge.
+ * - loop tail: target `83c312 0fbf03` (add then load); ours folds the load
+ *   pre-add `0fbf4312 83c312`. volatile on the while deref is inert.
+ * Same class as 0x2d5b8 / 0x28ec8. Recipe: -4s -oneatx -zp8 -s -zq
  */
 extern unsigned short *g_5348;
 extern void FUN_0001b798(unsigned short spr, short x, short y);

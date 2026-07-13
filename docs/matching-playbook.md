@@ -249,6 +249,17 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   re-reads through `*(volatile unsigned short *)node` — exactly those loads split; nothing else
   changes. Pointer-deref variant of the volatile-read lever. (0x26c78; likely un-parks 0x26da8's
   CSE component.)
+- **Volatile-alias extern (cont. 21)** — declare a SECOND extern name for the same global with
+  `volatile` (e.g. `g_e116v`) and use it per-site: volatile codegen exactly where wanted (store
+  forms, mem-cmp, `=1` immediates), normal codegen elsewhere — fixup masking ignores names.
+  Confirmed: wcc386 9.5 IGNORES volatile applied via cast; only the declaration counts.
+  (0x2bee8 case 3; decl-volatile on the real name regressed case 1.)
+- **`& ~7` vs `& 0xf8` mask spelling (cont. 21)** — with all mask high-bits set (`x & ~7`),
+  Watcom's demanded-bits narrows the AND to the byte form `and al,0xf8` and copies the full
+  register (quotient bits 8-15 pass through); a `(uchar)x & 0xf8` spelling inserts a movzx and
+  `0xf8`/`0xfff8` int masks stay wide (`25 …` imm32). The byte-AND + full-copy signature means
+  `& ~CONST`. (0x2ee18 — MATCHED; also: inline `di + 8` in the guard with ushort di makes LICM
+  re-materialise per-iteration instead of spilling a hoist slot.)
 - **goto-fail merge into a guard body (cont. 21)** — when the target shares ONE `xor eax; jmp`
   return-0 stub jumped into from multiple guards, write `goto fail;` with the `fail:` label
   placed INSIDE another guard's if-body — reproduces the shared stub instead of duplicated
