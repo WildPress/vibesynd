@@ -13,7 +13,20 @@
  * cases -> Watcom CSE-hoists them into the switch preamble (ecx=y+1/esi=x+1/edx=x-1/
  * ebx=y-1, AFTER the dec/cmp/ja range check).  NE/N/E share one FUN_00045e61 call
  * tail (identical args) via -oneatx cross-jump; SW joins only the final push+call.
- * Cousin: src/FUN_0001ba48.c. */
+ * Cousin: src/FUN_0001ba48.c.
+ *
+ * STATUS: NEAR-MISS +2 bytes (1336 vs true 1334, code-only; the compiled obj carries a
+ * co-located [table 40B][pad 8B] prefix that match_reloc strips, so the tool prints
+ * ours=1384/target=1334 and a bogus "first diff 0x28" from the size-mismatched tail
+ * split).  Structure is fully recovered: case->body map, jump-table decode, the 4-way
+ * neighbour CSE hoist, and the NE/N/E cross-jump tail-merge all reproduce.  The residual
+ * +2 is a register-allocation tie-break in the edge cases (W/N/S/E): the target does the
+ * `g +- 2` update IN-PLACE on the accumulator loaded by the guard compare and stores it
+ * with the compact `a3` form (sub eax,2; mov moffs,ax), whereas Watcom 9.5b copies to a
+ * fresh callee-saved reg first (mov ecx,eax; sub ecx,2; mov [g],cx, +? bytes) even though
+ * that reg is dead after the store.  Volatile-alias re-read (forced the movsx re-reads for
+ * the draw-call args but not the store form), compound `g -= 2`, and recipes -ot/-os/-oe/-or
+ * all left the same +2.  Genuine allocator wall (playbook 3). */
 extern unsigned short g_0000, g_0002;
 extern short g_1be32, g_1be34, g_1be36, g_1be38;
 extern int g_10ab4, g_10ab8;
