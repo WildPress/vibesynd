@@ -1,4 +1,12 @@
-/* @ 0x20158: item detail panel drawer. param1 selects the layout:
+/* @ 0x20158: MATCHED (RELOC-AWARE) 1028B, -4s -oneatx -zp8 -s -zq.
+   Levers: label strings spelled as *(char**)((char*)g_47xx + g_a50d*4) (the bare
+   g_47xx[g_a50d] index freed EAX and let g_11be4 take the 5-byte A1 moffs load
+   instead of the target's 6-byte 8B form); the g_4960 description slot both
+   guard and body INLINE g_4960 + byte*12 (no named q pointer) so the byte read
+   CSEs to the and-form widen, g_4960 materialises via MOV EBX,imm;ADD in the
+   null guard, and stays a +0x4960 disp32 in the body modrm.
+
+   item detail panel drawer. param1 selects the layout:
    ==2  -> weapon detail: blits the weapon icon (glyph (id+0x3f)*6, special 0x1d4
            for id 0x11) at (0x1f6,0x6a), then draws the name row and several
            label/value stat rows from the 0x1f5-stride record at
@@ -39,8 +47,6 @@ void FUN_00020158(unsigned char param1, unsigned char param2)
 {
     char buf[40];
     unsigned short y;
-    unsigned char b;
-    char *q;
 
     if (param1 == 2) {
         if (param2 == 0x11)
@@ -53,25 +59,25 @@ void FUN_00020158(unsigned char param1, unsigned char param2)
                                 + g_7bf4[(param2 - 1) * 0x1f5] * 12));
         FUN_00036698(buf, 0x1f8, 0xc4, 0xe, 0x54, g_11be4, -2, 6, 0, 0);
 
-        FUN_00036698(g_47a4[g_a50d], 0x1f8, 0xd0, 0xf, 0x54, g_11be4, -2, 8, 0, 0);
+        FUN_00036698(*(char **)((char *)g_47a4 + g_a50d * 4), 0x1f8, 0xd0, 0xf, 0x54, g_11be4, -2, 8, 0, 0);
         FUN_0003a4fa(buf, g_184, *(int *)(g_7bf4 + (param2 - 1) * 0x1f5 + 1));
         FUN_00036698(buf, 0x22c, 0xd0, 0xe, 0x54, g_11be4, -2, 6, 0, 0);
 
         y = 0xdc;
         if (g_a69a[param2] != 0) {
-            FUN_00036698(g_47b0[g_a50d], 0x1f8, 0xdc, 0xf, 0x54, g_11be4, -2, 8, 0, 0);
+            FUN_00036698(*(char **)((char *)g_47b0 + g_a50d * 4), 0x1f8, 0xdc, 0xf, 0x54, g_11be4, -2, 8, 0, 0);
             FUN_0003a4fa(buf, g_184, *(short *)(g_7bf4 + (param2 - 1) * 0x1f5 + 5) + 1);
             FUN_00036698(buf, 0x22c, 0xdc, 0xe, 0x54, g_11be4, -2, 6, 0, 0);
             y = 0xe8;
         }
 
-        FUN_00036698(g_47bc[g_a50d], 0x1f8, y, 0xf, 0x54, g_11be4, -2, 8, 0, 0);
+        FUN_00036698(*(char **)((char *)g_47bc + g_a50d * 4), 0x1f8, y, 0xf, 0x54, g_11be4, -2, 8, 0, 0);
         FUN_0003a4fa(buf, g_184, *(short *)(g_7bf4 + (param2 - 1) * 0x1f5 + 0xb));
         FUN_00036698(buf, 0x22c, y, 0xe, 0x54, g_11be4, -2, 6, 0, 0);
         y += 0xc;
 
         if (g_a69a[param2] != 0) {
-            FUN_00036698(g_47c8[g_a50d], 0x1f8, y, 0xf, 0x54, g_11be4, -2, 8, 0, 0);
+            FUN_00036698(*(char **)((char *)g_47c8 + g_a50d * 4), 0x1f8, y, 0xf, 0x54, g_11be4, -2, 8, 0, 0);
             FUN_0003a4fa(buf, g_184, *(int *)(g_7bf4 + (param2 - 1) * 0x1f5 + 7));
             FUN_00036698(buf, 0x22c, y, 0xe, 0x54, g_11be4, -2, 6, 0, 0);
         }
@@ -80,14 +86,14 @@ void FUN_00020158(unsigned char param1, unsigned char param2)
                                  + g_5780[(param2 - 1) * 0x1eb] * 12),
                      0x1f8, 0x6e, 0xe, 0x54, g_11be4, -2, 6, 0, 0);
 
-        FUN_00036698(g_47a4[g_a50d], 0x1f8, 0x7e, 0xf, 0x54, g_11be4, -2, 8, 0, 0);
+        FUN_00036698(*(char **)((char *)g_47a4 + g_a50d * 4), 0x1f8, 0x7e, 0xf, 0x54, g_11be4, -2, 8, 0, 0);
         FUN_0003a4fa(buf, g_184, *(int *)(g_5780 + (param2 - 1) * 0x1eb + 1));
         FUN_00036698(buf, 0x22c, 0x7e, 0xe, 0x54, g_11be4, -2, 6, 0, 0);
 
-        b = g_5780[(param2 - 1) * 0x1eb + 5];
-        q = (char *)g_4960 + b * 12;
-        if (q != 0) {
-            FUN_000363d8(*(char **)(q + g_a50d * 4),
+        if ((char *)g_4960 + g_5780[(param2 - 1) * 0x1eb + 5] * 12 != 0) {
+            FUN_000363d8(*(char **)((char *)g_4960
+                                    + g_5780[(param2 - 1) * 0x1eb + 5] * 12
+                                    + g_a50d * 4),
                          0x1f8, 0x8e, 0x78, 0xea, g_11be4, 0x54, 0xc, -2, 6, 0);
         }
     }
