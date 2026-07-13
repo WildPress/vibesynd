@@ -30,6 +30,11 @@ void *FUN_00017b48(char *name, int flags, void *out);
 
 void *FUN_00017b48(char *name, int flags, void *out)
 {
+    unsigned char *seg1[100];
+    char hdr[0xac];
+    unsigned char *a4[10];
+    char rec[0x18];
+    unsigned char in8[8];
     unsigned char b10[4];
     unsigned char b14[4];
     unsigned char b18[4];
@@ -48,11 +53,6 @@ void *FUN_00017b48(char *name, int flags, void *out)
     unsigned int tbl;
     int prev;
     int cur;
-    unsigned char in8[8];
-    char rec[0x18];
-    unsigned char *a4[10];
-    char hdr[0xac];
-    unsigned char *seg1[100];
     int fd;
     unsigned char *pp;
     unsigned int uv;
