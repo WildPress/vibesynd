@@ -269,6 +269,15 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   `_fstrcpy`/`_fstrcat`. The intrinsic wall (§3) is strlen/memcpy-SPECIFIC, not all string.h.
   (0x24be8.) ⚠ GOTCHA (0x27428): `#pragma intrinsic(f)` is SILENTLY IGNORED unless `f`'s prototype
   is declared — Watcom emits a plain call otherwise. Always pair the pragma with an `extern` decl.
+- **Cold-path (fallback) block placed physically LAST (cont. 25)** — when a fallback/error path is
+  reached by `if(cond){...fallback...}` inline in source order, Watcom keeps it inline; the target
+  moves it OUT-OF-LINE to the function end. Write `if(cond) goto fallback;` and put the `fallback:`
+  block physically last, before a shared `done:`/epilogue. Counterpart to "found-path first". Jumped
+  0x2def8 79→377 and fixed its length. Same idea as the early-return `if(valid) return x; return 0;`.
+- **Move zero-inits to just-before-use to free a callee-saved reg (cont. 25)** — a local zeroed AT
+  ENTRY makes Watcom hold the shared zero in a callee-saved reg (EDI), forcing a long-lived value to
+  SPILL. Moving each zero-init down to just before its first use lets the long-lived value take the
+  callee-saved reg instead (frame shrinks). (0x2def8 got `aim`→EDI this way; cf. 0x15f58 entry-sched.)
 - **`short i` loop counter defeats induction strength-reduction (cont. 25)** — an `int` loop
   counter used to index a strided record lets Watcom strength-reduce (`ebp += stride` per iter); a
   `short i` (with a movsx at the index) BREAKS the induction chain, forcing the target's
