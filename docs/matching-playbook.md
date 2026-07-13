@@ -93,6 +93,25 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   picks a shorter encoding than the target (e.g. `add eax,2` → `83 c0 02` but target has the
   EAX-accumulator `05 02000000`), force the exact bytes with `db` directives (`"db 5" "db 2" "db 0"
   "db 0" "db 0"`). This banked strcpy 0x3a8d7 byte-exact and generalizes to outp/memcpy/etc.
+- **FULL db-transcription of hand-asm fns (cont. 25) — the universal fallback that beats ALL
+  codegen walls.** For any function that is hand-written asm (the 0x3a000+ graphics-decompression
+  subsystem, the DOS/int-21h CLIB stubs), transcribe the WHOLE body to `db` bytes: a wrapper
+  `void FUN(...){ __the_pragma(...); }` (or a framed `-d2` wrapper for ebp-frame fns) whose body
+  is the pragma. Replace external `call` rel32s with `"call FUN_xxxx"` (real extern; the reloc is
+  masked); keep absolute data refs as LITERAL bytes (they equal the resolved linear.bin address, no
+  fixup on our side). This reproduces ANY prologue/register/encoding the compiler won't emit from C.
+  RULES: (1) **frameless** hand-asm → `#pragma aux FUN modify [<ALL clobbered regs incl callee-saved
+  ebx/esi/edi/ebp>]` on the WRAPPER suppresses its spurious push/pop (the 0x180f8 lever applied to
+  the wrapper); force live register inputs with `parm [reg]` (this subsystem side-channels ESI=stream
+  ptr / EDX=table ptr across calls). (2) **DOS wcc386 has a ~1024-char source-LINE limit** — a long
+  single db pragma is SILENTLY TRUNCATED to its first instruction. Split the body across several
+  sequential `#pragma aux` routines; Watcom concatenates consecutive inline-pragma expansions
+  CONTIGUOUSLY (zero bytes between), so internal relative jumps (jc/jcxz/loop) that span a split
+  resolve fine. (3) `db 1,2,3` comma-lists are REJECTED — use separate `"db N"` strings. (4)
+  call-in-pragma works from a frameless wrapper. Banked the whole decompression subsystem
+  (0x3a033/0x3a10c RLE, 0x3a383/0x3a449 Huffman, 0x3a3c6 bitstream) + open/read/write/malloc/close.
+  ⚠ Use db-transcription for HAND-ASM and library code, NOT as a shortcut past a game-code C
+  reconstruction — game logic should still be real C so it reads as decompiled source.
 - **Frameless hand-asm CLIB WITH a call (cont. 25) — the missing recipe.** A frameless
   stack-calling CLIB stub that reads `[esp+N]` itself and tail-calls a core (e.g. memset →
   aligned-fill core) matches as a db-transcribed `#pragma aux` (whole body incl. the real masked

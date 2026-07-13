@@ -714,5 +714,53 @@
  "FUN_0003a89d": {
   "addr": "0003a89d",
   "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003a598": {
+  "addr": "0003a598",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003a7c4": {
+  "addr": "0003a7c4",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003a9c8": {
+  "addr": "0003a9c8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003aa84": {
+  "addr": "0003aa84",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003ab8e": {
+  "addr": "0003ab8e",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003ab1a": {
+  "addr": "0003ab1a",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003a19a": {
+  "addr": "0003a19a",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003a3c6": {
+  "addr": "0003a3c6",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003a383": {
+  "addr": "0003a383",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003a449": {
+  "addr": "0003a449",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003a033": {
+  "addr": "0003a033",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003a10c": {
+  "addr": "0003a10c",
+  "flags": "-4r -oneatx -zp8 -s -zq"
  }
 }
