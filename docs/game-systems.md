@@ -164,3 +164,21 @@ op 0x16 = `node[0x44]=FUN_00037d08(node,0,cmd[0])` (sub-object spawn, banked 0x3
 op 0x39 = per-agent `g_5358` map/tile scan → `node[0x19]=7`, `node[0x58]=7`, clear `+0xa`
 bit3. Dominant callee `FUN_0002f608`. **To match: fix size (done), then go body-by-body,
 reusing the cont.22 cross-jump law for the recurring merged `FUN_0002f608` call tails.**
+
+## Tactical-map / radar renderer — `FUN_00019608` @ 0x19608 (cont. 25 decode)
+
+**TRUE SIZE 3474 (0x19608–0x1a399; manifest was 1544, fixed).** Full-screen minimap/radar
+drawer, `FUN(cam_struct *p1, short zoom)`, frameless + 4 saved regs, 0x644 frame. In the WALLED
+g_5358 cluster (reads g_5358 column table + g_10ac0 tile flags + g_810e pool + g_10e grid), so
+byte-parity is blocked (g_5358 register wall + IDIV accumulator ties + ~20-slot spill order).
+THREE co-located jump tables (lefix rule L+0xd748):
+- Table 1 @ 0x19564, 16 entries, index g_10ac0[tile] — terrain-shape polygon draw via 0x3fb40
+  (bodies 0x19800/0x19858/0x198b0/0x198ef, default 0x1994a).
+- Table 2 @ 0x195a4, 6 entries, index entity type [node+0x18] — blip draw (0x19b29/0x19b61/0x19edd,
+  default 0x19f08).
+- Table 3 @ 0x195bc, 17 entries, index word [rec+0x1be3e] — HUD/objective markers (0x1a13f/0x1a28c,
+  several break to 0x1a38f, default-continue 0x1a384).
+Phases: (1) nested 0x60×0x80 tile grid, column lookup + fixed-point corner projection + 0x3fb40
+draw; (2) grid-cell entity chains (g_810e+id, 0x12c cap) → type-dispatched blips; (3) two 0x18d18
+blip loops + conditional 0x19318 + 8× stride-14 objective-marker records at 0x1be3a. Callees:
+0x3fb40/0x3f4b4/0x3f636/0x18d18(×2)/0x19318 (matched: 0x18d18, 0x19318).
