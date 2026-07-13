@@ -4,7 +4,7 @@
   "image_base": "00010000",
   "language": "x86:LE:32:default",
   "functions": [
-    {"addr": "00011d68", "name": "FUN_00011d68", "size": 337, "calls": 0, "data_refs": 20, "incoming": 2, "status": "unmatched", "match_pct": 0.0, "src": null},
+    {"addr": "00011d68", "name": "FUN_00011d68", "size": 2881, "calls": 0, "data_refs": 20, "incoming": 2, "status": "unmatched", "match_pct": 0.0, "src": null},
     {"addr": "000128b8", "name": "FUN_000128b8", "size": 353, "calls": 0, "data_refs": 23, "incoming": 0, "status": "unmatched", "match_pct": 0.0, "src": null},
     {"addr": "00012ae8", "name": "FUN_00012ae8", "size": 443, "calls": 0, "data_refs": 27, "incoming": 0, "status": "unmatched", "match_pct": 0.0, "src": null},
     {"addr": "00012ca8", "name": "FUN_00012ca8", "size": 239, "calls": 1, "data_refs": 30, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/FUN_00012ca8.c"},
@@ -129,7 +129,7 @@
     {"addr": "00028878", "name": "FUN_00028878", "size": 114, "calls": 1, "data_refs": 7, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/FUN_00028878.c"},
     {"addr": "000288f8", "name": "FUN_000288f8", "size": 140, "calls": 1, "data_refs": 8, "incoming": 1, "status": "unmatched", "match_pct": 0.0, "src": null},
     {"addr": "000289a8", "name": "FUN_000289a8", "size": 34, "calls": 1, "data_refs": 3, "incoming": 11, "status": "matched", "match_pct": 100.0, "src": "src/FUN_000289a8.c"},
-    {"addr": "00028b88", "name": "FUN_00028b88", "size": 317, "calls": 5, "data_refs": 27, "incoming": 1, "status": "unmatched", "match_pct": 0.0, "src": null},
+    {"addr": "00028b88", "name": "FUN_00028b88", "size": 317, "calls": 5, "data_refs": 27, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/FUN_00028b88.c"},
     {"addr": "00028cc8", "name": "FUN_00028cc8", "size": 51, "calls": 2, "data_refs": 3, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/FUN_00028cc8.c"},
     {"addr": "00028d08", "name": "FUN_00028d08", "size": 289, "calls": 0, "data_refs": 3, "incoming": 0, "status": "matched", "match_pct": 100.0, "src": "src/FUN_00028d08.c"},
     {"addr": "00028ec8", "name": "FUN_00028ec8", "size": 218, "calls": 2, "data_refs": 3, "incoming": 0, "status": "matched", "match_pct": 100.0, "src": "src/FUN_00028ec8.c"},

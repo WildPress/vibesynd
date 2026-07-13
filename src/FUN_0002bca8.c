@@ -24,6 +24,25 @@
  * Levers already applied: volatile g_10b22/g_10b24 (target RE-READS them each compare),
  * unsigned char setX/setY (avoids the EBP hoist), unsigned short return (duplicated
  * epilogue vs shared), swapped box-test operand orders (acc = right operand).
+ *
+ * cont.22 RETRY (parked again 558/550 code bytes; 5 compiles, all reverted):
+ *   - volatile-alias extern (the 0x2bee8 case-3 lever) does NOT transfer: alias on
+ *     just the first `=1` store is byte-INERT in case 0 and in case 2 it flips the
+ *     case-2 x-block regs (schar lands EDX not EAX) without fixing the store. All-four
+ *     stores through the alias in case 2 produce the bee8-case-3 shape (mem-cmp
+ *     `cmp byte[esp+18],0` + IMMEDIATE `=0` stores) -- but THIS target keeps
+ *     register-loaded setX/setY tests and reg-form `=0`, so bee8's target genuinely
+ *     differed there; our first-`=1` reg-form is the same wall as bee8's CASE 1.
+ *   - store-order swap `{ g_e116 = 1; g_10b3f = 0; }`: scheduler reorders back, still
+ *     `mov ecx,1` reg-form. The imm-vs-reg pick is register-availability driven (2nd
+ *     `=1` is imm only because ECX is wanted by the following `mov cx,[ebx]`).
+ *   - `goto Lret;` to a shared final return: Watcom CROSS-JUMPS (jz rel32) instead of
+ *     duplicating the epilogue -- loses the inline dup, -2B, worse.
+ *   - plain `while` loop: FIXES the entry `xor edi,edi` placement (lands before the
+ *     guard movsx, proving that half of wall 2 is block-boundary-driven) but -oneatx
+ *     then emits jump-to-test layout + per-case duplicated `add ebx,0x12; jmp top`
+ *     advances (571B) -- entry schedule and loop layout CO-VARY, same wall class as
+ *     the playbook 2 structured-loop-var entry. Target = do-while shared bottom test.
  */
 extern volatile unsigned short g_10b22, g_10b24;   /* cursor point (x, y) */
 extern unsigned short g_e114, g_e116;     /* selection cursor state words */

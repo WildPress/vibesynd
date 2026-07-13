@@ -349,6 +349,24 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   -oneatx homes them into EBX/EBP and adds a push. Confirms the 0x377b8 recipe row. (0x284a8
   MATCHED this way.)
 
+- **i86.h FP_SEG pragma = dead offset load + `mov dx,cs` (cont. 22, MATCHED 0x28b88)** — the
+  pair `mov eax,<fn-addr>; mov dx,cs` with EAX never used is the Watcom 10a i86.h `FP_SEG`
+  (`#pragma aux FP_SEG = parm caller [eax dx] value [dx];` — an EMPTY body; the far cast of a
+  near function pointer materialises off in EAX, CS in DX). Transcribe the extern+pragma inline
+  (sources have no includes) and call `FP_SEG((void __far *)FUN_xxx)`. Companion in the same fn:
+  `in.edx = (int)FUN_xxx;` gives the reloc'd `mov edx,imm32` FP_OFF form.
+- **Call-per-switch-case beats size-temp + single call (cont. 22, 0x28b88)** — when each case
+  body is `push imm32; jmp SHARED_CALL` (68 xx), the source calls the function INSIDE every case
+  (`case 1: g = malloc(0x1100); break; …`) and Watcom tail-merges the call+store; a switch-assigned
+  size temp + one call after emits `mov eax,imm` per case + ONE shared push (+1B).
+- **Post-store global null-test re-read (cont. 22, 0x28b88)** — `g = f(sz); if (g != 0)` CSEs to
+  `test eax,eax`; the target's `mov [g],eax; cmp dword [g],0` needs the volatile-alias extern
+  lever (second extern name `void * volatile g_v;` tested instead) — confirms cont.21 entry.
+- **Statement-order write of a hoisted block constant (cont. 22, 0x28b88)** — in a store-block
+  feeding int386x, the constant whose STORE the target sinks LAST but LOADS first into a
+  callee-saved reg (edi=0xc at block top, `mov [in.ax],di` after the far-cast) is the FIRST
+  statement of the block in source; written last it degrades to an immediate word store.
+
 ## 3. Walls (recognize, then PARK — not source-reachable)
 
 If the structure is byte-correct and only ONE of these remains, stop and park with a note. Do not
@@ -357,7 +375,10 @@ grind; the fuzzer permutes *source* and can't change the allocator's mind.
 - **Register-role tie-break** — identical instructions, but a value lives in a different register
   (EAX vs EDX / ESI vs EBX), cascading into encodings (`cwde`↔`movsx`, `lea`↔`add`, `test al`↔`test
   dl`, `cmp ax`↔`cmp dx`). Every C spelling + the fuzzer converge to the wrong reg. (0x34048, 0x34088
-  CMP-modrm, 0x2dd48, 0x36d18, 0x183e8 via LICM.)
+  CMP-modrm, 0x2dd48, 0x36d18, 0x183e8 via LICM; 0x19318 — one post-call slot-reload pick, d into
+  EAX vs target ESI, rotates every later reload, kills a branch-tail cross-jump (+4B) and costs a
+  4th spill-temp slot (+4B frame); init-order permutations, named temps, int dword-alias reload,
+  for-header all fail or regress. Parked 589/585.)
 - **uchar widen-form (xor-first vs mov+and)** — widening a byte for an int arg: a NAMED char local
   gets `xor eax,eax; mov al,dl` (5B); a compiler CSE temp gets `mov al,ch; and eax,0xff` (8B,
   and-form). NO LONGER a hard wall when the value comes from MEMORY: respell the source so the

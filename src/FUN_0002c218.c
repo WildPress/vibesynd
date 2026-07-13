@@ -18,6 +18,17 @@
  *      read in case 2, giving it more uses); our compile colours sel->ESI, result->EDI
  *      (like the sibling), so every `mov dx,di`(sel) and `mov eax,esi`(result) has the
  *      other register. No declaration/first-use order I found flips the allocator.
+ *
+ * cont.22 RETRY (parked again 600/592 code bytes; 4 compiles, all reverted) -- three
+ * more role-flip levers failed, plus see FUN_0002bca8's header for why the 0x2bee8
+ * volatile-alias lever does not transfer to this family's `=1` stores:
+ *   - `register unsigned short result`: byte-inert, no flip.
+ *   - ternary double-read `result = result ? result : (unsigned short)*(signed char *)
+ *     (p+0xb);`: coalesces to the IDENTICAL test/jnz/movsx bytes -- extra source-level
+ *     use does not raise the allocator weight. Use-count weighting is not the tiebreak.
+ *   - `goto Lret;` shared-return (to un-fold the early `mov eax,edi` use): no flip,
+ *     entry becomes jz rel32 (cross-jump, no dup epilogue), AND it perturbs the case-0
+ *     x-block registers (schar->EAX flips to EDX). Reverted.
  */
 extern volatile unsigned short g_10b22, g_10b24;   /* cursor point (x, y) */
 extern unsigned short g_e114, g_e116;     /* selection cursor state words */

@@ -474,6 +474,10 @@ def init_worker(flags, target):
     work = f"/tmp/dosw_{wid}"; os.makedirs(work, exist_ok=True)
     G.update(flags=flags, target=target, work=work)
 
+def table_ok(codestart, table_len):
+    """Plausible [table][<=32B pad][code] split (see match_reloc.py)."""
+    return codestart >= table_len and codestart <= table_len + 32
+
 def try_batch(batch):
     """Compile a batch of variants in ONE DOSBox session and diff each against the target.
     `batch` is [(variant_index, c_source), ...]. Returns [(variant_index, score, matched)].
@@ -492,6 +496,19 @@ def try_batch(batch):
             out.append((idx, -1, False)); continue
         try: ob, fx = text_bytes_and_fixups(p)
         except Exception: out.append((idx, -1, False)); continue
+        # Jump-table-aware split (mirrors match_reloc.jumptable_aware_match): a switch
+        # makes Watcom co-locate its table at the START of the obj .text as a run of
+        # >=4 consecutive 4-byte fixups at offsets 0,4,8,... The on-disk target is
+        # clean code, so score/compare only the code TAIL with re-based fixups.
+        offs = {o: sz for o, sz in fx}
+        k = 0
+        while offs.get(4 * k) == 4:
+            k += 1
+        if k >= 4:
+            codestart = len(ob) - len(tb)
+            if table_ok(codestart, 4 * k):
+                ob = ob[codestart:]
+                fx = [(o - codestart, sz) for o, sz in fx if o >= codestart]
         matched = len(tb) == len(ob) and mask(tb, fx) == mask(ob, fx)   # exact (masked) hit
         out.append((idx, score(tb, ob, fx), matched))
     return out
