@@ -225,6 +225,25 @@ method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated 
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-13)
 - **Coverage: 172/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (cont. 24 — **THE SWEET-SPOT VEIN IS MINED OUT; remaining work is big-fn + wall-cracking.**
+  No new matches this round — a fanned-out agent wave died on the Fable-5 credit limit mid-run;
+  their partial decodes were salvaged into clean documented parks (0x2e5f8 LOS-trace 519/519
+  LENGTH-EXACT, blocked only by a y↔i spill-slot transpose that decl-order provably can't move;
+  0x34608 dir-picker 577/590, cross-jump asymmetry — target shares block-1's `return dir` tail but
+  inlines block-2's from identical source; 0x38cf8 XMIDI init 713/741, same param-promotion +
+  return-tail-merge walls as sibling 0x35d08). **cpermute is now jump-table-aware** (scorer does
+  the same table-split as match_reloc, so it scores dispatcher near-misses correctly — but it still
+  can't cross a pure register-role/spill-slot tie, only operand-order/scheduling).
+  **HONEST STATE OF THE REMAINING 328:** (a) ~20 are the DPMI/NCB EAX↔ECX cascade family, the
+  0x2bxx/0x2cxx interpreter register-parity family, and the weapons-cluster poor-shape family —
+  all length-exact or near, all walled on allocator-internal ties no C spelling reaches; (b) the
+  untried set is now dominated by MEGAFNS (0x11d68 2881B, 0x18d18/0x1bc28 ~1300B, 0x21658 3424B,
+  0x23158 ~4800B, 0x34198 453B loop-split, 0x184b8 803B) — large hand-decodes, low match-per-token;
+  (c) the small untried leftovers (0x2d85c, 0x2d8c8, 0x166b8) are mis-carves/bogus entries, skip.
+  **HIGHEST-LEVERAGE NEXT MOVES:** (1) build a register-allocation-aware permuter (decl-order +
+  spill-slot + type-retype search) — that single tool would unlock the ~20 length-exact
+  register-tie parks in bulk, far more than any hand-decode; (2) otherwise the megafns are the only
+  untapped coverage, best split across fresh-credit agents one subsystem at a time.)
   (cont. 23 — +3: 0x28b88 (mouse-driver INT 33h init — FP_SEG empty-pragma transcription, i86.h
   `parm caller [eax dx] value [dx]`), 0x2d9e8 (853B squad-interference test — volatile-alias
   extern also pins ENTRY-LOAD SCHEDULING, not just re-reads; compound `*=` in-place imul; named
