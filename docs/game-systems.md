@@ -126,3 +126,41 @@ call graph links the loader to the routines that consume them. That's the method
 pick a system, find its top function, and match down the tree, understanding each
 piece as a part of the whole rather than as an isolated puzzle. The map system is the
 one in progress.
+
+## Mission/orders command interpreter — `FUN_00023158` @ 0x23158 (cont. 24 decode)
+
+**TRUE SIZE 5280 (0x14A0)**, 0x23158–0x245f7 (manifest was 107; fixed). Per-record
+command interpreter: executes one queued command for record `idx` (u32 param), then
+clears the slot. Entry: `ESI = 0x105d4 + idx*0xe` (14-byte command record, opcode at
+`record[+0xd]`); `EDX = 0xe49c + idx*0x417` (the 0x417-stride equip/research template
+row consumed by matched siblings `FUN_000223c8`/`FUN_00012da8`; `[EDX+0xb5]` =
+`g_e551[idx*0x417]` = pool-A base-slot header). Every case ends
+`MOV byte [ESI+0xd],0` (consume) → `ADD ESP,0x34` → pops → RET.
+
+Jump table: literal `CS:[EAX*4+0x15920]` → manifest **0x23068** (0x15920+0xd748),
+`[table][4B pad @0x23154][code @0x23158]`. **59 dword entries, cases 0x00–0x3a**
+(switch = `record[+0xd]`, `CMP AH,0x3a / JA default`). **Default = 0x245ec.**
+**41 distinct non-default bodies**; two-bank structure — opcodes 0x01–0x1a mirror
+0x21–0x3a (the +0x20 bit selects a variant); 8 pairs share a body outright
+(0x01≡0x21, 0x02≡0x22, 0x06≡0x26, 0x0a≡0x2a, 0x12≡0x32, 0x13≡0x33, 0x17≡0x37,
+0x18≡0x38), collapsing the work to ~33 unique opcodes.
+
+Case map (case → body):
+```
+00→DFLT 01→231b7 02→2328d 03→23348 04→234bc 05→23567 06→2363d 07→23655
+08→23767 09→23908 0a→239c4 0b→23a28 0c→23cda 0d→23d5e 0e→23de2 0f→23e66
+10→23f06 11→243e0 12→24544 13→24592 14→23c10 15→DFLT 16→2447f 17→245dc
+18→23303 19→23aaa 1a-20→DFLT
+21→231b7 22→2328d 23→233a0 24→23504 25→235c6 26→2363d 27→2369b 28→23823
+29→23959 2a→239c4 2b→23a5d 2c→23d0f 2d→23d93 2e→23e17 2f→23ea9 30→24160
+31→24421 32→24544 33→24592 34→23c6c 35→DFLT 36→244c8 37→245dc 38→23303
+39→23b56 3a→2341e
+```
+Sampled ops: 1/0x21 = broadcast `FUN_000223c8` (equip-template apply) + `FUN_000229f8`
+across players (bound `g_10b0c`), single-player → `FUN_00029d88`, per-player flags to
+`g_e4ab`. op 3 = loop pool-A agents (0x8110 stride 0x5c, bound `(g_e551[idx*0x417]+4)`)
+calling `FUN_0002f608` (aim/step). op 8 = squad broadcast (`[+0x20]==agent-id` → `FUN_0002f608`).
+op 0x16 = `node[0x44]=FUN_00037d08(node,0,cmd[0])` (sub-object spawn, banked 0x37d08).
+op 0x39 = per-agent `g_5358` map/tile scan → `node[0x19]=7`, `node[0x58]=7`, clear `+0xa`
+bit3. Dominant callee `FUN_0002f608`. **To match: fix size (done), then go body-by-body,
+reusing the cont.22 cross-jump law for the recurring merged `FUN_0002f608` call tails.**
