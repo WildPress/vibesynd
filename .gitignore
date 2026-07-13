@@ -27,3 +27,8 @@ dashboard/data.json
 
 __pycache__/
 *.pyc
+
+# agent scratch + python caches
+tools/_*
+tools/__pycache__/
+tools/*.pyc
