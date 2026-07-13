@@ -3,24 +3,36 @@
    are stored on disk as relative offsets. Walk it, adding the table base to each
    entry to turn it into an absolute pointer, then publish the base in g_5358.
 
-   WALL (52B target vs 43B ours; logic byte-exact). The target uses a LESS-folded /
-   loop-aligned codegen our Watcom 9.5b never emits at ANY recipe: it holds the base in
-   a callee-saved register (`push esi` .. `esi=base`), materialises the element address
-   once in EAX (`movsx; lea eax,[eax*4]; add eax,esi`) and shares it between the load and
-   store (`mov ecx,[eax]; lea edx,[esi+ecx]; mov [eax],edx`), and pads the loop head with
-   alignment NOPs (`8d4000; 8bc9`). Every -o* variant (-oneatx/-ot/-oi/-oat/-oax/-ox/-ol/
-   -oal/-or/-os/-oe...) folds the addressing into modrm `[edx+eax*4]` with the base in a
-   scratch reg, no ESI save, no alignment pad -> a tighter 43B form. This is the loop-align
-   (§3) + un-folded/callee-saved-base register wall combined; not source-reachable. Any
-   `p[i]+=(int)p` / `q=p+i; *q+=(int)p` / `int base; *q+=base` spelling yields the same 43B. */
-extern int *g_5358;
+   PARKED WALL, improved by the cont.21 retry: 43B -> 45B vs the 52B target, and the
+   old "loop-align + callee-saved-base" bundle is now mostly RECOVERED. The winning
+   lever was the whole-index NAMED INT temp + named char* value local (`int addr =
+   i*4 + (int)base; char *v = *(char **)addr; *(char **)addr = base + (int)v;`):
+   this alone brings in the `push esi` callee-save, the pointer-add `lea` for the
+   sum, and -- confirming the old note -- the loop-head alignment pads appear
+   AUTOMATICALLY under -oneatx and are byte-identical to the target (`8d4000; 8bc9`).
+   Padding is NOT the blocker. TWO residues remain:
+   (1) base ESI<->EDX role swap (ours: base=EDX/sum=ESI via `lea esi,[edx+ecx]`;
+       target: base=ESI/sum=EDX via `lea edx,[esi+ecx]`) -- addend-position swap on
+       addr is byte-inert; register-role tie-break family;
+   (2) the 7-byte fold gap: ours still folds both accesses into modrm `[edx+eax*4]`
+       where the target materialises the slot address once in EAX
+       (`lea eax,[eax*4+0]; add eax,esi; mov ecx,[eax]; ...; mov [eax],edx`).
+       The named-addr, char** slot + (int)*slot (0x2d5b8 idiom), named-base,
+       pointer-variable g_5358 decl, and product-first spellings all still fold;
+       `volatile` on the deref REGRESSES to a 38B RMW `add [edx+eax*4],edx`;
+       -ot / no-opt recipes drop the pads and still fold. Un-folded-addressing
+       codegen our 9.5b does not emit -- same conclusion as the original park,
+       but now isolated to the fold + one role swap. */
+extern char **g_5358;
 void FUN_00020d18(int param_1)
 {
-    int *p = (int *)(param_1 + 0xc);
+    char *base = (char *)param_1 + 0xc;
     short i = 0;
     do {
-        p[i] += (int)p;
+        int addr = i * 4 + (int)base;
+        char *v = *(char **)addr;
+        *(char **)addr = base + (int)v;
         i++;
     } while (i < 0x3000);
-    g_5358 = p;
+    g_5358 = (char **)base;
 }

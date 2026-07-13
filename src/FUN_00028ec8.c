@@ -1,11 +1,13 @@
-/* NEAR-MISS @ 0x28ec8 -- ~200/218; PARKED on the cache-vs-fold wall (0x269d8
- * class). Target RE-READS the column pointer per test (add eax,[ecx] twice,
- * entry addr cached in ECX); -oneatx CSE-merges the load once into a register
- * (mov ecx,[ecx]; cmp [ecx+eax]) and no spelling splits it: inline exprs,
- * named pointer temp (copy-propagated away), char * volatile * (volatile via
- * pointer IGNORED by 9.5 CSE), operand commutes, named idx. Lighter -or fixes
- * the movsx-z placement but keeps the merged load + accumulate direction
- * (add eax,ecx vs add ecx,eax). Semantics fully decoded below.
+/* MATCHED 218/218 (reloc-aware) -- the cont. 22 retry closed the old
+ * cache-vs-fold wall in ONE compile with the 0x2fca8/0x33fb8 lever set:
+ * named int accumulator (`idx = row<<7; idx += col;` -- homes idx in ECX and
+ * gives the target's `add ecx,eax` accumulate direction, where the one-expr
+ * form homed idx in EAX); `base = g_5358;` named base (base lands in the
+ * freed EAX = the a1 moffs load); `slot = base + idx;`; and divide-first
+ * `(int)*slot` derefs in each test, which keep the column pointer as a folded
+ * memory operand (`add eax,[ecx]` per test) instead of the CSE-merged
+ * `mov ecx,[ecx]; cmp [ecx+eax]`. The movsx of z scheduled itself between the
+ * shl and the accumulate exactly as in the target.
  *
    0x28ec8 -- vertical probe + drift clamp. Computes the map column for the
  * object's tile (g_5358[((y % 0x6000)/0x100)*0x80 + (x & 0xff00)/0x100], the
@@ -21,20 +23,21 @@ extern void FUN_000269b8(unsigned char *b);
 
 void FUN_00028ec8(unsigned char *b)
 {
-    int idx = (*(short *)(b + 6) % 0x6000 / 0x100 << 7)
-            + (*(short *)(b + 4) & 0xff00) / 0x100;
+    char **base;
+    char **slot;
+    int idx;
     int z = *(short *)(b + 8);
-    char *t;
 
-    t = (z - 0x80) / 0x80 + g_5358[idx];
-    if (*t == 0x76) {
+    idx = *(short *)(b + 6) % 0x6000 / 0x100 << 7;
+    idx += (*(short *)(b + 4) & 0xff00) / 0x100;
+    base = g_5358;
+    slot = base + idx;
+    if (*(char *)((z - 0x80) / 0x80 + (int)*slot) == 0x76) {
+        *(short *)(b + 8) += 0x10;
+    } else if (*(char *)((z - 0x100) / 0x80 + (int)*slot) == 0x76) {
         *(short *)(b + 8) += 0x10;
     } else {
-        t = (z - 0x100) / 0x80 + g_5358[idx];
-        if (*t == 0x76)
-            *(short *)(b + 8) += 0x10;
-        else
-            *(short *)(b + 8) -= 8;
+        *(short *)(b + 8) -= 8;
     }
     *(short *)(b + 4) = FUN_00034048(*(short *)(b + 4), 0x80);
     *(short *)(b + 6) = FUN_00034048(*(short *)(b + 6), 0x80);
