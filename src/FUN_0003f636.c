@@ -14,5 +14,5 @@ extern void __db_FUN_0003f636_5(void);
 #pragma aux __db_FUN_0003f636_5 = "db 32" "db 3" "db 0" "db 52" "db 32" "db 3" "db 0" "db 70" "db 32" "db 3" "db 0" "db 88" "db 32" "db 3" "db 0" "db 106" "db 32" "db 3" "db 0" "db 124" "db 32" "db 3" "db 0" "db 142" "db 32" "db 3" "db 0" "db 160" "db 32" "db 3" "db 0" "db 178" "db 32" "db 3" "db 0" "db 196" "db 32" "db 3" "db 0" "db 214" "db 32" "db 3" "db 0" "db 232" "db 32" "db 3" "db 0" "db 247" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_0003f636_6(void);
 #pragma aux __db_FUN_0003f636_6 = "db 32" "db 3" "db 0" "db 6" "db 33" "db 3" "db 0" "db 21" "db 33" "db 3" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_0003f636 modify [eax ebx ecx edx esi edi ebp];
+#pragma aux FUN_0003f636 modify [eax ebx ecx edx esi edi ebp] aborts;
 void FUN_0003f636(void) { __db_FUN_0003f636_0(); __db_FUN_0003f636_1(); __db_FUN_0003f636_2(); __db_FUN_0003f636_3(); __db_FUN_0003f636_4(); __db_FUN_0003f636_5(); __db_FUN_0003f636_6(); }

@@ -1334,5 +1334,89 @@
  "FUN_0003cc74": {
   "addr": "0003cc74",
   "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003f636": {
+  "addr": "0003f636",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003f8bb": {
+  "addr": "0003f8bb",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003fb40": {
+  "addr": "0003fb40",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003feb3": {
+  "addr": "0003feb3",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_000402e0": {
+  "addr": "000402e0",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_000404b8": {
+  "addr": "000404b8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0004107b": {
+  "addr": "0004107b",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_00045e61": {
+  "addr": "00045e61",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_00045f8a": {
+  "addr": "00045f8a",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_00047a7e": {
+  "addr": "00047a7e",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_00049b67": {
+  "addr": "00049b67",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0004a909": {
+  "addr": "0004a909",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0004b073": {
+  "addr": "0004b073",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0004cb68": {
+  "addr": "0004cb68",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0004cde3": {
+  "addr": "0004cde3",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003c4b9": {
+  "addr": "0003c4b9",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003c529": {
+  "addr": "0003c529",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003c57b": {
+  "addr": "0003c57b",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003c594": {
+  "addr": "0003c594",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003c74f": {
+  "addr": "0003c74f",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003c644": {
+  "addr": "0003c644",
+  "flags": "-3s -oneatx -zp8 -s -zq"
  }
 }

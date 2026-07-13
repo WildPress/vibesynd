@@ -41,6 +41,28 @@ extern void __db_FUN_00049edf_18(void);
 extern void __db_FUN_00049edf_19(void);
 #pragma aux __db_FUN_00049edf_19 = "db 4" "db 0" "db 0" "db 139" "db 134" "db 96" "db 123" "db 1" "db 0" "db 137" "db 135" "db 96" "db 4" "db 0" "db 0" "db 139" "db 134" "db 176" "db 123" "db 1" "db 0" "db 137" "db 135" "db 176" "db 4" "db 0" "db 0" "db 131" "db 198" "db 4" "db 131" "db 199" "db 4" "db 67" "db 73" "db 15" "db 133" "db 46" "db 255" "db 255" "db 255" "db 131" "db 239" "db 64" "db 131" "db 238" "db 64" "db 235" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_00049edf_20(void);
-#pragma aux __db_FUN_00049edf_20 = "db 20" "db 246" "db 5" "db 5" "db 1" "db 0" "db 0" "db 4" "db 116" "db 2" "db 235" "db 9" "db 246" "db 5" "db 5" "db 1" "db 0" "db 0" "db 1" "db 116" "db 0" "db 95" "db 94" "db 90" "db 89" "db 91" "db 88" "db 201" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_00049edf modify [eax ebx ecx edx esi edi ebp];
-void FUN_00049edf(void) { __db_FUN_00049edf_0(); __db_FUN_00049edf_1(); __db_FUN_00049edf_2(); __db_FUN_00049edf_3(); __db_FUN_00049edf_4(); __db_FUN_00049edf_5(); __db_FUN_00049edf_6(); __db_FUN_00049edf_7(); __db_FUN_00049edf_8(); __db_FUN_00049edf_9(); __db_FUN_00049edf_10(); __db_FUN_00049edf_11(); __db_FUN_00049edf_12(); __db_FUN_00049edf_13(); __db_FUN_00049edf_14(); __db_FUN_00049edf_15(); __db_FUN_00049edf_16(); __db_FUN_00049edf_17(); __db_FUN_00049edf_18(); __db_FUN_00049edf_19(); __db_FUN_00049edf_20(); }
+#pragma aux __db_FUN_00049edf_20 = "db 20" "db 246" "db 5" "db 5" "db 1" "db 0" "db 0" "db 4" "db 116" "db 2" "db 235" "db 9" "db 246" "db 5" "db 5" "db 1" "db 0" "db 0" "db 1" "db 116" "db 0" "db 95" "db 94" "db 90" "db 89" "db 91" "db 88" "db 201" "db 195" modify exact [eax ebx ecx edx esi edi ebp];
+#pragma aux FUN_00049edf modify [eax ebx ecx edx esi edi ebp] aborts;
+void FUN_00049edf(void) {
+    __db_FUN_00049edf_0();
+    __db_FUN_00049edf_1();
+    __db_FUN_00049edf_2();
+    __db_FUN_00049edf_3();
+    __db_FUN_00049edf_4();
+    __db_FUN_00049edf_5();
+    __db_FUN_00049edf_6();
+    __db_FUN_00049edf_7();
+    __db_FUN_00049edf_8();
+    __db_FUN_00049edf_9();
+    __db_FUN_00049edf_10();
+    __db_FUN_00049edf_11();
+    __db_FUN_00049edf_12();
+    __db_FUN_00049edf_13();
+    __db_FUN_00049edf_14();
+    __db_FUN_00049edf_15();
+    __db_FUN_00049edf_16();
+    __db_FUN_00049edf_17();
+    __db_FUN_00049edf_18();
+    __db_FUN_00049edf_19();
+    __db_FUN_00049edf_20();
+}

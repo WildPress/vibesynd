@@ -8,5 +8,5 @@ extern void __db_FUN_0004cde3_2(void);
 #pragma aux __db_FUN_0004cde3_2 = "db 6" "db 3" "db 85" "db 240" "db 139" "db 125" "db 248" "db 232" "db 56" "db 0" "db 0" "db 0" "db 255" "db 69" "db 248" "db 102" "db 255" "db 77" "db 24" "db 117" "db 216" "db 235" "db 38" "db 139" "db 69" "db 244" "db 5" "db 128" "db 2" "db 0" "db 0" "db 137" "db 69" "db 244" "db 137" "db 69" "db 248" "db 235" "db 232" "db 235" "db 20" "db 246" "db 5" "db 5" "db 1" "db 0" "db 0" "db 4" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_0004cde3_3(void);
 #pragma aux __db_FUN_0004cde3_3 = "db 116" "db 2" "db 235" "db 9" "db 246" "db 5" "db 5" "db 1" "db 0" "db 0" "db 1" "db 116" "db 0" "db 94" "db 95" "db 90" "db 89" "db 91" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_0004cde3 modify [eax ebx ecx edx esi edi ebp];
+#pragma aux FUN_0004cde3 modify [eax ebx ecx edx esi edi ebp] aborts;
 void FUN_0004cde3(void) { __db_FUN_0004cde3_0(); __db_FUN_0004cde3_1(); __db_FUN_0004cde3_2(); __db_FUN_0004cde3_3(); }

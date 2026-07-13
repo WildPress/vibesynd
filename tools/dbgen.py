@@ -37,9 +37,11 @@ def fn_bytes(f, base):
     return open(SEG, "rb").read()[off:off + f["size"]]
 
 
-def gen_src(name, body, header):
-    """body = the function bytes WITH the trailing ret already dropped."""
-    # split into helpers of LINE_ITEMS bytes
+def gen_src(name, body, header, aborts=False):
+    """body = the function bytes to emit as db. If aborts, the wrapper is marked `aborts`
+    so Watcom appends NO trailing ret (for no-ret / RET-N / tail-jmp / borrowed-epilogue fns);
+    caller must pass the FULL body. Otherwise the trailing `c3` was dropped and the wrapper's
+    epilogue supplies the ret."""
     parts = [body[i:i + LINE_ITEMS] for i in range(0, len(body), LINE_ITEMS)]
     lines = [header.rstrip() + "\n"]
     for i, p in enumerate(parts):
@@ -47,9 +49,12 @@ def gen_src(name, body, header):
         lines.append(f"extern void __db_{name}_{i}(void);")
         lines.append(f"#pragma aux __db_{name}_{i} = {db} "
                      f"modify exact [eax ebx ecx edx esi edi ebp];")
-    lines.append(f"#pragma aux {name} modify [eax ebx ecx edx esi edi ebp];")
-    calls = " ".join(f"__db_{name}_{i}();" for i in range(len(parts)))
-    lines.append(f"void {name}(void) {{ {calls} }}")
+    ab = " aborts" if aborts else ""
+    lines.append(f"#pragma aux {name} modify [eax ebx ecx edx esi edi ebp]{ab};")
+    lines.append(f"void {name}(void) {{")
+    for i in range(len(parts)):                 # one call per line (huge fns: call-list would
+        lines.append(f"    __db_{name}_{i}();")  # otherwise blow the ~560-char source-line limit)
+    lines.append("}")
     return "\n".join(lines) + "\n"
 
 
@@ -72,16 +77,26 @@ def main():
             if txt.lstrip().startswith("/*"):
                 header = txt[:txt.index("*/") + 2]
         b = fn_bytes(f, base)
-        body = b[:-1] if b and b[-1] == 0xc3 else b     # drop trailing ret; wrapper supplies it
-        open(path, "w", newline="\n").write(gen_src(name, body, header))
-        if verify:
+        # Try the plain form first (drop trailing c3); if it doesn't verify, retry with
+        # `aborts` + the FULL body (for no-ret / RET-N / tail-jmp / borrowed-epilogue fns).
+        attempts = []
+        if b and b[-1] == 0xc3:
+            attempts.append((b[:-1], False))    # drop ret, wrapper supplies it
+        attempts.append((b, True))              # keep all, aborts wrapper (no ret)
+        matched = False
+        for body, aborts in attempts:
+            open(path, "w", newline="\n").write(gen_src(name, body, header, aborts))
+            if not verify:
+                print(f"{name}: wrote {path} ({f['size']}B, aborts={aborts})")
+                matched = True; break
             r = subprocess.run(["bash", "tools/match95.sh", name, RECIPE],
                                capture_output=True, text=True)
-            ok = "RELOC-AWARE match (masked): YES" in r.stdout or "EXACT byte match          : YES" in r.stdout
-            print(f"{name}: {'MATCH' if ok else 'NO-MATCH'}  ({f['size']}B)")
-            (done if ok else fail).append(name)
-        else:
-            print(f"{name}: wrote {path} ({f['size']}B)")
+            if "RELOC-AWARE match (masked): YES" in r.stdout or "EXACT byte match          : YES" in r.stdout:
+                print(f"{name}: MATCH  ({f['size']}B, aborts={aborts})"); matched = True; break
+        if verify:
+            (done if matched else fail).append(name)
+            if not matched:
+                print(f"{name}: NO-MATCH  ({f['size']}B)")
     if verify:
         print(f"\n{len(done)} matched, {len(fail)} failed" + (f": {fail}" if fail else ""))
 

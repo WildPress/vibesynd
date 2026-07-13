@@ -10,5 +10,5 @@ extern void __db_FUN_0004cb68_3(void);
 #pragma aux __db_FUN_0004cb68_3 = "db 12" "db 102" "db 193" "db 250" "db 3" "db 102" "db 131" "db 250" "db 0" "db 116" "db 11" "db 102" "db 139" "db 85" "db 24" "db 232" "db 65" "db 0" "db 0" "db 0" "db 235" "db 9" "db 102" "db 139" "db 85" "db 24" "db 232" "db 2" "db 1" "db 0" "db 0" "db 235" "db 148" "db 102" "db 139" "db 69" "db 254" "db 102" "db 137" "db 69" "db 16" "db 246" "db 5" "db 5" "db 1" "db 0" "db 0" "db 2" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_0004cb68_4(void);
 #pragma aux __db_FUN_0004cb68_4 = "db 116" "db 7" "db 102" "db 131" "db 69" "db 20" "db 12" "db 235" "db 5" "db 102" "db 131" "db 69" "db 20" "db 6" "db 233" "db 114" "db 255" "db 255" "db 255" "db 235" "db 9" "db 246" "db 5" "db 5" "db 1" "db 0" "db 0" "db 1" "db 116" "db 0" "db 94" "db 95" "db 90" "db 89" "db 91" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_0004cb68 modify [eax ebx ecx edx esi edi ebp];
+#pragma aux FUN_0004cb68 modify [eax ebx ecx edx esi edi ebp] aborts;
 void FUN_0004cb68(void) { __db_FUN_0004cb68_0(); __db_FUN_0004cb68_1(); __db_FUN_0004cb68_2(); __db_FUN_0004cb68_3(); __db_FUN_0004cb68_4(); }
