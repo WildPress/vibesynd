@@ -267,7 +267,13 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
 - **Near strcpy/strcat inline too (cont. 25)** — `#pragma intrinsic(strcpy, strcat)` with local
   near decls DOES inline byte-exact (repne-scasb strlen + 2-byte-unroll copy), joining `_fmemset`/
   `_fstrcpy`/`_fstrcat`. The intrinsic wall (§3) is strlen/memcpy-SPECIFIC, not all string.h.
-  (0x24be8.)
+  (0x24be8.) ⚠ GOTCHA (0x27428): `#pragma intrinsic(f)` is SILENTLY IGNORED unless `f`'s prototype
+  is declared — Watcom emits a plain call otherwise. Always pair the pragma with an `extern` decl.
+- **`short i` loop counter defeats induction strength-reduction (cont. 25)** — an `int` loop
+  counter used to index a strided record lets Watcom strength-reduce (`ebp += stride` per iter); a
+  `short i` (with a movsx at the index) BREAKS the induction chain, forcing the target's
+  recompute-`stride*i`-each-iteration + i-spill, AND word-homes it (`mov word[esp+N],si`). Fixed
+  frame size + the whole loop in 0x27428. Pairs with the "short param stays memory-homed" lever.
 - **Register pressure can make a BIG fn match where its small sibling walls (cont. 24)** — a
   larger function with more live values forces Watcom's allocator into the target's exact
   register choices, where a small sibling with slack allocates freely and diverges. Counter to
