@@ -224,7 +224,31 @@ the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intri
 method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-13)
-- **Coverage: 172/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 173/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (cont. 25 — **MEGAFN RUN + REGISTER-AWARE PERMUTER. Coverage 172→173.** BANKED 0x184b8 (803B DPMI
+  reallocator, call-heavy, 7 compiles) — and it proved a KEY PRINCIPLE (playbook §2): a LARGER fn
+  can match where its small sibling walls, because extra live values force Watcom's allocator into
+  the target's exact choices (0x184b8 matched where sibling 0x183e8 is walled). So DON'T skip a
+  megafn for being big. TOOLING: cpermute now (a) jump-table-aware (splits the co-located table
+  before scoring) and (b) permutes the leading declaration block (surgical vs the blunt order_seed;
+  exhaustive ≤7 locals, sampled ≥8) — but validated that loop-carried-slot (0x2e5f8) and
+  register-role (0x34048) ties are decl-INERT, i.e. GENUINE allocator walls not unfound C. NEW DECODES
+  + SIZE FIXES: 0x23158 = 5280B 41-body mission/orders command interpreter (was 107! full case map
+  in docs/game-systems.md; body-by-body is the only path, ~33 unique opcodes after the +0x20 bank
+  pairing). IMPROVED PARKS: 0x1bc28 → correct-structure +2 near-miss (was mis-structured; residual
+  is an in-place-accumulator-vs-fresh-reg tie). NEW WALL DIAGNOSES (all precise, all documented):
+  0x2a288 1427B — the cont.22 cross-jump law DOES reach the target's 6-first shared-st5 layout
+  (previously believed unreachable!), but that layout's backward join forces p→ESI, breaking the
+  register coloring: layout and coloring are provably mutually exclusive. 0x34198 453B 95.4% —
+  loop-split reproducible but the two march copies need opposite scheduler decisions
+  (reorderable-load hoist vs volatile barrier, mutually exclusive; same class as 0x34608). 0x2e5f8
+  519/519, 0x34608 577/590, 0x38cf8 713/741 all parked with full decodes.
+  **HONEST STATE:** the tractable vein is exhausted. Every remaining untried fn is either the
+  5280B body-by-body 0x23158 slog or a confirmed register-role/scheduler/spill-slot wall (0x18d18
+  irregular-table, 0x21658 3424B, the DPMI/interpreter/weapons families). The ~25 length-exact
+  parks are NOT source- or fuzzer-reachable — this is now proven, not suspected. Genuine further
+  coverage needs either (1) body-by-body megafn grinding, or (2) a register-ALLOCATION-aware search
+  (the decl-perm tool is step 1; it needs live-range/spill-slot mutation to reach the ties).)
   (cont. 24 — **THE SWEET-SPOT VEIN IS MINED OUT; remaining work is big-fn + wall-cracking.**
   No new matches this round — a fanned-out agent wave died on the Fable-5 credit limit mid-run;
   their partial decodes were salvaged into clean documented parks (0x2e5f8 LOS-trace 519/519
