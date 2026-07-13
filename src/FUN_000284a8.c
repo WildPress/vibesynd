@@ -7,9 +7,21 @@
  * (8-byte far-ptr arg: push seg widened from GS + push off) returning short
  * (-1 => -0x63). Busy-waits on status byte [0x31] until != 0xff; non-zero
  * status reported via 0x289a8(g_376c, 0x249, status); returns -status as int.
- * The far copy is a hand pragma (identical bytes to the _fmemcpy intrinsic)
- * so its modify list leaves EBX free for `off`.
- * Recipe: -4s -oneatx -zp8 -s -zq
+ * MATCHED (173/173, reloc-aware). Levers that mattered:
+ * - Recipe -or, not -oneatx: target RE-READS sel/len from their stack slots
+ *   (no param hoist into callee-saved regs); -oneatx homed len in EBX/EBP.
+ * - The far copy is a hand `#pragma aux` (db bytes identical to the _fmemcpy
+ *   intrinsic incl. F2 REPNE prefixes and the 91 xchg) whose `modify exact`
+ *   leaves EBX free so `off` homes there at entry.
+ * - Busy-wait written with UNNAMED inline reads (`while (p[0x31]==0xff);`
+ *   then `if (p[0x31])`): loop temp lands in AH (80 fc cmp), the if CSEs
+ *   onto AH (test ah,ah), and the report arg re-reads memory xor-first
+ *   (a named st local instead lands in AL with the 3c ff cmp + and-form arg).
+ * - `p = sel :> (unsigned char *)p;` before the final return: re-attaches a
+ *   FRESH stack read of sel (mov gs,[esp+0x14]) to p's surviving EBX offset,
+ *   so no far-ptr segment is live across the report call. Without it Watcom
+ *   caches the selector in EDI (mov edi,[esp+0x14] / mov gs,edi pairs).
+ * Recipe: -4s -or -zp8 -s -zq
  */
 extern unsigned char __far *g_df2afp;   /* transfer buffer far ptr: off @0xdf2a, sel @0xdf2e */
 extern unsigned short g_df28;
@@ -36,5 +48,6 @@ int FUN_000284a8(unsigned int off, unsigned short sel, void *src, int len)
         ;
     if (p[0x31] != 0)
         FUN_000289a8(g_376c, 0x249, p[0x31]);
-    return -(int)((sel :> (unsigned char *)off)[0x31]);
+    p = sel :> (unsigned char *)p;
+    return -(int)p[0x31];
 }

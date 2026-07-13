@@ -258,6 +258,13 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   DS-based far global (`extern uchar __far *g;` assigned from a near pointer) emits the target's
   `mov [g+4],ds; mov [g],eax` pair and `lgs` re-materialisation at each use. (0x35d08 confirms.)
 
+- **Byte-cast forces byte test (cont. 21)** — `(unsigned char)(node[0xb] & t)` emits the byte
+  `test [eax+0xb],dl`; without the cast Watcom zero-extends both operands and emits a dword test.
+  (0x128b8)
+- **Negative guards preserve cmp orientation (cont. 21)** — an `&&` chain makes Watcom
+  canonicalize `A >= B` into a reversed `cmp B,A / jg`; writing `if (A < B) goto skip;` keeps the
+  target's `cmp A,B / jl` orientation. (0x128b8 box checks)
+
 ## 3. Walls (recognize, then PARK — not source-reachable)
 
 If the structure is byte-correct and only ONE of these remains, stop and park with a note. Do not

@@ -1,10 +1,17 @@
 /* 0x1b908 -- walk the 10-byte record chain for slot `idx` (head index in the
  * 8-byte table at g_5338, records at g_5340, next-link at +8), and for each
- * record schedule FUN_0004a63a(x+rec[2], y+rec[4], g_5314+dur, rec[6]) with
- * g_5314 reset to its entry value before each call and re-read after.
- * Duration: if rec[0]/6-0x29 in [0,8) it's remapped through the per-actor
- * table g_e4ab (actor id = (p-0x8110)/0x5c/8, 0x417-byte stride), else rec[0]
- * raw. Recipe: -4s -oneatx -zp8 -s -zq.
+ * record schedule FUN_0004a63a(x+rec[2], y+rec[4], start+dur, rec[6]) with
+ * g_5314 (time cursor) reset to `start` before each call and re-read after.
+ * Duration: if rec[0]/6-0x29 in [0,8) it's remapped via the per-actor byte
+ * table g_e4ab (actor id = (p-0x8110)/0x5c/8, stride 0x417), else rec[0] raw.
+ * Recipe: -4s -oneatx -zp8 -s -zq.
+ *
+ * PARKED at 313/317 (true size 317; manifest says 315 -- undercounted, Ghidra
+ * mis-parses the bytes after the CALL). Pure register-role wall: ours homes
+ * start=ECX / base=EDI, target has start=EDI / base=ECX; everything else is
+ * byte-identical (the swap cascades into head-copy ESI vs ECX, tail-copy EDI
+ * vs EBP, `mov ebp,6` hoisted vs in-loop, and the two widen forms in the
+ * if-arm). First diff at 0x5 (modrm of the entry `mov edi,[g_5314]`).
  */
 extern unsigned char *g_5338;
 extern unsigned char *g_5340;
@@ -16,24 +23,21 @@ extern void FUN_0004a63a(int x, int y, unsigned int end, int arg4);
 
 void FUN_0001b908(int p, unsigned short idx, int x, int y)
 {
+    unsigned short base;
+    unsigned short t;
+    int v;
+    unsigned int end;
     int off;
     unsigned char *rec;
-    register unsigned int start;
+    unsigned int start;
 
     start = g_5314;
     rec = g_5340 + *(unsigned short *)(idx * 8 + (int)g_5338) * 10;
     if (rec > g_5340b) {
         off = (p - 0x8110) / 0x5c / 8 * 0x417;
         do {
-            unsigned short b;
-            unsigned short base;
-            unsigned short t;
-            int v;
-            unsigned int end;
-
-            b = g_e4ab[off];
+            base = g_e4ab[off] * 8 + 0x461;
             t = *(volatile unsigned short *)rec / 6 - 0x29;
-            base = b * 8 + 0x461;
             if (t < 8)
                 v = ((t & 7) + base) * 6;
             else

@@ -4,25 +4,31 @@
    (idx from the high bytes of coords p[4],p[6]); set *link = p->next (p[0]); if a next
    exists, patch next->prev (g_810e[next+2]) = p->prev; clear the flag.
 
-   PARKED near-miss (NOT matched; logic correct, idx build matches). Wall at 84/106:
-   the target is LESS optimised than -oneatx gives us in three spots -- it re-reads
-   *p into a fresh reg (we CSE-merge it), sign-extends the b-part via `movsx edx,dx;
-   mov ebx,edx` (we do `movsx ebx,dx` directly), and forms next->prev via `add edx,
-   0x810e; [edx+2]` (we fold to `[edx+0x8110]`). Lighter recipes (-ot/-oat/-os/-oa) and
-   6000 cpermute variants don't split these. Same grid-family opt/CSE wall as 0x26e18. */
+   PARKED near-miss, now at 105/106 (cont. 21: two of the three original walls fell
+   to proven levers — the volatile-deref cast `*(volatile unsigned short *)p` into a
+   named ushort local splits the post-store re-read into the target's `mov cx,[eax];
+   test cx,cx`, and the pointer statement `q = g_810e + nx;` gives the unfolded
+   `add edx,0x810e` + disp8). ONE instruction remains: target sign-extends the y-mask
+   via `movsx edx,dx; mov ebx,edx` (in-place promote + copy), ours always merges to
+   `movsx ebx,dx` — short/int/inline spellings + 4000 more cpermute variants all
+   converge to the merged form. movsx-split wall, register-role family. */
 extern unsigned char g_810e[];
 extern unsigned short g_10e[];
 void FUN_00026da8(unsigned char *p)
 {
     if (p[0xa] & 4) {
-        int idx = ((short)(*(unsigned short *)(p + 6) & 0x7f00) >> 1) |
-                  (((int)*(short *)(p + 4) >> 8) & 0x7f);
+        int ym = (short)(*(unsigned short *)(p + 6) & 0x7f00);
+        int idx = (ym >> 1) | (((int)*(short *)(p + 4) >> 8) & 0x7f);
         unsigned short *link = &g_10e[idx];
+        unsigned short nx;
         if (*(unsigned short *)(p + 2) != 0)
             link = (unsigned short *)(g_810e + *(unsigned short *)(p + 2));
         *link = *(unsigned short *)p;
-        if (*(unsigned short *)p != 0)
-            *(unsigned short *)(g_810e + *(unsigned short *)p + 2) = *(unsigned short *)(p + 2);
+        nx = *(volatile unsigned short *)p;
+        if (nx != 0) {
+            unsigned char *q = g_810e + nx;
+            *(unsigned short *)(q + 2) = *(unsigned short *)(p + 2);
+        }
         p[0xa] &= 0xfb;
     }
 }
