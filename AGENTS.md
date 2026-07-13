@@ -223,8 +223,31 @@ return-width, sign/zero-extend, symbols-not-literals, loop-form, volatile, `#pra
 the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intrinsic-inline), and the
 method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
 
-### ⭐ SNAPSHOT, read this first (as of 2026-07-12)
-- **Coverage: 152/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+### ⭐ SNAPSHOT, read this first (as of 2026-07-13)
+- **Coverage: 156/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (cont. 21 — **MULTI-AGENT SWEEP of the untried vein + 4 banks.** Orchestrated parallel subagents
+  (2 fns each, ≤10 compiles, no permuter/mark) while the main session serialized permuter runs.
+  BANKED: 0x33c38+0x33cf8 (grid-hit twins — NEW LEVER: inline `(short)(y&0x7f00)` in the loop body
+  ⇒ LICM preheader placement fixes entry load order; entry-statement `y&=` schedules with param
+  loads. Plus OR-operand swap for the movsx roles), 0x164c8 (agent, first session — NEW LEVER:
+  full-width temp `unsigned int t = <byte>; if ((unsigned short)t == g)` forces full xor widen; the
+  same lever then closed 0x265d8), 0x265d8 (stats-panel drawer; sprintf=0x3a4fa, text-draw=0x36698
+  signature confirmed). PARKED with NEW WALLS (all in playbook §2/§3): 0x338d8 (spill-SLOT-order
+  wall — 10 decl/scope configs, slot order is allocator-internal; manifest size fixed 295→418),
+  0x264a8 (single-exit+goto lever PROVEN for save/restore-at-every-return shape, but entry-scheduler
+  load batching + CH const-hoist walls; 314/297), 0x35d08 (register-resident param-copy lever found
+  — `bb = b` first statement explains lone promoted param; param auto-promotion + return-tail-merge
+  walls; 338/346), 0x205f8/0x20728 (menu-list twins, agent — NEW LEVER: 2D-table address
+  association picks which index gets the modrm scale; register-role cascade wall), 0x26c78
+  (entity-move, agent, 291/292 — NEW LEVER: volatile-DEREF cast splits post-store CSE re-reads;
+  one allocation-rank swap remains, cpermute can't flip it), 0x27f08 (DPMI alloc, agent, 177/185 —
+  far-pointer GS-home rules documented). DISPATCHERS/MIS-CARVES flagged: 0x2a288 (jump table
+  0x1cad8, true size ≥1400), 0x29ad8 (table 0x1c340), 0x23158 (table 0x15920, manifest 107 is a
+  massive undercount), 0x2d8c8 (7B mis-carve), 0x21658 (manifest mis-split, size fixed 279→3424 —
+  attemptable now). cpermute runs on 0x33c38/0x264a8/0x26c78 confirmed: the permuter cracks NONE of
+  the allocator-internal walls — its value is confirming a wall, not closing it. ⚠ mark.py is
+  line-format-sensitive: NEVER rewrite manifest/functions.json with json.dump (drops "lib" tags,
+  breaks mark.py); edit records with targeted regex/line replaces.)
   (cont. 19 — **LE FIXUP TOOL FIXED + a project-wide finding.** New `tools/lefix.py` replaces the
   broken `tools/archive/le_fixups.py`. Self-check PASSES 8688/8688 (stored placeholder dword ==
   record target offset, zero mismatches). Usage: `lefix.py check` | `lefix.py src <manifest_hex>

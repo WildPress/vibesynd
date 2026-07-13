@@ -210,6 +210,54 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   split). Same principle as the widen-form wall: named local ⇒ in-place/xor-first codegen,
   CSE temp ⇒ copy/and-form codegen. (0x2d228; cf. 0x279f8, 0x28628)
 
+- **Invariant-mask placement: entry statement vs inline-LICM (cont. 21)** — a loop-invariant mask
+  written as an ENTRY statement (`y &= 0x7f00;`) schedules the AND with the entry param loads and
+  perturbs the whole entry-block load order; written INLINE in the loop body as
+  `(short)(y & 0x7f00) >> 1`, LICM hoists it into the loop PREHEADER (AFTER the for-init/xor of
+  the counter — target shows `xor esi,esi; …; and edi,0x7f00` in that order) and the hoisted temp
+  stays SHORT-typed (per-iteration `movsx edx,di` re-materialisation). This + an OR operand swap
+  matched 0x33c38/0x33cf8 (grid-hit twins). When entry load order around a loop is off, move
+  invariant subexpressions between entry-statement and inline-in-loop forms.
+- **Single-exit + goto for save/restore-at-every-return fns (cont. 21)** — when the target saves a
+  global at entry (`mov si,[g]`) and re-stores it in EVERY return tail (duplicated
+  `mov [g],si; pops; ret` blocks), the source is SINGLE-EXIT: `char ret; … ret = X; goto done; …
+  done: g = save; return ret;`. Watcom itself tail-duplicates the store+ret into near branches and
+  far-jumps the distant ones. Writing multi-return C with per-return restores SPLITS the saved
+  local across TWO callee-saved regs (ESI home + DI store-copy with `mov edi,esi` re-copies) and
+  adds a push. (0x264a8)
+- **Full-width temp forces full xor widen (cont. 21, twice-proven)** — target shape
+  `xor eax,eax; …; mov al,[mem]; cmp ax,dx` (32-bit clear feeding a 16-bit compare of a byte vs a
+  ushort global): `(unsigned short)<byte-expr> == g` emits the half-clear `xor ah,ah`/`xor dh,dh`
+  when another register already holds a zero-extended byte (16-bit temp reuses known state);
+  DROPPING the cast promotes the ushort side to a 32-bit zext copy instead (worse: register split).
+  The fix is a named FULL-WIDTH temp + cast at the compare: `unsigned int t = <byte-expr>;
+  if ((unsigned short)t == g)` — defining t clobbers the whole register, forbidding the half-reg
+  trick, and the compare stays 16-bit. (0x164c8 first, then 0x265d8 → both MATCHED with it.)
+- **Register-resident param copy (cont. 21)** — when ONE param lives in a callee-saved reg from
+  entry (`mov esi,[esp+8]` before any call, default-assign writes SI not the slot) while sibling
+  params stay memory-homed (slot cmp/store, movzx at push), that param is used via a NAMED LOCAL
+  COPY (`unsigned short bb = b;` first statement) in the original. Which param OURS auto-promotes
+  instead is allocator-internal (see the promotion wall below). (0x35d08)
+- **2D-table address association is spelling-controlled (cont. 21, menu twins)** — for
+  `table[d*3 + a]` (dword table, both indices variable): `*(char **)((char *)tbl + a*4 + d*12)`
+  (column addend FIRST) yields `lea eax,[edx*4]; sub eax,edx; lea edx,[eax*4]` (12d materialised)
+  with the column in the modrm scale + moffs `mov al` column load; `tbl[d][a]` / row-addend-first
+  yields the opposite association (4a materialised, row 3d in the modrm scale). Both twins needed
+  one of EACH form at their two call sites. (0x205f8/0x20728)
+- **Volatile-deref split for post-store re-reads (cont. 21)** — when the target re-reads `*node`
+  from memory after a `*q = *node` store but -oneatx CSE-merges the reads, cast ONLY the post-store
+  re-reads through `*(volatile unsigned short *)node` — exactly those loads split; nothing else
+  changes. Pointer-deref variant of the volatile-read lever. (0x26c78; likely un-parks 0x26da8's
+  CSE component.)
+- **Far-pointer selector GS-home rules (cont. 21, 0x27f08)** — a selector local keeps its
+  segment-register home (direct `mov gs,[mem]` load, value reads via `mov dx,gs`, word spills)
+  ONLY while it feeds exactly ONE `:>` far-pointer construction; a second explicit `sel :> …`
+  re-homes it to a general register. Route every deref/copy through the one far pointer.
+  Anti-patterns: `(__segment)p` casts and far `p != 0` compares force a memory home; an inline
+  rvalue `(ushort)expr :> ptr` can silently fall back to a DS-based pointer (WRONG CODE). A
+  DS-based far global (`extern uchar __far *g;` assigned from a near pointer) emits the target's
+  `mov [g+4],ds; mov [g],eax` pair and `lgs` re-materialisation at each use. (0x35d08 confirms.)
+
 ## 3. Walls (recognize, then PARK — not source-reachable)
 
 If the structure is byte-correct and only ONE of these remains, stop and park with a note. Do not
@@ -272,6 +320,25 @@ grind; the fuzzer permutes *source* and can't change the allocator's mind.
   -os`** (0x3cc26); skip guarded-wrapper / saved-reg-before-frame fns (those hit the prologue wall).
   (0x3c491 21/23, 0x3c479 21/24, 0x3c42d 28/32 all walled.) The 0x39xxx game region (`-4s`/`-4r`,
   our own compiler) does NOT have this problem — mine there instead.
+
+- **Spill-slot assignment order (cont. 21)** — when 3+ byte locals spill to [esp+0/4/8/0xc], the
+  ORDER they get slots is allocator-internal: ours sorts role-first (all outer loop counters low,
+  all inners high) whatever the decl order (decl-order flips are provably byte-inert), scoping
+  (block vs function-top), or variable reuse across loops (perturbs order but never reaches the
+  target's case-grouped interleave). A [esp+0]-vs-[esp+4] disp8 difference shifts 1 byte and every
+  loop-alignment pad after it. 10 configs tried. Same family as register-role. (0x338d8 — body
+  otherwise byte-correct.)
+- **Param auto-promotion to callee-saved reg (cont. 21)** — ours promotes a stack param into a
+  callee-saved register at entry (profitable: 3 uses across calls) where the target keeps it
+  memory-homed until first use; ushort/int/short typings, casts, volatile (worse), and
+  assignment-in-condition all fail to suppress it. Companion: ours tail-MERGES identical 7-byte
+  `xor eax,eax; pops; ret` guards into one far block where the target duplicates them inline —
+  also not steerable. (0x35d08 338/346.)
+- **Entry-scheduler load batching (cont. 21)** — ours batches all entry loads (param + globals)
+  at the top and loads a byte global into AH for a `test` where the target compares memory
+  directly (`cmp byte [mem],0`) mid-sequence; ours also value-numbers a loop's `-1` into CH
+  (`add al,ch`) where the target has `dec al` — the -oneatx const-hoist. Named-local and spelling
+  changes don't break either; cpermute 4000 variants no match. (0x264a8 314/297.)
 
 ## 4. Object model (see docs/object-model.md)
 
