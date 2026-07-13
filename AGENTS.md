@@ -224,7 +224,26 @@ the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intri
 method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
 
 ### ⭐ SNAPSHOT, read this first (as of 2026-07-13)
-- **Coverage: 162/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+- **Coverage: 169/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
+  (cont. 22 — **THE DISPATCHER CLASS + OLD-WALL RETRY WAVE: +7 more.** BANKED: 0x33fb8 (the
+  legendary cont.11 one-byte park — the tail was SWITCH lowering (`jb` targets differ from &&-chain)
+  + base-decl-POSITION lever), 0x28ec8 (g_5358 column wall, 0x2fca8 lever set first rewrite),
+  0x26e18 (grid head-insert — pointer statement + cell-before-pid statement order), 0x2ee18
+  (cont.20 hoist wall — ushort di + inline `di+8` makes LICM re-materialise; `& ~7` mask finding),
+  0x37ad8 (19-case weapon selector, FIRST-TRY once table decoded via lefix.py + manifest size fixed
+  134→470; empty-case-label table-widening lever), 0x37d08 (752B twin, size 143→752; short-local
+  constant-prop 16-bit cmp + per-case-advance cross-jump control), 0x149e8 (size 35→91, `-4s -or`).
+  DISPATCHER METHOD (playbook §0): lefix.py the table (manifest = jmp-literal + 0xd748), recover
+  hidden case bytes via disassemble_bytes, fix the manifest size, switch with explicit empty case
+  labels — the jump-table-aware matcher does the rest. PARKED dispatchers (all length-exact, true
+  sizes fixed, register-role residues): 0x1a458 845B (~92%, full 45-case sprite-frame decode),
+  0x2bee8 792B, 0x2d0d8 333B (ONE commutative-add tie — NOTE cpermute is BLIND on jump-table fns,
+  its scorer lacks the table split, FIX IT next session), 0x33e78 303/310, 0x2cf28 240/262.
+  0x2d5b8/0x2d468 twins hold at ~10B (the 0x33fb8 winning spellings do NOT transplant into switch
+  context). New agent tools: tools/truediff.py (true-size masked compare), tools/seqdiff.py.
+  New levers in playbook §2: volatile-alias extern (per-site volatile via a second extern name;
+  volatile-via-cast is IGNORED by 9.5), base-decl position, `& ~7` demanded-bits, split-statement
+  subtraction, if-goto else-first layout, sum-operand-order accumulator pick.)
   (cont. 21 FINAL — session total +10: 0x33c38/0x33cf8/0x164c8/0x265d8 (first wave, see below),
   then 0x179f8 (container-size scan; aux-modify + REVERSE-decl frame order), 0x272b8 (multiplayer
   sync barrier — the permuter's FIRST register-tie crack, 1 success in ~12 runs: its value is
