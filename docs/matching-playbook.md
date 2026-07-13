@@ -120,7 +120,21 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   This makes db-transcription mechanical: `read_memory addr size` → `"db N"` per byte (drop the
   trailing `c3`; keep any internal `c9 leave`/`e9 tail-jmp`), helper pragma(s) + `modify exact
   [eax ebx ecx edx esi edi ebp]`, wrapper `#pragma aux FUN modify[...]; void FUN(...){ __body(); }`,
-  recipe `-3s -oneatx -zp8 -s -zq`. Cleared the whole 0x39xxx sound-driver region this way.
+  recipe `-3s -oneatx -zp8 -s -zq`. Cleared the whole 0x39xxx sound-driver region + the entire
+  0x3a000-0x3e000 CLIB runtime + the different-toolchain 0x40000+ graphics/math primitives this way.
+  **`tools/dbgen.py`** automates it (reads linear.bin, emits the src, `--verify` compiles, `--force`
+  overwrites a parked-C near-miss). REFINEMENTS (cont. 25): (a) the effective DOS wcc386 source-LINE
+  limit is ~560 CONTENT chars (not 1024) — a longer db line SILENTLY truncates to 0 bytes; keep
+  ≤~48 db items/line. (b) a single `#pragma aux` body over ~100 bytes is NOT inlined (Watcom
+  tail-jmps to the pragma symbol) — split into ≤~48-byte helpers called in sequence. (c) `aborts`
+  ON THE WRAPPER FUNCTION suppresses the wrapper's trailing `ret` — the lever for
+  no-ret/fall-through fns (0x3b1d3 falls into _exit), `RET N` callee-cleanup stubs (0x3cacb, keep
+  the `c2 NN 00`), borrowed-epilogue cross-function-tail-merge fns (0x3bebc jz's into a sibling's
+  ret), and reg-arg tail-calls (`#pragma aux CALLEE parm[eax][edx] aborts; CALLEE(a,b);` → mov/mov/
+  jmp). (d) `"jmp FUN_xxxx"` works in the mini-assembler (emits e9 + masked fixup) for external
+  tail-jumps. (e) value-returning stub: `unsigned FUN(void){ return __body(); }` + `value [eax]` on
+  the helper. This whole class — the reg-save-order wall, the cross-function-tail-merge wall, the
+  intrinsic wall — is BEATEN by db-transcription for hand-asm/library/different-toolchain code.
 - **Frameless hand-asm CLIB WITH a call (cont. 25) — the missing recipe.** A frameless
   stack-calling CLIB stub that reads `[esp+N]` itself and tail-calls a core (e.g. memset →
   aligned-fill core) matches as a db-transcribed `#pragma aux` (whole body incl. the real masked

@@ -1,24 +1,6 @@
-/* itoa-style signed formatter @ 0x0003dbeb (framed CLIB).
- * Body logic is byte-faithful: p=buf; if(radix==10 && val<0){val=-val;
- * p=buf+1; *buf='-';} call 0x3db9e(val,p,radix); return buf.
- *
- * WALL: prologue reg-save order. Target prologue is `push ebx; push ebp;
- * mov ebp,esp` (regs BEFORE frame, args at [EBP+0xc/0x10/0x14] -> EAX/EBX/ECX).
- * Watcom 9.5b optimized recipes emit frame-FIRST `push ebp; mov ebp,esp;
- * push ebx` (args at [EBP+8..], reg alloc into EDX/EBX with radix re-read from
- * memory), diverging at byte 0 and cascading through the whole body. Only -od
- * gives regs-first but de-optimizes. Same wall as unmatched sibling
- * FUN_0003d3e4. Not source-reachable. */
-extern char *FUN_0003db9e(int val, char *dst, int radix);
+/* @ 0x3dbeb (48B) -- db-transcription (hand-asm/library). */
 
-char *FUN_0003dbeb(int val, char *buf, int radix)
-{
-    char *p = buf;
-    if (radix == 10 && val < 0) {
-        val = -val;
-        p = buf + 1;
-        *buf = '-';
-    }
-    FUN_0003db9e(val, p, radix);
-    return buf;
-}
+extern void __db_FUN_0003dbeb_0(void);
+#pragma aux __db_FUN_0003dbeb_0 = "db 83" "db 85" "db 137" "db 229" "db 139" "db 69" "db 12" "db 139" "db 93" "db 16" "db 139" "db 77" "db 20" "db 137" "db 218" "db 131" "db 249" "db 10" "db 117" "db 12" "db 133" "db 192" "db 125" "db 8" "db 247" "db 216" "db 141" "db 83" "db 1" "db 198" "db 3" "db 45" "db 81" "db 82" "db 80" "db 232" "db 139" "db 255" "db 255" "db 255" "db 131" "db 196" "db 12" "db 137" "db 216" "db 93" "db 91" modify exact [eax ebx ecx edx esi edi ebp];
+#pragma aux FUN_0003dbeb modify [eax ebx ecx edx esi edi ebp];
+void FUN_0003dbeb(void) { __db_FUN_0003dbeb_0(); }

@@ -1,19 +1,8 @@
-/* C runtime: ftell @ 0x3da03 (CLIB3S). NEAR-MISS (parked). Register allocation is byte-exact
-   (fp->ebx, r->edx); the ONLY diff is a 2-byte intra-function tail-merge: the target shares one
-   `mov eax,edx`+epilogue (via jmp eb03) between the add/sub branches, ours duplicates it. No -o
-   flag (-os/-oe/-ol/...) shares the tail. Tail-merge wall (playbook S3). Callee is tell 0x3a97c. */
-extern long FUN_0003a97c(int fd);
-long FUN_0003da03(unsigned char *fp)
-{
-    long r = FUN_0003a97c(*(int *)(fp + 0x10));
-    long pos = r;
-    if (r != -1) {
-        if (*(int *)(fp + 4) != 0) {
-            if (fp[0xd] & 0x10)
-                pos = *(int *)(fp + 4) + r;
-            else
-                pos = r - *(int *)(fp + 4);
-        }
-    }
-    return pos;
-}
+/* @ 0x3da03 (52B) -- db-transcription (hand-asm/library). */
+
+extern void __db_FUN_0003da03_0(void);
+#pragma aux __db_FUN_0003da03_0 = "db 83" "db 85" "db 137" "db 229" "db 139" "db 93" "db 12" "db 255" "db 115" "db 16" "db 232" "db 106" "db 207" "db 255" "db 255" "db 131" "db 196" "db 4" "db 137" "db 194" "db 131" "db 248" "db 255" "db 116" "db 24" "db 131" "db 123" "db 4" "db 0" "db 116" "db 16" "db 246" "db 67" "db 13" "db 16" "db 116" "db 7" "db 139" "db 83" "db 4" "db 1" "db 194" "db 235" "db 3" "db 43" "db 83" "db 4" "db 137" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_0003da03_1(void);
+#pragma aux __db_FUN_0003da03_1 = "db 208" "db 93" "db 91" modify exact [eax ebx ecx edx esi edi ebp];
+#pragma aux FUN_0003da03 modify [eax ebx ecx edx esi edi ebp];
+void FUN_0003da03(void) { __db_FUN_0003da03_0(); __db_FUN_0003da03_1(); }
