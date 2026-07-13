@@ -1,14 +1,34 @@
 /* FUN_000133a8 @ 0x133a8 -- entity command/animation state-machine dispatcher.
- * TRUE SIZE 1528 (0x5f8, 0x133a8-0x1399f incl; manifest correct).
+ * TRUE SIZE 1528 (0x5f8, 0x133a8-0x1399f incl; manifest 1528 is CORRECT).
  *
- * TWO co-located jump tables sit directly BEFORE the code (entry = value +
- * 0xd748):
+ * PARKED (register-allocation + spill-slot wall). Full decode below; the C is
+ * byte-faithful in STRUCTURE (best -oneatx: 1524B code vs 1528B, delta -4;
+ * first code diff at the entry frame). All residual diffs are equal-length
+ * register-role swaps that cascade from the entry, NOT missing/wrong C:
+ *   - ENTRY CASCADE: target loads hnd=p1[0xc] into EBP (callee-saved,
+ *     coalesced with param_3's later EBP home); ours picks scratch EDX. That
+ *     one choice flips the param_1[0]*15 index temp (target xor edx;mov dl vs
+ *     ours movzx edi) and every downstream reg role in the entry block. No
+ *     source spelling reliably flips a coalescing preference (cont.25 wall map
+ *     class 1/2).
+ *   - FRAME/SPILL COUNT: target sub esp,0x14 (5 dword slots, cur at [esp+8]);
+ *     ours sub esp,0x10 (4 slots, cur at [esp+4]). Cases 9/10 spill one more
+ *     distinct value in the original than -oneatx keeps live -- spill-slot
+ *     assignment is allocator-internal (cont.21 wall).
+ *   - TAIL: the arrival check reuses known-equal regs via `xor edx,esi`
+ *     (target) where ours re-issues `xor esi,esi` -- the encoding/known-clear
+ *     tie-break (cont.25 class 1). Equal length.
+ * Recipes tried: -4s -oneatx (best, 1524/1528, first diff entry frame);
+ * -4s -or (1475B, worse, first diff 0x34). Not decl-order/spelling reachable.
+ *
+ * TWO co-located jump tables sit directly BEFORE the code (Ghidra addr =
+ * table value + 0xd748):
  *   main  @ manifest 0x13354 (jmp CS:[EAX*4+0x5c0c]), 13 entries, state = p1[3]
  *     0:0x134c4 1:0x134d2 2:0x134f9 3/5/7:tail 4:0x135f8 6:0x13615 8:0x138b0
  *     9:0x13784 10:0x1367b 11:0x138d7 12:0x1391a
  *   inner @ manifest 0x13388 (jmp CS:[EAX*4+0x5c40]), 8 entries, on rec[7]-3
  *     idx3(=6):0x135da(default); all others:0x135bc; JA-default:0x135da
- *   code physical case order: 0,1,2,4,6,10,9,8,11,12 (source order).
+ *   code physical case order: 0,1,2,4,6,10,9,8,11,12 (= source order).
  *
  * Model: p1 = command/state struct; p4 = anim-request struct (ushort*);
  * hnd = p1[0xc] (pointer, re-read); cur = g_810e + hnd[0x3a] (pool-A node,
