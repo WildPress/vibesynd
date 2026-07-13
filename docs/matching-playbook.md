@@ -260,6 +260,14 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   re-reads through `*(volatile unsigned short *)node` — exactly those loads split; nothing else
   changes. Pointer-deref variant of the volatile-read lever. (0x26c78; likely un-parks 0x26da8's
   CSE component.)
+- **`short argc`/16-bit params stay memory-homed (cont. 25)** — an `int` param that the target
+  compares 16-bit (`CMP DX,word[esp+N]`) gets promoted into a callee-saved reg (extra `push ebp`)
+  as `int`; declaring it `short` keeps it memory-homed and kills the promotion — often the single
+  biggest fix in a call-heavy fn. (0x24be8, the arg loop.)
+- **Near strcpy/strcat inline too (cont. 25)** — `#pragma intrinsic(strcpy, strcat)` with local
+  near decls DOES inline byte-exact (repne-scasb strlen + 2-byte-unroll copy), joining `_fmemset`/
+  `_fstrcpy`/`_fstrcat`. The intrinsic wall (§3) is strlen/memcpy-SPECIFIC, not all string.h.
+  (0x24be8.)
 - **Register pressure can make a BIG fn match where its small sibling walls (cont. 24)** — a
   larger function with more live values forces Watcom's allocator into the target's exact
   register choices, where a small sibling with slack allocates freely and diverges. Counter to
