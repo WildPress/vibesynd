@@ -24,19 +24,22 @@
  */
 extern char **g_5358;
 extern unsigned char *g_10ac0;
-extern short g_e128;
+extern volatile short g_e128;
 extern int FUN_LE_0000fa18(int a, int b, int c);
 extern int FUN_LE_0000fa88(int a, int b, int c);
 
-int FUN_0002d5b8(short x, short y, short w, unsigned char *p)
+int FUN_0002d5b8(short x, short y, int w, unsigned char *p)
 {
     short f = 0;
     int r;
+    short t;
+    char **slot;
 
     if (!(p[0x1c] & 2) && !(p[0x1d] & 8)) {
-        char *col = g_5358[(*(short *)(p + 6) % 0x6000 / 0x100 << 7)
-                           + (*(short *)(p + 4) & 0xff00) / 0x100];
-        switch (g_10ac0[col[(*(short *)(p + 8) - 1) / 0x80]]) {
+        slot = g_5358 + ((*(short *)(p + 6) % 0x6000 / 0x100 << 7)
+                        + (*(short *)(p + 4) & 0xff00) / 0x100);
+        switch (g_10ac0[*(unsigned char *)((int)*slot
+                                           + (*(short *)(p + 8) - 1) / 0x80)]) {
         case 0:
         case 1:
         case 2:
@@ -59,14 +62,9 @@ int FUN_0002d5b8(short x, short y, short w, unsigned char *p)
         }
     } else
         f = 1;
-    if (f != 0)
-        r = FUN_LE_0000fa18(x, y, w);
-    else
-        r = FUN_LE_0000fa88(x, y, w);
-    g_e128 = r - w;
-    if (g_e128 > 0x40)
-        return 0;
-    if (g_e128 < -0x40)
-        return 0;
-    return 1;
+    g_e128 = (f != 0 ? FUN_LE_0000fa18(x, y, (short)w) : FUN_LE_0000fa88(x, y, (short)w)) - w;
+    t = g_e128;
+    if (t <= 0x40 && t >= -0x40)
+        return 1;
+    return 0;
 }

@@ -17,12 +17,18 @@ CANDIDATES = [
     "-3r -of -oneatx -zp8 -s -zq",
     "-3s -oneatx -zp8 -s -zq",
     "-4s -of -oneatx -zp8 -s -zq",
+    "-4s -or -zp8 -s -zq",
+    "-4s -ot -s -zq",
+    "-3s -d2 -oneatx -zp8 -s -zq",
+    "-3s -os -zp8 -s -zq",
+    "-3s -os -ol -zp8 -s -zq",
 ]
 
 def try_match(name, flags):
-    r = subprocess.run(["bash", "tools/match10.sh", name, flags],
+    r = subprocess.run(["bash", "tools/match95.sh", name, flags],
                        capture_output=True, text=True)
-    return "RELOC-AWARE match (masked): YES" in r.stdout
+    return ("RELOC-AWARE match (masked): YES" in r.stdout
+            or "JUMP-TABLE-AWARE match    : YES" in r.stdout)
 
 def main():
     man = json.load(open("manifest/functions.json"))

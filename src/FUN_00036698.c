@@ -1,4 +1,21 @@
-/* @ 0x36698: the UI text drawer. Walks the NUL-terminated string s one byte at
+/* @ 0x36698: PARKED near-miss 295/362 (aligned bytes, -4s -oneatx -zp8 -s -zq).
+   Remaining walls (all §3 families): (1) spill-slot order — target has i at
+   [esp+0], c at [esp+4]; ours always swaps them under the for(;;)/goto loop
+   form that reproduces the target's test-at-top layout. A real
+   `for (i=0; s[i]; ++i)` header DOES give i slot 0 (structured-loop-var rank)
+   but then -oneatx converts to jump-to-test layout (entry jmp to a bottom
+   test) which the target does not have — the two requirements co-vary in
+   opposite directions. (2) underline block register-role: target homes
+   y2=(short)(a4+y-2) in EDX and the glyph-index chain in ESI (one-step
+   `movzx esi,[c]`); ours picks y2->ESI, chain->EDX (xor+mov byte widen, lea
+   -0x20 fold) whatever the operand spelling. (3) the 4a6c8 y-arg widen comes
+   out and-form (mov ax,dx; and eax,0xffff) vs target xor-form; full-width-temp
+   lever did NOT flip it here. Everything else matches, incl. the y+=a4
+   half-widen (y param must be `unsigned short`: dword slot loads with dirty
+   upper), the deferred c store (test s[i] in the guards, assign c after the
+   newline branch), saved-buffer in EBP, and both font-index computations.
+
+   The UI text drawer. Walks the NUL-terminated string s one byte at
    a time (byte index i). '\n' resets the pen x to the x param and advances y by
    a4 (the line height). For every other char the glyph record is the 6-byte
    entry tbl + (c - 0x20 + a5) * 6 (a5 = font/colour bank offset; +4 = advance
@@ -21,7 +38,7 @@ void FUN_00036698(char *s, unsigned short x, unsigned short y, unsigned char a4,
     unsigned char i;
     unsigned char j;
     unsigned short xpos;
-    unsigned short ypos;
+    unsigned int ypos;
     unsigned char *saved;
     unsigned char *font;
     unsigned char *glyph;
@@ -41,7 +58,7 @@ top:
         j = s[i];
         if (a9 != 0) {
             FUN_00018ae8((short)xpos, (short)(a4 + y - 2),
-                         (short)(a7 + (font[((unsigned)j + a5 - 0x20) * 6 + 4] + xpos)),
+                         (short)(a7 + (font[(a5 + (unsigned)j - 0x20) * 6 + 4] + xpos)),
                          (short)(a4 + y - 2), a9);
         }
         if (j == 0)
@@ -53,7 +70,7 @@ top:
                 g_5368 = g_5370;
             }
             glyph = font + (j + a5) * 6;
-            ypos = y + 0xc - glyph[5];
+            ypos = (unsigned short)(y + 0xc - glyph[5]);
             FUN_0004a6c8(xpos, ypos, glyph);
             xpos += a7 + glyph[4];
             if (a10)

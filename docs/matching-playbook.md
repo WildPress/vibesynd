@@ -264,6 +264,27 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
 - **Negative guards preserve cmp orientation (cont. 21)** — an `&&` chain makes Watcom
   canonicalize `A >= B` into a reversed `cmp B,A / jg`; writing `if (A < B) goto skip;` keeps the
   target's `cmp A,B / jl` orientation. (0x128b8 box checks)
+- **`volatile int x` = slot-homed local (cont. 21)** — when the target keeps a hot local in a
+  stack slot with EVERY access through memory (load-op-store per statement, slot reload at each
+  push) while ours registers it, `volatile` on that one local reproduces the slot-homed form
+  exactly without perturbing neighbours. (0x37918's x; note volatile on a PARAM was worse —
+  0x35d08.)
+- **Named base pointer for g_5358 column lookups (cont. 21)** — `base = g_5358; slot = base +
+  idx;` forces the `a1` base load BEFORE the `lea reg,[reg*4]` index scale; plain `&g_5358[idx]`
+  was anti-correlated with an unrelated block's codegen (fixing one flipped the other — the named
+  base pinned both). Plus `(int)*slot` casts the tile deref into `add eax,[ebp]; cmp [eax]`
+  instead of the SIB-folded form. Matched 0x2fca8 (438B); likely un-parks the 0x2d5b8/0x28ec8
+  g_5358 column register wall — RETRY those with this lever.
+- **Structured-loop-var slot rank vs loop layout (cont. 21, wall data)** — a real
+  `for(i=0;s[i];++i)` header BOOSTS i's spill-slot rank (landing it at [esp+0]) but -oneatx then
+  emits jump-to-test layout; `for(;;)`+break gives test-at-top but demotes the slot. The two
+  co-vary in opposite directions — when a target needs both, that's a wall (0x36698). Also: y
+  param as `unsigned short` explains dword slot loads with dirty upper + `xor ah,ah` half-widen
+  on `y += a4`.
+- **`-or` for slot re-read functions (cont. 21)** — a fn whose params/locals are re-read from
+  stack slots at each use (no callee-saved homing, no extra push) wants `-4s -or -zp8 -s -zq`;
+  -oneatx homes them into EBX/EBP and adds a push. Confirms the 0x377b8 recipe row. (0x284a8
+  MATCHED this way.)
 
 ## 3. Walls (recognize, then PARK — not source-reachable)
 
@@ -300,6 +321,18 @@ grind; the fuzzer permutes *source* and can't change the allocator's mind.
   `__int64` (E1009). A target that does a true 64-bit muldiv (`mul ecx; div ebx` carrying EDX from
   mul straight into div, no `xor edx`) is UNREACHABLE — with `unsigned int` Watcom always emits
   `xor edx` (or strength-reduces the `*const`) before the unsigned `div`. (0x39495.)
+- **Scaled-index lea materialization (cont. 21)** — target materialises `2*minor` as the 7-byte
+  `lea eax,[esi*2+0x0]` (disp32=0, NO fixup); our 9.5b always emits `add eax,eax` (or mov+add).
+  `*2`, `<<1`, `(short*)0+dy`, and extern-symbol-base spellings all fail (symbol forms don't fold
+  sym+idx*2 into one lea and restructure the entry). Same codegen-choice class as the push
+  imm8-vs-imm32 wall below. (0x18ae8 Bresenham, 516/524.)
+- **Spill-slot steering refinement (cont. 21)** — decl-order slot steering is NOT universally
+  inert: in 0x18ae8 endpoint/step locals were successfully steered to the target's slots via
+  declaration order, while its inc-quartet stayed in a 3-cycle and 0x338d8/0x12ae8's counters
+  ignored decls entirely. Try decl-order steering first; park only when the residue is a cyclic
+  permutation that decls provably don't move. Also (0x12ae8): inline `node[0x18]` (vs a named
+  temp) homes the loaded type byte in AH (`cmp ah,1`) instead of AL — another inline-vs-named
+  data point.
 - **Push imm8-vs-imm32 peephole threshold** — target encodes a small `push <const>` as imm32
   (`68 70 00 00 00`) where our Watcom 9.5b always emits the sign-extended imm8 (`6a 70`). Body can be
   byte-faithful with all relocs aligned and this single 3-byte push be the only diff. Not
