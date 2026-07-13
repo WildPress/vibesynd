@@ -102,7 +102,7 @@ USAGE
 Reads src/<FUNC>.c (the seed), leaves it untouched, and on success writes the winning
 variant to src/<FUNC>.c.match. pycparser is auto-installed if missing.
 """
-import json, subprocess, sys, re, os, copy, random, difflib
+import json, subprocess, sys, re, os, copy, random, difflib, itertools
 import multiprocessing as mp
 try:
     from pycparser import c_parser, c_generator, c_ast
@@ -342,8 +342,25 @@ def inline_sites(body):
     return out
 
 
+def declblock_len(body):
+    """Length of the leading CONTIGUOUS run of local declarations at the top of the function
+    body. These are the `T name;` / `T name = init;` statements Watcom lays out into esp-relative
+    spill slots / assigns registers to; PERMUTING them is the one lever that moves slot and
+    register assignment (decl-order is otherwise byte-inert only because the whole-body shuffle
+    breaks compilation before it can help). This is the surgical version of order_seed: reorder
+    just the declaration block, leave every executable statement in place. Cracks the length-exact
+    spill-slot / register-role parks (0x2e5f8 y<->i transpose, 0x338d8 counter slots, etc.)."""
+    n = 0
+    for stmt in (body.block_items or []):
+        if isinstance(stmt, c_ast.Decl) and not isinstance(stmt.type, c_ast.FuncDecl):
+            n += 1
+        else:
+            break
+    return n
+
+
 def apply_mutations(ast, loop_flags, comm_flags, rewrite_flags, hoist_types,
-                    local_types, order_seed, inline_flags=()):
+                    local_types, order_seed, inline_flags=(), decl_perm=None):
     """Apply one variant's chosen mutations to `ast` in place. Each *_flags tuple is
     parallel to the corresponding *_sites list. Order of application matters and is chosen
     so earlier structural edits don't invalidate later site lookups: loop-form swaps and
@@ -435,6 +452,17 @@ def apply_mutations(ast, loop_flags, comm_flags, rewrite_flags, hoist_types,
         random.Random(order_seed).shuffle(idx)
         spliced = [spliced[j] for j in idx]
     body.block_items = spliced
+
+    # (8) SURGICAL declaration-block permutation: reorder ONLY the leading contiguous run of
+    # Decl statements by decl_perm (a permutation of range(k)), leaving executable statements
+    # in place. This is what moves Watcom's spill-slot / register assignment; an invalid perm
+    # (e.g. an initializer that now precedes its dependency) just fails to compile and is dropped.
+    if decl_perm is not None:
+        items = body.block_items or []
+        k = declblock_len(body)
+        if len(decl_perm) == k and sorted(decl_perm) == list(range(k)):
+            head = [items[j] for j in decl_perm]
+            body.block_items = head + items[k:]
 
 
 # ---------------------------------------------------------------------------
@@ -534,18 +562,42 @@ def main():
     nloop = len(loop_sites(ast0)); ncomm = len(comm_sites(ast0)); nrw = len(rewrite_sites(ast0))
     nhoist = len(hoist_sites(body_of(ast0))); ntype = len(type_sites(body_of(ast0)))
     ninline = len(inline_sites(body_of(ast0)))
+    ndecl = declblock_len(body_of(ast0))
     print(f"{name}: {nloop} loop, {ncomm} commutative, {nrw} rewrite, {nhoist} hoist, "
-          f"{ntype} type, {ninline} inline sites; sampling {N} variants, "
+          f"{ntype} type, {ninline} inline, {ndecl} decl sites; sampling {N} variants, "
           f"target={len(target)}B", flush=True)
 
     # ---- sample N distinct specs (spec = per-family choice tuples) ----
     # Probabilities keep most sites OFF in any given variant, so we explore combinations of
     # a FEW simultaneous mutations rather than always-everything (which rarely matches).
+    ID = tuple(range(ndecl))                                                    # identity decl order
     rng = random.Random(seed)
     seen, specs = set(), []
     specs.append((tuple([0]*nloop), tuple([0]*ncomm), tuple([0]*nrw),           # identity first:
-                  tuple([None]*nhoist), tuple([None]*ntype), None, tuple([0]*ninline)))  # catches an
-                                                                                         # already-matching seed
+                  tuple([None]*nhoist), tuple([None]*ntype), None,              # catches an
+                  tuple([0]*ninline), ID))                                       # already-matching seed
+    seen.add(specs[0])
+    # PURE declaration-block permutations with EVERYTHING ELSE identity -- the highest-yield slice
+    # for the length-exact spill-slot / register-role parks, and the only variants guaranteed to
+    # compile (reordering uninitialised locals can't break semantics). Give this its own budget so
+    # the noisy combined search below (hoists/rewrites, which often fail to compile) can't starve
+    # it. Exhaust k! when k<=7 (<=5040); otherwise sample up to half the budget of distinct perms.
+    base = (tuple([0]*nloop), tuple([0]*ncomm), tuple([0]*nrw),
+            tuple([None]*nhoist), tuple([None]*ntype), None, tuple([0]*ninline))
+    if 2 <= ndecl <= 7:
+        for perm in itertools.permutations(range(ndecl)):
+            if len(specs) >= N: break
+            key = base + (perm,)
+            if key in seen: continue
+            seen.add(key); specs.append(key)
+    elif ndecl >= 8:
+        cap = min(N // 2, 8000)
+        tries = 0
+        while len(specs) < cap and tries < cap * 20:
+            tries += 1
+            key = base + (tuple(rng.sample(range(ndecl), ndecl)),)
+            if key in seen: continue
+            seen.add(key); specs.append(key)
     while len(specs) < N:
         lf = tuple(rng.randint(0, 1) for _ in range(nloop))                            # loop swaps
         cf = tuple(rng.randint(0, 1) for _ in range(ncomm))                            # comm swaps
@@ -554,7 +606,8 @@ def main():
         lt = tuple(rng.choice(TYPES) if rng.random() < 0.25 else None for _ in range(ntype))  # retypes
         od = rng.randint(0, 10**9) if rng.random() < 0.5 else None                     # reorder seed
         inf = tuple(rng.randint(0, 1) for _ in range(ninline))                         # inlines
-        key = (lf, cf, rw, hf, lt, od, inf)
+        dp = tuple(rng.sample(range(ndecl), ndecl)) if (ndecl >= 2 and rng.random() < 0.5) else ID
+        key = (lf, cf, rw, hf, lt, od, inf, dp)                                         # + decl perm
         if key in seen: continue
         seen.add(key); specs.append(key)
 
@@ -562,7 +615,8 @@ def main():
     def render(spec):
         a = copy.deepcopy(ast0)                       # never mutate the shared seed
         try:
-            apply_mutations(a, spec[0], spec[1], spec[2], spec[3], spec[4], spec[5], spec[6])
+            apply_mutations(a, spec[0], spec[1], spec[2], spec[3], spec[4], spec[5], spec[6],
+                            spec[7] if len(spec) > 7 else None)
             return GEN.visit(a)
         except Exception:
             return "void __broken(void){}"            # unrenderable -> will fail to match

@@ -19,6 +19,17 @@ Companion: `docs/object-model.md` (the pool/entity field map + global-table cata
 - **Bounded effort.** Hand-iterate a dozen or so times; if it won't close, report the NEAR-MISS
   (best X/Y + the specific remaining diff) — the orchestrator runs a serial `--workers 32` fuzzer
   on near-misses. Don't exhaustively grind register walls (see §3).
+- **cpermute is jump-table-aware AND declaration-permuting (cont. 24).** The fuzzer now (a) splits
+  the co-located jump table off obj `.text` before scoring (so dispatcher near-misses score
+  correctly), and (b) permutes the leading DECLARATION BLOCK — exhaustively for ≤7 top-level
+  locals, sampled for ≥8 — as a dedicated always-compilable phase. USE IT to settle whether a
+  near-miss is decl-order-reachable: if a spill-slot/register-role residue survives the pure decl
+  permutations, it is a GENUINE allocator wall (§3), not unfound C — stop hand-grinding decl order.
+  SCOPE: decl-perm moves slots for STRAIGHT-LINE slot-homed locals (matched 0x179f8 via a decl
+  swap; steered 0x18ae8 endpoints); it does NOT move LOOP-CARRIED slots (0x2e5f8 y↔i, confirmed
+  inert) or pure register-role ties (0x34048 cur/d EAX↔EDX, confirmed inert). LIMITATION: only
+  top-level decls; block-scoped locals (switch-case counters, e.g. 0x338d8) are not yet reached —
+  extending decl-perm to nested compounds is the next tooling step.
 - **Compile+diff:** `docker run --rm -v "$PWD":/work -w /work synd-decomp bash tools/match95.sh
   <FUN> "<flags>"`. The work dir is now isolated per-invocation, so parallel compiles are safe.
 - **If "ours" bytes look wildly wrong** (phantom DIV/loops), `rm -f build/<FUN>.obj` first — a
