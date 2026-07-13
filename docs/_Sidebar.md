@@ -20,6 +20,7 @@
 
 **The game**
 
+- [Architecture map](architecture)
 - [How the game works](game-systems)
 
 **Log**
