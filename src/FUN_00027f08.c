@@ -35,8 +35,6 @@ unsigned char __far *FUN_00027f08(void)
     int in[7];
     int out[7];
     unsigned short sel;
-    unsigned char __far *r;
-    unsigned char __far *p;
 
     FUN_0003aaf8(in, 0, 0x1c);
     FUN_0003aaf8(out, 0, 0x1c);
@@ -48,11 +46,9 @@ unsigned char __far *FUN_00027f08(void)
         return 0;
     }
     sel = (unsigned short)out[3];
-    p = sel :> (unsigned char *)0;
-    r = p;
     if (out[6] != 0 || sel != 0) {
-        _fmemset(p, 0, 0x42);
-        *(unsigned short __far *)(p + 0x40) = (unsigned short)out[0];
+        _fmemset(sel :> (unsigned char *)0, 0, 0x42);
+        *(unsigned short __far *)((sel :> (unsigned char *)0) + 0x40) = (unsigned short)out[0];
     }
-    return r;
+    return sel :> (unsigned char *)0;
 }

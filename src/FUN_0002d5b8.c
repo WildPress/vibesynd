@@ -1,4 +1,17 @@
-/* NEAR-MISS @ 0x2d5b8 -- 259 vs 264 code bytes; JUMP TABLE FULLY RECOVERED
+/* NEAR-MISS @ 0x2d5b8 -- cont.21 re-attack closed MOST of the old wall: code
+ * tail now 259/259 length (was 264), entry + guards + switch + calls + tail all
+ * byte-identical after: g_5358 declared as POINTER VARIABLE (mov edx,[g_5358]
+ * load, not an immediate — this alone flipped the f/w ESI/EDI roles into
+ * place), slot-pointer local + (int)*slot cast (gives the in-place
+ * `add eax,[ecx]` deref), ternary-merge for the fa18/fa88 result (single
+ * `sub eax,esi`), volatile g_e128 + named re-read temp for the tail compares,
+ * int-typed w with (short) casts at pushes. REMAINING (~10 bytes): the slot
+ * address forms via `add ecx,eax` with base ECX (target `lea ecx,[edx+eax]`,
+ * base EDX) with a movsx scheduled early, and the tile byte widens and-form
+ * in EAX (target xor/mov dl into EDX). Named-base spelling regresses others;
+ * 4000 more cpermute variants no match. Register-role family.
+ *
+ * ORIGINAL NOTES: 259 vs 264 code bytes; JUMP TABLE FULLY RECOVERED
  * (this is the payoff of the fixed tools/lefix.py). The 16-entry dispatcher at
  * manifest 0x2d574 (obj1:+0x1fe2c) maps tile type -> {6,7,8,9,0xb,0xf}=blocked.
  * The whole body is byte-identical through the switch EXCEPT the g_5358 column
