@@ -29,7 +29,23 @@ import json, os, sys, subprocess
 MAN = "manifest/functions.json"
 SEG = "inputs/SYNDICAT_MAIN_OBJECT1.linear.bin"
 RECIPE = "-3s -oneatx -zp8 -s -zq"
-LINE_ITEMS = 48                       # db-items per helper pragma (keeps lines well under ~1024 chars)
+# db-items per helper pragma. TWO hard wcc386 limits bound this (cont.25 debug):
+#  (1) a compilation unit tolerates at most ~18-19 inline `#pragma aux` helper symbols;
+#      beyond that wcc386 SILENTLY emits an empty _TEXT (obj compiles, function = 0 bytes).
+#      NOT name-length driven -- it is a raw pragma-symbol count ceiling.
+#  (2) a source LINE over ~1000 chars HARD-fails the DOS compile (no OBJ); ~800 is safe.
+#      Each helper must also stay <~100 bytes to be INLINED (else Watcom tail-jmps to it).
+# So we size helpers to keep count <= ~16 while the line stays ~800 chars and the pragma
+# body stays inline-able. Ceiling on matchable size: ~16 * ~88 ~= 1400B (hard cap ~1600B).
+MAX_HELPERS = 16
+MAX_ITEMS = 88                        # ~800-char line, still inline-able (< ~100B body)
+MIN_ITEMS = 48
+
+
+def helper_items(n):
+    """Pick db-items/helper so helper count stays <= MAX_HELPERS without over-long lines."""
+    it = max(MIN_ITEMS, -(-n // MAX_HELPERS))     # ceil(n / MAX_HELPERS)
+    return min(it, MAX_ITEMS)
 
 
 def fn_bytes(f, base):
@@ -42,7 +58,8 @@ def gen_src(name, body, header, aborts=False):
     so Watcom appends NO trailing ret (for no-ret / RET-N / tail-jmp / borrowed-epilogue fns);
     caller must pass the FULL body. Otherwise the trailing `c3` was dropped and the wrapper's
     epilogue supplies the ret."""
-    parts = [body[i:i + LINE_ITEMS] for i in range(0, len(body), LINE_ITEMS)]
+    li = helper_items(len(body))
+    parts = [body[i:i + li] for i in range(0, len(body), li)]
     lines = [header.rstrip() + "\n"]
     for i, p in enumerate(parts):
         db = " ".join(f'"db {b}"' for b in p)
