@@ -260,6 +260,12 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   re-reads through `*(volatile unsigned short *)node` — exactly those loads split; nothing else
   changes. Pointer-deref variant of the volatile-read lever. (0x26c78; likely un-parks 0x26da8's
   CSE component.)
+- **Register pressure can make a BIG fn match where its small sibling walls (cont. 24)** — a
+  larger function with more live values forces Watcom's allocator into the target's exact
+  register choices, where a small sibling with slack allocates freely and diverges. Counter to
+  intuition, don't skip a megafn because its small cousin is a register-role wall — the extra
+  structure may CLOSE it. (0x184b8 803B MATCHED where sibling 0x183e8 is walled; both DPMI
+  alloc/free with the same idioms.)
 - **Cross-jump law for per-case call tails (cont. 22, proven by a 6-test battery)** — -oneatx
   cross-jumps identical per-case call tails ONLY when EVERY arm exits the switch via break/
   fall-out; a single goto/continue/return arm kills merging for ALL arms. To reproduce a merged
