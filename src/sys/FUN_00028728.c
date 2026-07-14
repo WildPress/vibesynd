@@ -6,7 +6,7 @@
    then zero-fill the block through a far pointer. */
 
 extern void FUN_0003aaf8(void *dst, int val, int len);   /* memset helper */
-extern void FUN_0003adb2(int a, void *msg, void *scratch);
+extern void int386(int a, void *msg, void *scratch);
 extern void FUN_000289a8(int a, int b, int c);
 
 extern void __far *_fmemset(void __far *dst, int c, unsigned n);
@@ -23,7 +23,7 @@ unsigned int FUN_00028728(unsigned short *param_1, unsigned short param_2)
     FUN_0003aaf8(scratch, 0, 0x1c);
     msg[0] = 0x100;
     msg[1] = (param_2 + 0x10) / 16;
-    FUN_0003adb2(0x31, msg, scratch);
+    int386(0x31, msg, scratch);
     local_c = scratch[6];
     if (local_c != 0) {
         FUN_000289a8(0x376c, 0x297, -2);

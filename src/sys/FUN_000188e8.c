@@ -4,7 +4,7 @@
  * close(fd) @0x18878. Returns fd. Recipe: -4s -oneatx -zp8 -s -zq
  */
 extern int FUN_00018828(char *path, int mode);
-extern int FUN_00018958(char *path);
+extern int open_detect_rnc_header(char *path);
 extern void FUN_000188a8(int fd, void *buf, int n);
 extern int FUN_0003a1ec(void *dst, void *src);
 extern void FUN_0003ad66(int code, char *path);
@@ -15,7 +15,7 @@ int FUN_000188e8(char *path, void *buf)
     int fd = FUN_00018828(path, 0x200);
 
     if (fd != -1) {
-        FUN_000188a8(fd, buf, FUN_00018958(path));
+        FUN_000188a8(fd, buf, open_detect_rnc_header(path));
         if (FUN_0003a1ec(buf, buf) < 0)
             FUN_0003ad66(0x14c, path);
         FUN_00018878(fd);

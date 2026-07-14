@@ -107,7 +107,7 @@ extern unsigned int  g_10b02;
 extern short         g_10b16;
 extern unsigned char g_10b45;
 
-extern int  FUN_00020c88(void);
+extern int  keyboard_state_machine(void);
 extern void FUN_0004d1db(unsigned char *dst, unsigned char *src, int n);
 
 /* compiled-out 2-arg hook: emits arg push + cdecl cleanup, no call bytes */
@@ -175,7 +175,7 @@ void FUN_00021e18(unsigned short param)
                                             *(unsigned short *)(g_e5bc + d * 40 + REC) =
                                                 *(unsigned short *)(pr + 0x3c);
                                             *(unsigned short *)(g_e5ba + d * 40 + REC) = 0x10;
-                                            g_e5b9[d * 40 + REC] = (unsigned char)FUN_00020c88();
+                                            g_e5b9[d * 40 + REC] = (unsigned char)keyboard_state_machine();
                                             for (s = 0; s < 8; s++) {
                                                 *(unsigned short *)(g_e5c3 + d * 40 + s * 4 + REC) = 0;
                                                 *(unsigned short *)(g_e5c1 + d * 40 + s * 4 + REC) = 0;

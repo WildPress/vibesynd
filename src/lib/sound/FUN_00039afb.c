@@ -1,3 +1,3 @@
-/* dispatch stub @ 00039afb (10B): mov eax,0x7c; jmp FUN_000392ac (tail call) */
-extern int FUN_000392ac(int);
-int FUN_00039afb(void) { return FUN_000392ac(0x7c); }
+/* dispatch stub @ 00039afb (10B): mov eax,0x7c; jmp sound_dispatch_trampoline (tail call) */
+extern int sound_dispatch_trampoline(int);
+int FUN_00039afb(void) { return sound_dispatch_trampoline(0x7c); }

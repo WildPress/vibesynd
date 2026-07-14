@@ -134,8 +134,13 @@ def make_stubs(func_names, data_names, path, entry_code=None):
 
 def main():
     rec = json.load(open("manifest/recipes.json"))
+    # a function source is any src/**/*.c whose basename is a manifest function name (FUN_<addr> OR a
+    # semantic name after tools/apply_names.py). name_of maps addr -> current name for the stubs below.
+    man_fns = json.load(open("manifest/functions.json"))["functions"]
+    man_names = {f["name"] for f in man_fns}
+    name_of = {f["addr"]: f["name"] for f in man_fns}
     names = sorted(os.path.basename(p)[:-2] for p in glob.glob("src/**/*.c", recursive=True)
-                   if re.match(r"FUN_[0-9a-fA-F]+$", os.path.basename(p)[:-2]))
+                   if os.path.basename(p)[:-2] in man_names)
     DEFAULT = "-4s -oneatx -zp8 -s -zq"
     os.makedirs(WORK, exist_ok=True)
     for f in glob.glob(WORK + "/*"):
@@ -147,9 +152,21 @@ def main():
         # main() hands off to the game's real main FUN_00024be8(argc,argv). This uses CLIB's
         # proven startup (past 1012, reaches main) and BYPASSES the game's own __x386_start, whose
         # DOS/4GW handoff our hand-built single-blob LE (GAMEO) mishandles.
-        body = ("int main(void){return 42;}\n" if "--gamemain" not in sys.argv else
-                "extern void FUN_00024be8(int,char**);\n"
-                "int main(int argc,char**argv){FUN_00024be8(argc,argv);return 0;}\n")
+        GAMEMAIN = name_of.get("00024be8", "FUN_00024be8")   # follows apply_names.py rename
+        INT386 = name_of.get("0003adb2", "FUN_0003adb2")
+        if "--diagmain" in sys.argv:
+            body = ("extern int printf(const char*,...);\nextern int fflush(void*);\n"
+                    "extern void %s(int,void*,void*);\n" % INT386 +
+                    "int main(int argc,char**argv){\n"
+                    "  int buf[16];\n"
+                    "  printf(\"M1\\n\"); fflush(0);\n"
+                    "  ((unsigned char*)buf)[1]=0xf; %s(0x10,buf,buf);\n" % INT386 +
+                    "  printf(\"M2-int386-ok mode=%d\\n\", ((unsigned char*)buf)[0]); fflush(0);\n"
+                    "  return 7;\n}\n")
+        else:
+            body = ("int main(void){return 42;}\n" if "--gamemain" not in sys.argv else
+                    "extern void %s(int,char**);\n" % GAMEMAIN +
+                    "int main(int argc,char**argv){%s(argc,argv);return 0;}\n" % GAMEMAIN)
         open("src/_mainstub.c", "w").write(body)
         subprocess.run(["bash", "tools/wcc_95.sh", "_mainstub", "-4s -zq"], capture_output=True, text=True)
         if os.path.exists("build/_mainstub.obj"):
@@ -179,6 +196,17 @@ def main():
     dr = read_omf("build/dataimg.obj")
     data_defs = dr[0] if dr else set()
     shutil.copy("build/dataimg.obj", os.path.join(WORK, "DATA.OBJ"))
+
+    # the recovered object1 code PREFIX (tools/prefix_obj.py): one relink-safe object holding the
+    # game's MAIN LOOP (FUN_0000d928) + startup fns the shifted linear.bin dropped. Its PUBDEFs
+    # satisfy the FUN_0000xxxx references the main body makes, so they stop being ret-stubs.
+    if os.path.exists("build/prefix.obj"):
+        pr = read_omf("build/prefix.obj")
+        if pr:
+            defs |= pr[0]; refs |= set(pr[1])
+        shutil.copy("build/prefix.obj", os.path.join(WORK, "PREFIX.OBJ"))
+        objlist.append("PREFIX.OBJ")
+        print("linked build/prefix.obj (%d PUBDEFs)" % (len(pr[0]) if pr else 0))
 
     # everything referenced but not defined by our objects or the data image.
     # CLIB symbols (leading underscore runtime helpers) are left for CLIB3S.LIB to satisfy.

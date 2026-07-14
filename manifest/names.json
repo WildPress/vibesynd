@@ -1,0 +1,3495 @@
+{
+ "FUN_00011d68": {
+  "addr": "00011d68",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "PARKED near-miss @ 0x11d68 -- LCS 1962/2881 bytes, ours 3112B vs 2881B, recipe -4s -oneatx -zp8 -s -zq. TRUE SIZE 2881 (0xb41) -- manifest says 337 (do not trust it; report only). Both jump tables emi",
+  "runs_in_intro": false
+ },
+ "FUN_000128b8": {
+  "addr": "000128b8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "PARKED near-miss @ 0x128b8 -- 317/353 bytes, first diff 0x1a, size match 353/353, all fixup sites aligned. Register-role wall (see below). Semantics: find a live ped (pool-A type 1) near (x,y,z). Scan",
+  "runs_in_intro": false
+ },
+ "FUN_00012ae8": {
+  "addr": "00012ae8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "PARKED near-miss @ 0x12ae8 -- 392/443 bytes, first diff 0x5f, size match 443/443, all fixup sites aligned. Register-role/spill-slot wall, same family as sibling 0x128b8. Semantics: find an overlapping",
+  "runs_in_intro": false
+ },
+ "FUN_00012ca8": {
+  "addr": "00012ca8",
+  "label": "",
+  "subsystem": "startup",
+  "desc": "0x12ca8 -- session init. Clears bit 4 of byte +6 in each of 0x80 records of * 0xf bytes at 0x1beb2 (compiler-unrolled x4 -- write the PLAIN loop, -oneatx unrolls small do-whiles x4 by itself and DOUBL",
+  "runs_in_intro": false
+ },
+ "FUN_00012da8": {
+  "addr": "00012da8",
+  "label": "",
+  "subsystem": "economy",
+  "desc": "frameless @ 0x12da8: build + apply player k's equip-template row. TRUE SIZE 1188 (0x4a4, 0x12da8..0x1324b incl.) -- manifest says 955: it truncates at the 4-way jump table `jmp CS:[EAX*4+0x5650]` (tab",
+  "runs_in_intro": false
+ },
+ "FUN_000133a8": {
+  "addr": "000133a8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "FUN_000133a8 @ 0x133a8 -- entity command/animation state-machine dispatcher. * TRUE SIZE 1528 (0x5f8, 0x133a8-0x1399f incl; manifest 1528 is CORRECT). * * PARKED (register-allocation + spill-slot wall",
+  "runs_in_intro": false
+ },
+ "FUN_000139a8": {
+  "addr": "000139a8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "0x139a8 -- kill-credit eligibility test. n's cause flags at +0x1c pick a * rule bit in b[1]: &4 -> b[1]&1; &2 -> owner p = ((n - g_8110)/0x5c)/8, if * player-rec flag (g_e4aa[p*0x417] & 2) then p==idx",
+  "runs_in_intro": false
+ },
+ "FUN_00013a98": {
+  "addr": "00013a98",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x13a98: if arg2->[0xb] bit 0 is set, forward to FUN_13ac8 with reordered args and return 0; otherwise return 1.",
+  "runs_in_intro": false
+ },
+ "FUN_00013ac8": {
+  "addr": "00013ac8",
+  "label": "",
+  "subsystem": "anim",
+  "desc": "frameless @ 0x13ac8: reset obj1 state and flash obj2's palette entry twice. Zero obj1[0xa](word)/[2]/[5], copy obj1[4]->obj1[3]; set obj2[0xd]=0x14 and obj2's three words [0]/[1]/[2] to 0x7f, call FUN",
+  "runs_in_intro": false
+ },
+ "FUN_00013b38": {
+  "addr": "00013b38",
+  "label": "",
+  "subsystem": "anim",
+  "desc": "frameless @ 0x13b38: three-stage palette flash (sibling of 0x13ac8). Clear param_5[5]; then three times set obj1[0xd] to a stage id, fill obj1's three words, and call FUN_00023158(param_4): stage 7 us",
+  "runs_in_intro": false
+ },
+ "FUN_00013bc8": {
+  "addr": "00013bc8",
+  "label": "",
+  "subsystem": "entity",
+  "desc": "frameless @ 0x13bc8: walk a pool linked list to its terminal node. Start from the node id at (*(int*)(param_5+0xc))[0x3a]; node = g_810e + id. Unless the first node already has node[0x19]==1, follow t",
+  "runs_in_intro": false
+ },
+ "FUN_00014078": {
+  "addr": "00014078",
+  "label": "",
+  "subsystem": "multiplayer",
+  "desc": "0x14078 -- net-sync message builder. First time (s[5]==0): send type 4 with * the node id (ptr at s+0x10 minus pool base 0x810e), mark s[5]=1. Otherwise * probe 0x2e808(s->obj, s->node, (short)(g_a6c2",
+  "runs_in_intro": false
+ },
+ "FUN_000146f8": {
+  "addr": "000146f8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x146f8: eligibility test, returns 1 unless a guard fails. Return 0 if (obj2[5] != 0xff and obj1[7] != obj2[5]); or (obj2[7] == 3 and obj2[9] == obj1[7]); or (obj2[6] & 8 and FUN_00037778(",
+  "runs_in_intro": false
+ },
+ "FUN_00014998": {
+  "addr": "00014998",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x14998: walk a chain of 15-byte records at g_1beb2, following the link at record+2, until the link is zero. (do-while form)",
+  "runs_in_intro": false
+ },
+ "FUN_000149e8": {
+  "addr": "000149e8",
+  "label": "",
+  "subsystem": "mission",
+  "desc": "MATCHED (pending manifest size fix) @ 0x149e8 -- jump-table dispatcher, * 10-entry table at 0x149c0 (jmp CS:[ebx*4+0x7278] -> manifest 0x7278+0xd748; * table sits directly BEFORE the function, NOT at ",
+  "runs_in_intro": false
+ },
+ "FUN_00014c58": {
+  "addr": "00014c58",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "sum of squares then call. * mov eax,[esp+4]; mov edx,[esp+8]; imul eax,eax; imul edx,edx; add eax,edx; * push eax; call 0x4d393; add esp,4; ret -> return g(a*a + b*b)",
+  "runs_in_intro": false
+ },
+ "FUN_00014cc8": {
+  "addr": "00014cc8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x14cc8: scan up to 4 records at g_8110 (stride 0x5c). While a record's flag byte [+0xb] has bit 0 set, advance; return 1 on the first record whose bit is clear, 0 if all 4 have it set.",
+  "runs_in_intro": false
+ },
+ "FUN_00015d98": {
+  "addr": "00015d98",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "call three functions, tail-call the fourth. * call 0x3eda6; call 0x355d8; call 0x3ee21; jmp 0x35538",
+  "runs_in_intro": false
+ },
+ "FUN_00015e08": {
+  "addr": "00015e08",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "0x15e08 -- 5-arg constant forwarder into FUN_00015ee8. * xor eax,eax; mov al,[esp+4] = unsigned char param widened. * Push order: a, 0x96, 0x264, 0x16, 0x118 -> args (0x118,0x16,0x264,0x96,a). * Recip",
+  "runs_in_intro": false
+ },
+ "FUN_00015e38": {
+  "addr": "00015e38",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x15e38: masked blit of a param_5 x param_6 cell into the g_5368 buffer. mask = param_1*param_6*param_5 + param_7; fill = g_b46a[param_2]; dest origin = g_5368 + param_3 + param_4*0x140. F",
+  "runs_in_intro": false
+ },
+ "FUN_00015f58": {
+  "addr": "00015f58",
+  "label": "",
+  "subsystem": "economy",
+  "desc": "@ 0x15f58 -- daily/time economy tick. Reads 5 volatile input-edge flags (g_e2bf..g_e2c3) that toggle bookkeeping bytes / nudge the game-speed global g_5304 (busy-wait while the flag==1). Then, for the",
+  "runs_in_intro": false
+ },
+ "FUN_00016318": {
+  "addr": "00016318",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "NEAR-MISS @ 0x16318 -- 280/287 masked (was ~242/287); PARKED on ONE window: * entry order. Target loads g_10b16 into SI BEFORE the param byte * (mov ch,[esp+0x10]); ours always emits the param load fi",
+  "runs_in_intro": false
+ },
+ "FUN_00016438": {
+  "addr": "00016438",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x16438 (132B): per-index timer/percent computation. Records are stride 10 based at g_539c, indexed by param_1*10. If the record's byte field (+2, 0x539e) equals the word g_10b16 AND the r",
+  "runs_in_intro": false
+ },
+ "FUN_000164c8": {
+  "addr": "000164c8",
+  "label": "",
+  "subsystem": "economy",
+  "desc": "0x164c8 -- per-player target (re)assignment sweep. For each player slot i<8: * resets g_e13c[i]=0xff, skips self (g_10b16); x=FUN_165f8(i) rates the slot * (0x32 aborts the whole sweep, 0 skips); pick",
+  "runs_in_intro": false
+ },
+ "FUN_000165f8": {
+  "addr": "000165f8",
+  "label": "",
+  "subsystem": "economy",
+  "desc": "frameless @ 0x165f8: count how many of the 50 ten-byte records at g_539e have their leading byte equal to param. Sibling of 0x16638. Returns the count.",
+  "runs_in_intro": false
+ },
+ "FUN_00016638": {
+  "addr": "00016638",
+  "label": "",
+  "subsystem": "economy",
+  "desc": "frameless @ 0x16638: scan a table of 10-byte records at g_539e, wrapping the index at 0x32, and return the index of the count-th record whose byte equals val. Returns 0xff if count is zero.",
+  "runs_in_intro": false
+ },
+ "FUN_00016678": {
+  "addr": "00016678",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "framed @ 0x16678. TRUE extent 0x16678-0x16735 = 190B (0xbe); manifest size 64 is UNDER-COUNTED (Ghidra bounds stop at 0x166b7, mid-body, before the RET at 0x16735). Reads the current record g_e4a0[g_1",
+  "runs_in_intro": false
+ },
+ "buffered_read": {
+  "addr": "00017998",
+  "label": "buffered_read",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "container_total_size": {
+  "addr": "000179f8",
+  "label": "container_total_size",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "container_load": {
+  "addr": "00017b48",
+  "label": "container_load",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "file_open_read_close": {
+  "addr": "000180f8",
+  "label": "file_open_read_close",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "alloc_init_with_errcode": {
+  "addr": "00018158",
+  "label": "alloc_init_with_errcode",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "validate_records_or_abort": {
+  "addr": "00018338",
+  "label": "validate_records_or_abort",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_000183e8": {
+  "addr": "000183e8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless(sub-esp) @ 0x183e8: walk records (stride 0x2c) while field +0x1c != 0. Each record's +0x1c is a pointer (obj); if obj[0] (val) != 0: test byte +0x28 & 1 -> build a small stack msg {[0]=0x101",
+  "runs_in_intro": false
+ },
+ "global_add_and_call": {
+  "addr": "00018458",
+  "label": "global_add_and_call",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_00018488": {
+  "addr": "00018488",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless push-ebx @ 0x18488: g_3ef0 -= b; FUN_0003ab59(a);",
+  "runs_in_intro": false
+ },
+ "realloc_block_descriptor": {
+  "addr": "000184b8",
+  "label": "realloc_block_descriptor",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_00018828": {
+  "addr": "00018828",
+  "label": "",
+  "subsystem": "sys",
+  "desc": "frameless call-seq @ 0x18828: conditional 3-call block, then g4(a,b,0x40)",
+  "runs_in_intro": true
+ },
+ "FUN_00018878": {
+  "addr": "00018878",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "Decomp target: stack-calling forwarding wrapper. original @ 0x00018878 (14 bytes) * * 8b 54 24 04 mov edx,[esp+4] ; arg * 52 push edx * e8 <rel32> call 0x0003a89d ; <-- relocation (masked when diffing",
+  "runs_in_intro": true
+ },
+ "FUN_000188a8": {
+  "addr": "000188a8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "forward three args to a callee (g uses ebx as scratch).",
+  "runs_in_intro": true
+ },
+ "FUN_000188c8": {
+  "addr": "000188c8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "forward three args to a callee (same shape as FUN_000188a8).",
+  "runs_in_intro": false
+ },
+ "FUN_000188e8": {
+  "addr": "000188e8",
+  "label": "",
+  "subsystem": "sys",
+  "desc": "0x188e8 -- load+unpack a file. open(path,0x200) @0x18828; if fd != -1: * read(fd, buf, size_from_header(path) @0x18958 [RNC detector, banked]), * unpack @0x3a1ec(buf,buf), on negative result error(0x1",
+  "runs_in_intro": false
+ },
+ "open_detect_rnc_header": {
+  "addr": "00018958",
+  "label": "open_detect_rnc_header",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_00018ab8": {
+  "addr": "00018ab8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless global setter @ 0x18ab8: store 4 args into 4 consecutive globals",
+  "runs_in_intro": false
+ },
+ "FUN_00018ae8": {
+  "addr": "00018ae8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "PARKED near-miss @ 0x18ae8 -- 516/524 bytes (aligned-common ~485/524 after fixup masking), first diff 0x6f, whole CFG/branch layout byte-correct. WALL 1 (primary, 8-byte size deficit): the target mate",
+  "runs_in_intro": false
+ },
+ "FUN_00018d18": {
+  "addr": "00018d18",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "FUN_00018d18 (1523B) -- inline jump-table switch dispatcher. NEAR-MISS / WALL. * * STRUCTURE (fully reverse-engineered from the disasm; jump-table verification is * now available and the leading [tabl",
+  "runs_in_intro": false
+ },
+ "FUN_00019318": {
+  "addr": "00019318",
+  "label": "",
+  "subsystem": "render",
+  "desc": "FUN_00019318 @ 0x19318 - draw a circle outline centred (cx,cy), radius r, * colour c, by midpoint/Bresenham 8-way symmetry: per step plots the 8 octant * points via the pixel-plot 0x40236, decision d ",
+  "runs_in_intro": false
+ },
+ "FUN_00019608": {
+  "addr": "00019608",
+  "label": "",
+  "subsystem": "map",
+  "desc": "FUN_00019608 @ 0x19608 -- TRUE SIZE 3474 (0x19608..0x1a399). * * The tactical-map / radar renderer. Draws the full-screen overview map centred * on the currently-followed agent: terrain tiles, then a ",
+  "runs_in_intro": false
+ },
+ "FUN_0001a458": {
+  "addr": "0001a458",
+  "label": "",
+  "subsystem": "mission",
+  "desc": "NEAR-MISS (parked) @ 0x1a458 -- jump-table dispatcher, 45-entry table at * manifest 0x1a39c = jmp CS:[edx*4+0xcc54]; table precedes the fn, 8B gap. * TRUE SIZE 845 (0x34d): 0x1a458..0x1a7a4 incl (mani",
+  "runs_in_intro": false
+ },
+ "FUN_0001a8c8": {
+  "addr": "0001a8c8",
+  "label": "",
+  "subsystem": "map",
+  "desc": "frameless @ 0x1a8c8: fill a 0x19-row x 0x10-col byte grid (row stride 0x10) at g_db2c with 1, then set the flag g_10b4f. Outer counter y (ECX) 0..0xf, inner x (EAX) 0..0x18; address = x*0x10 + y + g_d",
+  "runs_in_intro": false
+ },
+ "FUN_0001a918": {
+  "addr": "0001a918",
+  "label": "",
+  "subsystem": "map",
+  "desc": "frameless @ 0x1a918: mark a clamped rectangle of the minimap grid g_db2c with 3. Convert the four screen coords to grid cells in place: param_1=(p1-0x80)/0x20, param_3=(p3-0x80)/0x20 (rows), param_2=p",
+  "runs_in_intro": false
+ },
+ "FUN_0001b798": {
+  "addr": "0001b798",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "PARKED near-miss (NOT matched) -- draw-list walk over the g_5340 pool. Register-allocation/CSE wall (~133-150/183-165): the target double-loads g_5340 into a 2nd callee-saved reg (spilling EBP) and sc",
+  "runs_in_intro": false
+ },
+ "FUN_0001b858": {
+  "addr": "0001b858",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "PARKED near-miss (NOT matched) @ 0x1b858 (165B) -- draw-list walk over the g_5340 pool. Sibling of 0x1b798. Logic verified instruction-exact (the whole FUN_0004a63a call region is byte-identical maske",
+  "runs_in_intro": false
+ },
+ "FUN_0001b908": {
+  "addr": "0001b908",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "0x1b908 -- walk the 10-byte record chain for slot `idx` (head index in the * 8-byte table at g_5338, records at g_5340, next-link at +8), and for each * record schedule FUN_0004a63a(x+rec[2], y+rec[4]",
+  "runs_in_intro": false
+ },
+ "FUN_0001ba48": {
+  "addr": "0001ba48",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x1ba48: clamp a point (param_1,param_2) into the bounding box [g_1be32,g_1be36] x [g_1be34,g_1be38], snap to even (& 0xfe), store to g_0000/g_0002, reset accumulators g_10ab4/g_10ab8, the",
+  "runs_in_intro": false
+ },
+ "FUN_0001bc28": {
+  "addr": "0001bc28",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "@ 0x1bc28: 10-way selection-marker dispatcher (inline jump-table switch). * sel = param_1 (cases 1..10 -> dec/cmp 9/ja default). Jump table at obj1:+0xe4b0 * (manifest 0x1bbf8), decoded via tools/lefi",
+  "runs_in_intro": false
+ },
+ "FUN_0001c168": {
+  "addr": "0001c168",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "empty @ 0x0001c168: no-op (single ret).",
+  "runs_in_intro": false
+ },
+ "FUN_0001c178": {
+  "addr": "0001c178",
+  "label": "",
+  "subsystem": "entity",
+  "desc": "frameless @ 0x1c178: spawn into the g_15e70 pool (128 records of 0x1e bytes). For each free slot (in-use flag +0x18 == 0), stamp the coords (+4/+6/+8 = X/Y/Z from param_1..3), mark it in-use (type 3),",
+  "runs_in_intro": false
+ },
+ "FUN_0001ff98": {
+  "addr": "0001ff98",
+  "label": "",
+  "subsystem": "render",
+  "desc": "frameless @ 0x1ff98: draw a gauge/bar segment. Params: x,y (u16 screen coords), a (total/divisor), b (current value). Clamp b to [0,a]; percentage v = b*0x18/a (0..0x18), with a==0 giving 0x18. Then c",
+  "runs_in_intro": false
+ },
+ "FUN_00020018": {
+  "addr": "00020018",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "PARKED near-miss @ 0x20018 -- 307/314 bytes, sizes 307 vs 314, recipe -4s -oneatx -zp8 -s -zq. All structure, immediates, guards, both pool loops, switch tree, and epilogue shapes correct; residue is ",
+  "runs_in_intro": false
+ },
+ "FUN_00020158": {
+  "addr": "00020158",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "@ 0x20158: MATCHED (RELOC-AWARE) 1028B, -4s -oneatx -zp8 -s -zq. Levers: label strings spelled as *(char**)((char*)g_47xx + g_a50d*4) (the bare g_47xx[g_a50d] index freed EAX and let g_11be4 take the ",
+  "runs_in_intro": false
+ },
+ "FUN_00020568": {
+  "addr": "00020568",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x20568: search a 10-byte-record array until rec[8] == param_3, tracking the last matching rec[8] in `result` (initialised to param_3). Mode param_2==0: when rec[9] indexes a set g_e284 en",
+  "runs_in_intro": false
+ },
+ "FUN_000205f8": {
+  "addr": "000205f8",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "@ 0x205f8: menu list draw + select. Walks the 491-byte records at g_5780 (byte +0 = type, terminator 0xff; word +8 = state), drawing a text row via FUN_36698 for each record whose state == 0x960, at x",
+  "runs_in_intro": false
+ },
+ "FUN_00020728": {
+  "addr": "00020728",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "@ 0x20728: menu list draw + select, twin of 0x205f8. Walks the 501-byte records at g_7bf4 (byte +0 = type/terminator 0xff; word +0x11 = state), drawing a text row via FUN_36698 for each record whose s",
+  "runs_in_intro": false
+ },
+ "FUN_00020b78": {
+  "addr": "00020b78",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x20b78: for the current row g_10b16, count the leading nonzero word entries (up to 8) in the strided table at 0xe5c3 for column = g_10aa4[param_1]. Row stride 1047, column stride 40, entr",
+  "runs_in_intro": false
+ },
+ "FUN_00020be8": {
+  "addr": "00020be8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x20be8: for the current row g_10b16, count the leading nonzero word entries (up to 8) in the strided table at 0xe5c3 for column = param_1. Row stride 1047, column stride 40, entry stride ",
+  "runs_in_intro": false
+ },
+ "keyboard_state_machine": {
+  "addr": "00020c88",
+  "label": "keyboard_state_machine",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_00020d18": {
+  "addr": "00020d18",
+  "label": "",
+  "subsystem": "map",
+  "desc": "frameless @ 0x20d18: relocate the map column-offset table. The caller passes a block base; the column table starts at base+0xc and holds 0x3000 int entries that are stored on disk as relative offsets.",
+  "runs_in_intro": false
+ },
+ "FUN_00020d98": {
+  "addr": "00020d98",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x20d98: PARKED near-miss (switch-tree balance). Logic, register (EDX cursor), loop bounds and all eight cases are correct; the only diff is how Watcom balances the switch's binary-search ",
+  "runs_in_intro": false
+ },
+ "new_campaign_reset": {
+  "addr": "00020fc8",
+  "label": "new_campaign_reset",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_00021658": {
+  "addr": "00021658",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "FUN_00021658 @ 0x21658 -- \"new-game / player reset\": recompute equipment & * research availability flags for the current player, and (when a research * tier is NOT yet owned) reset that player's funds",
+  "runs_in_intro": false
+ },
+ "FUN_00021e18": {
+  "addr": "00021e18",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "FUN_00021e18 @ 0x21e18 (TRUE SIZE 1440 = 0x21e18..0x223b7 incl., ends at RET; * matches the manifest 1440. This was a SEPARATE function the headless sweep had * merged into 0x21658; own prologue push ",
+  "runs_in_intro": false
+ },
+ "FUN_000223c8": {
+  "addr": "000223c8",
+  "label": "",
+  "subsystem": "economy",
+  "desc": "FUN_000223c8 @ 0x223c8 (724B true size; manifest 686 excludes the 38B of * jump-table case bodies hidden behind the CS:[eax*4+0x14c70] dispatch). * PARKED ~694/724 (-4s -oneatx -zp8 -s -zq; verify wit",
+  "runs_in_intro": false
+ },
+ "FUN_000226a8": {
+  "addr": "000226a8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless init @ 0x226a8: r=g1(p->w4,p->w6,p->w8); if(r){ init fields; g2(r,p);} return r",
+  "runs_in_intro": false
+ },
+ "FUN_00022708": {
+  "addr": "00022708",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x22708: zero the region from g_108 up to g_1c632. Calls FUN_0004d199(g_108, 0, g_1c632 - g_108); the size is the runtime difference of the two symbol addresses (end - start), not a folded",
+  "runs_in_intro": false
+ },
+ "FUN_00022768": {
+  "addr": "00022768",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x22768: PARKED near-miss (register allocation). Logic is correct; with four live pointers (three results + the scan cursor) Watcom assigns EBX/ ESI to pool A vs C the opposite way round, ",
+  "runs_in_intro": false
+ },
+ "FUN_00022858": {
+  "addr": "00022858",
+  "label": "",
+  "subsystem": "startup",
+  "desc": "frameless @ 0x22858: mission/map init sequence. Builds the g_5358 column table (FUN_20d18), fixes up two pointer tables (FUN_25378 x2), clears g_10ac8, session init when g_10b45==0 (FUN_12ca8), block/",
+  "runs_in_intro": false
+ },
+ "FUN_00022b38": {
+  "addr": "00022b38",
+  "label": "",
+  "subsystem": "entity",
+  "desc": "frameless slot scan+init @ 0x22b38: find free slot in g_15e70[256] (stride 0x1e), fill it, call g(s, w4,w6,w8), return s; else 0. Uses the extern array (keeps the bounds guard the original has); the a",
+  "runs_in_intro": false
+ },
+ "FUN_00022ba8": {
+  "addr": "00022ba8",
+  "label": "",
+  "subsystem": "entity",
+  "desc": "frameless @ 0x22ba8: spawn into the g_11670 pool (records of 0x24 bytes). Scan for a free slot -- in-use flag +0x18 == 0 OR >= 6 -- clear the 0x24-byte record via FUN_0004d199, stamp coords (+4/+6/+8 ",
+  "runs_in_intro": false
+ },
+ "FUN_00022ed8": {
+  "addr": "00022ed8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "FUN_00022ed8 @ 0x22ed8 (159 bytes) * Reset the per-index slot for index param_1: clear a 0x417-byte block, * zero the 0xe-stride record fields, stamp the id byte / flag, and set the * per-index angle ",
+  "runs_in_intro": false
+ },
+ "FUN_00023038": {
+  "addr": "00023038",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "WALL (jump-table dispatch) @ 0x23038 -- function CODE is byte-EXACT, tool can't confirm. * * The reconstructed function body compiles to the target's bytes verbatim (masked): * target 42B window == ou",
+  "runs_in_intro": false
+ },
+ "FUN_00023158": {
+  "addr": "00023158",
+  "label": "",
+  "subsystem": "mission",
+  "desc": "FUN_00023158 @ 0x23158 -- TRUE SIZE 5280 (0x14A0), 0x23158-0x245f7. * * PARKED (cont.26). Compiles; JUMP-TABLE matches EXACTLY (59 dword entries, * cases 0x00-0x3a). Recipe -4s -oneatx -zp8 -s -zq. Be",
+  "runs_in_intro": false
+ },
+ "parse_hex_arg": {
+  "addr": "00024b08",
+  "label": "parse_hex_arg",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "startup_main": {
+  "addr": "00024be8",
+  "label": "startup_main",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_00025168": {
+  "addr": "00025168",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless linear call-seq @ 0x25168: g(ptr) five times with fixed pointers",
+  "runs_in_intro": false
+ },
+ "guarded_init_alloc": {
+  "addr": "00025238",
+  "label": "guarded_init_alloc",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_000252d8": {
+  "addr": "000252d8",
+  "label": "",
+  "subsystem": "startup",
+  "desc": "frameless linear call-seq @ 0x252d8: guard on two flags, then PIT timer setup + d_setvec",
+  "runs_in_intro": false
+ },
+ "init_input_subsystem": {
+  "addr": "00025338",
+  "label": "init_input_subsystem",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_00025348": {
+  "addr": "00025348",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "NEAR-MISS @ 0x25348 -- instruction stream byte-IDENTICAL (masked); only an alignment pad differs. * * target 43B: e8<28cc8> 8d80 00000000 8d52 00 8bdb 31c0 66a1<df12> 50 8b15<df0e> 52 6a09 e8<b273> 83",
+  "runs_in_intro": false
+ },
+ "FUN_00025378": {
+  "addr": "00025378",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless push-ebx loop @ 0x25378: for(p=a; p<b; p+=6bytes) *p += c",
+  "runs_in_intro": false
+ },
+ "pool_records_add": {
+  "addr": "000253a8",
+  "label": "pool_records_add",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "keyboard_hook_install": {
+  "addr": "000254a8",
+  "label": "keyboard_hook_install",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_00025d58": {
+  "addr": "00025d58",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "@ 0x25d58: PARKED near-miss (prologue reg-save-order wall, GAME region). Body is byte-faithful (all 6+ calls, constants, globals and the whole instruction sequence reproduce the target under -4s -onea",
+  "runs_in_intro": false
+ },
+ "FUN_000263f8": {
+  "addr": "000263f8",
+  "label": "",
+  "subsystem": "render",
+  "desc": "frameless @ 0x263f8: masked blit of a 0x40 x 0x2c cell into a destination. mask = g_df18 + param_1*0xb00; for each of 0x2c rows x 0x40 cols, if the mask byte is set write param_2 to the destination. T",
+  "runs_in_intro": false
+ },
+ "FUN_000264a8": {
+  "addr": "000264a8",
+  "label": "",
+  "subsystem": "economy",
+  "desc": "frameless @ 0x264a8: slot-claim eligibility test for record p (char return). Tables: 10-byte records at 0x539c (word at +0 = claim word, byte at +2 = owner) and 19-byte rows at 0xb069 (8 link bytes at",
+  "runs_in_intro": false
+ },
+ "FUN_000265d8": {
+  "addr": "000265d8",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "frameless @ 0x265d8: stats-panel drawer for record p in the 10-byte table at 0x539c (dword value at +6, signed byte multiplier at +4, owner byte at +2, claim word at +0 \u2014 the 0x264a8/0x164c8 family). ",
+  "runs_in_intro": false
+ },
+ "FUN_00026778": {
+  "addr": "00026778",
+  "label": "",
+  "subsystem": "render",
+  "desc": "@ 0x26778 (544 bytes): dashed Bresenham line drawer, plotting every 2nd pixel from (x1,y1) to (x2,y2) via the pixel-plot callee FUN_00040236(x,y,color). Color alternates between c1 and c2 on bit 2 of ",
+  "runs_in_intro": false
+ },
+ "FUN_000269b8": {
+  "addr": "000269b8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "forward arg to a callee, then clear a field. * mov edx,[esp+4]; push edx; call 0x26da8; add esp,4; * mov eax,[esp+4]; mov byte[eax+0x18],0; ret",
+  "runs_in_intro": false
+ },
+ "FUN_000269d8": {
+  "addr": "000269d8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x269d8: advance a linked index through a table of 8-byte records. g_5338 points to the record array; p[0x10] is the current record index (u16). Set p[0x10] to the record's \"next\" field (u",
+  "runs_in_intro": false
+ },
+ "FUN_00026aa8": {
+  "addr": "00026aa8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless push-ebx @ 0x26aa8: return max(abs(a),abs(b)) with 16-bit compare",
+  "runs_in_intro": false
+ },
+ "FUN_00026ad8": {
+  "addr": "00026ad8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "",
+  "runs_in_intro": false
+ },
+ "FUN_00026ba8": {
+  "addr": "00026ba8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "short-arg forwarder @ 0x00026ba8 (21B): * movsx eax,[esp+8]; push eax; movsx eax,[esp+8]; push eax; call 0x4d221; add esp,8; ret * Forwards two sign-extended short params to a 2-int function. Stack ca",
+  "runs_in_intro": false
+ },
+ "FUN_00026bc8": {
+  "addr": "00026bc8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "",
+  "runs_in_intro": false
+ },
+ "FUN_00026c78": {
+  "addr": "00026c78",
+  "label": "",
+  "subsystem": "entity",
+  "desc": "frameless @ 0x26c78: move pool-A object `node` to coords (x,y,z). Clamp: if tile-x ((short)x>>8) < 1 -> x=0x7e00, >= 0x7f -> x=0x200; tile-y < 1 -> y=0x5e00, >= 0x5f -> y=0x200; z &= ~0xf000. Compute ",
+  "runs_in_intro": false
+ },
+ "FUN_00026da8": {
+  "addr": "00026da8",
+  "label": "",
+  "subsystem": "entity",
+  "desc": "frameless @ 0x26da8: remove a pool object from its spatial-grid doubly-linked list (the inverse of 0x26e18's head-insert). If the \"in grid\" flag (p[0xa]&4) is set: link = prev node (g_810e + p[2]) if ",
+  "runs_in_intro": false
+ },
+ "FUN_00026e18": {
+  "addr": "00026e18",
+  "label": "",
+  "subsystem": "entity",
+  "desc": "MATCHED @ 0x26e18 (130/130 reloc-aware, -4s -oneatx -zp8 -s -zq). Head-insert of pool object p into spatial-grid cell g_10e[idx], idx built from the high bytes of coords a,b; maintains the doubly-link",
+  "runs_in_intro": false
+ },
+ "FUN_000272b8": {
+  "addr": "000272b8",
+  "label": "",
+  "subsystem": "multiplayer",
+  "desc": "frameless @ 0x272b8: multiplayer player-record sync barrier. Logs g_368c; only acts in multiplayer (g_10b0c > 1) and when the caller id equals the local player id g_10b16. For each slot i: if i is the",
+  "runs_in_intro": false
+ },
+ "FUN_00027428": {
+  "addr": "00027428",
+  "label": "",
+  "subsystem": "multiplayer",
+  "desc": "PARKED NEAR-MISS (ours 1474B vs target 1482B; structure instruction-for- * instruction exact -- every one of the 11 calls, both inline far strcpy * blocks, the near strcpy+strlen name build, and all f",
+  "runs_in_intro": false
+ },
+ "FUN_000279f8": {
+  "addr": "000279f8",
+  "label": "",
+  "subsystem": "multiplayer",
+  "desc": "0x279f8 -- scan the far-pointer slot table at 0x10644 (6-byte far ptrs, * lgs stride *6). For each slot i < g_10b0c: if p[2] and p[0x31]!=0xff, and * the slot isn't already marked in g_df30 and isn't ",
+  "runs_in_intro": false
+ },
+ "FUN_00027d88": {
+  "addr": "00027d88",
+  "label": "",
+  "subsystem": "multiplayer",
+  "desc": "frameless @ 0x27d88: submit a NetBIOS NCB via DPMI. Clears the mailbox status byte p[0x31], builds a DPMI real-mode register block (rm.ebx = offset of p, flags=0x100, ds/fs = the real-mode segment sto",
+  "runs_in_intro": false
+ },
+ "FUN_00027e78": {
+  "addr": "00027e78",
+  "label": "",
+  "subsystem": "sys",
+  "desc": "@ 0x27e78: far-alloc probe. Alloc a 0x5c far block (DOS int-21h allocator 0x3b239, returns seg:off in DX:EAX); if null return -1. Then through the global far pointer g_5056 (offset @0x5056, selector @",
+  "runs_in_intro": false
+ },
+ "FUN_00027ed8": {
+  "addr": "00027ed8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x27ed8: if(p1||p2) FUN_000287c8(p1,(unsigned short)p2). NEAR-MISS (parked). Logic exact but the target loads p2 (16-bit `mov ax,[esp+8]`) BEFORE p1 and no source form flips that schedulin",
+  "runs_in_intro": false
+ },
+ "FUN_00027f08": {
+  "addr": "00027f08",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "PARKED near-miss (NOT matched, ours 183B vs target 185B, first diff 0x6f) -- improved from the old 177/185 park by typing the selector as __segment. That fixed old residue (b): fmemset dst offset is n",
+  "runs_in_intro": false
+ },
+ "FUN_00027fc8": {
+  "addr": "00027fc8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "PARKED near-miss (NOT matched, ours 324B vs target 326B, byte-identical through 0xa0, raw 182/326 after the 2-byte shift) -- register-role tie-break wall. Structure is exact: inline _fstrcpy/_fstrlen/",
+  "runs_in_intro": false
+ },
+ "FUN_00028118": {
+  "addr": "00028118",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "PARKED NEAR-MISS (256B vs 258B target; NOT matched, but cluster A's sel * half is now SOLVED via the split-param + assignment-in-arg lever from * matched 0x28558/0x284a8). * Current state (retry cont.",
+  "runs_in_intro": false
+ },
+ "FUN_00028228": {
+  "addr": "00028228",
+  "label": "",
+  "subsystem": "multiplayer",
+  "desc": "PARKED NEAR-MISS (ours 314B vs target 313B, raw LCS 247/313, structure instruction-for-instruction exact) -- the 0x27fc8/0x28118 EAX<->ECX register-role tie-break wall, reproduced here across 10 compi",
+  "runs_in_intro": false
+ },
+ "FUN_00028368": {
+  "addr": "00028368",
+  "label": "",
+  "subsystem": "multiplayer",
+  "desc": "PARKED NEAR-MISS (ours 305B vs target 311B, structure exact) -- same EAX<->ECX register-role tie-break wall as its twin 0x28228 (see that file's header for the full lever list; identical failure signa",
+  "runs_in_intro": false
+ },
+ "FUN_000284a8": {
+  "addr": "000284a8",
+  "label": "",
+  "subsystem": "multiplayer",
+  "desc": "FUN_000284a8 @ 0x284a8 - DOS/DPMI transfer-buffer request, opcode 0x94. * Copies (ushort)len bytes from near src into the global transfer buffer * (far ptr: off dword @0xdf2a, sel word @0xdf2e) via an",
+  "runs_in_intro": false
+ },
+ "FUN_00028558": {
+  "addr": "00028558",
+  "label": "",
+  "subsystem": "multiplayer",
+  "desc": "frameless @ 0x28558: NetBIOS receive via the DPMI mailbox (opcode 0x95), sibling of matched 0x284a8 (0x94 send). Builds the NCB at sel:>off: word+6 = g_df1c, word+8 = g_df38, byte 0 = 0x95; submits vi",
+  "runs_in_intro": false
+ },
+ "FUN_00028628": {
+  "addr": "00028628",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "MATCHED (reloc-aware, 135/135) @ 0x28628 -- recipe -4s -oneatx -zp8 -s -zq. * The old 132/135 uchar-widen-form park (xor-form vs and-form on the report * arg) fell to the cont.21 inline-vs-named ident",
+  "runs_in_intro": false
+ },
+ "FUN_00028728": {
+  "addr": "00028728",
+  "label": "",
+  "subsystem": "sys",
+  "desc": "PARKED near-miss (NOT matched, ~165/187) -- DPMI int 0x31 AX=0x100 DOS-memory alloc then far-pointer zero-fill. Instruction-exact incl. the inlined _fmemset (far rep stosw). Register- role wall: local",
+  "runs_in_intro": false
+ },
+ "FUN_000287e8": {
+  "addr": "000287e8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "PARKED near-miss (NOT matched, 103/130) -- guard + build two stack msg buffers + dispatch. Single int buf[14] reproduces the exact stack layout. WHOLE-TU register-alloc wall: the target promotes param",
+  "runs_in_intro": false
+ },
+ "FUN_00028878": {
+  "addr": "00028878",
+  "label": "",
+  "subsystem": "multiplayer",
+  "desc": "frameless @ 0x28878: chunked dispatch. Call FUN_000284a8(p1,p2,p3,chunk) for param_4/g_df38 whole chunks of g_df38 (16-bit global divisor), advancing p3 by g_df38 each time; stop early if a call retur",
+  "runs_in_intro": false
+ },
+ "FUN_000288f8": {
+  "addr": "000288f8",
+  "label": "",
+  "subsystem": "multiplayer",
+  "desc": "PARKED near-miss (NOT matched, ~140/140 len, first diff 0x13) -- chunked-dispatch loop, sibling of matched 0x28878. Structure byte-exact (short callee return + goto-out shared epilogue gave 140/140). ",
+  "runs_in_intro": false
+ },
+ "FUN_000289a8": {
+  "addr": "000289a8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless 5-arg call @ 0x289a8: g(0x37d8, p1, (u16)p2, (short)p3, (short)p3)",
+  "runs_in_intro": false
+ },
+ "mouse_init_int33": {
+  "addr": "00028b88",
+  "label": "mouse_init_int33",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_00028cc8": {
+  "addr": "00028cc8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x28cc8: build two local buffers, zero a word in one, call int386(0x33, b, a); then if global g_df3c is set, call FUN_0003ab59(g_df3c).",
+  "runs_in_intro": false
+ },
+ "FUN_00028d08": {
+  "addr": "00028d08",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "0x28d08 -- probe four adjacent zones. Each enabled flag (short params * a2..a5) fires the fixup callee @0xffc8 with (b, x, y, z-0x100, w, h, 0x100, * 0x200): N (x+0x100, y+0x240, 0x80x0x100), E (x+0x2",
+  "runs_in_intro": false
+ },
+ "FUN_00028ec8": {
+  "addr": "00028ec8",
+  "label": "",
+  "subsystem": "map",
+  "desc": "MATCHED 218/218 (reloc-aware) -- the cont. 22 retry closed the old * cache-vs-fold wall in ONE compile with the 0x2fca8/0x33fb8 lever set: * named int accumulator (`idx = row<<7; idx += col;` -- homes",
+  "runs_in_intro": false
+ },
+ "FUN_000299c8": {
+  "addr": "000299c8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x299c8: center a string into a 16-char field padded with spaces. len = strlen(src); pad = (0x10 - len)/2. For each of 16 output positions i: emit a space if i < pad or i >= pad+len, else ",
+  "runs_in_intro": false
+ },
+ "FUN_00029a28": {
+  "addr": "00029a28",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless two table-lookup calls @ 0x29a28",
+  "runs_in_intro": false
+ },
+ "FUN_00029a68": {
+  "addr": "00029a68",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless table-lookup call @ 0x29a68: g(0x10564, tbl_4480[g_a50d])",
+  "runs_in_intro": false
+ },
+ "FUN_00029ad8": {
+  "addr": "00029ad8",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "FUN_00029ad8 @ 0x29ad8 -- mission status-line builder (jump-table * dispatcher). TRUE SIZE 372 (0x174, ret at 0x29c4b; manifest said 185). * 17-entry jump table at literal 0x1c340 (manifest 0x29a88), ",
+  "runs_in_intro": false
+ },
+ "FUN_00029c58": {
+  "addr": "00029c58",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "@ 0x29c58: HUD icon/text selector. Based on flags g_10afc/g_52ff/g_10b46 and the counter g_e395, choose a sprite pointer + a 16-bit frame number, then draw it via FUN_0004cde3(sprite, 0, 0xbe, frame, ",
+  "runs_in_intro": false
+ },
+ "FUN_0002a288": {
+  "addr": "0002a288",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "FUN_0002a288 @ 0x2a288 -- radar/status panel state machine. * TRUE SIZE 1427 (0x593, ret at 0x2a81a; manifest said 304 -- headless sweep * truncated at the first indirect jmp). TWO jump tables decoded",
+  "runs_in_intro": false
+ },
+ "FUN_0002ad58": {
+  "addr": "0002ad58",
+  "label": "",
+  "subsystem": "input",
+  "desc": "frameless @ 0x2ad58 -- mission cursor / target-action RESOLUTION dispatcher. TRUE SIZE 3694 bytes (0x2ad58-0x2bbc5 incl); manifest says 1737 -- BADLY UNDERCOUNTED (the headless sweep truncated at the ",
+  "runs_in_intro": false
+ },
+ "FUN_0002bbe8": {
+  "addr": "0002bbe8",
+  "label": "",
+  "subsystem": "anim",
+  "desc": "NEAR-MISS @ 0x2bbe8 -- 160 vs 159 code bytes; JUMP TABLE FULLY RECOVERED via * tools/lefix.py (the payoff of the fixed parser). 5-entry dispatcher at * obj1:+0x1e480: word +0 -> case 1/2/3 add 1/2/3, ",
+  "runs_in_intro": false
+ },
+ "FUN_0002bca8": {
+  "addr": "0002bca8",
+  "label": "",
+  "subsystem": "mission",
+  "desc": "inline jump-table switch dispatcher @ 0x2bca8 (550B) -- command-list interpreter. * * Signature: 4 stack params (Ghidra's 1-param __cdecl is phantom): * FUN(unsigned char *p /[ESP+0x10]->EBX/, int sel",
+  "runs_in_intro": false
+ },
+ "FUN_0002bee8": {
+  "addr": "0002bee8",
+  "label": "",
+  "subsystem": "mission",
+  "desc": "inline jump-table switch dispatcher @ 0x2bee8 -- command-list interpreter, * THIRD sibling of FUN_0002bca8 / FUN_0002c218 (same 0x12-byte record walk, * word[0]==-0x63 terminator, same select-cursor b",
+  "runs_in_intro": false
+ },
+ "FUN_0002c218": {
+  "addr": "0002c218",
+  "label": "",
+  "subsystem": "mission",
+  "desc": "inline jump-table switch dispatcher @ 0x2c218 (592B) -- command-list interpreter. * Sibling of FUN_0002bca8 (same shape; register roles swapped: sel->EDI, * result->ESI). Extra `if(result==0)` clause ",
+  "runs_in_intro": false
+ },
+ "FUN_0002c468": {
+  "addr": "0002c468",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x2c468: copy 5 fields (word,byte,word,word,word) for 8 records (stride 0x12) from the src table at 0x51b4 to the dst table at 0x5256, clearing one byte at 0xdf76 per record, then zero the",
+  "runs_in_intro": false
+ },
+ "FUN_0002c4e8": {
+  "addr": "0002c4e8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "",
+  "runs_in_intro": false
+ },
+ "FUN_0002c578": {
+  "addr": "0002c578",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "FUN_0002c578 @ 0x2c578 -- AGENT STATUS-PANEL / HUD RENDERER (per-player squad). * * TRUE SIZE = 2387 bytes (0x953), body 0x2c578 - 0x2ceca (RET at 0x2ceca). * The manifest records 2080 (0x820, ends 0x",
+  "runs_in_intro": false
+ },
+ "FUN_0002cf28": {
+  "addr": "0002cf28",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "PARKED near-miss (NOT matched) -- 240/262 with EXACT length 262 (TRUE size; * manifest says 184, undercounted: code runs 0x2cf28..0x2d02d). All relocs, * the whole entry/slot/ped block, both helper-ca",
+  "runs_in_intro": false
+ },
+ "FUN_0002d038": {
+  "addr": "0002d038",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "PARKED near-miss (NOT matched, fuzzer 117/144, 8000 variants) -- branchy state machine on param_2. Structure correct; register-role wall. Agent + max-worker cpermute both plateau.",
+  "runs_in_intro": false
+ },
+ "FUN_0002d0d8": {
+  "addr": "0002d0d8",
+  "label": "",
+  "subsystem": "mission",
+  "desc": "jump-table dispatcher @ 0x2d0d8 -- rate-driven byte drift (3-channel value * fade). 4-entry jump table at obj1:+0x1f980 (manifest 0x2d0c8, via lefix.py): * case 0 -> 0x2d118 (b=4, a=0x14) case 2 -> 0x",
+  "runs_in_intro": false
+ },
+ "FUN_0002d228": {
+  "addr": "0002d228",
+  "label": "",
+  "subsystem": "anim",
+  "desc": "0x2d228 -- animation tick. Increments the frame counter b[0x53] (wraps &7 * while b[0x49] < 10); if the stage word w14 is 0..0xf and flag 2 set on * +0x1c, advances w14 when the counter hits the caden",
+  "runs_in_intro": false
+ },
+ "FUN_0002d358": {
+  "addr": "0002d358",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "frameless @ 0x2d358: combat/aim update, cousin of 0x2d6c8/0x2d738. Set obj[0x54] = FUN_0002d8c8(obj, obj[0x55]) (speed from a table), then aim toward the target: r = FUN_00026bc8(obj[0x54], obj[0x2e]-",
+  "runs_in_intro": false
+ },
+ "FUN_0002d3b8": {
+  "addr": "0002d3b8",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "* FUN_0002d3b8 - commit/advance the shot-cursor accumulator. * * Validates the current shot-cursor position (g_10b28, g_10b2a, g_10b2c) * against the entity param_1 via FUN_0002d468. If valid, it adva",
+  "runs_in_intro": false
+ },
+ "FUN_0002d468": {
+  "addr": "0002d468",
+  "label": "",
+  "subsystem": "map",
+  "desc": "@ 0x2d468 -- twin of 0x2d5b8 (path/passability probe). 16-entry jump table at manifest 0x2d428 (obj1:+0x1fce0 literal, decoded via lefix.py): blocked tile set = {0,6,7,8,9,0xb,0xf} (the twin's set PLU",
+  "runs_in_intro": false
+ },
+ "FUN_0002d5b8": {
+  "addr": "0002d5b8",
+  "label": "",
+  "subsystem": "map",
+  "desc": "NEAR-MISS @ 0x2d5b8 -- cont.21 re-attack closed MOST of the old wall: code * tail now 259/259 length (was 264), entry + guards + switch + calls + tail all * byte-identical after: g_5358 declared as PO",
+  "runs_in_intro": false
+ },
+ "FUN_0002d6c8": {
+  "addr": "0002d6c8",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "frameless @ 0x2d6c8: twin of 0x2d738. Set obj[0x54] = FUN_0002d8c8(obj, obj[0x55]) (speed from a table), then step the projectile along direction param_4 using the signed direction tables g_ab60 (x) /",
+  "runs_in_intro": false
+ },
+ "FUN_0002d738": {
+  "addr": "0002d738",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "frameless @ 0x2d738: step a projectile one unit along direction param_2 and test it. Set obj[0x54] = 0x80 (speed), then compute the new position from the 256-entry signed direction tables g_ab60 (x) /",
+  "runs_in_intro": false
+ },
+ "FUN_0002d7a8": {
+  "addr": "0002d7a8",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "frameless @ 0x2d7a8: interpolate/scale. delta = obj[0x51] - obj[0x50] (as short). If 0 return 0. Else scale (param_2 & 0xffff) by delta, signed-divide by obj[0x50] when delta<0 or by 0xff-obj[0x50] wh",
+  "runs_in_intro": false
+ },
+ "FUN_0002d808": {
+  "addr": "0002d808",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "frameless @ 0x2d808: interpolate/scale. delta = obj[0x4d] - obj[0x4c] (as short). If 0 return 0. Otherwise scale (param_2 & 0xffff) by delta and divide (signed) by obj[0x4c] when delta < 0, or by 0xff",
+  "runs_in_intro": false
+ },
+ "FUN_0002d868": {
+  "addr": "0002d868",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "frameless @ 0x2d868: interpolate/scale. delta = obj[0x49] - obj[0x48] (as short). If 0 return 0. Else scale (param_2 & 0xffff) by delta, signed-divide by obj[0x48] when delta<0 or by 0xff-obj[0x48] wh",
+  "runs_in_intro": false
+ },
+ "FUN_0002d8c8": {
+  "addr": "0002d8c8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x2d8c8: per-object anim frame-duration / speed selector. Called from FUN_0002d6c8 / FUN_0002d738 as obj[0x54] = FUN_0002d8c8(obj, obj[0x55]). If ((u16)obj[0x1c] & 0x1002) is set: pick a d",
+  "runs_in_intro": false
+ },
+ "FUN_0002d998": {
+  "addr": "0002d998",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless status logic @ 0x2d998: recompute p->b58 (a state code) then mirror to p->b19",
+  "runs_in_intro": false
+ },
+ "FUN_0002d9e8": {
+  "addr": "0002d9e8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "MATCHED @ 0x2d9e8 (853/853, reloc-aware) -- recipe -4s -oneatx -zp8 -s -zq. * Levers that closed it: (1) decl order nb-BEFORE-ca steers ca into ECX / * nb into EBX (ca-first gave ca=EBX and rotated th",
+  "runs_in_intro": false
+ },
+ "FUN_0002dd48": {
+  "addr": "0002dd48",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "FUN_0002dd48 @ 0x2dd48 - entity event/flag-word (+0xc) dispatcher. * Reads the 16-bit flag word at +0xc; if any bit is set it clears the word and * returns a code for the first matching bit (each also",
+  "runs_in_intro": false
+ },
+ "FUN_0002de18": {
+  "addr": "0002de18",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "0x2de18 -- launch setup. Rounds facing to a quadrant (d = ((dir+0x20)>>6<<6) * - 0x40), then tries up to 4 quadrants clockwise until the step probe 0x2d6c8 * (matched twin) accepts. Sets speed p[0x59]",
+  "runs_in_intro": false
+ },
+ "FUN_0002def8": {
+  "addr": "0002def8",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "0x2def8 (1284B): projectile trajectory aim/turn selection. * Compute aim angle w1e = 0x14c58(dx,dy) from target coords obj[0x2e]/obj[0x30] * vs own obj[4]/obj[6]. If busy flag g_5300 != 0, bail. Set g",
+  "runs_in_intro": false
+ },
+ "FUN_0002e408": {
+  "addr": "0002e408",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "NEAR-MISS @ 0x2e408 -- 231/240 (was 222/240); PARKED on the last x-product * register-role tie-break. cont.21 levers that CLOSED ground: (1) goto-fail * merge -- `goto fail;` from the quadrant guard i",
+  "runs_in_intro": false
+ },
+ "FUN_0002e4f8": {
+  "addr": "0002e4f8",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "frameless @ 0x2e4f8: search up to 4 directions for a valid projectile step. local_10 = obj[0x1a] + param_2; each iteration test FUN_0002d5b8 at the position obj[4]/obj[6] offset by the signed directio",
+  "runs_in_intro": false
+ },
+ "FUN_0002e588": {
+  "addr": "0002e588",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x2e588: dispatch based on a pool linked list hung off param_2[0x24]. If param_2[0x19]==0x17 return 0. If the list is empty, tail to FUN_0002e5f8. Else walk node[0x24] \"next\" links (node =",
+  "runs_in_intro": false
+ },
+ "FUN_0002e5f8": {
+  "addr": "0002e5f8",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "frameless @ 0x2e5f8: line-of-sight trace from entity p1 toward entity p2 (sibling of 0x2e808, with extra head checks and a richer hit branch). Head: if p1 has flag 2 at +0x1c and p1/p2 are in the same",
+  "runs_in_intro": false
+ },
+ "FUN_0002e808": {
+  "addr": "0002e808",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "frameless @ 0x2e808: line-of-sight trace from entity p1 toward entity p2. d1 = dist(p2-p1) via FUN_14c58; if d1 >= range, fail. steps = range/0x80 (must be >= 1). dir1 = angle(p2-p1 in xy) via FUN_4d2",
+  "runs_in_intro": false
+ },
+ "FUN_0002ed28": {
+  "addr": "0002ed28",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "NEAR-MISS @ 0x2ed28 -- PARKED on a register-role rotation wall, improved * cont.21: `unsigned int c` (full-width temp lever) closed the widen-form gap * (and-form `mov bl;and ebx,0xff` -> target's xor",
+  "runs_in_intro": false
+ },
+ "FUN_0002ee18": {
+  "addr": "0002ee18",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "MATCHED @ 0x2ee18 (163/163, reloc-aware) -- recipe -4s -oneatx -zp8 -s -zq. * Find a valid target for agent a: scans pool-A records (0x5c bytes at g_8110, * end g_10ae0), skipping the 8-record squad t",
+  "runs_in_intro": false
+ },
+ "FUN_0002f608": {
+  "addr": "0002f608",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "FUN_0002f608 @ 0x2f608 - entity aim/orient helper. * If entity link id (+0x44) is nonzero and target node health (+0x14) >= 0, * compute dx = x - self.x(+4), dy = y - self.y(+6); store facing byte at ",
+  "runs_in_intro": false
+ },
+ "FUN_0002fbc8": {
+  "addr": "0002fbc8",
+  "label": "",
+  "subsystem": "entity",
+  "desc": "frameless @ 0x2fbc8: detach a pool entity from its \"type\" linked list and reset it. id = p[0x24] (next-in-list id); p[0x54]=0. If id==0, just stamp p[0x58]=p[0x19] and tail to FUN_0002d998. Else node ",
+  "runs_in_intro": false
+ },
+ "FUN_0002fca8": {
+  "addr": "0002fca8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "@ 0x2fca8: MATCHED (RELOC-AWARE YES, -4s -oneatx -zp8 -s -zq, 438B). Levers that closed it: named pointer statements for every g_810e + id deref (add+disp8, no symbol fold); named int accumulator `idx",
+  "runs_in_intro": false
+ },
+ "FUN_00030508": {
+  "addr": "00030508",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "0x30508 -- entity update (pool obj in ebx). Sets flag 2 on +0xb; computes * calls 0x26ad8((ushort)((e568((ushort)hp) + 2)/2 + hp), (ushort)dir) -- the * nested call inside arg1 makes Watcom push arg2 ",
+  "runs_in_intro": false
+ },
+ "FUN_00030708": {
+  "addr": "00030708",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "step an entity then adjust its HP word (+0x14) and * flags word (+0xa) by a code derived from flags (+0x1d,+0x3c). * call 0x269d8(p); if((short)==0) return; * code<2 -> HP=-1; ==2 -> HP-=8; ==3 -> HP-",
+  "runs_in_intro": false
+ },
+ "FUN_00030868": {
+  "addr": "00030868",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "frameless @ 0x30868: (re)acquire + engage target for pool-A entity `node`. Clears node[0x54], d = FUN_2d808(node,0x64) (kept in DI). Clears node[0x46]; if the target link node[0x44] is set: p2 = its p",
+  "runs_in_intro": false
+ },
+ "FUN_00032118": {
+  "addr": "00032118",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x32118: for block param_2, look up the base record index in the 0x417-stride block table g_e551, then scan records [idx .. idx+4) in the 0x5c-stride record table g_108110. For each record",
+  "runs_in_intro": false
+ },
+ "FUN_00033568": {
+  "addr": "00033568",
+  "label": "",
+  "subsystem": "economy",
+  "desc": "frameless @ 0x33568: commit funding entry, 866 bytes (manifest size correct). Returns 2 if g_5595==0; 0 if g_5597==-1; 3 if price g_b95c[g_5597]*g_559b exceeds the money int at 0xe49c+g_10b16*0x417 (e",
+  "runs_in_intro": false
+ },
+ "FUN_000338d8": {
+  "addr": "000338d8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x338d8: table save/restore state machine. TRUE SIZE 418 (manifest said 295 \u2014 undercount past Ghidra's carve gap at 0x33990-0x33a11, recovered via disassemble_bytes; manifest fixed). Sets ",
+  "runs_in_intro": false
+ },
+ "FUN_00033b88": {
+  "addr": "00033b88",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "PARKED near-miss (NOT matched) -- exact-size 171/171, all 3 relocs aligned, and the entire tail from obj offset 0x37 (byte 55) to the end is byte-IDENTICAL. The whole divergence is the leading 49-byte",
+  "runs_in_intro": false
+ },
+ "FUN_00033c38": {
+  "addr": "00033c38",
+  "label": "",
+  "subsystem": "map",
+  "desc": "frameless @ 0x33c38: grid-hit scan along x (twin of 0x33cf8 which scans y). Scans 6 tiles at decreasing x starting from x+0x100: for each, walks the g_10e grid-head chain in the g_810e pool looking fo",
+  "runs_in_intro": false
+ },
+ "FUN_00033cf8": {
+  "addr": "00033cf8",
+  "label": "",
+  "subsystem": "map",
+  "desc": "frameless @ 0x33cf8: grid-hit scan along y (twin of 0x33c38 which scans x). Scans 6 tiles at decreasing y starting from y+0x100: for each, walks the g_10e grid-head chain in the g_810e pool looking fo",
+  "runs_in_intro": false
+ },
+ "FUN_00033db8": {
+  "addr": "00033db8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "PARKED near-miss (NOT matched, 154/167) -- spatial-grid proximity scan. Structure 100% correct (offsets, signedness, -0x80 check, JBE health test, CMP DI,6, return width). Two \u00a73 ties remain: (1) prol",
+  "runs_in_intro": false
+ },
+ "FUN_00033e78": {
+  "addr": "00033e78",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "PARKED near-miss (NOT matched) -- 311B vs target 310B; TRUE size 310 (manifest * says 150, undercounted: carve stops at the jmp CS:[...] -- code runs to the * ret at 0x33fad). Entry block, tile lookup",
+  "runs_in_intro": false
+ },
+ "FUN_00033fb8": {
+  "addr": "00033fb8",
+  "label": "",
+  "subsystem": "map",
+  "desc": "MATCHED 137/137 (reloc-aware) -- frameless map-passability check @ 0x33fb8. * Levers that closed the old g_5358 register wall (cont. 22): pointer-variable * decl `char **g_5358`; `base = g_5358;` decl",
+  "runs_in_intro": false
+ },
+ "FUN_00034048": {
+  "addr": "00034048",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "frameless @ 0x34048: snap a direction value `cur` toward target `tgt`. m = cur with byte-1 cleared (cur & 0xffff00ff); d = (short)(m - tgt). Clamp: d < -0x20 -> cur+0x20; d > 0x20 -> cur-0x20; else cu",
+  "runs_in_intro": false
+ },
+ "FUN_00034088": {
+  "addr": "00034088",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "frameless @ 0x34088: collision query along a shot path. The shot's accumulated position lives in the globals g_10b5e (x), g_10b5c (y), g_10b5a (level). Build the 128x128 spatial-grid cell index from t",
+  "runs_in_intro": false
+ },
+ "FUN_00034118": {
+  "addr": "00034118",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "frameless @ 0x34118: from src->[0x1c] (id into object pool g_810e), take the node's byte[0x54]; if it exceeds threshold thr, store (byte-0x54 - thr) into dst[0x54], else store 0. Was parked as a \"regi",
+  "runs_in_intro": false
+ },
+ "FUN_00034168": {
+  "addr": "00034168",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "frameless push-ebx @ 0x34168: field p[0x54] (uchar) clamp-decrement by n (u16)",
+  "runs_in_intro": false
+ },
+ "FUN_00034198": {
+  "addr": "00034198",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "0x34198 -- march a shot along its direction for `count` steps, running * collision on the first 3 steps and then applying damage to `p` based on * whether/where a wall/turn was hit. * * setup: dir = p",
+  "runs_in_intro": false
+ },
+ "FUN_00034368": {
+  "addr": "00034368",
+  "label": "",
+  "subsystem": "map",
+  "desc": "@ 0x34368 -- 4-way compass neighbour tile-type probe. dir (arg3, byte) selects one of N/E/S/W (0/0x40/0x80/0xc0, else return 0); each direction offsets the moving coordinate by the direction-vector ta",
+  "runs_in_intro": false
+ },
+ "FUN_00034608": {
+  "addr": "00034608",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "0x34608 -- pick a passable direction for the current projectile/scan point. * If dir is vertical (0 / 0x80) and the point's x tile differs from the target * x tile (g_10b54), first try the direction F",
+  "runs_in_intro": false
+ },
+ "FUN_00034858": {
+  "addr": "00034858",
+  "label": "",
+  "subsystem": "combat",
+  "desc": "@ 0x34858: top-level weapon-fire routine (964B, 8 distinct callees). Two * top-level modes on the firing entity's type byte p2[0x19]: * - type 5/6 (guided/tracking): step the shot cursor (g_10b28/g_10",
+  "runs_in_intro": false
+ },
+ "noop_ret": {
+  "addr": "00034c28",
+  "label": "noop_ret",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_00035538": {
+  "addr": "00035538",
+  "label": "",
+  "subsystem": "render",
+  "desc": "frameless @ 0x35538: bulk dword copy. Copy 15999 dwords from the buffer pointed to by g_5370 (src) into the buffer pointed to by g_5368 (dst), loop unrolled x3 (15999 = 5333 * 3). Mirror of 0x35588 (w",
+  "runs_in_intro": false
+ },
+ "FUN_00035588": {
+  "addr": "00035588",
+  "label": "",
+  "subsystem": "render",
+  "desc": "frameless @ 0x35588: bulk dword copy, mirror of 0x35538. Copy 15999 dwords from the buffer pointed to by g_5368 (src) into the buffer pointed to by g_5370 (dst), loop unrolled x3. Same declaration-ord",
+  "runs_in_intro": false
+ },
+ "FUN_000355d8": {
+  "addr": "000355d8",
+  "label": "",
+  "subsystem": "render",
+  "desc": "frameless @ 0x355d8: blit the back buffer (g_5368) to VGA memory at 0xa0000, 16000 dwords, loop unrolled x5 (16000 = 3200 * 5). Cousin of 0x35538/0x35588. Declaration order src, dst, n reproduces the ",
+  "runs_in_intro": false
+ },
+ "FUN_00035638": {
+  "addr": "00035638",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "0x35638 -- message-line setter. Sets g_506c=1/g_5064=0, strcpy(g_bdfc, * g_b4c0[i]), clears g_10b3f; if g_5591 set, calls 0x4987e(g_10aa0) and clears * it; calls 0x39ca0(0,0,g_b958); then the two scre",
+  "runs_in_intro": false
+ },
+ "FUN_00035b68": {
+  "addr": "00035b68",
+  "label": "",
+  "subsystem": "economy",
+  "desc": "0x35b68 -- save game. Taxes the player's cash (dword at g_e49c + p*0x417) * by 10% when above 30000 (unsigned mul/div, RMW -=); builds the path with * sprintf(buf, fmt 0x3cf0, str 0xb970, n) like the ",
+  "runs_in_intro": false
+ },
+ "FUN_00035c88": {
+  "addr": "00035c88",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "0x35c88 -- read a 0x14-byte name record. Builds a path with sprintf(buf, * fmt@0x3cf0, str@0xb970, n), opens it (0x18828, mode 0x202); if fd > 0 reads * 0x14 bytes into out and closes. If out is still",
+  "runs_in_intro": false
+ },
+ "sound_driver_init": {
+  "addr": "00035d08",
+  "label": "sound_driver_init",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "walk_sound_record_table": {
+  "addr": "00035e68",
+  "label": "walk_sound_record_table",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_00035ed8": {
+  "addr": "00035ed8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x35ed8: zero the 8 even-offset bytes (0,2,4,6,8,0xa,0xc,0xe) of every 0x10-byte record in the global array based at g_11bdc, for record index i = 0x10, 0x20, ... 0x200. The stored zero is",
+  "runs_in_intro": false
+ },
+ "FUN_00035f28": {
+  "addr": "00035f28",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x35f28: conditionally record a max value. If g_5350[param_1*0x20 + 0x1e] is set, index i = param_1*2 into the paired tables g_11bec (flag) / g_11bed (value): if the flag is clear, store p",
+  "runs_in_intro": false
+ },
+ "FUN_00035f78": {
+  "addr": "00035f78",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x35f78: guarded dispatch. If g_10b4a && g_537f, index the 0x20-stride record table g_5350 by param_1, then call FUN_00039ae7 passing g_11dec, a far pointer built from *(int*)(rec+0x12) wi",
+  "runs_in_intro": false
+ },
+ "FUN_00036168": {
+  "addr": "00036168",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x36168: if(g_10b4a) FUN_0000344e(0); NEAR-MISS (parked). Body matches (masked), but the target has a DEAD push ebx/pop ebx around the call (ebx never used) that no recipe reproduces -- th",
+  "runs_in_intro": false
+ },
+ "FUN_000361a8": {
+  "addr": "000361a8",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "FUN_000361a8 @ 0x361a8 - centre a string then draw it. Measures the string * width via 0x36648 (table g_11be4, base 0x413, adj -2), computes the centred x * = (0x280 - width)/2, then draws via 0x36698",
+  "runs_in_intro": false
+ },
+ "FUN_00036208": {
+  "addr": "00036208",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "FUN_00036208 @ 0x36208 - measure+draw marshalling, cousin of 0x361a8. * Measures via 0x36648 (table g_11be4), computes a centred/offset x, then * draws via 0x36698. The two calls share their trailing ",
+  "runs_in_intro": false
+ },
+ "FUN_00036298": {
+  "addr": "00036298",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "FUN_00036298 @ 0x36298 - bounding-box hit test then draw dispatch. * If point (g_5390,g_5392) is strictly inside box (g_b6c8,g_b6ca)-(g_b6cc,g_b6ce) * pick sprite 0x166 else 0x1ef, then draw via FUN_0",
+  "runs_in_intro": false
+ },
+ "FUN_00036338": {
+  "addr": "00036338",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "FUN_00036338 @ 0x36338 - bounding-box hit test then draw dispatch. * Direct sibling of FUN_00036298. If point (g_5390,g_5392) is strictly * inside box (g_b6d2,g_b6d4)-(g_b6d6,g_b6d8) pick sprite 0x166",
+  "runs_in_intro": false
+ },
+ "FUN_000363d8": {
+  "addr": "000363d8",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "@ 0x363d8 (523 bytes): word-wrap text layout/draw engine. Draws string s glyph-by-glyph with `font` (6-byte glyph records: width at +4, height at +5), word-wrapping inside the box (x0,y0,w,h). a7 = gl",
+  "runs_in_intro": false
+ },
+ "FUN_000365e8": {
+  "addr": "000365e8",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "FUN_000365e8 @ 0x365e8 - measure summed text width of a string. * Walks param_1 until NUL or one of ' ' '\\n' '\\\\' '|'; for each char c looks up * a 6-byte-stride record table (param_2) at index (c+par",
+  "runs_in_intro": false
+ },
+ "FUN_00036648": {
+  "addr": "00036648",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "frameless @ 0x36648: text-width / kerning accumulator. For each char of str (until 0 or '\\n'): idx = (arg3 + c - 0x20); w = table[idx].w (6-byte records, width byte at +4); acc += w + arg4; return acc",
+  "runs_in_intro": false
+ },
+ "FUN_00036698": {
+  "addr": "00036698",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "@ 0x36698: PARKED near-miss 295/362 (aligned bytes, -4s -oneatx -zp8 -s -zq). Remaining walls (all \u00a73 families): (1) spill-slot order \u2014 target has i at [esp+0], c at [esp+4]; ours always swaps them un",
+  "runs_in_intro": false
+ },
+ "FUN_00036808": {
+  "addr": "00036808",
+  "label": "",
+  "subsystem": "ui",
+  "desc": "@ 0x36808: PARKED near-miss (987B target, -4s -oneatx -zp8 -s -zq). Structure is byte-faithful; the whole divergence cascades from a single \u00a73 register-role tie: `cur` (param5, ESI in target) and `len",
+  "runs_in_intro": false
+ },
+ "FUN_00036c28": {
+  "addr": "00036c28",
+  "label": "",
+  "subsystem": "entity",
+  "desc": "frameless @ 0x36c28: walk the chain from p->[0x1c] (base g_810e, link +0x22); for each node call FUN_0002fbc8, copy p->[0x16] into node->[0x16], set node[0x19]=0x14 and node[0xa] |= 8.",
+  "runs_in_intro": false
+ },
+ "FUN_00036c78": {
+  "addr": "00036c78",
+  "label": "",
+  "subsystem": "entity",
+  "desc": "FUN_00036c78 @ 0x36c78 - walk pool chain (g_810e) from node[0x1c], reset nodes",
+  "runs_in_intro": false
+ },
+ "FUN_00036d18": {
+  "addr": "00036d18",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "flag-driven HP adjust @ 0x00036d18 (135B): early-out on flags, subtract from * +0x14 word per flag bit in +0xc, call 0x36c78, then mask +0xc word to bit9. * NEAR-MISS: register-role wall (0x34048 clas",
+  "runs_in_intro": false
+ },
+ "FUN_00037658": {
+  "addr": "00037658",
+  "label": "",
+  "subsystem": "entity",
+  "desc": "FUN_00037658 @ 0x37658 (leaf) - link param_1 into param_2's chain. * Chain nodes live in the g_810e pool; next-link is node[0x1c]. * Returns 0 only when the chain is already full (>6); other paths * f",
+  "runs_in_intro": false
+ },
+ "FUN_000376f8": {
+  "addr": "000376f8",
+  "label": "",
+  "subsystem": "entity",
+  "desc": "frameless @ 0x376f8: walk the chain from p->[0x3a] (base g_810e, link +0x1c) and sum a 16-bit table value g_a7b4[node[0x19]] over every node.",
+  "runs_in_intro": false
+ },
+ "FUN_00037738": {
+  "addr": "00037738",
+  "label": "",
+  "subsystem": "entity",
+  "desc": "frameless @ 0x37738: from p->[0x44] (id into object pool base g_810e), if the node is live (signed word at +0x14 >= 0) store g_a6fe[node[0x19]] into p[0x46]. NOTE: the field is loaded INLINE twice (no",
+  "runs_in_intro": false
+ },
+ "FUN_00037778": {
+  "addr": "00037778",
+  "label": "",
+  "subsystem": "entity",
+  "desc": "frameless @ 0x37778: walk the chain from p->[0x3a] (base g_810e, link +0x1c); return 1 if any node has byte[0x19] == val, else 0.",
+  "runs_in_intro": false
+ },
+ "FUN_000377b8": {
+  "addr": "000377b8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x377b8: count the length of a linked chain starting from a 16-bit id in p->[0x3a], following link at node+0x1c",
+  "runs_in_intro": false
+ },
+ "FUN_000377e8": {
+  "addr": "000377e8",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x377e8: two-level table lookup with a bounds check. field = p->[0x44]; node = g_810e + field; if node below g_11670 -> 0; else return g_a6ea[node[0x19]]",
+  "runs_in_intro": false
+ },
+ "FUN_00037818": {
+  "addr": "00037818",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "frameless @ 0x37818: pool accessor. node = g_810e + p[0x44] (u16 id); if the node address is within the valid pool region (>= g_810e + 0x9562) return the byte table g_a686 indexed by node[0x19], else ",
+  "runs_in_intro": false
+ },
+ "FUN_00037878": {
+  "addr": "00037878",
+  "label": "",
+  "subsystem": "entity",
+  "desc": "FUN_00037878 @ 0x37878 (leaf) - unlink param_1 from its pool chain. * Chain nodes live in the g_810e pool; node = g_810e + param_1[0x44]. * prev id = node[0x1e], next id = node[0x1c], scratch at node[",
+  "runs_in_intro": false
+ },
+ "FUN_00037918": {
+  "addr": "00037918",
+  "label": "",
+  "subsystem": "entity",
+  "desc": "frameless @ 0x37918: drop/scatter the chain of carried items hanging off entity p (head id at p+0x3a, links at node+0x1c). Clears the carry fields (p+0x3a, p+0x46, p+0x44), then for each chained node:",
+  "runs_in_intro": false
+ },
+ "FUN_00037a48": {
+  "addr": "00037a48",
+  "label": "",
+  "subsystem": "entity",
+  "desc": "frameless @ 0x37a48: detach the chain at p->[0x3a] then walk the old chain (base g_810e, link +0x1c) calling FUN_000269b8 on every node.",
+  "runs_in_intro": false
+ },
+ "FUN_00037ad8": {
+  "addr": "00037ad8",
+  "label": "",
+  "subsystem": "mission",
+  "desc": "FUN_00037ad8 @ 0x37ad8 (jump-table dispatcher, 19-entry table at 0x2a340). * Best-weapon-in-range selector: walk node's carried-item chain (head id at * node+0x3a, next link at item+0x1c, item = g_810",
+  "runs_in_intro": false
+ },
+ "FUN_00037d08": {
+  "addr": "00037d08",
+  "label": "",
+  "subsystem": "mission",
+  "desc": "FUN_00037d08 @ 0x37d08 (jump-table dispatcher, 19-entry table at 0x2a568). * Twin of FUN_00037ad8 with an extra \"wanted type\" argument: walk the node's * carried-item chain (head id at node+0x3a, next",
+  "runs_in_intro": false
+ },
+ "FUN_00038c28": {
+  "addr": "00038c28",
+  "label": "",
+  "subsystem": "unclassified",
+  "desc": "guarded alloc/read helper @ 0x38c28",
+  "runs_in_intro": true
+ },
+ "xmidi_music_init": {
+  "addr": "00038cf8",
+  "label": "xmidi_music_init",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_00038fe8": {
+  "addr": "00038fe8",
+  "label": "",
+  "subsystem": "sound",
+  "desc": "FUN_00038fe8 @ 0x38fe8 - sound/channel state select.",
+  "runs_in_intro": false
+ },
+ "FUN_00039088": {
+  "addr": "00039088",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "FUN_00039088 (stack/cdecl, -4s). Globals-only guard + dispatch. * disasm: if (g_10b49 && g_10b4d && (signed char)g_bbec >= 0) * FUN_00039bc3(g_11e2c, g_11e0c[g_bbec]); g_bbec = -1;",
+  "runs_in_intro": false
+ },
+ "FUN_00039188": {
+  "addr": "00039188",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_000391a8": {
+  "addr": "000391a8",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_00039280": {
+  "addr": "00039280",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "sound_dispatch_trampoline": {
+  "addr": "000392ac",
+  "label": "sound_dispatch_trampoline",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "clear_voice_tables": {
+  "addr": "00039393",
+  "label": "clear_voice_tables",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "install_timer_isr": {
+  "addr": "000393e0",
+  "label": "install_timer_isr",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_0003942f": {
+  "addr": "0003942f",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "FUN_0003942f -- SKIP-ASM-IDIOM (restore timer ISR, 56B). * disasm: pushfd; cli; g_bcee = -1; * INT 21h / AH=25h : set interrupt vector 8 back to the saved handler * (offset g_bce6, segment g_bcea via ",
+  "runs_in_intro": false
+ },
+ "reprogram_pit_ch0": {
+  "addr": "00039467",
+  "label": "reprogram_pit_ch0",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_00039495": {
+  "addr": "00039495",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "recompute_timer_period": {
+  "addr": "000394c6",
+  "label": "recompute_timer_period",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "init_voice_tables": {
+  "addr": "0003954c",
+  "label": "init_voice_tables",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_000395b6": {
+  "addr": "000395b6",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "FUN_000395b6 -- SKIP-ASM-IDIOM (per-voice service loop, 111B). * disasm: framed; pushfd; cli; * for (i=0; i<0x10; i++) if (g_bcfa[i]) { * if (g_bd3a[i] != -1) FUN_000396d5(g_bd3a[i]); * FUN_00039a82(i",
+  "runs_in_intro": false
+ },
+ "FUN_00039625": {
+  "addr": "00039625",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_000396d5": {
+  "addr": "000396d5",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_00039722": {
+  "addr": "00039722",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "interrupt-critical-section teardown. Disasm (authoritative): push esi; push edi pushfd; cli ; save EFLAGS, disable interrupts mov esi,0xf .loop: push esi; call 0x396d5; add esp,4; dec esi; jge .loop ;",
+  "runs_in_intro": false
+ },
+ "FUN_00039747": {
+  "addr": "00039747",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003979c": {
+  "addr": "0003979c",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_000397f1": {
+  "addr": "000397f1",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "timer_rate_critsec": {
+  "addr": "00039846",
+  "label": "timer_rate_critsec",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_00039879": {
+  "addr": "00039879",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_000398d7": {
+  "addr": "000398d7",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_00039966": {
+  "addr": "00039966",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_00039994": {
+  "addr": "00039994",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_000399b3": {
+  "addr": "000399b3",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "dispatch stub @ 000399b3 (10B): mov eax,0x65; jmp sound_dispatch_trampoline (tail call)",
+  "runs_in_intro": true
+ },
+ "FUN_000399bd": {
+  "addr": "000399bd",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_00039a82": {
+  "addr": "00039a82",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "FUN_00039a82 -- SKIP-ASM-IDIOM (voice-stop trampoline, 61B). * disasm: mov ebx,esp; mov ebx,[ebx+4]; if ((unsigned)ebx >= 0x10) ret; * ebx <<= 2; edx=0; xchg [ebx+g_bd7a],edx; ; atomically clear activ",
+  "runs_in_intro": false
+ },
+ "FUN_00039ae7": {
+  "addr": "00039ae7",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "dispatch stub @ 00039ae7 (10B): mov eax,0x7b; jmp sound_dispatch_trampoline (tail call)",
+  "runs_in_intro": false
+ },
+ "FUN_00039af1": {
+  "addr": "00039af1",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "dispatch stub @ 00039af1 (10B): mov eax,0x85; jmp sound_dispatch_trampoline (tail call)",
+  "runs_in_intro": true
+ },
+ "FUN_00039afb": {
+  "addr": "00039afb",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "dispatch stub @ 00039afb (10B): mov eax,0x7c; jmp sound_dispatch_trampoline (tail call)",
+  "runs_in_intro": false
+ },
+ "FUN_00039b05": {
+  "addr": "00039b05",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "dispatch stub @ 00039b05 (10B): mov eax,0x7d; jmp sound_dispatch_trampoline (tail call)",
+  "runs_in_intro": false
+ },
+ "FUN_00039b55": {
+  "addr": "00039b55",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "dispatch stub @ 00039b55 (10B): mov eax,0x96; jmp sound_dispatch_trampoline (tail call)",
+  "runs_in_intro": true
+ },
+ "FUN_00039b5f": {
+  "addr": "00039b5f",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "dispatch stub @ 00039b5f (10B): mov eax,0x97; jmp sound_dispatch_trampoline (tail call)",
+  "runs_in_intro": true
+ },
+ "FUN_00039b73": {
+  "addr": "00039b73",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "dispatch stub @ 00039b73 (10B): mov eax,0x99; jmp sound_dispatch_trampoline (tail call)",
+  "runs_in_intro": true
+ },
+ "FUN_00039b7d": {
+  "addr": "00039b7d",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "dispatch stub @ 00039b7d (10B): mov eax,0x9a; jmp sound_dispatch_trampoline (tail call)",
+  "runs_in_intro": true
+ },
+ "FUN_00039b87": {
+  "addr": "00039b87",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "dispatch stub @ 00039b87 (10B): mov eax,0x9b; jmp sound_dispatch_trampoline (tail call)",
+  "runs_in_intro": true
+ },
+ "FUN_00039b91": {
+  "addr": "00039b91",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "dispatch stub @ 00039b91 (10B): mov eax,0x9c; jmp sound_dispatch_trampoline (tail call)",
+  "runs_in_intro": true
+ },
+ "FUN_00039bb9": {
+  "addr": "00039bb9",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "dispatch stub @ 00039bb9 (10B): mov eax,0xaa; jmp sound_dispatch_trampoline (tail call)",
+  "runs_in_intro": false
+ },
+ "FUN_00039bc3": {
+  "addr": "00039bc3",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "dispatch stub @ 00039bc3 (10B): mov eax,0xab; jmp sound_dispatch_trampoline (tail call)",
+  "runs_in_intro": false
+ },
+ "FUN_00039ca0": {
+  "addr": "00039ca0",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_00039e42": {
+  "addr": "00039e42",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_00039ee2": {
+  "addr": "00039ee2",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_00039f49": {
+  "addr": "00039f49",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "frameless linear call @ 0x39f49: g(g_bdd0, g_5370, (u16)g_bddc - 6)",
+  "runs_in_intro": false
+ },
+ "FUN_00039f69": {
+  "addr": "00039f69",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "frameless linear call @ 0x39f69: g(g_bdd0, g_10ab0, (u16)g_bddc - 6); g_be2e = 1 0x39xxx unit is -3 (386) AND a lighter opt than the main game: compile \"-3s\" with NO -oneatx (plain -3s -zp8 -s -zq), o",
+  "runs_in_intro": false
+ },
+ "FUN_00039f92": {
+  "addr": "00039f92",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003a033": {
+  "addr": "0003a033",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). RLE/sprite-stream decoder @ 0x3a033. Framed hand-asm (its own PUSH EBP; MOV EBP,ESP; ADD ESP,-0x10 prologue, LEAVE/RET epilogue). Reads the frame header",
+  "runs_in_intro": false
+ },
+ "FUN_0003a10c": {
+  "addr": "0003a10c",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). RLE/sprite-stream decoder @ 0x3a10c. Framed hand-asm sibling of 0x3a033 (its own PUSH EBP; MOV EBP,ESP; ADD ESP,-4 prologue, LEAVE/RET epilogue), a simp",
+  "runs_in_intro": false
+ },
+ "FUN_0003a19a": {
+  "addr": "0003a19a",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Frame-rate throttle @ 0x3a19a. Leaf, frameless. If g_bdf8 (min interval, centiseconds) != 0, busy-waits on the DOS clock (INT 21h AH=2Ch: DH=sec, DL=1/1",
+  "runs_in_intro": false
+ },
+ "FUN_0003a1ec": {
+  "addr": "0003a1ec",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Top-level graphics decompression driver @ 0x3a1ec. TRUE SIZE 398 bytes (manifest under-counts at 386: the body extends to the RET at 0x3a379; the tail c",
+  "runs_in_intro": true
+ },
+ "FUN_0003a37a": {
+  "addr": "0003a37a",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Big-endian dword reader @ 0x3a37a. Frameless 9-byte leaf: LODSD pulls the next dword from the ESI stream (side-channel input, advanced by 4), then XCHG ",
+  "runs_in_intro": true
+ },
+ "FUN_0003a383": {
+  "addr": "0003a383",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Huffman symbol lookup @ 0x3a383. Non-leaf (calls the bit-reader 0x3a3c6 twice). Input: table pointer in EDX. XCHG ESI,EDX puts the table in ESI, then sc",
+  "runs_in_intro": true
+ },
+ "FUN_0003a3c6": {
+  "addr": "0003a3c6",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Bitstream bit-extractor @ 0x3a3c6. Leaf. Reads CL (=AL param) bits out of the little-endian bit buffer held in globals g_bfbe (word, high half AX), g_bf",
+  "runs_in_intro": true
+ },
+ "FUN_0003a449": {
+  "addr": "0003a449",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Huffman decode-table builder @ 0x3a449. Non-leaf (calls the bit-reader 0x3a3c6). Destination pointer arrives in EDX (saved via PUSH EDX at entry, later ",
+  "runs_in_intro": true
+ },
+ "FUN_0003a4fa": {
+  "addr": "0003a4fa",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003a526": {
+  "addr": "0003a526",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003a579": {
+  "addr": "0003a579",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: open @ 0x3a579 (CLIB3S). Variadic wrapper: va_arg the mode, then call the real open (path, oflag, 0, mode). Full body via #pragma aux db bytes with a real `call FUN_0003a598` (masked reloc)",
+  "runs_in_intro": true
+ },
+ "FUN_0003a598": {
+  "addr": "0003a598",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: open/sopen core @ 0x3a598 (CLIB3S). Skips leading spaces in the name, masks the share/access flags (&0x83), DOS open (AH=0x3d); on ENOENT with O_CREAT (0x40) does DOS create (AH=0x3c) honou",
+  "runs_in_intro": true
+ },
+ "FUN_0003a7c4": {
+  "addr": "0003a7c4",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: read (text/binary) @ 0x3a7c4 (CLIB3S). Handle lookup (0x3c529), then a raw binary DOS read (AH=0x3f, +0x40 flag) or the text-mode loop stripping CR (0x0d) / stopping at Ctrl-Z (0x1a). Error",
+  "runs_in_intro": true
+ },
+ "FUN_0003a89d": {
+  "addr": "0003a89d",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: close @ 0x3a89d (CLIB3S, Watcom 9.5). DOS close (AH=0x3E, BX=handle). int 21h; fold carry into the sign bit (rcl eax,1; ror eax,1); on success call the handle-release helper FUN_0003c57b(ha",
+  "runs_in_intro": true
+ },
+ "FUN_0003a8d7": {
+  "addr": "0003a8d7",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: strcpy @ 0x3a8d7 (CLIB3S). Open Watcom strcpy.c uses #pragma aux __strcpy (hand asm, 2-byte unroll) for 386 small model. Replicated verbatim; the target encodes `add eax,2` as the EAX-accum",
+  "runs_in_intro": false
+ },
+ "FUN_0003a900": {
+  "addr": "0003a900",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Word-wise string append @ 0x3a900. Custom frame (PUSH ESI/EDI/EBP; MOV EBP,ESP): dest at [EBP+0x10], src at [EBP+0x14]. Sets ES=DS, SCASB/REPNE-scans de",
+  "runs_in_intro": true
+ },
+ "FUN_0003a93b": {
+  "addr": "0003a93b",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: lseek @ 0x3a93b (CLIB3S). DOS seek (AH=0x42), 64-bit->32-bit result combine, error path calls the DOS-error handler. Full body via #pragma aux db bytes; the one call is a real `call FUN_000",
+  "runs_in_intro": true
+ },
+ "FUN_0003a97c": {
+  "addr": "0003a97c",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: tell @ 0x3a97c (CLIB3S). DOS seek-cur (AH=0x42, method 1) to read the file position; 64-bit->32-bit combine + error handler call. Sibling of lseek; full body via #pragma aux db bytes with a",
+  "runs_in_intro": true
+ },
+ "FUN_0003a9c8": {
+  "addr": "0003a9c8",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: strcmp @ 0x3a9c8 (CLIB3S). 386 hand-asm dword-at-a-time compare with the 0xfefefeff/0x80808080 zero-byte detector, 4x unrolled, byte-tail resolve returning -1/0/1. Frameless leaf (saves edx",
+  "runs_in_intro": true
+ },
+ "FUN_0003aa74": {
+  "addr": "0003aa74",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "framed 1-arg forwarder @ 0x3aa74: push [ebp+8]; call 0x3aa84",
+  "runs_in_intro": true
+ },
+ "FUN_0003aa84": {
+  "addr": "0003aa84",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: malloc / _nmalloc core @ 0x3aa84 (CLIB3S, small model). Saves ES/FS/GS, reads DS as the near selector, walks/extends the near heap via 0x3c594 (alloc-from-freelist), growing with 0x3c816 th",
+  "runs_in_intro": true
+ },
+ "FUN_0003aaf8": {
+  "addr": "0003aaf8",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: memset @ 0x3aaf8 (CLIB3S, Watcom 9.5). Hand-asm, FRAMELESS, stack-calling. Loads dst/c/len from [esp+4/8/0xc], splats byte c into all 4 bytes of EDX (mov dh,dl; shl edx,8; mov dl,dh; shl; m",
+  "runs_in_intro": true
+ },
+ "FUN_0003ab1a": {
+  "addr": "0003ab1a",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: filelength @ 0x3ab1a (CLIB3S). Saves current pos (lseek SEEK_CUR), seeks to end (SEEK_END) for the length, restores original pos (SEEK_SET), returns the end position. Three cdecl calls to l",
+  "runs_in_intro": true
+ },
+ "FUN_0003ab59": {
+  "addr": "0003ab59",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "framed 1-arg forwarder @ 0x3ab59: push [ebp+8]; call 0x3ab69",
+  "runs_in_intro": true
+ },
+ "FUN_0003ab69": {
+  "addr": "0003ab69",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Thin wrapper @ 0x3ab69 that forwards its 3rd stack arg ([EBP+0xc], into EAX) plus two fixed global buffer addresses (0xbfc4 in EAX -- immediately overwr",
+  "runs_in_intro": true
+ },
+ "FUN_0003ab8e": {
+  "addr": "0003ab8e",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: write (text/binary) @ 0x3ab8e (CLIB3S). Handle lookup (0x3c529); append-mode pre-seek (AH=0x42) for +0x80 handles; binary path is a single DOS write (AH=0x40), text path buffers into a stac",
+  "runs_in_intro": false
+ },
+ "FUN_0003ad66": {
+  "addr": "0003ad66",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: printf @ 0x3ad66 (CLIB3S, Watcom 9.5). Variadic formatter front-end for a stream/handle: set up a va_list at the first vararg and tail into the shared formatter core FUN_0003cb24(dest, fmt,",
+  "runs_in_intro": false
+ },
+ "FUN_0003ad89": {
+  "addr": "0003ad89",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Non-returning exit trampoline @ 0x3ad89. Runs two chained indirect calls through the global function-pointer slots at [0xbff4] and [0xbff8] (atexit/flus",
+  "runs_in_intro": false
+ },
+ "int386": {
+  "addr": "0003adb2",
+  "label": "int386",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_0003addb": {
+  "addr": "0003addb",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "framed forwarder @ 0x3addb: push [ebp+c]; push 0x62; push [ebp+8]; call 0x3a579",
+  "runs_in_intro": false
+ },
+ "FUN_0003adf0": {
+  "addr": "0003adf0",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "GAME/CLIB hand-asm (0% RTL fingerprint, library region). setmode-style stream helper @ 0x3adf0. Frame PUSH EBX/ESI/EDI/EBP; MOV EBP,ESP. Arg0 (handle, [EBP+0x14]->EBX), arg1 (requested mode, [EBP+0x18",
+  "runs_in_intro": false
+ },
+ "FUN_0003aea6": {
+  "addr": "0003aea6",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003aed8": {
+  "addr": "0003aed8",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: labs @ 0x3aed8 (CLIB3S). long abs value. -d2 forces the leaf frame.",
+  "runs_in_intro": false
+ },
+ "FUN_0003aee6": {
+  "addr": "0003aee6",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "framed 2-arg forwarder @ 0x3aee6: push [ebp+c]; push [ebp+8]; call 0x3aef9; add esp,8",
+  "runs_in_intro": false
+ },
+ "FUN_0003aef9": {
+  "addr": "0003aef9",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003af38": {
+  "addr": "0003af38",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: system @ 0x3af38 (CLIB3S, Watcom 9.5). Runs a command through the shell. Looks up the COMSPEC env string (FUN_0003cba4 with the string table addr 0x3d30), defaulting to the built-in shell n",
+  "runs_in_intro": true
+ },
+ "thunk_FUN_0003b1f6": {
+  "addr": "0003b1d1",
+  "label": "",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": false
+ },
+ "FUN_0003b1d3": {
+  "addr": "0003b1d3",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime helper @ 0x3b1d3 (CLIB3S region). Writes the NUL-terminated string pointed to by EAX to a DOS file/handle: opens the fixed path at ds:0x2d8d2 (DOS int 21h AH=0x3D, AL=1 open-for-write), strl",
+  "runs_in_intro": false
+ },
+ "FUN_0003b1f6": {
+  "addr": "0003b1f6",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: _exit @ 0x3b1f6 (CLIB3S, Watcom 9.5). Runs the atexit/cleanup chain (FUN_0003d079), then terminates via DOS int 21h AH=0x4C with the exit code in AL. The tail `mov ds,cs:[0x2d8d0]` (restore",
+  "runs_in_intro": false
+ },
+ "FUN_0003b22d": {
+  "addr": "0003b22d",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: outp @ 0x3b22d (CLIB3S). out dx,al -- replicated via #pragma aux (value passed in 8-bit AL so it loads with mov al,[..] not movzx).",
+  "runs_in_intro": false
+ },
+ "FUN_0003b239": {
+  "addr": "0003b239",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: d_getvec @ 0x3b239 (CLIB3S). DOS get-interrupt-vector (AH=0x35, with a DOS-version gate on the 0xc2da flag). int21 asm replicated via #pragma aux (db bytes); the 0xc2da refs are literals ma",
+  "runs_in_intro": true
+ },
+ "FUN_0003b273": {
+  "addr": "0003b273",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: d_setvec @ 0x3b273 (CLIB3S). DOS set-interrupt-vector (AH=0x25) with the DOS-version gate. Entire body (incl the [ebp+N] param loads -- the segment loads 16-bit via mov cx) emitted as #prag",
+  "runs_in_intro": true
+ },
+ "FUN_0003b2aa": {
+  "addr": "0003b2aa",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: inp @ 0x3b2aa (CLIB3S, Watcom 9.5). Read a byte from an I/O port: framed (push ebp; mov ebp,esp), loads the port from [ebp+8] into EDX, zeroes EAX (sub eax,eax) and `in al,dx`. Sibling of o",
+  "runs_in_intro": false
+ },
+ "FUN_0003b2b5": {
+  "addr": "0003b2b5",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime helper @ 0x3b2b5 (CLIB3S region, buffered console output). Writes the character c to the console stream (FILE at 0xc09a) via the fast putc FUN_0003d24a; on success it emits a newline: if the",
+  "runs_in_intro": false
+ },
+ "FUN_0003b326": {
+  "addr": "0003b326",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: fgets/getline @ 0x3b326 (CLIB3S, Watcom 9.5). Reads a line from the console-input stream (buffer arg at [ebp+0x14]) into the caller's buffer. Saves and masks the mode/echo flag byte g_c08c ",
+  "runs_in_intro": false
+ },
+ "segread": {
+  "addr": "0003b3b9",
+  "label": "segread",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_0003b3e6": {
+  "addr": "0003b3e6",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: int386x @ 0x3b3e6 (CLIB3S, Watcom 9.5). Register-setup wrapper for a software interrupt: saves ebx/esi/edi/ebp, loads the four args (inter_no, in, out, sregs) into ESI/EDI/EDX/EBX, calls th",
+  "runs_in_intro": true
+ },
+ "FUN_0003b407": {
+  "addr": "0003b407",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "framed field-mask+call @ 0x3b407: p=[ebp+8]; p[0xc]&=0xcf; g(p,0,0)",
+  "runs_in_intro": true
+ },
+ "FUN_0003b420": {
+  "addr": "0003b420",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: fread @ 0x3b420 (CLIB3S). size*count buffered read (_filbuf/qread core); regs-first prologue -> full db-transcription. Body db-transcribed (frameless wrapper; modify[] suppresses the wrappe",
+  "runs_in_intro": true
+ },
+ "FUN_0003b539": {
+  "addr": "0003b539",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: fgetc (text mode) @ 0x3b539 (CLIB3S, Watcom 9.5). Reads one character from the stream (FILE* at [ebp+0xc]): inlined getc (--_cnt; if >=0 take *_ptr++ else __filbuf FUN_0003d3e4). On a CR (0",
+  "runs_in_intro": false
+ },
+ "FUN_0003b594": {
+  "addr": "0003b594",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: fseek @ 0x3b594 (CLIB3S). buffered seek via lseek/tell/ftell/flush; regs-first prologue -> full db-transcription. Body db-transcribed (frameless wrapper; modify[] suppresses the wrapper fra",
+  "runs_in_intro": true
+ },
+ "FUN_0003b739": {
+  "addr": "0003b739",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: fopen mode-string parser @ 0x3b739 (CLIB3S). Decodes r/w/a/+/b/t to stream flag bits (tolower, 0xc289 default-mode); regs-first prologue -> full db-transcription. Body db-transcribed (frame",
+  "runs_in_intro": true
+ },
+ "FUN_0003b7e8": {
+  "addr": "0003b7e8",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: _fopen core @ 0x3b7e8 (CLIB3S). Parse mode, open/create via 0x3a598, append-truncate via fseek, init FILE; regs-first prologue -> full db-transcription. Body db-transcribed (frameless wrapp",
+  "runs_in_intro": true
+ },
+ "FUN_0003b8cd": {
+  "addr": "0003b8cd",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "framed call-then-cond-call @ 0x3b8cd: p=g1(0); if(p) p=g2(a,b,c,p); return p;",
+  "runs_in_intro": true
+ },
+ "FUN_0003b8f8": {
+  "addr": "0003b8f8",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "framed forwarder @ 0x3b8f8: push 0; push [ebp+c]; push [ebp+8]; call 0x3b8cd",
+  "runs_in_intro": true
+ },
+ "FUN_0003b90d": {
+  "addr": "0003b90d",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: _getstream/freelist search @ 0x3b90d (CLIB3S). Walks the two FILE freelists (g_11e4c/g_11e44); regs-first prologue -> full db-transcription. Body db-transcribed (frameless wrapper; modify[]",
+  "runs_in_intro": false
+ },
+ "FUN_0003b972": {
+  "addr": "0003b972",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "framed cond-call w/ field-mask @ 0x3b972: p=g1(c); if(p){ p[3]&=0x4000; g2(a,b,0,p);}",
+  "runs_in_intro": false
+ },
+ "FUN_0003b99e": {
+  "addr": "0003b99e",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003b9ca": {
+  "addr": "0003b9ca",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: @ 0x3b9ca (CLIB3S). r=FUN_3ba80(a,b); FUN_3dae1(a); return r; regs-first prologue -> full db-transcription. Body db-transcribed (frameless wrapper; modify[] suppresses the wrapper frame). E",
+  "runs_in_intro": true
+ },
+ "FUN_0003b9ee": {
+  "addr": "0003b9ee",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime helper @ 0x3b9ee (CLIB3S): nibble -> ASCII hex digit. x+=0x30; if(x>'9') x+=0x27; (mislabeled 'fclose' by the window heuristic)",
+  "runs_in_intro": false
+ },
+ "FUN_0003ba01": {
+  "addr": "0003ba01",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: temp filename builder @ 0x3ba01 (CLIB3S). Builds t<hex>_<hex>.tmp via nibble->hex 0x3b9ee; regs-first prologue -> full db-transcription. Body db-transcribed (frameless wrapper; modify[] sup",
+  "runs_in_intro": false
+ },
+ "FUN_0003ba80": {
+  "addr": "0003ba80",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: stream teardown / _fclose core @ 0x3ba80 (CLIB3S, Watcom 9.5). FILE* at [ebp+0x10], flag [ebp+0x14]. Handle field [EBX+0xc]==0 -> return -1. Flush (0x3d966 when [EBX+0xd]&0x10), fflush (0x3",
+  "runs_in_intro": true
+ },
+ "FUN_0003bb1e": {
+  "addr": "0003bb1e",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: _doprnt @ 0x3bb1e (CLIB3S, Watcom 9.5) -- the printf/sprintf formatter core (sprintf 0x3a4fa tails into it). Walks the format string, per '%' parses the spec via 0x3bd37, fetches va_args an",
+  "runs_in_intro": false
+ },
+ "FUN_0003bd37": {
+  "addr": "0003bd37",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: printf conversion-spec parser @ 0x3bd37 (CLIB3S, Watcom 9.5). Called by _doprnt per '%': parses flag chars via 0x3be40, then field width (digits or '*'=va_arg), precision ('.' then digits o",
+  "runs_in_intro": false
+ },
+ "FUN_0003be40": {
+  "addr": "0003be40",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: printf flag-char parser @ 0x3be40 (CLIB3S, Watcom 9.5). Scans the leading conversion flags at [ebp+8] into flags byte [rec+0x14] (rec=[ebp+0xc]): '-'->0x8, '#'->0x1, '+'->0x4 & clear 0x2, '",
+  "runs_in_intro": false
+ },
+ "FUN_0003be93": {
+  "addr": "0003be93",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: bounded far strlen (byte) @ 0x3be93 (CLIB3S, Watcom 9.5). Counts bytes of the far string SI:[EBP+0x14] up to max [EBP+0x1c], stopping at NUL or cap; count in EAX. Frame push ebx;esi;es;ebp;",
+  "runs_in_intro": false
+ },
+ "FUN_0003bebc": {
+  "addr": "0003bebc",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: bounded far strlen (WIDE / 16-bit) @ 0x3bebc (CLIB3S, Watcom 9.5). Word sibling of 0x3be93: counts 16-bit chars of SI:[EBP+0x14], stride 2, up to [EBP+0x1c], stopping at a zero word or the ",
+  "runs_in_intro": false
+ },
+ "FUN_0003bee3": {
+  "addr": "0003bee3",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: integer-to-padded-field helper @ 0x3bee3 (CLIB3S, Watcom 9.5). Converts a value to text via 0x3dbeb (_ltoa, radix 0x10 pushed) into a scratch buffer, gets its length via 0x3dc1b (strlen), t",
+  "runs_in_intro": false
+ },
+ "FUN_0003bf36": {
+  "addr": "0003bf36",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: fixed-point / %f fraction formatter @ 0x3bf36 (CLIB3S, Watcom 9.5). Emits a signed value with a fractional field: '-' for negatives (negating [ebp-4]), converts the integer part via 0x3dbeb",
+  "runs_in_intro": false
+ },
+ "FUN_0003c002": {
+  "addr": "0003c002",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "framed indirect forwarder @ 0x3c002: push [ebp+10]; push [ebp+c]; push [ebp+8]; call [c2e8]",
+  "runs_in_intro": false
+ },
+ "FUN_0003c019": {
+  "addr": "0003c019",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: printf conversion-specifier dispatcher @ 0x3c019 (CLIB3S, Watcom 9.5). The %-format engine core. Args at [ebp+0x18..0x20]; a 0x14-byte local frame and a pushed ES make its own prologue (pus",
+  "runs_in_intro": false
+ },
+ "FUN_0003c42d": {
+  "addr": "0003c42d",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003c44d": {
+  "addr": "0003c44d",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: isatty @ 0x3c44d (CLIB3S). DOS IOCTL 0x4400 get-device-info, test the char-device bit -> 0/1. int21 asm replicated via #pragma aux (db bytes).",
+  "runs_in_intro": true
+ },
+ "FUN_0003c46d": {
+  "addr": "0003c46d",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "Decomp target #1 - original @ 0x0003c46d (6 bytes) * * Original machine code: B8 3C 1E 01 00 C3 * Disassembly: MOV EAX, 0x11e3c * RET * * A tiny accessor (called from 20 sites) that returns the consta",
+  "runs_in_intro": true
+ },
+ "FUN_0003c473": {
+  "addr": "0003c473",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "Decomp target #2 - original @ 0x0003c473 (6 bytes) * * Original machine code: B8 40 1E 01 00 C3 * Disassembly: MOV EAX, 0x11e40 * RET * * Sibling of FUN_0003c46d (+4). Accessor returning &global @ 0x1",
+  "runs_in_intro": false
+ },
+ "FUN_0003c479": {
+  "addr": "0003c479",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003c491": {
+  "addr": "0003c491",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003c4b9": {
+  "addr": "0003c4b9",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: DOS-error handler @ 0x3c4b9 (CLIB3S, Watcom 9.5). Called by lseek/tell/ open/qread. Stores the raw DOS error (BL) via FUN_0003c473, then remaps the code (when < 0x100 and DOS major-version ",
+  "runs_in_intro": false
+ },
+ "FUN_0003c529": {
+  "addr": "0003c529",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: fd->stream lookup @ 0x3c529 (CLIB3S, Watcom 9.5). Returns the stream table entry ds:0xc07c[fd*4] after (for fd 0..5, when the fd-flag 0x40 is clear) probing it with isatty (FUN_0003c44d): m",
+  "runs_in_intro": true
+ },
+ "FUN_0003c57b": {
+  "addr": "0003c57b",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: handle-release helper @ 0x3c57b (CLIB3S, Watcom 9.5). Stores the handle (arg1) OR'd with 0x40 in its high byte into the fd/handle table at ds:0xc07c indexed by arg2. Hand-asm: full-body #pr",
+  "runs_in_intro": true
+ },
+ "heap_alloc": {
+  "addr": "0003c594",
+  "label": "heap_alloc",
+  "subsystem": "",
+  "desc": "",
+  "runs_in_intro": true
+ },
+ "FUN_0003c644": {
+  "addr": "0003c63f",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: near-heap FREE core @ 0x3c63f-0x3c74e (CLIB3S, Watcom 9.5). Register-calling hand-asm: EAX=payload ptr, DX=arena segment (loaded into DS), EBX=arena descriptor. Clears the in-use bit, coale",
+  "runs_in_intro": true
+ },
+ "FUN_0003c74f": {
+  "addr": "0003c74f",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: heap-top free-size probe @ 0x3c74f (CLIB3S, Watcom 9.5). Frameless leaf. If the heap-enabled flag ds:0xbfc4 is set and the last arena block (ds:0xbfec) ends exactly at the current break ds:",
+  "runs_in_intro": false
+ },
+ "FUN_0003c772": {
+  "addr": "0003c772",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: DPMI/DOS paragraph allocator @ 0x3c772 (CLIB3S, Watcom 9.5). Framed (push ebx/esi/edi/ebp; mov ebp,esp). Splits the byte size arg [ebp+0x14] into segment:offset, tries a DPMI \"resize memory",
+  "runs_in_intro": true
+ },
+ "FUN_0003c816": {
+  "addr": "0003c816",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: heap-grow / sbrk-style allocator core @ 0x3c816 (CLIB3S, Watcom 9.5). Rounds the requested size (arg at [ebp+0x10]) up to a paragraph, honours the DOS memory model flag g_c2da (1/9 = protec",
+  "runs_in_intro": true
+ },
+ "FUN_0003ca0d": {
+  "addr": "0003ca0d",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003ca18": {
+  "addr": "0003ca18",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: byte-fill core @ 0x3ca18 (CLIB3S, Watcom 9.5). The byte-granular front of memset: if ECX!=0, aligns EAX to a 4-byte boundary storing DL and rotating the pattern EDX right by 8 each step, th",
+  "runs_in_intro": true
+ },
+ "FUN_0003ca4f": {
+  "addr": "0003ca4f",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: aligned dword-fill core @ 0x3ca4f (CLIB3S, Watcom 9.5). The inner loop of memset: fills ECX dwords of pattern EDX starting at EAX, aligning to a 0x20 boundary first (store dword + lea eax,[",
+  "runs_in_intro": true
+ },
+ "FUN_0003cabb": {
+  "addr": "0003cabb",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: __STK stack-probe accessor @ 0x3cabb (CLIB3S, Watcom 9.5). Returns ESP - g_c2bc (the current stack depth below the stack-limit global) in EAX. Frameless hand-asm (mov eax,esp; sub eax,[0xc2",
+  "runs_in_intro": false
+ },
+ "FUN_0003cacb": {
+  "addr": "0003cacb",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: __STK stack-check thunk @ 0x3cacb (CLIB3S, Watcom 9.5). Preserves the caller's EAX by XCHG'ing it with the size argument at [esp+4], calls the stack-limit check core FUN_0003cade with the s",
+  "runs_in_intro": true
+ },
+ "FUN_0003cade": {
+  "addr": "0003cade",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: __STK stack-limit check core @ 0x3cade (CLIB3S, Watcom 9.5). Given a proposed new stack top in EAX: if EAX >= ESP it is fine (JNC ret); otherwise the requested depth (ESP-EAX) is compared a",
+  "runs_in_intro": true
+ },
+ "FUN_0003cafb": {
+  "addr": "0003cafb",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: __STK stack-overflow reporter @ 0x3cafb (CLIB3S, Watcom 9.5). Loads the stack-error message-table address 0xc296 into EAX and the code 1 into EDX, then tail-jumps to the runtime fatal-error",
+  "runs_in_intro": false
+ },
+ "FUN_0003cb24": {
+  "addr": "0003cb24",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: stream mode/reopen helper @ 0x3cb24 (CLIB3S, Watcom 9.5). Framed (push ebx/esi/edi/ebp; mov ebp,esp; sub esp,4). Takes a FILE* at [ebp+0x14]; saves and clears its buffering-mode bits (flags",
+  "runs_in_intro": false
+ },
+ "FUN_0003cba4": {
+  "addr": "0003cba4",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: getenv @ 0x3cba4 (CLIB3S, Watcom 9.5). Framed (push ebx/esi/edi/ebp; mov ebp,esp). Walks the environment table at g_c2f4; for the name arg at [ebp+0x14] it takes strlen (FUN_0003dc1b) once,",
+  "runs_in_intro": true
+ },
+ "FUN_0003cbf9": {
+  "addr": "0003cbf9",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: switch-char/cmd-prefix helper @ 0x3cbf9 (CLIB3S; heuristic mislabeled spawnve). If arg3!=0 store '/'; else DOS get-switch-char (AH=0x37); then append 'c',0. Returns buf. Pure asm (int21, no",
+  "runs_in_intro": true
+ },
+ "FUN_0003cc26": {
+  "addr": "0003cc26",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "framed @ 0x3cc26: thin wrapper. Calls FUN_0003df3c(param_1, 7, &buf) with a 0x2c-byte local scratch buffer, returns (result == 0) as an int (SETZ/MOVZX). MATCHED, recipe `-3s -os -zp8 -s -zq`. `-os` (",
+  "runs_in_intro": false
+ },
+ "FUN_0003cc45": {
+  "addr": "0003cc45",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "framed two-call @ 0x3cc45: g1(b, e, c, 0); g2(a, b, c, d, e); params a=+8 b=+c c=+10 d=+14 e=+18",
+  "runs_in_intro": true
+ },
+ "FUN_0003cc74": {
+  "addr": "0003cc74",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: system() / spawn-command @ 0x3cc74 (CLIB3S, Watcom 9.5). Large framed hand-asm: stack-probe prologue (push 0xd8; call FUN_0003cacb), saves ebx/esi/edi + ES, ENTER 0xa4,0 then SUB EBP,0x5a f",
+  "runs_in_intro": true
+ },
+ "FUN_0003cfce": {
+  "addr": "0003cfce",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "framed forwarder @ 0x3cfce: lea eax,[ebp+10]; push eax; push [ebp+c]; push [ebp+8]; call 0x3e48e",
+  "runs_in_intro": true
+ },
+ "FUN_0003d079": {
+  "addr": "0003d079",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003d0bc": {
+  "addr": "0003d0bc",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003d16f": {
+  "addr": "0003d16f",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003d24a": {
+  "addr": "0003d24a",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003d2c3": {
+  "addr": "0003d2c3",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003d36b": {
+  "addr": "0003d36b",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003d3e4": {
+  "addr": "0003d3e4",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003d40f": {
+  "addr": "0003d40f",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003d4bc": {
+  "addr": "0003d4bc",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003d4f3": {
+  "addr": "0003d4f3",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003d894": {
+  "addr": "0003d894",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003d90b": {
+  "addr": "0003d90b",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003d935": {
+  "addr": "0003d935",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: qread @ 0x3d935 (CLIB3S). DOS read (AH=0x3f); error path calls the DOS-error handler. Full body via #pragma aux db bytes with a real call (masked reloc).",
+  "runs_in_intro": true
+ },
+ "FUN_0003d966": {
+  "addr": "0003d966",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003da03": {
+  "addr": "0003da03",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003da37": {
+  "addr": "0003da37",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: tolower @ 0x3da37 (CLIB3S). -d2 forces the leaf frame.",
+  "runs_in_intro": true
+ },
+ "FUN_0003da4c": {
+  "addr": "0003da4c",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003dae1": {
+  "addr": "0003dae1",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003db36": {
+  "addr": "0003db36",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: chktty @ 0x3db36 (CLIB3S). If the tty-checked flag (0x20) is unset and the fd is a tty (isatty), set 0x20; if no buffering-mode bits (0x7) are set, mark line-buffered (0x2).",
+  "runs_in_intro": true
+ },
+ "FUN_0003db63": {
+  "addr": "0003db63",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "global getter @ 0003db63",
+  "runs_in_intro": false
+ },
+ "FUN_0003db69": {
+  "addr": "0003db69",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "framed forwarder @ 0x3db69: push ebp; mov ebp,esp; push [ebp+8]; call 0x3e590; add esp,4; pop ebp; ret",
+  "runs_in_intro": false
+ },
+ "FUN_0003db9e": {
+  "addr": "0003db9e",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003dbeb": {
+  "addr": "0003dbeb",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003dc1b": {
+  "addr": "0003dc1b",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003dc68": {
+  "addr": "0003dc68",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003dcb5": {
+  "addr": "0003dcb5",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003dce5": {
+  "addr": "0003dce5",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime: toupper @ 0x3dce5 (CLIB3S). -d2 forces the leaf frame.",
+  "runs_in_intro": false
+ },
+ "FUN_0003dcfa": {
+  "addr": "0003dcfa",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003dd97": {
+  "addr": "0003dd97",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003dea0": {
+  "addr": "0003dea0",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003deee": {
+  "addr": "0003deee",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003df3c": {
+  "addr": "0003df3c",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003df89": {
+  "addr": "0003df89",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003dfcf": {
+  "addr": "0003dfcf",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime helper @ 0x3dfcf (CLIB3S): string copy incl NUL (heuristic mislabeled 'cenvarg').",
+  "runs_in_intro": true
+ },
+ "FUN_0003dfe8": {
+  "addr": "0003dfe8",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003e143": {
+  "addr": "0003e143",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003e1af": {
+  "addr": "0003e1af",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003e27a": {
+  "addr": "0003e27a",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003e2bb": {
+  "addr": "0003e2bb",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003e361": {
+  "addr": "0003e361",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "C runtime helper @ 0x3e361 (CLIB3S): path-separator normalize (mislabeled makepath).",
+  "runs_in_intro": true
+ },
+ "FUN_0003e381": {
+  "addr": "0003e381",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003e471": {
+  "addr": "0003e471",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "framed forwarder @ 0x3e471: push [c2f4]; lea eax,[ebp+10]; push eax; push [ebp+c]; push [ebp+8]; call 0x3cc74",
+  "runs_in_intro": false
+ },
+ "FUN_0003e48e": {
+  "addr": "0003e48e",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "framed forwarder @ 0x3e48e: push [c2f4]; push [ebp+10]; push [ebp+c]; push [ebp+8]; call 0x3e6ab",
+  "runs_in_intro": true
+ },
+ "FUN_0003e4aa": {
+  "addr": "0003e4aa",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "constant setter @ 0x0003e4aa (11B): mov dword[0xc2f0],0x8000 ; ret",
+  "runs_in_intro": false
+ },
+ "FUN_0003e4c0": {
+  "addr": "0003e4c0",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003e4f8": {
+  "addr": "0003e4f8",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003e513": {
+  "addr": "0003e513",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003e590": {
+  "addr": "0003e590",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003e5b4": {
+  "addr": "0003e5b4",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003e698": {
+  "addr": "0003e698",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003e6ab": {
+  "addr": "0003e6ab",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0003e7f7": {
+  "addr": "0003e7f7",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "",
+  "runs_in_intro": false
+ },
+ "FUN_0003e816": {
+  "addr": "0003e816",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003ea6b": {
+  "addr": "0003ea6b",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003eda6": {
+  "addr": "0003eda6",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003ee21": {
+  "addr": "0003ee21",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003f0f1": {
+  "addr": "0003f0f1",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003f2b7": {
+  "addr": "0003f2b7",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003f4b4": {
+  "addr": "0003f4b4",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003f575": {
+  "addr": "0003f575",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003f636": {
+  "addr": "0003f636",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003f8bb": {
+  "addr": "0003f8bb",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003fb40": {
+  "addr": "0003fb40",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0003feb3": {
+  "addr": "0003feb3",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_00040236": {
+  "addr": "00040236",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_000402e0": {
+  "addr": "000402e0",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_000404b8": {
+  "addr": "000404b8",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_00040f4e": {
+  "addr": "00040f4e",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004107b": {
+  "addr": "0004107b",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_000418ac": {
+  "addr": "000418ac",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_00041a44": {
+  "addr": "00041a44",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004287e": {
+  "addr": "0004287e",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_000436b2": {
+  "addr": "000436b2",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004483d": {
+  "addr": "0004483d",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_00045e61": {
+  "addr": "00045e61",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_00045f8a": {
+  "addr": "00045f8a",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_00046188": {
+  "addr": "00046188",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_00047a7e": {
+  "addr": "00047a7e",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004987e": {
+  "addr": "0004987e",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_000498ef": {
+  "addr": "000498ef",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_00049922": {
+  "addr": "00049922",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004993b": {
+  "addr": "0004993b",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004997e": {
+  "addr": "0004997e",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_00049a31": {
+  "addr": "00049a31",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_00049b67": {
+  "addr": "00049b67",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_00049edf": {
+  "addr": "00049edf",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004a3cc": {
+  "addr": "0004a3cc",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004a42f": {
+  "addr": "0004a42f",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004a492": {
+  "addr": "0004a492",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004a574": {
+  "addr": "0004a574",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004a5a8": {
+  "addr": "0004a5a8",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004a639": {
+  "addr": "0004a639",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004a63a": {
+  "addr": "0004a63a",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004a66b": {
+  "addr": "0004a66b",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004a69c": {
+  "addr": "0004a69c",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004a6c8": {
+  "addr": "0004a6c8",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004a6fe": {
+  "addr": "0004a6fe",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004a734": {
+  "addr": "0004a734",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004a898": {
+  "addr": "0004a898",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004a8d1": {
+  "addr": "0004a8d1",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004a909": {
+  "addr": "0004a909",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004b073": {
+  "addr": "0004b073",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004cacc": {
+  "addr": "0004cacc",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004cb1a": {
+  "addr": "0004cb1a",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004cb68": {
+  "addr": "0004cb68",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004cc4d": {
+  "addr": "0004cc4d",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004cc77": {
+  "addr": "0004cc77",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004cd18": {
+  "addr": "0004cd18",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004cd19": {
+  "addr": "0004cd19",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004cd3e": {
+  "addr": "0004cd3e",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004cde3": {
+  "addr": "0004cde3",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004ce87": {
+  "addr": "0004ce87",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004d04b": {
+  "addr": "0004d04b",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004d069": {
+  "addr": "0004d069",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004d0b4": {
+  "addr": "0004d0b4",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004d199": {
+  "addr": "0004d199",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": true
+ },
+ "FUN_0004d1db": {
+  "addr": "0004d1db",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004d221": {
+  "addr": "0004d221",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004d352": {
+  "addr": "0004d352",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004d393": {
+  "addr": "0004d393",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004d442": {
+  "addr": "0004d442",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004d451": {
+  "addr": "0004d451",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ },
+ "FUN_0004d513": {
+  "addr": "0004d513",
+  "label": "",
+  "subsystem": "lib",
+  "desc": "-- db-transcription (hand-asm/library).",
+  "runs_in_intro": false
+ }
+}

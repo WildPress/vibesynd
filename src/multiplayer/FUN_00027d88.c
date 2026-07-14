@@ -11,10 +11,10 @@
    half in ESI (`mov esi,[esp+0x88]` + `mov gs,si` re-arms, push esi); ours
    always re-loads GS from the param slot (`mov gs,[esp+0x8c]`, 7B vs 3B). Tried:
    far-ptr param direct, named far local copy, (off, ushort sel) split params,
-   __segment param, ushort local copy — all copy-propagate back to slot loads.
+   __segment param, ushort local copy ï¿½ all copy-propagate back to slot loads.
    Same profitability rule as 0x35d08/0x2e808, opposite direction. */
 extern void FUN_0003aaf8(void *dst, int val, int len);
-extern void FUN_0003b3b9(void *sregs);
+extern void segread(void *sregs);
 extern void FUN_0003b3e6(int inum, void *inr, void *outr, void *sregs);
 extern void FUN_000289a8(char *s, int line, int code);
 extern char g_376c[];
@@ -39,7 +39,7 @@ int FUN_00027d88(unsigned char __far *p)
     FUN_0003aaf8(in, 0, 0x1c);
     FUN_0003aaf8(out, 0, 0x1c);
     FUN_0003aaf8(sr, 0, 0xc);
-    FUN_0003b3b9(sr);
+    segread(sr);
     in[5] = (int)rm;
     in[0] = 0x300;
     in[1] = 0x5c;

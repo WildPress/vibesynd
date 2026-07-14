@@ -82,7 +82,7 @@ extern unsigned char g_e5c3[];   /* equip-template slot kind word */
 extern short         g_a73a[];   /* item kind -> default quantity table */
 
 extern int  FUN_0003aee6(unsigned char *bitset, int id);
-extern int  FUN_00020c88(void);
+extern int  keyboard_state_machine(void);
 
 void FUN_00021658(void)
 {
@@ -171,7 +171,7 @@ void FUN_00021658(void)
         /* equip templates: 18 entries of stride 40 inside rec; the eight item
          * slots (kinds 6,6,1,0xc,0x11,0x11,7,7) are fully unrolled */
         for (d = 0; d < 0x12; d++) {
-            roll = FUN_00020c88();
+            roll = keyboard_state_machine();
             g_e5b9[0x417 * g_10b16 + d * 40] = (unsigned char)roll;
             *(short *)(g_e5ba + 0x417 * g_10b16 + d * 40) = 0x10;
             *(short *)(g_e5bc + 0x417 * g_10b16 + d * 40) = 0x1fff;

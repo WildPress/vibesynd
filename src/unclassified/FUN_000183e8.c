@@ -1,6 +1,6 @@
 /* frameless(sub-esp) @ 0x183e8: walk records (stride 0x2c) while field +0x1c != 0.
    Each record's +0x1c is a pointer (obj); if obj[0] (val) != 0: test byte +0x28 & 1 ->
-   build a small stack msg {[0]=0x101, +0xc=(u16)+0x2a} and call FUN_0003adb2(0x31,&msg,
+   build a small stack msg {[0]=0x101, +0xc=(u16)+0x2a} and call int386(0x31,&msg,
    scratch); else FUN_00018488(val, *(int*)+0x24). Then clear obj[0]=0. Top-guard + do/while
    on the +0x1c pointer field. Recipe: -4s -oneat -zp8 -s -zq (no -x, else the loop-back
    field access CSEs into EDI).
@@ -19,7 +19,7 @@
    permuter run (8000 named + 8000 inline + 6000 obj, all ceiling ~87-90/106) flips the
    allocation. Same class as the parked 0x34048/0x34088/0x26e18/0x33fb8 register-role walls. */
 extern void FUN_00018488(int a, int b);
-extern void FUN_0003adb2(int a, void *msg, void *scratch);
+extern void int386(int a, void *msg, void *scratch);
 
 void FUN_000183e8(int param_1)
 {
@@ -35,7 +35,7 @@ void FUN_000183e8(int param_1)
                 if (p[0x28] & 1) {
                     msg[0] = 0x101;
                     *(unsigned short *)((char *)msg + 0xc) = *(unsigned short *)(p + 0x2a);
-                    FUN_0003adb2(0x31, msg, scratch);
+                    int386(0x31, msg, scratch);
                 } else {
                     FUN_00018488(obj[0], *(int *)(p + 0x24));
                 }

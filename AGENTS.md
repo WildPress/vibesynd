@@ -229,11 +229,130 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 
 ## Current Status  (update every session)
 
+### 🏷️ SEMANTIC NAMES (2026-07-14): FUN_<addr> is NO LONGER special — the anchor is now the manifest
+### `name` (== source filename == the name tools take; match_reloc looks up by name->addr). `tools/names.py`
+### -> `manifest/names.json` (all 499: label+desc from src headers+subsystem) + `docs/function-map.md`.
+### `tools/apply_names.py` did a REAL rename of 32 intro-path fns (files + function symbol + all externs/
+### calls + manifest name/src + recipes key): FUN_00024be8->startup_main, 0x3adb2->int386, 0x3c594->
+### heap_alloc, 0x35d08->sound_driver_init, 0x38cf8->xmidi_music_init, 0x28b88->mouse_init_int33, etc.
+### VERIFIED: all 23 previously-matched of them STILL byte-match (symbols don't affect bytes); the 9
+### "fails" are status=unmatched (never matched, unaffected). GAMEO unaffected (uses obj1_full, not per-fn
+### objs). buildgame.py glob now keys on manifest names (not FUN_ regex); unbake/mkdata already use manifest
+### name. TO RENAME MORE: add to names.py LABELS, run apply_names.py, re-verify with recipe flags.
+### Unknown fns stay FUN_<addr>. (Globals g_XXXX still generic -- next naming target.)
+
 ### 📘 MATCHING PLAYBOOK: read `docs/matching-playbook.md` FIRST
 Consolidated, living reference for every match: recipes, the full lever catalogue (branch-layout,
 return-width, sign/zero-extend, symbols-not-literals, loop-form, volatile, `#pragma aux modify`, ...),
 the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intrinsic-inline), and the
 method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
+
+### 🏁🎉 MILESTONE 2026-07-14 — GAMEO RENDERS THE INTRO. The reconstructed build (`tools/origbuild.py`)
+### boots under DOS/4GW and draws the SYNDICATE / BULLFROG PRODUCTIONS 1993 title screen
+### (`build/rec/e_8.png` == the original `build/rec/porig_08.png`). Reproduce: `linearize.py; origbuild.py`,
+### record with dosbox at cycles>=20000 (dosrec's 8000 is too slow to reach it in a short clip).
+The three fixes that got here, in order: (1) LE FIXUP reconstruction (10060 fixups from lefix.py, linked
+with NATIVE OW wlink not DOSBox-wlink) so DOS/4GW relocates absolutes -> no more wild-jump/R6003; (2) data
+seglen 0x109110 (cover all globals incl the C heap block) -> heap malloc no longer fails; (3) THE KEY DATA
+BUG: OBJECT2/OBJECT4.linear.bin are each shifted 0x28b8 (missing their first 0x28b8 bytes, SAME as
+object1). Place them at buf[0x28b8]/buf[0x28b8+0x14a60] (PLACE_OBJ2/PLACE_OBJ4) while keeping fixup disp =
+the code's DGROUP offset (toff) -> `buf[0x3568]=OBJECT2[0xcb0]=" "` (g_3568 const strings restored). Found
+via the trace-diff harness (see below) + a runtime [ESI] dump. NOTE: this is the ORIGINAL BYTES rendering
+(obj1_full is the extracted original code); next is splicing our MATCHED-C fn objects in at their addresses
+(identical bytes -> stays running) to prove the decomp incrementally, and/or driving past the logo.
+
+### (earlier) GAMEO RUNS THE REAL GAME CODE TO CLEAN COMPLETION (crash FIXED via LE fixup reconstruction).
+**THE CRASH IS FIXED.** Root cause was the missing LE fixup table (below). `origbuild.py` now reconstructs
+all 10060 fixups (9209 code-sourced + 851 data-sourced, from `tools/lefix.py`) as OMF FIXUPP records and
+links with the **NATIVE Open Watcom v2 `wlink` (/opt/watcom/binl64/wlink)** — NOT wlink-under-DOSBox,
+which PAGE-FAULTS on >~20 fixups (memory). `build/GAMEO.EXE` (549864 B) now loads, runs `__x386_start` →
+the real main → full init/teardown, and EXITS CLEANLY under `build/dosbox-dbg` (no WILDJUMP, no R6003).
+**BUT it never switches to VGA graphics — it runs in text mode and exits** (`build/rec/rapid_*` all text,
+even at cycles=3000 with 1.2s frames), whereas the ORIGINAL MAIN.EXE with the same args renders the
+Bullfrog logo (`build/rec/porig_08.png`). Same code (byte-identical) → the divergence is in the DATA.
+**🎯 RENDER BUG LOCALIZED via trace-diff (2026-07-14): our DGROUP DATA LAYOUT is WRONG.**
+Ran MAIN.EXE vs GAMEO under `build/dosbox-dbg` with the tracer gated at the GAME MAIN (`FUN_00024be8`,
+ga 0x174a0 — skips CLIB-startup noise), both run as the SAME filename `SAME.EXE` (else argv[0] len
+`MAIN`≠`GAMEO` gives a benign REP-MOVS false-positive). They match for 130 game-main instrs, then DIVERGE
+at **manifest 0x24c50**: `MOV AL,[ESI]; CMP AL,0; JZ 0x24c66` with **ESI=0x3568 (g_3568)** — orig reads
+NON-ZERO (a real separator string), **GAMEO reads 0**. Confirmed `inputs/OBJECT2.linear.bin[0x3568]==0`
+and the whole 0x355c-0x3580 region is zero. So the cmdline-prefix/separator globals g_355c (DGROUP:0x355c)
++ g_3568 (0x3568) hold REAL string data in the original but our DGROUP has zeros there.
+**ROOT CAUSE: `mkdata`/`origbuild` assume OBJECT2's _DATA sits at DGROUP offset 0, but it does NOT.**
+The Watcom DGROUP is CONST+CONST2+_DATA+_BSS; the low offsets (~0x355c) are a CONST segment (string
+literals) placed BEFORE OBJECT2's _DATA, so OBJECT2[0x3568] is NOT g_3568. NEXT: find the real DGROUP
+layout — where each object's data sits (Watcom map, or the LE data-object internal segments, or search
+the objects for the g_355c/g_3568 strings) — and lay out `origbuild`'s data object to match, so g_XXXX
+DGROUP offsets resolve to the right bytes. This also means mkdata's data image (for --clibstart) is
+mislaid the same way. FIXED SO FAR: data seglen now covers all globals (0x109110, was 0x32a60 -> a
+malloc/heap divergence at 0x3c5b8 cleared). Reproduce: `linearize.py; origbuild.py`; trace via the
+game-main gate in core_normal.cpp (ga==0x174a0); run both as SAME.EXE; diff (script in session log).
+
+**TRACE-DIFF TOOL BUILT + earlier divergences (2026-07-14).** `build/dosbox-dbg` now also logs, to
+`$TRACEOUT` (binary, 4-byte per instr), every executed instruction's `cseip - SegBase(cs)`, gated to
+start at the common entry (off `0x20c6`, csbase `0xf0000` — NOTE: entry executes at off 0x20c6, NOT the
+0x2d85c we set; and `FUN_00024be8` @off 0x174a0 wasn't seen early). Ran MAIN.EXE (orig, 30M instr cap,
+still rendering) + GAMEO (5.1M then exits), diffed: **both identical for 40 instructions, then DIVERGE
+at instr #40 — orig jumps to off 0x210, GAMEO jumps to off 0x0 (garbage)** after a startup loop at off
+0x14a0-0x14a6. GAMEO reads a wrong pointer/return-addr VERY early in the DOS4GW/CLIB startup.
+⚠ CAVEAT: `obj1_full` shows ZEROS at these offsets (0xebe8...) while the runtime executes real code
+there — so csbase 0xf0000 is a startup/transfer segment, NOT a clean object1 base; the off->manifest
+map (`manifest = off + 0xd748`) is therefore WRONG for these. RESOLVE the real segment (dump csbase's
+memory at the divergence, or set a data breakpoint) before naming the function. Suspect: GAMEO reads 0x0
+where orig has 0x210 -> a value we ZEROED for a fixup that didn't get restored, OR the entry handoff
+(0x20c6 vs our intended 0x2d85c __x386_start) is wrong. Re-run: `TRACEOUT=x build/dosbox-dbg ...`, gate
+in `src/cpu/core_normal.cpp` on off==0x20c6; diff two runs to the first mismatch (script in session log).
+
+**NEXT: find the data divergence (why GAMEO takes a no-render/early-exit path).** Prime suspect: the
+DGROUP data OFFSET mapping. mkdata/origbuild pack OBJ2@0, OBJ3-BSS, OBJ4@0x14a60 (contiguous, "code
+baked disps run 0..0x31092"), but the LE object table puts OBJ2@0x50000/OBJ3@0x70000/OBJ4@0x80000
+(NON-contiguous). If the code's real DGROUP offset for OBJ4 data is 0x30000 (separate-object model) not
+0x14a60, OBJ4 globals read wrong → divergence. VERIFY which model is right (disassemble a known OBJ4
+global access + its baked disp). Also confirm DS points at DGROUP. Diff GAMEO vs original execution with
+`build/dosbox-dbg` (add a branch-trace patch) to find the first divergent branch. Build+record cadence:
+`linearize.py; origbuild.py` (mkdata not needed — origbuild builds its own data obj), record at
+cycles<=20000 with rapid frames to catch any transient graphics.
+
+### (earlier) GAMEO LOADS UNDER DOS/4GW AND RUNS THE GENUINE GAME STARTUP
+The `--clibstart` relocated build is a DEAD END for running (baked absolute CODE addresses in db CLIB
+fns — int-dispatch tables, jump tables, fn-pointers — get mis-fixed by the 0x28b8 shift → int386 &
+friends crash). **The ORIGINAL-ADDRESS build avoids ALL of that**: place the byte-exact full image at its
+true base 0x10000, entry at the real `__x386_start` (0x3d85c), and every baked reference is already
+correct — no fixups. `tools/origbuild.py` (REWRITTEN): code = `build/obj1_full.bin` (from linearize.py,
+the prefix-complete TRUE image), entry 0x3d85c (file off 0x2d85c), **+ a STACK SEGDEF (0x75 acbp, 64k) —
+without it wlink warns "stack segment not found" and DOS/4GW faults**; links code+`dataimg.obj` via wlink
+→ `build/GAMEO.EXE` (462817 B). Record via `run/PGAMEO.BAT` (`cd \SYNDICAT; d:\GAMEO.EXE /c0 /iirq7
+/idma1 /iio220`). **At cycles>=60000 (`dosrec.sh`'s 8000 was just SLOW, looked like a hang) the game
+runs its init and hits `run-time error R6003 - integer divide by 0`** (Watcom CLIB catches it, clean
+exit — `build/rec/gameo_long.png`). So GAMEO LOADS → runs genuine `__x386_start` → runs the game's REAL
+main → executes game init → **divide-by-zero**. The game's own code is executing; this is a specific,
+fixable bug, not a crash. DGROUP data layout is CORRECT as-is: the code accesses globals DGROUP-relative
+(`mov [0xa50d]` = ds:offset, offsets 0..0x31092), which is exactly mkdata's contiguous OBJ2|OBJ3|OBJ4
+packing — NOT linear 0x50000 (earlier worry was wrong).
+**⛔ DIVIDE-BY-0 ROOT-CAUSED 2026-07-14 (via a purpose-built DOSBox debugger) → THE REAL BLOCKER IS THE
+MISSING LE FIXUP TABLE.** Chain: the R6003 divide is in a FAULT HANDLER triggered by a WILD JUMP — the
+game calls through an uninitialised pointer (value `0xcccccccc`, NOT present in code/data → a runtime
+garbage read). WHY: the debugger shows **object1 loaded at linear base 0xf0000 (csbase=0x000f0000), NOT
+its reloc_base 0x10000**. GAMEO has NO LE fixup table, so DOS/4GW cannot relocate the baked ABSOLUTE
+references (data pointers, fn-pointer tables, cross-object addrs assume the 0x10000/0x50000 layout) → they
+point to wrong/garbage memory → wild jump → R6003. Self-relative code works (that's why it runs at all);
+absolutes don't.
+**FIX = give GAMEO the LE FIXUPS.** Two routes: (a) emit OMF FIXUPP records in origbuild's CODE.OBJ for
+every absolute site (tools/lefix.py already parses all 8688 fixups: src linear + target obj:off) so wlink
+writes a proper LE fixup table; or (b) since GAMEO's code is BYTE-IDENTICAL to the original, GRAFT the
+original MAIN.EXE's fixup page-table + records directly into GAMEO's LE (post-process the wlink LE:
+copy the fixup section, patch the header's fixup-table offsets/sizes). (b) is likely faster + exact.
+Then object1 loads relocated correctly and the absolutes resolve.
+**DOSBOX DEBUGGER BUILT (durable): `build/dosbox-dbg`** — a patched DOSBox 0.74-3 (source in
+`build/dbxsrc/`). Patches: `src/cpu/cpu.cpp` CPU_Exception logs `### DIV0 CS=.. EIP=..`; `src/cpu/
+core_normal.cpp` logs `### EXEC#n linEIP/csbase/eip` (first instrs = load base) + `### WILDJUMP from
+linEIP=.. to ..`. Rebuild: `cd build/dbxsrc/dosbox-0.74-3 && make && cp src/dosbox /work/build/dosbox-dbg`
+(needs `apt-get install libsdl1.2-dev libsdl-net1.2-dev libpng-dev zlib1g-dev libasound2-dev`; autotools
+timestamps already de-fanged). Run headless: `SDL_VIDEODRIVER=dummy build/dosbox-dbg -conf <conf>` and
+grep stderr for the markers. Map a logged linEIP: subtract csbase (0xf0000) → object1 offset → manifest =
+0x10000+offset. build cadence: `linearize.py; mkdata.py; origbuild.py` then record at cycles>=20000.
+The prefix + 14 sub-graph carve (this session) is for the --clibstart path; GAMEO already contains all of
+object1 byte-exact so it needs neither.
 
 ### ⭐ SNAPSHOT — read this first (as of 2026-07-14)
 
@@ -243,15 +362,34 @@ byte-matched, 115 parked-with-decode, 0 undecoded (details in the DECODE-STATUS 
 `main` (**FUN_00024be8**) runs its full init→run→teardown with NO crash. BUT it EXITS before
 rendering. **Getting it to render is the current frontier.**
 
-**▶ STEP 1 FOR THE NEXT SESSION — run the CONTROL EXPERIMENT before debugging our code.**
-Run BARE, BOTH the original `MAIN.EXE` and our `GAME.EXE` drop straight to the DOS prompt → the
-early-exit is almost certainly an INVOCATION problem (args / cwd / launcher handoff), NOT our bug.
-  1. Inspect how `SYND.EXE` (the campaign selector) launches `/gog/SYNDICAT/MAIN.EXE` — args, working
-     dir, environment. It passes campaign/mission selection.
-  2. Record the ORIGINAL `MAIN.EXE` launched THAT way with `tools/dosrec.sh`; confirm it renders
-     (proves harness + invocation, and gives a reference frame to diff against).
-  3. Record OUR `GAME.EXE` launched identically. If it renders → "does our code run" is answered. If
-     not → we now have a clean, isolated diff with a working reference.
+**▶ STEP 1 DONE (2026-07-14) — CONTROL EXPERIMENT RUN. Result: invocation solved; render gap
+root-caused to STUBBED callees (missing object1 code).**
+- INVOCATION FOUND: `SYND/SYND.INF` = `main /c0 /iirq7 /idma1 /iio220`. The original `MAIN.EXE`
+  (== `run/SYNMAIN.EXE`, md5 67111e44…) run BARE exits to DOS just like ours — proving the bare exit
+  is NOT our bug. Launched with those args AND cwd = the campaign dir (`C:\SYNDICAT`, where MAIN.EXE +
+  DATA + DOS4GW.EXE live), the original RENDERS the SYNDICATE/Bullfrog-1993 title. Reproduce with the
+  batch files `run/PORIG.BAT` (original) / `run/PGAME.BAT` (ours): `c:` / `cd \SYNDICAT` / `<exe> /c0
+  /iirq7 /idma1 /iio220`. Record via `tools/dosrec.sh "d:\PORIG.BAT" 18 build/rec/porig` (mount /gog).
+  Reference frames: `build/rec/porig_08.png` (Bullfrog logo) vs `build/rec/pgame_06.png` (ours: DOS/4GW
+  banner then clean exit, NO pixels, NO crash).
+- ROOT CAUSE of "no render": our GAME.EXE runs the SAME init path (`FUN_00024be8` = the startup/arg
+  parser → `FUN_00018338` logo/report → subsystem init → `FUN_00025238`, then `CALL 0x0000d928`, a
+  ~0x48-tick timer spin, `FUN_000252d8`, teardown, restore video). But `buildgame.py` auto-STUBS 57
+  callees to bare `ret`, and several sit ON the render path — chief: **`FUN_0000d928`** (direct
+  `CALL 0x0000d928` at 0x250e5).
+- WHY d928 is missing — THE `linear.bin` IS SHIFTED. LE object table (parsed from the real EXE):
+  obj#1 CODE reloc_base **0x10000** vsize 0x3fdf4, entry runtime **0x3d85c**; obj#2/3/4 DATA at
+  0x50000/0x70000/0x80000. But our `OBJECT1.linear.bin` places `__x386_start` at Ghidra 0x3afa4 →
+  it actually loads at real **0x128b8**, i.e. it is MISSING object1's first **0x28b8** bytes
+  (real [0x10000,0x128b8)). Ghidra/manifest label everything 0x28b8 too low. So Ghidra `0xd928` = real
+  **0x101e0** = object1 offset 0x1e0 — a real function in that MISSING PREFIX. We never carved/decoded
+  it → stub → the game inits and exits with no graphics. (Raw `OBJECT1.bin` @0x1e0 shows real code
+  `8d 44 24 08 50 e8…`, so the prefix bytes are RECOVERABLE — but `raw` is a different page arrangement
+  than `linear`, not a clean +0x28b8 shift; needs proper re-linearization from the LE pages.)
+- SECOND GAP: ~17 stubbed callees are real Ghidra functions (e.g. `FUN_00013c98` 0x13c98–0x1406a,
+  4 callers) that are IN-RANGE but were never in the manifest (Ghidra has 512 fns, manifest 499). These
+  are decodable now; they just need carving + decode + build. Full stub list: run the classifier in the
+  session log (buildgame prints only the count).
 
 **REPRODUCE the runnable build** (in-container, with BOTH mounts + `pip install --break-system-packages
 capstone` first):
@@ -266,15 +404,127 @@ docker run --rm -v "$PWD":/work \
 ⚠ Gotchas: use GOG's `DOS4GW.EXE` (231179 B, permissive) not watcom10a's (265420 B → error 1012);
 `SDL_VIDEODRIVER=x11` + `SDL_AUDIODRIVER=dummy`; dosbox conf `machine=svga_s3`, `xms/ems/umb=true`.
 
-**NEXT ACTIONS (priority order):**
-- [ ] **Step 1 control experiment** above — highest value; get pixels + a reference frame.
-- [ ] If ours diverges from the reference: trace why `FUN_00024be8`'s run-branch returns early
-      (Ghidra: the `DAT_00010b42` flag path, the `func_0x0000d928` indirect call, `FUN_00025238`) —
-      missing init, wrong data value, or a data-file open failing?
-- [ ] Alt path — fix `GAMEO` (original-address build, `tools/origbuild.py`): it's missing object1's
-      FIRST 0x28b8 bytes (our linear.bin is trimmed) AND places code at manifest coords not runtime
-      (`runtime = manifest + 0x28b8`); supply the prefix + shift, then its `__x386_start` crash
-      (`Illegal write 0xffffffe2`) should clear. Compare which path is closer to rendering.
+**🎯 THE STUBBED FUNCTION IS THE GAME'S MAIN LOOP.** `FUN_0000d928` (manifest 0xd928 = obj1 offset
+0x1e0, in the missing prefix) decompiles to the central event loop: `FUN_00020fc8()` init, then a
+nested `do/while` running ~25 per-frame subsystems (input `FUN_00020ef8/22e38`, squad panel
+`FUN_00022ca8/13258`, blit `FUN_00026998/254f8`, sound `FUN_00039088`, `FUN_0004d434`, `FUN_00018a28`,
+`FUN_0001aa08`, …) until `FUN_00034d48()` signals exit. Stubbed to `ret`, so the game inits and
+immediately tears down — the exact no-render behaviour. Recovering it IS the render fix.
+
+**PREFIX RECOVERY DONE (tooling) — `tools/linearize.py`.** Emits `build/obj1_full.bin` (the TRUE
+object1 image; SEQUENTIAL LE pages from file 0x15c00; VERIFIED obj1[0x28b8:]==current linear.bin 2493/2493)
+and `build/obj1_prefix.bin` (obj1[0:0x28b8] = manifest [0xd748,0x10000)). Loaded `obj1_full.bin` into a
+2nd Ghidra program **rebased to image_base 0xd748** so its addresses == MANIFEST coords (offset i =
+manifest 0xd748+i); Ghidra now carves + decompiles the prefix. **`build/obj1_full.bin` is a
+manifest-coordinate byte image** (byte at manifest A = obj1_full.bin[A-0xd748]) — use it as the byte
+source for prefix db-transcription.
+
+**PREFIX INVENTORY (manifest [0xd748,0x10000), 14 fns, recursive-disasm from seeds):** 0xd758,
+0xd928(MAIN LOOP), 0xdaa8, 0xdc08, 0xe568, 0xe5a8(3010B), 0xf5e8, 0xf898, 0xfa18, 0xfa88, 0xfb48,
+0xfd38, 0xfee8, 0xffc8. Prefix is MIXED code+data (padding/tables between fns, e.g. [0xda89,0xdaa8),
+[0xdc49,0xe568)) — so transcribe the WHOLE prefix as one object, not per-function. `tools/prefix_obj.py`
+does this (one relink-safe OMF: exact bytes + PUBDEF per entry (FUN_ and FUN_LE_ alias) + fixups only
+for refs leaving the prefix). Emits `build/prefix.obj`.
+
+**⚠ SCOPE REFRAME — the manifest is MISSING A WHOLE SUB-GRAPH, not just the prefix.** The prefix main
+loop calls main-body functions that are ABSENT from the manifest (verified missing: 0x34d48, 0x20ef8,
+0x22e38, 0x29fc8, 0x22cc8, 0x22728, 0x356c8, 0x39158; present: 0x38fe8, 0x47a7e, 0x3a4fa). REASON: those
+were reachable ONLY through the stubbed prefix, so the decomp (built on the prefix-less linear.bin)
+never carved them — and buildgame never even STUBBED them (nothing referenced them). So "recover the
+prefix" cascades into "carve the previously-unreachable sub-graph rooted at __x386_start→main→
+FUN_00024be8→FUN_0000d928". `obj1_full.bin` (correct image) already finds 489 fns from partial seeding;
+the running game needs the FULL reachable set (~512+), byte-exact. This is a bulk db-transcription
+campaign, not a one-shot.
+
+**⛔ CORRECTED UNDERSTANDING 2026-07-14 — "the game runs, exits before rendering" was a NO-OP MAIN.**
+The build IS reproducible (no regression). The catch: **`--clibstart` WITHOUT `--gamemain` builds a 1254925 B
+binary whose `main(){return 42;}` NEVER CALLS THE GAME** — it loads, DOS/4GW prints its banner, main
+returns, clean exit. THAT is the binary the "milestone" (and this session's first `pgame` recording) was
+actually running. Reproduced bit-for-bit (`buildgame.py --clibstart` -> 1254925 B, records banner+exit
+`build/rec/pg_nomain_*`).
+- **`--clibstart --gamemain` (main calls the game's real main FUN_00024be8) = 1259563 B and CRASHES
+  DOSBOX IMMEDIATELY** — loads, banner printed-but-unflushed, then FUN_00024be8 faults on ~its first
+  work → DOSBox `terminate 'char*'` core-dump → all-black frames + empty LOG.TXT. **This crash is
+  PRE-EXISTING (committed state, no carve) — it is the REAL render blocker, NOT a build regression and
+  NOT caused by the prefix/sub-graph work.** So the game's real main has NEVER actually executed.
+- **CRASH LOCALIZED (marker bisection via `buildgame.py --diagmain`):** a `main` that only does CLIB
+  `printf` runs CLEAN (banner/exit, non-black `build/rec/pg_pf_*`). Adding the FIRST game call
+  **`FUN_0003adb2(0x10,buf,buf)` = int386 (BIOS int 0x10 get-video-mode) CRASHES** (black `pg_386_*`).
+  So the fault is the int386 → DPMI real-mode-interrupt path: `FUN_0003adb2` → `FUN_0003b3b9` +
+  `FUN_0003b3e6` → `FUN_0003d4bc` (DPMI simulate-real-mode-int, int 0x31 AX=0x300). All defined
+  (db-transcribed), NOT stubbed.
+- **LEADING HYPOTHESIS: `--clibstart` bypasses the game's own `__x386_start`, which sets up the DPMI
+  real-mode-call infrastructure (RM call buffer/selector globals) that int386 needs — so int386 runs
+  with uninitialized DPMI state and faults.** The original MAIN.EXE does int 0x10 fine under the SAME
+  DOSBox (renders), so DOSBox's DPMI is capable; it's OUR startup handoff that's wrong. This ALSO
+  explains GAMEO (game's real __x386_start) crashing (`Illegal write 0xffffffe2`) — BOTH startup paths
+  are broken. **THE REAL BLOCKER IS STARTUP/DPMI INIT, upstream of the prefix/sub-graph carve.**
+  NEXT: (a) decompile `__x386_start` (obj1_full @0x3afa4) + `FUN_0003d4bc` — find the DPMI globals it
+  inits and whether CLIB's cstart inits them; (b) either make the game's own __x386_start work (fix the
+  GAMEO 0xffffffe2 write) so DPMI inits properly, or replicate the needed DPMI init before calling
+  FUN_00024be8; (c) DOSBox-debugger build to get the exact fault EIP if (a) is inconclusive.
+  The prefix/sub-graph carve only matters AFTER int386/startup works and FUN_00024be8 reaches the d928 loop.
+- `dbgen.py` SILENTLY makes EMPTY _TEXT for a db fn needing >16 helper pragmas (documented ceiling) —
+  FUN_00034d48 (2032B) hit this → excluded → stubbed. Split large fns (smaller helper items) or use
+  prefix_obj-style whole-region objects. VERIFY buildgame's "malformed/empty (excluded)" stays [].
+⚠ Repo CLEAN: manifest reverted to HEAD, 14 added src removed, only additive changes (AGENTS.md,
+tools/buildgame.py[guarded prefix block], linearize.py, prefix_obj.py, bulkcarve.py). run/GAME.EXE
+restored to the working 1254925 B (--clibstart, no gamemain).
+
+**▶ PROGRESS 2026-07-14 (cont.) — PREFIX + SUB-GRAPH CARVED & LINKED; game now EXECUTES the recovered
+main loop and CRASHES (was: clean-exit no-op).** Done this push:
+- `tools/bulkcarve.py` — closure carver (recursive-descent from manifest+prefix seeds, CALL-targets-only
+  promoted to entries, sized by tiling against manifest anchors). Found the **14 missing sub-graph fns**
+  (all >= 0x10000, bytes already in linear.bin): 0x15ee8, 0x20ef8, 0x22728, 0x22c58, 0x22cc8, 0x22e38,
+  0x27158, 0x29fc8, 0x34d48(2032B), 0x356c8(1184B), 0x36188, 0x39158, 0x39b0f, 0x39bd7. Added to manifest.
+- db-transcribed all 14 (`dbgen.py`) + reloc-recovered (`unbake.py`): **VERIFY 14/14 PASS** (byte-exact).
+- `tools/prefix_obj.py` → `build/prefix.obj` (14 prefix entries, 28 PUBDEFs incl FUN_LE_ aliases, 16
+  EXTDEFs). `buildgame.py` now links `build/prefix.obj` (added). Rebuild: 513 objs, **stub FUNCS 57→47**,
+  GAME.EXE 1.28MB. FUN_0000d928 (main loop) is now DEFINED, not a stub.
+- RESULT: recording `PGAME.BAT` → DOSBox `terminate ... 'char*'` (core dump), all-black frames
+  (`build/rec/pg_v2_*.png`). The game no longer cleanly exits — it runs the recovered code and FAULTS.
+
+**⚠ THE CRASH — prime suspect: prefix intra-absolute refs not relocated.** `prefix.obj` is placed by
+wlink at a NON-original address, but it keeps intra-prefix ABSOLUTE refs baked (function pointers, and
+especially SWITCH JUMP-TABLE entries = data dwords holding original 0x10000-based code addrs).
+prefix_obj.py fixes up external refs + abs refs to exact fn-starts, but NOT jump-table entries / mid-fn
+abs pointers -> those still point at original addrs -> fault. (Data disps to DGROUP are fine; rel32 intra
+is fine.) All-black frames + empty LOG.TXT suggest an early/load-ish fault. DIAGNOSE NEXT:
+- [ ] Build the DOSBox-debugger image (AGENTS optional item) to get the FAULT EIP + regs; map EIP back
+      to a function via the link map.
+- [ ] Audit `prefix.obj`: scan prefix code for `jmp/call [disp32]` jump tables + `mov reg,imm32`(code)
+      and fixup those table entries / pointers to prefix PUBDEFs. Extend prefix_obj.py accordingly.
+- [ ] **47 stubs remain and the closure MISSED ~16 real fns** — 0x13c98, 0x141f8, 0x14588, 0x14828,
+      0x17a70, 0x17a90, 0x17cb0, 0x1aa74, 0x1b290, 0x1b798, 0x229f8, 0x27a88, 0x287c8, 0x29988, 0x29d88,
+      0x37ff8 (all real Ghidra fns, graphics/entity range, likely ON the render path). `bulkcarve.py`
+      missed them because `in_a_manifest_fn` treats an OVERSIZED manifest fn's declared range as covering
+      them (false negative) — FIX: also flag a call-target as missing if it is a Ghidra function-start in
+      obj1_full even when it lands inside a manifest range (i.e. the manifest range is too big / the
+      target splits it). Re-run closure, transcribe these too. The rest (0x39xxx/0x3axxx `_`-suffix and
+      fn_/03c4b9/344e) are aliases/artifacts/CLIB — verify before carving. So the CRASH may be a
+      still-stubbed render fn returning garbage, NOT only jump-tables — fix BOTH.
+- [ ] ALT: the original-address build (origbuild/GAMEO) keeps ALL refs baked (no relocation) — with the
+      recovered prefix it may be the lower-friction vehicle for the prefix's jump tables. Reconsider.
+
+**NEXT ACTIONS — BULK CARVE the full reachable set, then rebuild for pixels:**
+- [ ] **Full-analyze `obj1_full.bin` from __x386_start (0x3afa4)** to get the COMPLETE function set at
+      manifest coords (it's the correct image, base 0xd748; already seeded, ~489 fns, push to full).
+      Export the function boundary list (addr,size) for every fn.
+- [ ] **Bulk db-transcribe every reachable fn NOT already matched/built**, byte-exact, sourcing bytes
+      from `build/obj1_full.bin` (offset = manifest-0xd748). Extend `dbgen.py`/`unbake.py` to read that
+      image (they currently read linear.bin, off=addr-0x10000, which lacks the prefix). Add manifest
+      entries for the missing fns. The prefix specifically goes via `tools/prefix_obj.py` (whole-region
+      object, already written) because it's mixed code+data.
+      ⚠ `prefix_obj.py --disasm` shows its EXTERNAL relocs currently resolve to nearest-manifest-fn +
+      addend (because the targets aren't carved yet) — those addends are WRONG until the target fns are
+      added to the manifest as exact starts. So carve the sub-graph FIRST, then prefix_obj resolves clean.
+- [ ] Wire `build/prefix.obj` (+ any bulk-carve objects) into `buildgame.py`'s link list (it currently
+      only globs src/**/*.c objects + dataimg + stubs).
+- [ ] Rebuild + re-record `PGAME.BAT`; diff vs `build/rec/porig_08.png` (Bullfrog logo) for first pixels.
+- [ ] TOOLING DONE THIS SESSION: `tools/linearize.py` (prefix/full-image recovery, VERIFIED),
+      `tools/prefix_obj.py` (whole-prefix relink-safe object). Ghidra: 2 programs open —
+      `SYNDICAT_MAIN_OBJECT1.linear.bin` (original decomp basis, base 0) and `obj1_full.bin` (correct
+      image, base 0xd748, has the prefix). Pass `program=` explicitly.
 - [ ] Optional: a DOSBox debugger build for live register state at any fault.
 
 **THE BUILD PIPELINE (all durable in `tools/`):**

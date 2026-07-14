@@ -1,0 +1,31 @@
+/* validate_records_or_abort @ 0x18338 - walk records (stride 0x2c) while *(int*)(rec+0x1c)!=0;
+   classify each via realloc_block_descriptor, tally errors, then report+abort if any. */
+extern int  realloc_block_descriptor(char *rec);
+extern void FUN_0003ad66(int code, int arg);
+extern void FUN_0003ad89(int arg);
+#pragma aux FUN_0003ad89 aborts;
+
+void validate_records_or_abort(char *p)
+{
+    short cnt = 0;
+
+    while (*(int *)(p + 0x1c) != 0) {
+        short r = (short)realloc_block_descriptor(p);
+        if (r < 0) {
+            if (r == -1) FUN_0003ad66(0xb4, (int)p);
+            if (r == -2) FUN_0003ad66(0xd8, (int)p);
+            if (r == -3) FUN_0003ad66(0xfc, (int)p);
+            cnt++;
+        }
+        if (r == 0) {
+            cnt++;
+            FUN_0003ad66(0x11c, (int)p);
+        }
+        p += 0x2c;
+    }
+
+    if (cnt != 0) {
+        FUN_0003ad66(0x12c, cnt);
+        FUN_0003ad89(1);
+    }
+}

@@ -32,7 +32,7 @@
    Recipe: -4s -oneatx -zp8 -s -zq */
 
 extern void FUN_0003aaf8(void *dst, int val, int len);   /* memset helper */
-extern void FUN_0003adb2(int a, void *inr, void *outr);  /* int386 */
+extern void int386(int a, void *inr, void *outr);  /* int386 */
 extern void FUN_000289a8(char *s, int line, int code);
 extern char g_376c[];
 
@@ -51,7 +51,7 @@ unsigned char __far *FUN_00027f08(void)
     FUN_0003aaf8(out, 0, 0x1c);
     in[0] = 0x100;
     in[1] = 5;
-    FUN_0003adb2(0x31, in, out);
+    int386(0x31, in, out);
     if (out[6]) {
         FUN_000289a8(g_376c, 0x1c7, -2);
         return 0;
