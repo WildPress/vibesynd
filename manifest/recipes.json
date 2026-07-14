@@ -1530,5 +1530,9 @@
  "FUN_00049edf": {
   "addr": "00049edf",
   "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "thunk_FUN_0003b1f6": {
+  "addr": "0003b1d1",
+  "flags": "-3s -oneatx -zp8 -s -zq"
  }
 }

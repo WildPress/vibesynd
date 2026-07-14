@@ -318,7 +318,7 @@
     {"addr": "0003aee6", "name": "FUN_0003aee6", "size": 19, "calls": 1, "data_refs": 2, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/FUN_0003aee6.c"},
     {"addr": "0003aef9", "name": "FUN_0003aef9", "size": 63, "calls": 0, "data_refs": 2, "incoming": 2, "status": "matched", "match_pct": 100.0, "src": "src/FUN_0003aef9.c", "lib": "95S:stricmp"},
     {"addr": "0003af38", "name": "FUN_0003af38", "size": 106, "calls": 3, "data_refs": 6, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/FUN_0003af38.c"},
-    {"addr": "0003b1d1", "name": "thunk_FUN_0003b1f6", "size": 2, "calls": 0, "data_refs": 0, "incoming": 1, "status": "unmatched", "match_pct": 0.0, "src": null},
+    {"addr": "0003b1d1", "name": "thunk_FUN_0003b1f6", "size": 2, "calls": 0, "data_refs": 0, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/thunk_FUN_0003b1f6.c"},
     {"addr": "0003b1d3", "name": "FUN_0003b1d3", "size": 35, "calls": 0, "data_refs": 1, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/FUN_0003b1d3.c"},
     {"addr": "0003b1f6", "name": "FUN_0003b1f6", "size": 22, "calls": 1, "data_refs": 1, "incoming": 0, "status": "matched", "match_pct": 100.0, "src": "src/FUN_0003b1f6.c"},
     {"addr": "0003b22d", "name": "FUN_0003b22d", "size": 12, "calls": 0, "data_refs": 2, "incoming": 2, "status": "matched", "match_pct": 100.0, "src": "src/FUN_0003b22d.c", "lib": "95S:outp"},
