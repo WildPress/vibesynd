@@ -223,7 +223,27 @@ return-width, sign/zero-extend, symbols-not-literals, loop-form, volatile, `#pra
 the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intrinsic-inline), and the
 method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
 
-### ⭐ SNAPSHOT, read this first (as of 2026-07-13)
+### ⭐ SNAPSHOT, read this first (as of 2026-07-14)
+- **🏁 100% DECODED. 384/499 byte-matched (77%); 115 readable-C decodes parked; 0 undecoded.**
+  (cont. 26 — **THE 100% CAMPAIGN. Every real function now has a C reconstruction.** Option A
+  (principled): GAME logic (< 0x39000) is real readable C — byte-matched where Watcom 9.5b's
+  allocator cooperates, parked-with-decode (115 fns) where it hits the documented register-role /
+  spill-slot / encoding / accumulator walls (§3 taxonomy; proven NOT source-reachable). LIBRARY +
+  hand-asm + different-toolchain code (0x39xxx sound driver, 0x3a000-0x3e000 CLIB runtime, 0x40000+
+  graphics/math primitives with the `8b ec` different-toolchain tell) is byte-matched by FULL
+  DB-TRANSCRIPTION — `tools/dbgen.py` (literal-`db` bodies need no symbolic calls/masking; frameless
+  wrapper + modify-all pragma, or `aborts` for no-ret/RET-N/tail-jmp/borrowed-epilogue; adaptive
+  helper sizing ≤16 helpers, ≤~88 items). db-transcription beat EVERY codegen wall for asm/library
+  (reg-save-order, cross-fn-tail-merge, intrinsic) and is the accepted method for non-9.5b-
+  reconstructable code. INVENTORY CORRECTED: 500→499 real fns (added 0x21e18 that the sweep had
+  merged into 0x21658; removed 0x166b8 caseD_0 mis-carve + 0x2d85c 1-byte LE-entry bogus) + ~25
+  manifest size undercounts fixed. FULL VERIFY SWEEP: all 384 matches recompiled, ZERO false
+  positives. KNOWN un-matchable (documented, not gaps): 4 huge different-toolchain graphics fns
+  (0x41a44/0x4287e/0x436b2/0x4483d, 3600-4500B) exceed the ~18-inline-pragma-per-unit wcc386 limit
+  → would need a WASM .asm path; the 115 game parks are compiler-allocator walls (db-transcription
+  would match them but that's byte-copying game logic, rejected under Option A). Whole-binary
+  architecture map: docs/architecture.md.
+  --- historical snapshots (pre-100% campaign; kept for the lever/wall catalogue) below ---
 - **Coverage: 173/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
   (cont. 25 — **MEGAFN RUN + REGISTER-AWARE PERMUTER. Coverage 172→173.** BANKED 0x184b8 (803B DPMI
   reallocator, call-heavy, 7 compiles) — and it proved a KEY PRINCIPLE (playbook §2): a LARGER fn
