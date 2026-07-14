@@ -32,3 +32,8 @@ __pycache__/
 tools/_*
 tools/__pycache__/
 tools/*.pyc
+
+# runtime/recording artifacts (contains GOG copyrighted DOS4GW.EXE)
+run/
+/stdout.txt
+/stderr.txt

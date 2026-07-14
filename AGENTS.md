@@ -182,11 +182,23 @@ reverse/
   docker/Dockerfile pipeline image definition
   run.sh           host wrapper (WSL): docker run into the image
   tools/           harness: wcompile.sh (+ match/diff scripts to come)
-  src/             our written matched C               (smoke.c is a throwaway test)
+  src/             our written matched C, ORGANIZED BY SUBSYSTEM (2026-07-14; see src/README.md)
   asm/             extracted target disassembly per function
   manifest/        functions.json (inventory + status) + README (schema)
   build/           compiled objects                    (git-ignored)
 ```
+
+**⚠ src/ is now a SUBSYSTEM TREE, not flat (2026-07-14, `tools/reorg.py`).** Files are
+`src/<subsystem>/FUN_<addr>.c` — game dirs (startup sys input entity map combat mission economy
+render ui multiplayer anim sound) + `lib/` for non-game code (`lib/runtime`=Watcom CLIB,
+`lib/gfx`=0x40000+ primitives, `lib/sound`=driver stubs) + `unclassified/` (~100 not yet placed).
+Filename FUN_<addr> is unchanged (the anchor); only the directory carries meaning. Each dir has an
+`_index.md`; overview in `src/README.md`. Classification: explicit map from architecture.md +
+library address ranges (0x39xxx sound, 0x3a000-0x3ffff runtime, 0x40000+ gfx). **Tools resolve a
+function's source by name across subdirs** — `wcc_95.sh`/`dbgen.py`/`mark.py`/`cpermute.py` do
+`find`/`glob src/**/FUN_<addr>.c`; `buildgame.py`/`mkdata.py` glob `src/**/*.c` recursively. The
+manifest `src` field holds the full subdir path for matched fns. Verified post-reorg: compile +
+full `buildgame.py --clibstart` build both still work.
 
 ## Legal / hygiene
 
@@ -223,26 +235,81 @@ return-width, sign/zero-extend, symbols-not-literals, loop-form, volatile, `#pra
 the wall catalogue (register-role, CSE/hoist, align-vs-unroll, tail-merge, intrinsic-inline), and the
 method (disasm authoritative, sibling-reference, manifest-size gotcha). Updated as agents find new data.
 
-### ⭐ SNAPSHOT, read this first (as of 2026-07-14)
-- **🏁 100% DECODED. 384/499 byte-matched (77%); 115 readable-C decodes parked; 0 undecoded.**
-  (cont. 26 — **THE 100% CAMPAIGN. Every real function now has a C reconstruction.** Option A
-  (principled): GAME logic (< 0x39000) is real readable C — byte-matched where Watcom 9.5b's
-  allocator cooperates, parked-with-decode (115 fns) where it hits the documented register-role /
-  spill-slot / encoding / accumulator walls (§3 taxonomy; proven NOT source-reachable). LIBRARY +
-  hand-asm + different-toolchain code (0x39xxx sound driver, 0x3a000-0x3e000 CLIB runtime, 0x40000+
-  graphics/math primitives with the `8b ec` different-toolchain tell) is byte-matched by FULL
-  DB-TRANSCRIPTION — `tools/dbgen.py` (literal-`db` bodies need no symbolic calls/masking; frameless
-  wrapper + modify-all pragma, or `aborts` for no-ret/RET-N/tail-jmp/borrowed-epilogue; adaptive
-  helper sizing ≤16 helpers, ≤~88 items). db-transcription beat EVERY codegen wall for asm/library
-  (reg-save-order, cross-fn-tail-merge, intrinsic) and is the accepted method for non-9.5b-
-  reconstructable code. INVENTORY CORRECTED: 500→499 real fns (added 0x21e18 that the sweep had
-  merged into 0x21658; removed 0x166b8 caseD_0 mis-carve + 0x2d85c 1-byte LE-entry bogus) + ~25
-  manifest size undercounts fixed. FULL VERIFY SWEEP: all 384 matches recompiled, ZERO false
-  positives. KNOWN un-matchable (documented, not gaps): 4 huge different-toolchain graphics fns
-  (0x41a44/0x4287e/0x436b2/0x4483d, 3600-4500B) exceed the ~18-inline-pragma-per-unit wcc386 limit
-  → would need a WASM .asm path; the 115 game parks are compiler-allocator walls (db-transcription
-  would match them but that's byte-copying game logic, rejected under Option A). Whole-binary
-  architecture map: docs/architecture.md.
+### ⭐ SNAPSHOT — read this first (as of 2026-07-14)
+
+**WHERE WE ARE.** Two things are true: (1) the decomp is a 100%-DECODED corpus — 384/499 functions
+byte-matched, 115 parked-with-decode, 0 undecoded (details in the DECODE-STATUS block below); and
+(2) it now LINKS AND RUNS — our reconstructed game code executes under DOS/4GW: the game's real
+`main` (**FUN_00024be8**) runs its full init→run→teardown with NO crash. BUT it EXITS before
+rendering. **Getting it to render is the current frontier.**
+
+**▶ STEP 1 FOR THE NEXT SESSION — run the CONTROL EXPERIMENT before debugging our code.**
+Run BARE, BOTH the original `MAIN.EXE` and our `GAME.EXE` drop straight to the DOS prompt → the
+early-exit is almost certainly an INVOCATION problem (args / cwd / launcher handoff), NOT our bug.
+  1. Inspect how `SYND.EXE` (the campaign selector) launches `/gog/SYNDICAT/MAIN.EXE` — args, working
+     dir, environment. It passes campaign/mission selection.
+  2. Record the ORIGINAL `MAIN.EXE` launched THAT way with `tools/dosrec.sh`; confirm it renders
+     (proves harness + invocation, and gives a reference frame to diff against).
+  3. Record OUR `GAME.EXE` launched identically. If it renders → "does our code run" is answered. If
+     not → we now have a clean, isolated diff with a working reference.
+
+**REPRODUCE the runnable build** (in-container, with BOTH mounts + `pip install --break-system-packages
+capstone` first):
+```
+docker run --rm -v "$PWD":/work \
+  -v "/mnt/c/Program Files (x86)/GOG Galaxy/Games/Syndicate Plus":/gog:ro -w /work synd-decomp bash -c '
+  python3 tools/unbake.py --all                       # relocation-recover the 144 db objects
+  python3 tools/mkdata.py                              # reconstructed 466-global data image
+  python3 tools/buildgame.py --clibstart --gamemain   # -> build/GAME.EXE (1.26MB DOS/4GW LE)
+  bash   tools/dosrec.sh "d:\\GAME.EXE" 16 build/rec/g # record: build/rec/g.mp4 + g_NN.png frames'
+```
+⚠ Gotchas: use GOG's `DOS4GW.EXE` (231179 B, permissive) not watcom10a's (265420 B → error 1012);
+`SDL_VIDEODRIVER=x11` + `SDL_AUDIODRIVER=dummy`; dosbox conf `machine=svga_s3`, `xms/ems/umb=true`.
+
+**NEXT ACTIONS (priority order):**
+- [ ] **Step 1 control experiment** above — highest value; get pixels + a reference frame.
+- [ ] If ours diverges from the reference: trace why `FUN_00024be8`'s run-branch returns early
+      (Ghidra: the `DAT_00010b42` flag path, the `func_0x0000d928` indirect call, `FUN_00025238`) —
+      missing init, wrong data value, or a data-file open failing?
+- [ ] Alt path — fix `GAMEO` (original-address build, `tools/origbuild.py`): it's missing object1's
+      FIRST 0x28b8 bytes (our linear.bin is trimmed) AND places code at manifest coords not runtime
+      (`runtime = manifest + 0x28b8`); supply the prefix + shift, then its `__x386_start` crash
+      (`Illegal write 0xffffffe2`) should clear. Compare which path is closer to rendering.
+- [ ] Optional: a DOSBox debugger build for live register state at any fault.
+
+**THE BUILD PIPELINE (all durable in `tools/`):**
+- `unbake.py` — capstone-driven relocation recovery: 144 db-library fns made relink-safe (VERIFIED
+  144/144 byte-exact) + fixes the 4 huge uncompilable fns. Emits `build/<name>.obj` directly.
+- `mkdata.py` — authors `build/dataimg.obj` defining all 466 `g_` globals from OBJECT2/4 (contiguous
+  OBJ2|OBJ3|OBJ4 packing matches the code's baked disps). `--reloc-ptrs` = optional DATA-side pointer
+  reloc (found 0 — pointers are runtime-initialized by our own symbolic code, not baked).
+- `buildgame.py` — full link via WLINK 10.0. `--clibstart` links the GENUINE Watcom startup + CLIB
+  (passes the 1012 loader check); `--gamemain` makes `main()` call the game's `FUN_00024be8`;
+  auto-stubs whatever stays unresolved (~57).
+- `origbuild.py` — original-address single-blob build → `build/GAMEO.EXE` (entry 0x3afa4).
+- `dosrec.sh` — record any DOS/4GW exe under Xvfb → mp4 + readable PNG frames + xdotool input.
+- `lefixups.py` — LE fixup-table parser (reference; recovery is disassembler-driven now).
+
+**KEY FACTS proven this arc:**
+- LOADER: DOS/4GW rejects hand-built LEs lacking the genuine Watcom startup (error 1012). `--clibstart`
+  (real CSTRTX3S + CLIB) passes; the original-address GAMEO also passes (it contains the startup).
+- COORDINATE: runtime addr = manifest addr + **0x28b8** (LE EIP 0x2d85c → runtime 0x3d85c = manifest
+  0x3afa4 = `__x386_start`, `jmp` over version strings). Our linear.bin/manifest is trimmed of
+  object1's first 0x28b8 bytes.
+- REFERENCE MODEL: data refs are BAKED DS-relative displacements (work if dataimg is at DGROUP:0);
+  rel32 calls are self-relative; only absolute code/data pointers are LE fixups. The 144 db functions
+  had baked (frozen) references → `unbake.py` symbolized them so they relink anywhere.
+- `src/` is now a SUBSYSTEM TREE (`tools/reorg.py`; see `src/README.md`): files are
+  `src/<subsystem>/FUN_<addr>.c`; the build/match tools resolve a function by name across subdirs.
+
+--- DECODE-STATUS (the matching-decomp corpus; the campaign that got us to 100% decoded) ---
+- **🏁 100% DECODED. 384/499 byte-matched (77%); 115 readable-C decodes parked; 0 undecoded.** Option
+  A (principled): GAME logic (<0x39000) is real readable C — byte-matched where Watcom 9.5b's allocator
+  cooperates, parked-with-decode where it hits register-role / spill-slot / encoding / accumulator
+  walls (playbook §3; proven NOT source-reachable). LIBRARY + hand-asm + different-toolchain code
+  (0x39xxx sound, 0x3a000-0x3e000 CLIB runtime, 0x40000+ graphics/math with the `8b ec` tell) is
+  byte-matched by DB-TRANSCRIPTION (`tools/dbgen.py`, literal-`db` bodies) — and now made relink-safe
+  by `unbake.py`. Inventory: 499 real fns. Whole-binary architecture map: `docs/architecture.md`.
   --- historical snapshots (pre-100% campaign; kept for the lever/wall catalogue) below ---
 - **Coverage: 173/500 matched** (byte-identical, relocation-aware). See `manifest/functions.json`.
   (cont. 25 — **MEGAFN RUN + REGISTER-AWARE PERMUTER. Coverage 172→173.** BANKED 0x184b8 (803B DPMI

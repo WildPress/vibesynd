@@ -556,8 +556,11 @@ def main():
     off = int(f["addr"], 16) - base
     target = open(SEG, "rb").read()[off:off + f["size"]]
 
-    # ---- seed AST + site counts ----
-    src0 = strip_comments(open(f"src/{name}.c").read())
+    # ---- seed AST + site counts ----  (src files live in subsystem subdirs)
+    import glob as _glob
+    _sp = _glob.glob(f"src/**/{name}.c", recursive=True)
+    srcfile = _sp[0] if _sp else f"src/{name}.c"
+    src0 = strip_comments(open(srcfile).read())
     ast0 = PARSER.parse(src0)
     nloop = len(loop_sites(ast0)); ncomm = len(comm_sites(ast0)); nrw = len(rewrite_sites(ast0))
     nhoist = len(hoist_sites(body_of(ast0))); ntype = len(type_sites(body_of(ast0)))
@@ -634,8 +637,8 @@ def main():
             done += 1
             if sc > best[0]: best = (sc, idx)
             if matched:
-                open(f"src/{name}.c.match", "w").write(sources[idx][1])
-                print(f"\n*** MATCH (variant {idx}) -> src/{name}.c.match ***", flush=True)
+                open(f"{srcfile}.match", "w").write(sources[idx][1])
+                print(f"\n*** MATCH (variant {idx}) -> {srcfile}.match ***", flush=True)
                 pool.terminate(); return
         print(f"  [{done}/{len(specs)}] best={best[0]}/{len(target)} bytes match", flush=True)
     pool.close(); pool.join()

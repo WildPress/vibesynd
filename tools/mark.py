@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Mark a function matched in manifest/functions.json (targeted, format-preserving).
   python3 tools/mark.py <name> [src_path]"""
-import sys
+import sys, glob
 name = sys.argv[1]
-src = sys.argv[2] if len(sys.argv) > 2 else f"src/{name}.c"
+if len(sys.argv) > 2:
+    src = sys.argv[2]
+else:                                    # src files live in subsystem subdirs; find by name
+    _h = glob.glob(f"src/**/{name}.c", recursive=True)
+    src = _h[0] if _h else f"src/unclassified/{name}.c"
 MAN = "manifest/functions.json"
 lines = open(MAN).read().split("\n")
 done = False

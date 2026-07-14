@@ -8,8 +8,9 @@ set -u
 name="${1:?usage: wcc_95.sh <name> [flags]}"
 FLAGS="${2:--4s -oneatx -zp8 -s -zq}"
 ROOT=/work/toolchain
-src="src/${name}.c"
-[ -f "$src" ] || { echo "no such source: $src" >&2; exit 1; }
+# src files now live in subsystem subdirs (src/<subsystem>/FUN_<addr>.c); locate by name.
+src=$(find src -name "${name}.c" 2>/dev/null | head -1)
+[ -n "$src" ] && [ -f "$src" ] || { echo "no such source: src/**/${name}.c" >&2; exit 1; }
 
 command -v dosbox >/dev/null 2>&1 || { export DEBIAN_FRONTEND=noninteractive
   (apt-get update -qq && apt-get install -y -qq dosbox) >/dev/null 2>&1; }

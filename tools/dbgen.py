@@ -24,7 +24,7 @@ hand-written game-code reconstruction). Preserves an existing file's top comment
 ⚠ This is for HAND-ASM and LIBRARY code (byte-parity is the goal, C isn't meaningful). Do NOT use
 it to shortcut a game-logic C reconstruction -- game code should read as decompiled C.
 """
-import json, os, sys, subprocess
+import json, os, sys, subprocess, glob
 
 MAN = "manifest/functions.json"
 SEG = "inputs/SYNDICAT_MAIN_OBJECT1.linear.bin"
@@ -86,7 +86,10 @@ def main():
         f = by.get(name)
         if not f:
             print(f"{name}: not in manifest"); fail.append(name); continue
-        path = f"src/{name}.c"
+        # src files live in subsystem subdirs; reuse the existing location, else default to lib/runtime
+        _hits = glob.glob(f"src/**/{name}.c", recursive=True)
+        path = _hits[0] if _hits else f"src/lib/runtime/{name}.c"
+        os.makedirs(os.path.dirname(path), exist_ok=True)
         header = f"/* @ 0x{int(f['addr'],16):x} ({f['size']}B) -- db-transcription (hand-asm/library). */"
         if os.path.exists(path) and not force:
             # preserve the existing header comment (a prior semantic decode)
