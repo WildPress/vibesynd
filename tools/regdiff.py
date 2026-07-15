@@ -81,7 +81,11 @@ def compile_one(name, flags):
     env = dict(os.environ)
     if os.path.isdir("/tmp/wat"):
         env["WAT_ROOT"] = "/tmp/wat"
-    subprocess.run(["bash", "tools/wcc95_batch.sh", W, flags], capture_output=True, env=env)
+    try:
+        subprocess.run(["bash", "tools/wcc95_batch.sh", W, flags], capture_output=True, env=env,
+                       timeout=90)                       # dosemu can wedge; don't hang the triage
+    except subprocess.TimeoutExpired:
+        return None
     p = f"{W}/O00.OBJ"
     if not os.path.exists(p):
         return None
