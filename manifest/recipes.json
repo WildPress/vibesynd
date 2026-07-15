@@ -1421,7 +1421,7 @@
  },
  "FUN_0003c42d": {
   "addr": "0003c42d",
-  "flags": "-3s -oneatx -zp8 -s -zq"
+  "flags": "-3s -d2 -os -zp8 -s -zq"
  },
  "FUN_0003c479": {
   "addr": "0003c479",
