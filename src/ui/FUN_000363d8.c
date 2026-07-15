@@ -3,7 +3,7 @@
    height at +5), word-wrapping inside the box (x0,y0,w,h). a7 = glyph base offset
    added to each char code, a8 = line height, a9 = signed char spacing, a10 unused,
    out = (optional) receives the remaining-string pointer on vertical overflow.
-   Words are measured with FUN_000365e8; each glyph is drawn at
+   Words are measured with measure_text_width; each glyph is drawn at
    (x, y+12-glyphheight) via FUN_0004a6c8. Separators: space, 0x0a, 0x5c, 0x7c;
    double-0x0a = blank line (y += 2*a8, x=x0), 0x5c = newline, 0x7c = terminator,
    TAB is rewritten to a space in the buffer. Returns 0 on overflow (out set), 1
@@ -46,7 +46,7 @@
    Good permuter candidate: one add-direction flip in guard2 likely cascades
    through (c) and (d). */
 
-extern int FUN_000365e8(char *s, unsigned char *font, int base, int spacing);
+extern int measure_text_width(char *s, unsigned char *font, int base, int spacing);
 extern void FUN_0004a6c8(unsigned short x, unsigned short y, unsigned char *glyph);
 
 char FUN_000363d8(char *s, int x0, int y0, int w, int h,
@@ -64,7 +64,7 @@ char FUN_000363d8(char *s, int x0, int y0, int w, int h,
     x = x0;
     y = y0;
     while (*s != 0 && *s != 0x7c) {
-        ww = FUN_000365e8(s, fp, a7, a9);
+        ww = measure_text_width(s, fp, a7, a9);
         if ((unsigned short)ww + x > (unsigned short)x0 + (unsigned short)w) {
             x = (unsigned short)x0;
             y += a8;

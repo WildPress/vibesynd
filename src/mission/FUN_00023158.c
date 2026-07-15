@@ -20,7 +20,7 @@
  * only): op01/21, op02/22, op03..op0f, op18/38..op2f, op14/34, op19/39,
  * op0b/2b, op11/31, op16/36, op12/32, op13/33, op17/37. WEAKEST (structural,
  * not byte-verified): op10 and op30 -- the RNG projectile-scatter bodies
- * (FUN_00035f28 seed, FUN_0000e568 rand, FUN_00037ff8 tracer, two FUN_00022b38
+ * (record_max seed, FUN_0000e568 rand, FUN_00037ff8 tracer, two find_free_slot_15e70
  * spawns per shot using g_dir_dy sin / g_dir_dx cos scatter). Their interleaved
  * e568-call arg overlap and heavy [esp+N] slot reuse are not slot-exact; being
  * mis-sized they drift the tail (op11..op17). NEXT PASS: this is a genuine
@@ -38,7 +38,7 @@
  * tpl[0xb5] = pool-A base slot (byte), tpl[0xb6] = signed agent selector.
  * Common node address = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c.
  * Squad-loop bodies walk 4 pool-A records: p in [g_pool_a + tpl[0xb5]*0x5c,
- * g_pool_a + (tpl[0xb5]+4)*0x5c). Dominant callee FUN_0002f608 (aim/step).
+ * g_pool_a + (tpl[0xb5]+4)*0x5c). Dominant callee entity_aim_helper (aim/step).
  */
 extern unsigned char g_command_recs[];
 extern unsigned char g_player_recs[];
@@ -62,14 +62,14 @@ extern void FUN_00029d88(void);
 extern void FUN_00027a88(unsigned short a);
 extern int  FUN_00023038(unsigned char *p);
 extern unsigned short FUN_00037d08(unsigned char *node, unsigned short dist, unsigned char type);
-extern void FUN_0002f608(unsigned char *p, int x, int y, int z);
+extern void entity_aim_helper(unsigned char *p, int x, int y, int z);
 extern int  FUN_000377b8(unsigned char *p);
 extern void FUN_0001a458(unsigned char *p);
 extern unsigned short FUN_00037ad8(unsigned char *node, int flag);
 extern void FUN_00037ff8(int a, int b, int c, int d, int e, int f, int g, int h);
-extern void FUN_00035f28(unsigned char a, unsigned char b);
+extern void record_max(unsigned char a, unsigned char b);
 extern unsigned short FUN_0000e568(unsigned short n);
-extern unsigned char *FUN_00022b38(int a, int b, int c);
+extern unsigned char *find_free_slot_15e70(int a, int b, int c);
 
 void FUN_00023158(unsigned int idx)
 {
@@ -263,7 +263,7 @@ void FUN_00023158(unsigned int idx)
             unsigned char *carried = g_entity_pool + link;
             if ((unsigned short)FUN_00023038(node) &&
                 *(short *)(carried + 0x14) >= 0)
-                FUN_0002f608(node, *(short *)rec, *(short *)(rec + 2),
+                entity_aim_helper(node, *(short *)rec, *(short *)(rec + 2),
                              *(short *)(rec + 4));
         }
         if ((*(unsigned short *)(node + 0x1c) & 0x1002) != 2)
@@ -274,7 +274,7 @@ void FUN_00023158(unsigned int idx)
             do {
                 if (*(unsigned short *)(p + 0x20) ==
                     (unsigned short)(node - g_entity_pool))
-                    FUN_0002f608(p, *(short *)rec, *(short *)(rec + 2),
+                    entity_aim_helper(p, *(short *)rec, *(short *)(rec + 2),
                                  *(short *)(rec + 4));
                 p += 0x5c;
             } while (p < g_10ae0);
@@ -294,7 +294,7 @@ void FUN_00023158(unsigned int idx)
                 unsigned char *carried = g_entity_pool + link;
                 if ((node[0x1d] & 4) && *(short *)(carried + 0x14) >= 0 &&
                     (unsigned short)FUN_00023038(node))
-                    FUN_0002f608(node, *(short *)rec, *(short *)(rec + 2),
+                    entity_aim_helper(node, *(short *)rec, *(short *)(rec + 2),
                                  *(short *)(rec + 4));
             }
             if ((*(unsigned short *)(node + 0x1c) & 0x1002) == 2) {
@@ -303,7 +303,7 @@ void FUN_00023158(unsigned int idx)
                     p = g_pool_a;
                     do {
                         if (*(unsigned short *)(p + 0x20) == (unsigned short)cur_id)
-                            FUN_0002f608(p, *(short *)rec, *(short *)(rec + 2),
+                            entity_aim_helper(p, *(short *)rec, *(short *)(rec + 2),
                                          *(short *)(rec + 4));
                         p += 0x5c;
                     } while (p < g_10ae0);
@@ -535,7 +535,7 @@ void FUN_00023158(unsigned int idx)
         n = k * 2;
         for (i = 0; i < n; i++) {
             int x1, y1, d;
-            FUN_00035f28(0x16, 0x7f);
+            record_max(0x16, 0x7f);
             a = FUN_0000e568(0xff);
             FUN_00037ff8(*(short *)(node + 4), *(short *)(node + 6),
                          *(short *)(node + 8) + 0x80, (unsigned char)a, 0,
@@ -544,7 +544,7 @@ void FUN_00023158(unsigned int idx)
             y1 = *(short *)(node + 6) + ((int)g_dir_dy[d] * FUN_0000e568(a) >> 8);
             d = FUN_0000e568(0xff);
             x1 = *(short *)(node + 4) + ((int)g_dir_dx[d] * FUN_0000e568(a) >> 8);
-            n2 = FUN_00022b38(x1, y1, *(short *)(node + 8));
+            n2 = find_free_slot_15e70(x1, y1, *(short *)(node + 8));
             if (n2 != 0) {
                 n2[0x19] = 0xa;
                 *(unsigned short *)(n2 + 0x1c) = (unsigned short)nid;
@@ -553,7 +553,7 @@ void FUN_00023158(unsigned int idx)
             y1 = *(short *)(node + 6) + ((int)g_dir_dy[d] * FUN_0000e568(a) >> 8);
             d = FUN_0000e568(0xff);
             x1 = *(short *)(node + 4) + ((int)g_dir_dx[d] * FUN_0000e568(a) >> 8);
-            n2 = FUN_00022b38(x1, y1, *(short *)(node + 8));
+            n2 = find_free_slot_15e70(x1, y1, *(short *)(node + 8));
             if (n2 != 0) {
                 n2[0x19] = 7;
                 *(unsigned short *)(n2 + 0x1c) = (unsigned short)nid;
@@ -580,7 +580,7 @@ void FUN_00023158(unsigned int idx)
             n = k * 2;
             for (i = 0; i < n; i++) {
                 int x1, y1, d;
-                FUN_00035f28(0x16, 0x7f);
+                record_max(0x16, 0x7f);
                 a = FUN_0000e568(0xff);
                 FUN_00037ff8(*(short *)(p + 4), *(short *)(p + 6),
                              *(short *)(p + 8) + 0x80, (unsigned char)a, 0,
@@ -589,7 +589,7 @@ void FUN_00023158(unsigned int idx)
                 y1 = *(short *)(p + 6) + ((int)g_dir_dy[d] * FUN_0000e568(a) >> 8);
                 d = FUN_0000e568(0xff);
                 x1 = *(short *)(p + 4) + ((int)g_dir_dx[d] * FUN_0000e568(a) >> 8);
-                n2 = FUN_00022b38(x1, y1, *(short *)(p + 8));
+                n2 = find_free_slot_15e70(x1, y1, *(short *)(p + 8));
                 if (n2 != 0) {
                     n2[0x19] = 0xa;
                     *(unsigned short *)(n2 + 0x1c) = (unsigned short)nid;
@@ -598,7 +598,7 @@ void FUN_00023158(unsigned int idx)
                 y1 = *(short *)(p + 6) + ((int)g_dir_dy[d] * FUN_0000e568(a) >> 8);
                 d = FUN_0000e568(0xff);
                 x1 = *(short *)(p + 4) + ((int)g_dir_dx[d] * FUN_0000e568(a) >> 8);
-                n2 = FUN_00022b38(x1, y1, *(short *)(p + 8));
+                n2 = find_free_slot_15e70(x1, y1, *(short *)(p + 8));
                 if (n2 != 0) {
                     n2[0x19] = 7;
                     *(unsigned short *)(n2 + 0x1c) = (unsigned short)nid;

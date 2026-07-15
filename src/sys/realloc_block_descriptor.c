@@ -13,7 +13,7 @@
  *   in.edx(msg[3] low word) selector; out.eax(scratch[0]) err/seg; out.edx(scratch[3]) selector.
  *
  * Returns 1 ok, 0 open failed, -1/-2/-3 DPMI errors (8 / 7 / 0x8011) or alloc failure.
- * Sibling: FUN_000183e8 (same DPMI free idiom).
+ * Sibling: walk_records_2c (same DPMI free idiom).
  */
 extern void int386(int a, void *in, void *out);
 extern void FUN_00018488(int a, int b);

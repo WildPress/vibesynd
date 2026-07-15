@@ -90,7 +90,7 @@ extern unsigned char *los_trace_far(unsigned char *p1, unsigned char *p2, int di
 extern int FUN_000377b8(unsigned char *p);
 extern void FUN_0001b858(unsigned short a, short x, short y);
 extern int FUN_0003fb40();
-extern void FUN_000299c8(int a, int b);
+extern void center_string_16(int a, int b);
 
 void radar_panel_sm(void)
 {
@@ -205,7 +205,7 @@ void radar_panel_sm(void)
             case 0xc:
                 m = n * 9;
                 FUN_0001b858(*(unsigned short *)(g_frame_sprite + 0x29a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
-                FUN_000299c8(0x10584, tbl_4b10[e[0x19] - 1][g_language]);
+                center_string_16(0x10584, tbl_4b10[e[0x19] - 1][g_language]);
                 break;
             case 0xd:
             case 0xe:
@@ -231,7 +231,7 @@ void radar_panel_sm(void)
                 FUN_0003fb40((unsigned short)g_auxbar_panel[n * 9] + 4,
                              (unsigned short)g_auxbar_panel[n * 9 + 1] + 0x18, 0x17, 4, 0xc);
         }
-        FUN_000299c8(0x10584, tbl_4b10[e[0x19] - 1][g_language]);
+        center_string_16(0x10584, tbl_4b10[e[0x19] - 1][g_language]);
         g_5324 = g_5308 + state * 6;
         return;
     case 5:

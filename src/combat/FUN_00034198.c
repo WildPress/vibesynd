@@ -47,7 +47,7 @@ extern short g_shot_x;
 extern short g_dir_dx[];
 extern short g_dir_dy[];
 extern unsigned short FUN_00034608(short dir);
-extern unsigned char *FUN_00034088(void);
+extern unsigned char *shot_collision_query(void);
 extern void FUN_00034118(unsigned char *dst, unsigned char *src, unsigned short thr);
 extern void FUN_00034168(unsigned char *p, unsigned short n);
 
@@ -66,7 +66,7 @@ void FUN_00034198(unsigned char *p2, unsigned char *p, unsigned short count)
         g_shot_x += g_dir_dx[dir] * 0x100 >> 8;
         g_shot_y += g_dir_dy[dir] * 0x100 >> 8;
         if (i < 3) {
-            node = FUN_00034088();
+            node = shot_collision_query();
             if (node != 0) {
                 if (node[0x18] == 2) {
                     if (i < 1)

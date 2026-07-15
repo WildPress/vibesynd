@@ -10,11 +10,11 @@ struct S226 {
     unsigned char b19;    /* 0x19 */
     unsigned char b1a;    /* 0x1a */
 };
-extern struct S226 *FUN_00022ba8(int a, int b, int c);
+extern struct S226 *spawn_pool_11670(int a, int b, int c);
 extern void FUN_00037658(struct S226 *r, struct P226 *p);
 struct S226 *FUN_000226a8(struct P226 *p, unsigned char param2, int param3)
 {
-    struct S226 *r = FUN_00022ba8(p->w4, p->w6, p->w8);
+    struct S226 *r = spawn_pool_11670(p->w4, p->w6, p->w8);
     if (r) {
         r->w12 = (short)0xffff;
         r->b1a = 0;

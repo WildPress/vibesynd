@@ -5,7 +5,7 @@
  * 5:0x29b52 0xa:0x29bbb 0xb:0x29bcc 0xe:0x29b66 0xf:0x29b77 0x10:0x29b88;
  * 0,4,6,7,8,9,0xc,0xd -> default (continue at 0x29c0d).
  *
- * Centers string arg1 into the 16-char field 0x10554 (FUN_000299c8 =
+ * Centers string arg1 into the 16-char field 0x10554 (center_string_16 =
  * center-into-16-char-field), stores arg2 word to g_537c. If byte g_radar_detail
  * set: done. If flags g_in_mission & 6: bit1 -> FUN_00029a28, bit2 (re-read
  * after the call) -> FUN_00029a68. Else scan the 8 14-byte slots at
@@ -48,7 +48,7 @@ extern int tbl_4438[];
 extern int tbl_4444[];
 extern int tbl_4450[];
 extern int tbl_445c[];
-extern void FUN_000299c8(int a, int b);
+extern void center_string_16(int a, int b);
 extern void FUN_00029a28(void);
 extern void FUN_00029a68(void);
 
@@ -56,7 +56,7 @@ void mission_statusline(int a, int b)
 {
     short bx;
 
-    FUN_000299c8(0x10554, a);
+    center_string_16(0x10554, a);
     g_537c = (unsigned short)b;
     if (g_radar_detail == 0) {
         if ((g_in_mission & 6) == 0) {
@@ -65,29 +65,29 @@ void mission_statusline(int a, int b)
                     continue;
                 switch (*(unsigned short *)&g_objectives[bx * 14 + 4]) {
                 case 5:
-                    FUN_000299c8(0x10564, tbl_4408[g_language]);
+                    center_string_16(0x10564, tbl_4408[g_language]);
                     goto hit;
                 case 0xe:
-                    FUN_000299c8(0x10564, tbl_4414[g_language]);
+                    center_string_16(0x10564, tbl_4414[g_language]);
                     goto hit;
                 case 0xf:
-                    FUN_000299c8(0x10564, tbl_4420[g_language]);
+                    center_string_16(0x10564, tbl_4420[g_language]);
                     goto hit;
                 case 0x10:
-                    FUN_000299c8(0x10564, tbl_442c[g_language]);
+                    center_string_16(0x10564, tbl_442c[g_language]);
                     goto hit;
                 case 1:
-                    FUN_000299c8(0x10564, tbl_4438[g_language]);
+                    center_string_16(0x10564, tbl_4438[g_language]);
                     goto hit;
                 case 3:
-                    FUN_000299c8(0x10564, tbl_4444[g_language]);
+                    center_string_16(0x10564, tbl_4444[g_language]);
                     goto hit;
                 case 2:
                 case 0xa:
-                    FUN_000299c8(0x10564, tbl_4450[g_language]);
+                    center_string_16(0x10564, tbl_4450[g_language]);
                     goto hit;
                 case 0xb:
-                    FUN_000299c8(0x10564, tbl_445c[g_language]);
+                    center_string_16(0x10564, tbl_445c[g_language]);
                     break;
                 case 0:
                 case 4:
@@ -107,7 +107,7 @@ hit:
                 }
                 break;
             }
-            FUN_000299c8(0x10574, 0x3828);
+            center_string_16(0x10574, 0x3828);
             return;
         }
         if (g_in_mission & 2)

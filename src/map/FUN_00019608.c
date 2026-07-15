@@ -79,7 +79,7 @@ extern void FUN_0003f636(int a, int b, int c, int d);   /* radar y recentre    *
 extern void FUN_00018d18(int x, int y, int chr, int colour);      /* draw blip  */
 extern void draw_circle(int x, int y, int r, int colour);        /* draw ring  */
 extern int  FUN_00014c58(int a, int b);                 /* marker anim length  */
-extern void FUN_00035f28(int a, int b);                 /* off-screen indicator*/
+extern void record_max(int a, int b);                 /* off-screen indicator*/
 
 void FUN_00019608(unsigned char *agent, short zoom)
 {
@@ -353,7 +353,7 @@ void FUN_00019608(unsigned char *agent, short zoom)
                 g_marker_anim = 3;
                 if (g_offscreen_obj != 0 &&
                     !(mx >= 0 && mx < 0x80 && my >= 0 && my < 0x80))
-                    FUN_00035f28(0x11, 0x7f);     /* off-screen: edge marker */
+                    record_max(0x11, 0x7f);     /* off-screen: edge marker */
             }
 
             if (mx >= 0 && mx < 0x80 && my >= 0 && my < 0x80) {

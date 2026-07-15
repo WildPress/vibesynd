@@ -55,25 +55,25 @@
   "desc": "frameless @ 0x13a98: if arg2->[0xb] bit 0 is set, forward to FUN_13ac8 with reordered args and return 0; otherwise return 1.",
   "runs_in_intro": false
  },
- "FUN_00013ac8": {
+ "reset_flash_palette": {
   "addr": "00013ac8",
-  "label": "",
-  "subsystem": "anim",
-  "desc": "frameless @ 0x13ac8: reset obj1 state and flash obj2's palette entry twice. Zero obj1[0xa](word)/[2]/[5], copy obj1[4]->obj1[3]; set obj2[0xd]=0x14 and obj2's three words [0]/[1]/[2] to 0x7f, call FUN",
+  "label": "reset_flash_palette",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_00013b38": {
+ "palette_flash3": {
   "addr": "00013b38",
-  "label": "",
-  "subsystem": "anim",
-  "desc": "frameless @ 0x13b38: three-stage palette flash (sibling of 0x13ac8). Clear param_5[5]; then three times set obj1[0xd] to a stage id, fill obj1's three words, and call FUN_00023158(param_4): stage 7 us",
+  "label": "palette_flash3",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_00013bc8": {
+ "pool_list_last": {
   "addr": "00013bc8",
-  "label": "",
-  "subsystem": "entity",
-  "desc": "frameless @ 0x13bc8: walk a pool linked list to its terminal node. Start from the node id at (*(int*)(param_5+0xc))[0x3a]; node = g_entity_pool + id. Unless the first node already has node[0x19]==1, f",
+  "label": "pool_list_last",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00014078": {
@@ -83,11 +83,11 @@
   "desc": "0x14078 -- net-sync message builder. First time (s[5]==0): send type 4 with * the node id (ptr at s+0x10 minus pool base 0x810e), mark s[5]=1. Otherwise * probe 0x2e808(s->obj, s->node, (short)(g_a6c2",
   "runs_in_intro": false
  },
- "FUN_000146f8": {
+ "eligibility_test": {
   "addr": "000146f8",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x146f8: eligibility test, returns 1 unless a guard fails. Return 0 if (obj2[5] != 0xff and obj1[7] != obj2[5]); or (obj2[7] == 3 and obj2[9] == obj1[7]); or (obj2[6] & 8 and FUN_00037778(",
+  "label": "eligibility_test",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00014998": {
@@ -132,11 +132,11 @@
   "desc": "0x15e08 -- 5-arg constant forwarder into FUN_00015ee8. * xor eax,eax; mov al,[esp+4] = unsigned char param widened. * Push order: a, 0x96, 0x264, 0x16, 0x118 -> args (0x118,0x16,0x264,0x96,a). * Recip",
   "runs_in_intro": false
  },
- "FUN_00015e38": {
+ "blit_cell_wh": {
   "addr": "00015e38",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x15e38: masked blit of a param_5 x param_6 cell into the g_screen_buf buffer. mask = param_1*param_6*param_5 + param_7; fill = g_blip_colours[param_2]; dest origin = g_screen_buf + param_",
+  "label": "blit_cell_wh",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "economy_daily_tick": {
@@ -230,11 +230,11 @@
   "desc": "",
   "runs_in_intro": true
  },
- "FUN_000183e8": {
+ "walk_records_2c": {
   "addr": "000183e8",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless(sub-esp) @ 0x183e8: walk records (stride 0x2c) while field +0x1c != 0. Each record's +0x1c is a pointer (obj); if obj[0] (val) != 0: test byte +0x28 & 1 -> build a small stack msg {[0]=0x101",
+  "label": "walk_records_2c",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "global_add_and_call": {
@@ -398,18 +398,18 @@
   "desc": "empty @ 0x0001c168: no-op (single ret).",
   "runs_in_intro": false
  },
- "FUN_0001c178": {
+ "spawn_pool_15e70": {
   "addr": "0001c178",
-  "label": "",
-  "subsystem": "entity",
-  "desc": "frameless @ 0x1c178: spawn into the g_15e70 pool (128 records of 0x1e bytes). For each free slot (in-use flag +0x18 == 0), stamp the coords (+4/+6/+8 = X/Y/Z from param_1..3), mark it in-use (type 3),",
+  "label": "spawn_pool_15e70",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_0001ff98": {
+ "draw_gauge_segment": {
   "addr": "0001ff98",
-  "label": "",
-  "subsystem": "render",
-  "desc": "frameless @ 0x1ff98: draw a gauge/bar segment. Params: x,y (u16 screen coords), a (total/divisor), b (current value). Clamp b to [0,a]; percentage v = b*0x18/a (0..0x18), with a==0 giving 0x18. Then c",
+  "label": "draw_gauge_segment",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00020018": {
@@ -426,11 +426,11 @@
   "desc": "@ 0x20158: MATCHED (RELOC-AWARE) 1028B, -4s -oneatx -zp8 -s -zq. Levers: label strings spelled as *(char**)((char*)g_47xx + g_language*4) (the bare g_47xx[g_language] index freed EAX and let g_text_pa",
   "runs_in_intro": false
  },
- "FUN_00020568": {
+ "find_rec_by_field8": {
   "addr": "00020568",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x20568: search a 10-byte-record array until rec[8] == param_3, tracking the last matching rec[8] in `result` (initialised to param_3). Mode param_2==0: when rec[9] indexes a set g_e284 en",
+  "label": "find_rec_by_field8",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "menu_list_draw": {
@@ -447,18 +447,18 @@
   "desc": "",
   "runs_in_intro": false
  },
- "FUN_00020b78": {
+ "count_leading_nonzero": {
   "addr": "00020b78",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x20b78: for the current row g_cur_player, count the leading nonzero word entries (up to 8) in the strided table at 0xe5c3 for column = g_roster_index[param_1]. Row stride 1047, column str",
+  "label": "count_leading_nonzero",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_00020be8": {
+ "count_leading_nonzero_b": {
   "addr": "00020be8",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x20be8: for the current row g_cur_player, count the leading nonzero word entries (up to 8) in the strided table at 0xe5c3 for column = param_1. Row stride 1047, column stride 40, entry st",
+  "label": "count_leading_nonzero_b",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "keyboard_state_machine": {
@@ -538,18 +538,18 @@
   "desc": "",
   "runs_in_intro": false
  },
- "FUN_00022b38": {
+ "find_free_slot_15e70": {
   "addr": "00022b38",
-  "label": "",
-  "subsystem": "entity",
-  "desc": "frameless slot scan+init @ 0x22b38: find free slot in g_15e70[256] (stride 0x1e), fill it, call g(s, w4,w6,w8), return s; else 0. Uses the extern array (keeps the bounds guard the original has); the a",
+  "label": "find_free_slot_15e70",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_00022ba8": {
+ "spawn_pool_11670": {
   "addr": "00022ba8",
-  "label": "",
-  "subsystem": "entity",
-  "desc": "frameless @ 0x22ba8: spawn into the g_11670 pool (records of 0x24 bytes). Scan for a free slot -- in-use flag +0x18 == 0 OR >= 6 -- clear the 0x24-byte record via FUN_0004d199, stamp coords (+4/+6/+8 ",
+  "label": "spawn_pool_11670",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00022ed8": {
@@ -727,11 +727,11 @@
   "desc": "",
   "runs_in_intro": false
  },
- "FUN_00026da8": {
+ "grid_unlink_object": {
   "addr": "00026da8",
-  "label": "",
-  "subsystem": "entity",
-  "desc": "frameless @ 0x26da8: remove a pool object from its spatial-grid doubly-linked list (the inverse of 0x26e18's head-insert). If the \"in grid\" flag (p[0xa]&4) is set: link = prev node (g_entity_pool + p[",
+  "label": "grid_unlink_object",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00026e18": {
@@ -769,11 +769,11 @@
   "desc": "",
   "runs_in_intro": false
  },
- "FUN_00027e78": {
+ "far_alloc_probe": {
   "addr": "00027e78",
-  "label": "",
-  "subsystem": "sys",
-  "desc": "@ 0x27e78: far-alloc probe. Alloc a 0x5c far block (DOS int-21h allocator 0x3b239, returns seg:off in DX:EAX); if null return -1. Then through the global far pointer g_5056 (offset @0x5056, selector @",
+  "label": "far_alloc_probe",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00027ed8": {
@@ -902,11 +902,11 @@
   "desc": "MATCHED 218/218 (reloc-aware) -- the cont. 22 retry closed the old * cache-vs-fold wall in ONE compile with the 0x2fca8/0x33fb8 lever set: * named int accumulator (`idx = row<<7; idx += col;` -- homes",
   "runs_in_intro": false
  },
- "FUN_000299c8": {
+ "center_string_16": {
   "addr": "000299c8",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x299c8: center a string into a 16-char field padded with spaces. len = strlen(src); pad = (0x10 - len)/2. For each of 16 output positions i: emit a space if i < pad or i >= pad+len, else ",
+  "label": "center_string_16",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00029a28": {
@@ -979,11 +979,11 @@
   "desc": "inline jump-table switch dispatcher @ 0x2c218 (592B) -- command-list interpreter. * Sibling of FUN_0002bca8 (same shape; register roles swapped: sel->EDI, * result->ESI). Extra `if(result==0)` clause ",
   "runs_in_intro": false
  },
- "FUN_0002c468": {
+ "copy_5fields_8recs": {
   "addr": "0002c468",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x2c468: copy 5 fields (word,byte,word,word,word) for 8 records (stride 0x12) from the src table at 0x51b4 to the dst table at 0x5256, clearing one byte at 0xdf76 per record, then zero the",
+  "label": "copy_5fields_8recs",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_0002c4e8": {
@@ -1028,11 +1028,11 @@
   "desc": "0x2d228 -- animation tick. Increments the frame counter b[0x53] (wraps &7 * while b[0x49] < 10); if the stage word w14 is 0..0xf and flag 2 set on * +0x1c, advances w14 when the counter hits the caden",
   "runs_in_intro": false
  },
- "FUN_0002d358": {
+ "combat_aim_update": {
   "addr": "0002d358",
-  "label": "",
-  "subsystem": "combat",
-  "desc": "frameless @ 0x2d358: combat/aim update, cousin of 0x2d6c8/0x2d738. Set obj[0x54] = anim_speed_select(obj, obj[0x55]) (speed from a table), then aim toward the target: r = FUN_00026bc8(obj[0x54], obj[0",
+  "label": "combat_aim_update",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_0002d3b8": {
@@ -1063,32 +1063,32 @@
   "desc": "frameless @ 0x2d6c8: twin of 0x2d738. Set obj[0x54] = anim_speed_select(obj, obj[0x55]) (speed from a table), then step the projectile along direction param_4 using the signed direction tables g_dir_d",
   "runs_in_intro": false
  },
- "FUN_0002d738": {
+ "projectile_step": {
   "addr": "0002d738",
-  "label": "",
-  "subsystem": "combat",
-  "desc": "frameless @ 0x2d738: step a projectile one unit along direction param_2 and test it. Set obj[0x54] = 0x80 (speed), then compute the new position from the 256-entry signed direction tables g_dir_dx (x)",
+  "label": "projectile_step",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_0002d7a8": {
+ "interp_scale_a": {
   "addr": "0002d7a8",
-  "label": "",
-  "subsystem": "combat",
-  "desc": "frameless @ 0x2d7a8: interpolate/scale. delta = obj[0x51] - obj[0x50] (as short). If 0 return 0. Else scale (param_2 & 0xffff) by delta, signed-divide by obj[0x50] when delta<0 or by 0xff-obj[0x50] wh",
+  "label": "interp_scale_a",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_0002d808": {
+ "interp_scale_b": {
   "addr": "0002d808",
-  "label": "",
-  "subsystem": "combat",
-  "desc": "frameless @ 0x2d808: interpolate/scale. delta = obj[0x4d] - obj[0x4c] (as short). If 0 return 0. Otherwise scale (param_2 & 0xffff) by delta and divide (signed) by obj[0x4c] when delta < 0, or by 0xff",
+  "label": "interp_scale_b",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_0002d868": {
+ "interp_scale_c": {
   "addr": "0002d868",
-  "label": "",
-  "subsystem": "combat",
-  "desc": "frameless @ 0x2d868: interpolate/scale. delta = obj[0x49] - obj[0x48] (as short). If 0 return 0. Else scale (param_2 & 0xffff) by delta, signed-divide by obj[0x48] when delta<0 or by 0xff-obj[0x48] wh",
+  "label": "interp_scale_c",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "anim_speed_select": {
@@ -1140,18 +1140,18 @@
   "desc": "NEAR-MISS @ 0x2e408 -- 231/240 (was 222/240); PARKED on the last x-product * register-role tie-break. cont.21 levers that CLOSED ground: (1) goto-fail * merge -- `goto fail;` from the quadrant guard i",
   "runs_in_intro": false
  },
- "FUN_0002e4f8": {
+ "find_projectile_step": {
   "addr": "0002e4f8",
-  "label": "",
-  "subsystem": "combat",
-  "desc": "frameless @ 0x2e4f8: search up to 4 directions for a valid projectile step. local_10 = obj[0x1a] + param_2; each iteration test FUN_0002d5b8 at the position obj[4]/obj[6] offset by the signed directio",
+  "label": "find_projectile_step",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_0002e588": {
+ "pool_list_dispatch": {
   "addr": "0002e588",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x2e588: dispatch based on a pool linked list hung off param_2[0x24]. If param_2[0x19]==0x17 return 0. If the list is empty, tail to los_trace. Else walk node[0x24] \"next\" links (node = g_",
+  "label": "pool_list_dispatch",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "los_trace": {
@@ -1182,11 +1182,11 @@
   "desc": "MATCHED @ 0x2ee18 (163/163, reloc-aware) -- recipe -4s -oneatx -zp8 -s -zq. * Find a valid target for agent a: scans pool-A records (0x5c bytes at g_pool_a, * end g_10ae0), skipping the 8-record squad",
   "runs_in_intro": false
  },
- "FUN_0002f608": {
+ "entity_aim_helper": {
   "addr": "0002f608",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "FUN_0002f608 @ 0x2f608 - entity aim/orient helper. * If entity link id (+0x44) is nonzero and target node health (+0x14) >= 0, * compute dx = x - self.x(+4), dy = y - self.y(+6); store facing byte at ",
+  "label": "entity_aim_helper",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "detach_entity_type": {
@@ -1294,11 +1294,11 @@
   "desc": "frameless @ 0x34048: snap a direction value `cur` toward target `tgt`. m = cur with byte-1 cleared (cur & 0xffff00ff); d = (short)(m - tgt). Clamp: d < -0x20 -> cur+0x20; d > 0x20 -> cur-0x20; else cu",
   "runs_in_intro": false
  },
- "FUN_00034088": {
+ "shot_collision_query": {
   "addr": "00034088",
-  "label": "",
-  "subsystem": "combat",
-  "desc": "frameless @ 0x34088: collision query along a shot path. The shot's accumulated position lives in the globals g_shot_x (x), g_shot_y (y), g_shot_level (level). Build the 128x128 spatial-grid cell index",
+  "label": "shot_collision_query",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00034118": {
@@ -1364,11 +1364,11 @@
   "desc": "frameless @ 0x35588: bulk dword copy, mirror of 0x35538. Copy 15999 dwords from the buffer pointed to by g_screen_buf (src) into the buffer pointed to by g_back_buf (dst), loop unrolled x3. Same decla",
   "runs_in_intro": false
  },
- "FUN_000355d8": {
+ "blit_backbuffer": {
   "addr": "000355d8",
-  "label": "",
-  "subsystem": "render",
-  "desc": "frameless @ 0x355d8: blit the back buffer (g_screen_buf) to VGA memory at 0xa0000, 16000 dwords, loop unrolled x5 (16000 = 3200 * 5). Cousin of 0x35538/0x35588. Declaration order src, dst, n reproduce",
+  "label": "blit_backbuffer",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00035638": {
@@ -1406,18 +1406,18 @@
   "desc": "",
   "runs_in_intro": true
  },
- "FUN_00035ed8": {
+ "zero_even_bytes": {
   "addr": "00035ed8",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x35ed8: zero the 8 even-offset bytes (0,2,4,6,8,0xa,0xc,0xe) of every 0x10-byte record in the global array based at g_11bdc, for record index i = 0x10, 0x20, ... 0x200. The stored zero is",
+  "label": "zero_even_bytes",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_00035f28": {
+ "record_max": {
   "addr": "00035f28",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x35f28: conditionally record a max value. If g_objective_slots[param_1*0x20 + 0x1e] is set, index i = param_1*2 into the paired tables g_11bec (flag) / g_11bed (value): if the flag is cle",
+  "label": "record_max",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00035f78": {
@@ -1434,32 +1434,32 @@
   "desc": "if (g_sound_enabled) FUN_000395b6(0); * * The body compiles to a bare guarded call, but the target wraps it in a dead * push ebx / pop ebx: this function must preserve EBX for its own caller * (callee",
   "runs_in_intro": false
  },
- "FUN_000361a8": {
+ "center_draw_string": {
   "addr": "000361a8",
-  "label": "",
-  "subsystem": "ui",
-  "desc": "FUN_000361a8 @ 0x361a8 - centre a string then draw it. Measures the string * width via 0x36648 (table g_text_pal, base 0x413, adj -2), computes the centred x * = (0x280 - width)/2, then draws via 0x36",
+  "label": "center_draw_string",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_00036208": {
+ "measure_draw_text": {
   "addr": "00036208",
-  "label": "",
-  "subsystem": "ui",
-  "desc": "FUN_00036208 @ 0x36208 - measure+draw marshalling, cousin of 0x361a8. * Measures via 0x36648 (table g_text_pal), computes a centred/offset x, then * draws via 0x36698. The two calls share their traili",
+  "label": "measure_draw_text",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_00036298": {
+ "hittest_draw": {
   "addr": "00036298",
-  "label": "",
-  "subsystem": "ui",
-  "desc": "FUN_00036298 @ 0x36298 - bounding-box hit test then draw dispatch. * If point (g_mouse_x,g_mouse_y) is strictly inside box (g_b6c8,g_b6ca)-(g_b6cc,g_b6ce) * pick sprite 0x166 else 0x1ef, then draw via",
+  "label": "hittest_draw",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_00036338": {
+ "hittest_draw_b": {
   "addr": "00036338",
-  "label": "",
-  "subsystem": "ui",
-  "desc": "FUN_00036338 @ 0x36338 - bounding-box hit test then draw dispatch. * Direct sibling of FUN_00036298. If point (g_mouse_x,g_mouse_y) is strictly * inside box (g_b6d2,g_b6d4)-(g_b6d6,g_b6d8) pick sprite",
+  "label": "hittest_draw_b",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_000363d8": {
@@ -1469,18 +1469,18 @@
   "desc": "@ 0x363d8 (523 bytes): word-wrap text layout/draw engine. Draws string s glyph-by-glyph with `font` (6-byte glyph records: width at +4, height at +5), word-wrapping inside the box (x0,y0,w,h). a7 = gl",
   "runs_in_intro": false
  },
- "FUN_000365e8": {
+ "measure_text_width": {
   "addr": "000365e8",
-  "label": "",
-  "subsystem": "ui",
-  "desc": "FUN_000365e8 @ 0x365e8 - measure summed text width of a string. * Walks param_1 until NUL or one of ' ' '\\n' '\\\\' '|'; for each char c looks up * a 6-byte-stride record table (param_2) at index (c+par",
+  "label": "measure_text_width",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_00036648": {
+ "text_width_kern": {
   "addr": "00036648",
-  "label": "",
-  "subsystem": "ui",
-  "desc": "frameless @ 0x36648: text-width / kerning accumulator. For each char of str (until 0 or '\\n'): idx = (arg3 + c - 0x20); w = table[idx].w (6-byte records, width byte at +4); acc += w + arg4; return acc",
+  "label": "text_width_kern",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00036698": {
@@ -1504,11 +1504,11 @@
   "desc": "frameless @ 0x36c28: walk the chain from p->[0x1c] (base g_entity_pool, link +0x22); for each node call detach_entity_type, copy p->[0x16] into node->[0x16], set node[0x19]=0x14 and node[0xa] |= 8.",
   "runs_in_intro": false
  },
- "FUN_00036c78": {
+ "pool_chain_reset": {
   "addr": "00036c78",
-  "label": "",
-  "subsystem": "entity",
-  "desc": "FUN_00036c78 @ 0x36c78 - walk pool chain (g_entity_pool) from node[0x1c], reset nodes",
+  "label": "pool_chain_reset",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00036d18": {
@@ -1616,11 +1616,11 @@
   "desc": "",
   "runs_in_intro": true
  },
- "FUN_00038fe8": {
+ "sound_channel_select": {
   "addr": "00038fe8",
-  "label": "",
-  "subsystem": "sound",
-  "desc": "FUN_00038fe8 @ 0x38fe8 - sound/channel state select.",
+  "label": "sound_channel_select",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00039088": {
@@ -3506,11 +3506,11 @@
   "desc": "prefix @ 0xdc08 -- guarded one-shot state setter (previously-undecoded render-path prefix). * If neither bit 1/2 of flag g_in_mission is set: stamp g_532c=0x10, set bit 2 of g_in_mission, copy * g_10a",
   "runs_in_intro": false
  },
- "FUN_0000fa88": {
+ "z_probe_b": {
   "addr": "0000fa88",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "prefix @ 0xfa88 -- Z-probe (twin of 0xfa18, callee FUN_0000fd38). Try the passability test at * z+0x7f, z-1, z-0x81; return first nonzero, else a floor-masked z. Frameless, stack-calling. * Recipe: -4",
+  "label": "z_probe_b",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "passability_4corner": {

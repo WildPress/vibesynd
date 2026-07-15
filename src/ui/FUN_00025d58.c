@@ -48,12 +48,12 @@ extern char *g_4714[];
 extern char g_365c[];
 extern char g_3660[];
 
-extern unsigned short FUN_00036648(char *s, unsigned char *tbl, unsigned short base,
+extern unsigned short text_width_kern(char *s, unsigned char *tbl, unsigned short base,
                                    signed char adj, int a5);
 extern void FUN_00036698(char *s, unsigned short x, int a3, int a4, unsigned short a5,
                          unsigned char *tbl, signed char a7, signed char a8, int a9,
                          int a10);
-extern void FUN_00036208(char *a, unsigned short b, unsigned short c, unsigned short d,
+extern void measure_draw_text(char *a, unsigned short b, unsigned short c, unsigned short d,
                          unsigned short e, signed char f, unsigned char g);
 extern void FUN_0003a4fa(char *buf, char *fmt, ...);
 extern void stats_panel_draw(unsigned char p);
@@ -68,7 +68,7 @@ void FUN_00025d58(unsigned char param1)
     /* section 1: centred title */
     FUN_00036698(
         *(char **)((char *)g_41a4 + g_language * 4 + g_b072[param1 * 19] * 12),
-        (unsigned short)(0xb8 + (0x118 - FUN_00036648(
+        (unsigned short)(0xb8 + (0x118 - text_width_kern(
             *(char **)((char *)g_41a4 + g_language * 4 + g_b072[param1 * 19] * 12),
             g_text_pal, 0x54, -2, 8)) / 2),
         0x13a, 0xf, 0x54, g_text_pal, -2, 8, 0, 0);
@@ -92,7 +92,7 @@ void FUN_00025d58(unsigned char param1)
                 colour = 0x166;
             else
                 colour = 0x1ef;
-            FUN_00036208(*(char **)((char *)g_45d0 + g_language * 4), 0x10, 0x15a, 0x82,
+            measure_draw_text(*(char **)((char *)g_45d0 + g_language * 4), 0x10, 0x15a, 0x82,
                          colour, -2, 0xc);
         }
     } else {
@@ -105,7 +105,7 @@ void FUN_00025d58(unsigned char param1)
                 colour = 0x166;
             else
                 colour = 0x1ef;
-            FUN_00036208(*(char **)((char *)g_45d0 + g_language * 4), 0x10, 0x15a, 0x82,
+            measure_draw_text(*(char **)((char *)g_45d0 + g_language * 4), 0x10, 0x15a, 0x82,
                          colour, -2, 0xc);
         }
     }

@@ -53,6 +53,26 @@ LABELS = {
     "00027f08": "dpmi_alloc_5para",       "00033cf8": "grid_hit_y",
     "00033c38": "grid_hit_x",             "000263f8": "masked_blit_cell",
     "000284a8": "xfer_buf_req94",         "0001ba48": "clamp_point_box",
+    # cont.28 batch 2
+    "00015e38": "blit_cell_wh",           "0002f608": "entity_aim_helper",
+    "00038fe8": "sound_channel_select",   "00036298": "hittest_draw",
+    "00036338": "hittest_draw_b",         "00036c78": "pool_chain_reset",
+    "0002e4f8": "find_projectile_step",   "00013b38": "palette_flash3",
+    "00020568": "find_rec_by_field8",     "00034088": "shot_collision_query",
+    "00036208": "measure_draw_text",      "0002c468": "copy_5fields_8recs",
+    "0001c178": "spawn_pool_15e70",       "0001ff98": "draw_gauge_segment",
+    "0000fa88": "z_probe_b",              "00022b38": "find_free_slot_15e70",
+    "00020b78": "count_leading_nonzero",  "00022ba8": "spawn_pool_11670",
+    "00026da8": "grid_unlink_object",     "000183e8": "walk_records_2c",
+    "00013ac8": "reset_flash_palette",    "0002e588": "pool_list_dispatch",
+    "00020be8": "count_leading_nonzero_b","0002d738": "projectile_step",
+    "00013bc8": "pool_list_last",         "0002d358": "combat_aim_update",
+    "000299c8": "center_string_16",       "000355d8": "blit_backbuffer",
+    "00027e78": "far_alloc_probe",        "000365e8": "measure_text_width",
+    "000361a8": "center_draw_string",     "0002d7a8": "interp_scale_a",
+    "0002d868": "interp_scale_c",         "0002d808": "interp_scale_b",
+    "000146f8": "eligibility_test",       "00036648": "text_width_kern",
+    "00035ed8": "zero_even_bytes",        "00035f28": "record_max",
 }
 
 

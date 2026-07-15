@@ -52,9 +52,9 @@ extern short          g_dir_dx[], g_dir_dy[];   /* direction tables (s16[256]) *
 extern unsigned char g_pool_a[];
 
 extern int  clamp_point_box(int x, int y);
-extern void FUN_0002c468(void);
-extern int  FUN_0002d7a8(unsigned char *rec, int a);
-extern int  FUN_0002d808(unsigned char *rec, int a);
+extern void copy_5fields_8recs(void);
+extern int  interp_scale_a(unsigned char *rec, int a);
+extern int  interp_scale_b(unsigned char *rec, int a);
 extern int  FUN_00036be8(unsigned char *rec, unsigned short *node);
 extern int  FUN_000377e8(unsigned char *rec);
 extern unsigned char *FUN_00037608(unsigned char *rec);
@@ -126,7 +126,7 @@ after_scan:                                          /* 0x2b01b */
         if (g_e112 != 0 && g_e124 != 0 && (*(rec + 0x1d) & 4) != 0) {
             /* confirmed selection -> build move/attack order (0x2b06c) */
             if (g_sel_cursor != 0) g_e120 = 1;
-            FUN_0002c468();
+            copy_5fields_8recs();
             *((unsigned char *)p + 0xd) = 0x6;
             p[0] = g_e124 - 1;
             if (g_e114 != 0) {
@@ -143,8 +143,8 @@ after_scan:                                          /* 0x2b01b */
     /* ---- pick a fresh target under the cursor (0x2b11c) ---- */
     rec = PREC(AGENT_FIRST(g_cur_player) + AGENT_SEL(g_cur_player));
     if (*(rec + 0x19) == 0
-        && FUN_0002d7a8(rec, 0xa) > 0
-        && FUN_0002d808(rec, 0x64) > 0
+        && interp_scale_a(rec, 0xa) > 0
+        && interp_scale_b(rec, 0x64) > 0
         && *(short *)(rec + 0x44) != 0
         && *(rec + 0x46) == 0) {
         int f = *(rec + 0x1a);

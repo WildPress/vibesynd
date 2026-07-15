@@ -2,9 +2,9 @@
  *   mov edx,[esp+4]; push edx; call 0x26da8; add esp,4;
  *   mov eax,[esp+4]; mov byte[eax+0x18],0; ret
  */
-extern void FUN_00026da8(void *);
+extern void grid_unlink_object(void *);
 void FUN_000269b8(char *p)
 {
-    FUN_00026da8(p);
+    grid_unlink_object(p);
     p[0x18] = 0;
 }

@@ -21,10 +21,10 @@ extern short g_aim_y;
 extern short g_aim_level;
 
 extern int FUN_00014c58(int dx, int dy);
-extern int FUN_0002d738(unsigned char *obj, unsigned char dir);
+extern int projectile_step(unsigned char *obj, unsigned char dir);
 extern unsigned short FUN_0002d6c8(unsigned char *obj, unsigned char dir);
 extern int FUN_00026aa8(short a, short b);
-extern void FUN_0002e4f8(unsigned char *obj, char dir);
+extern void find_projectile_step(unsigned char *obj, char dir);
 extern unsigned char FUN_0000e568(int a);
 extern void FUN_00026ad8(unsigned short mult, unsigned short idx);
 extern int FUN_0002d3b8(int obj);
@@ -54,7 +54,7 @@ void FUN_0002def8(unsigned char *obj, int tgt)
     dA = dB = ((obj[0x1a] + 0x20) >> 6 << 6) - 0x40;
 
     for (j = 0; j < 4; j++) {
-        if (FUN_0002d738(obj, dA) != 0)
+        if (projectile_step(obj, dA) != 0)
             break;
         dA += 0x40;
     }
@@ -93,7 +93,7 @@ void FUN_0002def8(unsigned char *obj, int tgt)
     b1dist = 0;
     obj[0x19] = 0;
     for (i = 0; i < 0x20; i++) {
-        FUN_0002e4f8(buf2, -0x40);
+        find_projectile_step(buf2, -0x40);
         if ((*(short *)(obj + 0x2e) >> 8) == (*(short *)(buf2 + 4) >> 8) &&
             (*(short *)(obj + 0x30) >> 8) == (*(short *)(buf2 + 6) >> 8)) {
             obj[0x19] = 0xe;
@@ -112,7 +112,7 @@ void FUN_0002def8(unsigned char *obj, int tgt)
             b2iter = i;
         }
 
-        FUN_0002e4f8(buf1, 0x40);
+        find_projectile_step(buf1, 0x40);
         if ((*(short *)(obj + 0x2e) >> 8) == (*(short *)(buf1 + 4) >> 8) &&
             (*(short *)(obj + 0x30) >> 8) == (*(short *)(buf1 + 6) >> 8)) {
             obj[0x19] = 0xf;

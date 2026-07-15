@@ -5,7 +5,7 @@
  * (f6 c2 TEST); this cascades into the relative-jump displacements. A word-typed
  * cache reaches DL but only by hoisting/merging the +0xc load (spurious mov,
  * loses the CMP-mem-0 top) -- not the target's shape. */
-extern void FUN_00036c78(int p);
+extern void pool_chain_reset(int p);
 
 void FUN_00036d18(int p)
 {
@@ -19,15 +19,15 @@ void FUN_00036d18(int p)
         b = *(unsigned char *)(p + 0xc);
         if (b & 8) {
             *(short *)(p + 0x14) -= 10;
-            FUN_00036c78(p);
+            pool_chain_reset(p);
         } else if (b & 0x10) {
             *(short *)(p + 0x14) -= 300;
-            FUN_00036c78(p);
+            pool_chain_reset(p);
         } else if (b & 0x80) {
             *(short *)(p + 0x14) -= 300;
-            FUN_00036c78(p);
+            pool_chain_reset(p);
         } else if (b & 0x40) {
-            FUN_00036c78(p);
+            pool_chain_reset(p);
         }
     }
     *(unsigned short *)(p + 0xc) &= 0x200;

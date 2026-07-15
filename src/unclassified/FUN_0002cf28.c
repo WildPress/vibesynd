@@ -16,7 +16,7 @@
  * 0x2cecc, jmp literal 0x1f784). HUD inventory-slot state refresh for the
  * selected agent (g_cur_player): slot = g_agent_slots[n*0x417] + (signed char)g_agent_slots[n*0x417+1],
  * ped = g_pool_a + slot*0x5c. If ped type is 0x18/0x19, or (ped flag +0xb bit 0
- * set and g_df52[b*0xb] < 2), reset the record table via FUN_0002c468(); if
+ * set and g_df52[b*0xb] < 2), reset the record table via copy_5fields_8recs(); if
  * type == 0xa refresh via FUN_0002c4e8(). Then walk the carried-item chain
  * (head id at ped+0x3a, next at item+0x1c, item = g_entity_pool + id), advancing a
  * record cursor (0x5256, stride 0x12) per item, and for each item type 1..0x13
@@ -31,7 +31,7 @@ extern unsigned char g_pool_a[];
 extern unsigned char g_entity_pool[];
 extern short g_5256[];
 
-void FUN_0002c468(void);
+void copy_5fields_8recs(void);
 void FUN_0002c4e8(void);
 void FUN_0002d038(unsigned char *p, short *rec, int item, short spr);
 
@@ -48,7 +48,7 @@ void FUN_0002cf28(void)
 
     if (type == 0x18 || type == 0x19 ||
         ((ped[0xb] & 1) && g_df52[b * 0xb] < 2))
-        FUN_0002c468();
+        copy_5fields_8recs();
     if (ped[0x19] == 0xa)
         FUN_0002c4e8();
     id = *(unsigned short *)(ped + 0x3a);

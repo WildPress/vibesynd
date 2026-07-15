@@ -42,7 +42,7 @@ extern void guarded_init_alloc(void);
 extern void main_game_loop(void);
 extern void FUN_000252d8(void);
 extern void FUN_00025348(void);
-extern void FUN_000183e8(char *p);
+extern void walk_records_2c(char *p);
 extern void FUN_00039188(void);
 extern void FUN_00036168(void);
 
@@ -197,7 +197,7 @@ void startup_main(short argc, char **argv)
     }
 
     FUN_00025348();
-    FUN_000183e8(g_4d9c);
+    walk_records_2c(g_4d9c);
     FUN_00039188();
     FUN_00036168();
     noop_ret();

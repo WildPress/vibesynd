@@ -42,11 +42,11 @@ extern unsigned short g_a73a[];
 extern unsigned short g_a6c2[];
 extern void FUN_00023158(unsigned int);
 extern unsigned short FUN_0000e568(int);
-extern unsigned char *FUN_0002e588(unsigned char *, unsigned char *, int);
+extern unsigned char *pool_list_dispatch(unsigned char *, unsigned char *, int);
 extern char FUN_00013a98(unsigned short *, unsigned char *, unsigned char *, unsigned char);
 extern char FUN_000139a8(unsigned char *, unsigned char *, unsigned char);
-extern void FUN_00013b38(short *, int, int, unsigned char, unsigned char *);
-extern void FUN_00013ac8(unsigned char *, unsigned short *, unsigned char);
+extern void palette_flash3(short *, int, int, unsigned char, unsigned char *);
+extern void reset_flash_palette(unsigned char *, unsigned short *, unsigned char);
 extern void FUN_00013c98(unsigned short *, unsigned char *, unsigned char,
                          unsigned char, unsigned char *, unsigned char *);
 extern void FUN_00014588(unsigned char *);
@@ -151,7 +151,7 @@ dispatch:
     case 6:
         if (FUN_00013a98(param_4, tnode, param_1, param_3)) {
             q = (short)((int)(unsigned short)g_a6c2[cur[0x19]] * 9 / 10);
-            n = FUN_0002e588(*(unsigned char **)(param_1 + 0xc), tnode, q);
+            n = pool_list_dispatch(*(unsigned char **)(param_1 + 0xc), tnode, q);
             param_1[3] = (n == tnode) + 9;
         }
         goto tail;
@@ -159,22 +159,22 @@ dispatch:
         if (!FUN_00013a98(param_4, tnode, param_1, param_3))
             goto tail;
         q = (short)((int)(unsigned short)g_a6c2[cur[0x19]] * 9 / 10);
-        n = FUN_0002e588(*(unsigned char **)(param_1 + 0xc), tnode, q);
+        n = pool_list_dispatch(*(unsigned char **)(param_1 + 0xc), tnode, q);
         if (n != 0) {
             if (n == tnode) {
                 if (FUN_000139a8(param_1, n, param_3))
-                    FUN_00013b38(param_4, (int)*(unsigned char **)(param_1 + 0xc),
+                    palette_flash3(param_4, (int)*(unsigned char **)(param_1 + 0xc),
                                  (int)tnode, param_3, param_1);
                 else
-                    FUN_00013ac8(param_1, param_4, param_3);
+                    reset_flash_palette(param_1, param_4, param_3);
             } else if (FUN_000139a8(param_1, n, param_3)) {
-                FUN_00013b38(param_4, (int)*(unsigned char **)(param_1 + 0xc),
+                palette_flash3(param_4, (int)*(unsigned char **)(param_1 + 0xc),
                              (int)cur, param_3, param_1);
             }
         } else if (FUN_000139a8(param_1, tnode, param_3)) {
             param_1[3] = 9;
         } else {
-            FUN_00013ac8(param_1, param_4, param_3);
+            reset_flash_palette(param_1, param_4, param_3);
         }
         goto tail;
     case 9:
@@ -182,13 +182,13 @@ dispatch:
             goto tail;
         if (FUN_000139a8(param_1, tnode, param_3)) {
             q = (short)((int)(unsigned short)g_a6c2[cur[0x19]] * 9 / 10);
-            n = FUN_0002e588(*(unsigned char **)(param_1 + 0xc), tnode, q);
+            n = pool_list_dispatch(*(unsigned char **)(param_1 + 0xc), tnode, q);
             if (n != 0) {
                 if (n == tnode) {
-                    FUN_00013b38(param_4, (int)*(unsigned char **)(param_1 + 0xc),
+                    palette_flash3(param_4, (int)*(unsigned char **)(param_1 + 0xc),
                                  (int)tnode, param_3, param_1);
                 } else if (FUN_000139a8(param_1, n, param_3)) {
-                    FUN_00013b38(param_4, (int)*(unsigned char **)(param_1 + 0xc),
+                    palette_flash3(param_4, (int)*(unsigned char **)(param_1 + 0xc),
                                  (int)cur, param_3, param_1);
                 }
             } else if (param_1[5] == 0) {
@@ -203,7 +203,7 @@ dispatch:
                 FUN_00023158((unsigned short)param_3);
             }
         } else {
-            FUN_00013ac8(param_1, param_4, param_3);
+            reset_flash_palette(param_1, param_4, param_3);
         }
         goto tail;
     case 8:
