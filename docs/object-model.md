@@ -49,6 +49,7 @@ high-frequency fields are certain, the rare ones are educated.
 | `0x1a` | u8 | **facing** (0..255 direction) | 0x2f608 sets `obj[0x1a]` from atan2 |
 | `0x1b` | u8 | secondary angle | 0x2f608 `obj[0x1b]` |
 | `0x1c` | u16 | link: **next** id (a second chain) | 9 uses; 0x13bc8/0x34118 walk |
+| `0x1d` | u8 | **flags C** (bit1, bit2) | 20 uses; `n[0x1d]\|=2`, `&4` test |
 | `0x24` | u16 | link: list **head** | 0x2e588 |
 | `0x3a` | u16 | id into another list | 0x13bc8/0x13b38 |
 | `0x44` | u16 | linked id → node whose `[0x19]` indexes a sprite table | 0x37738/0x37818 |
@@ -58,7 +59,8 @@ high-frequency fields are certain, the rare ones are educated.
 | `0x50/0x51` | u8,u8 | a (min,max) byte pair | 0x2d7a8 |
 | `0x54` | u8 | **current health / value** (hottest field) | 20 uses; 0x34118 `[0x54]-=dmg` |
 | `0x55` | u8 | **speed / max** (paired with 0x54) | 0x2d6c8/0x34118 |
-| `0x58` | — | ? (7 uses) | — |
+| `0x58` | u8 | **state code** (recomputed, then mirrored to 0x19 anim) | `recompute_state_code` (0x2d998); set 0x1c/0x1f/0x20 |
+| `0x5a` | u8 | value stepped by ±0x40/±0x80 (angle/scroll?) | `obj[0x5a]±0x40`, 18 uses |
 
 The three consecutive `(min,max)` byte pairs at `0x48/0x4c/0x50`, each fed through the same
 `x*delta/(hi-lo)` interpolation (fns 0x2d7a8/0x2d808/0x2d868), look like **three lighting or
