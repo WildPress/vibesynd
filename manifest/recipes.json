@@ -1329,7 +1329,7 @@
  },
  "FUN_00039188": {
   "addr": "00039188",
-  "flags": "-3s -oneatx -zp8 -s -zq"
+  "flags": "-4s -oneatx -zp8 -s -zq"
  },
  "FUN_000391a8": {
   "addr": "000391a8",
