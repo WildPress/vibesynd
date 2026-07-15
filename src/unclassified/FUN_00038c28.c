@@ -1,4 +1,8 @@
-/* guarded alloc/read helper @ 0x38c28 */
+/* guarded alloc/read helper @ 0x38c28.
+ *
+ * NEAR-MISS (NOT matched). Register-ROLE wall: the target's ESI/EDI assignment is the
+ * mirror of ours and no C spelling flips it. Confirmed by hand-crafting (local copies,
+ * operand swaps) -- all reproduce our role, none the target's. Not source-reachable. */
 extern signed char g_11e34;
 extern signed char g_11e35;
 extern int g_11e36;

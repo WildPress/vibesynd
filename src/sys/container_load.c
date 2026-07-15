@@ -1,4 +1,7 @@
 /* 0x17b48 -- resource/container LOADER (sibling of the size-scanner 0x179f8).
+ * NEAR-MISS (NOT matched; large fn, pervasive register-role divergence across the
+ * whole body -- allocator assigns different regs throughout, not a single fixable
+ * point). Structure/logic correct; parked as a register-allocation wall.
  * open(name,0x200) unless flags&1 (memory-resident, fd=name). Compute total
  * size via container_total_size; if flags&4, malloc that size into 'out' (fail->close+0)
  * then memset it. Read u32 table offset at 0x3c, 2-byte version-ish word at tbl

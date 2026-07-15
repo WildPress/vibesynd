@@ -3,9 +3,14 @@
    drawing a text row via FUN_36698 for each record whose state == 0x960, at
    x=0x1f8 starting y=0x70 stepping 12, colour 0xdd, using string ptr
    g_4b10[g_5780[i*0x1eb]*3 + g_a50d] (type byte still from the 0x1eb-strided
-   pool). Then runs the list-select loop FUN_20018 (id 0x14 here vs 0x12); if a
-   row was picked (nonzero 1-based result), redraws it highlighted (colour
-   0x54) at y = sel*12 + 0x70. */
+   pool). Then runs the list-select loop FUN_20018 (id 0x14 here vs 0x12); if a   row was picked (nonzero 1-based result), redraws it highlighted (colour
+   0x54) at y = sel*12 + 0x70.
+
+   NEAR-MISS (NOT matched). Register-ROLE wall, same as its twin 0x205f8: the
+   target uses FOUR callee-saved regs (pushes ebp) and swaps the edx/eax roles in
+   the record-index loop, where our Watcom uses three. Entry `push ebp` is the first
+   diff -- not source-reachable. */
+
 extern unsigned char g_7bf4[];
 extern unsigned char g_5780[];
 extern char *g_4b10[];
