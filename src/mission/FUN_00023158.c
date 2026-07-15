@@ -48,7 +48,7 @@ extern short g_num_players;
 extern short g_cur_player;
 extern short g_10b2e;
 extern unsigned short g_e553;
-extern unsigned char g_e4ab[];
+extern unsigned char g_player_owner[];
 extern unsigned char g_in_mission;
 extern unsigned char g_radar_detail;
 extern unsigned char *g_10ae0;
@@ -85,7 +85,7 @@ void FUN_00023158(unsigned int idx)
                 for (k = 0; k < g_num_players; k++)
                     FUN_000223c8((unsigned short)k, 2);
                 for (k = 0; k < g_num_players; k++)
-                    g_e4ab[(unsigned short)k * 0x417] = (unsigned char)k;
+                    g_player_owner[(unsigned short)k * 0x417] = (unsigned char)k;
             }
         } else {
             FUN_000229f8(0x26c, g_10b2e);

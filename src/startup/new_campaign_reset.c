@@ -83,7 +83,7 @@ void new_campaign_reset(void)
         /* equip/research template (0xe49c, stride 0x417) */
         if (p == 0) {
             g_player_recs[p * 0x417 + 0x11] = 0;   /* g_e4ad */
-            g_player_recs[p * 0x417 + 0xe]  = 1;   /* g_e4aa: player 0 human/active */
+            g_player_recs[p * 0x417 + 0xe]  = 1;   /* g_player_flags: player 0 human/active */
         } else {
             g_player_recs[p * 0x417 + 0x11] = 0;
             g_player_recs[p * 0x417 + 0xe]  = 2;   /* other players AI syndicates */
@@ -95,7 +95,7 @@ void new_campaign_reset(void)
         }
 
         g_player_recs[p * 0x417 + 0x10] = (unsigned char)p;   /* g_e4ac */
-        g_player_recs[p * 0x417 + 0xf]  = (unsigned char)p;   /* g_e4ab: owner id */
+        g_player_recs[p * 0x417 + 0xf]  = (unsigned char)p;   /* g_player_owner: owner id */
         *(int *)(g_player_recs + p * 0x417 + 4)    = 0;        /* g_player_budget */
         *(short *)(g_player_recs + p * 0x417 + 8)  = 1;        /* g_e4a4 */
         *(short *)(g_player_recs + p * 0x417 + 0xa) = 0x55;    /* g_e4a6 */
@@ -122,17 +122,17 @@ void new_campaign_reset(void)
                 g_player_recs[slot] = 0xff;
             }
             if (j < 4) {
-                g_player_recs[slot + 7] = (unsigned char)(j + 1);   /* g_e5c0 */
+                g_player_recs[slot + 7] = (unsigned char)(j + 1);   /* g_squad_slot */
                 g_roster_index[j] = (unsigned char)j;
             } else {
                 g_player_recs[slot + 7] = 0;
             }
             for (k = 0; k < 8; k++) {
-                *(short *)(g_player_recs + slot + 8 + k * 4) = 0;    /* g_e5c1 */
-                *(short *)(g_player_recs + slot + 0xa + k * 4) = 0;  /* g_e5c3 */
+                *(short *)(g_player_recs + slot + 8 + k * 4) = 0;    /* g_equip_qty */
+                *(short *)(g_player_recs + slot + 0xa + k * 4) = 0;  /* g_equip_kind */
             }
-            *(short *)(g_player_recs + slot + 0xa) = 2;             /* g_e5c3[0] */
-            *(short *)(g_player_recs + slot + 8) = g_a73e;          /* g_e5c1[0] */
+            *(short *)(g_player_recs + slot + 0xa) = 2;             /* g_equip_kind[0] */
+            *(short *)(g_player_recs + slot + 8) = g_a73e;          /* g_equip_qty[0] */
         }
     }
 

@@ -103,6 +103,37 @@ matched code + the named globals:
 | `8` | `g_rec8_table` (0x5338) | linked via +6, flag byte +5 |
 | `5` | `g_rec5_table` (0x5340) | linked; `base + id*5` |
 
+## The per-player record (`g_player_recs`, stride 0x417)
+
+One `0x417`-byte record per player, based at `g_player_recs` (0xe49c), indexed
+`g_player_recs + player*0x417`. Almost every `g_e4xx`/`g_e5xx` global is a *field-view*
+into this record (its address = `0xe49c + field-offset`), so `g_field[player*0x417 + …]`
+reads that field for a given player. Fields mapped from matched code:
+
+| offset | field-view global | type | meaning |
+|--------|-------------------|------|---------|
+| +0x0   | `g_player_recs`   | —    | record base / accumulators |
+| +0x4   | `g_player_budget` | int  | money/budget |
+| +0xe   | `g_player_flags`  | u8   | flags; **bit 2 = active/remote** player (triggers equip build 0x12da8) |
+| +0xf   | `g_player_owner`  | u8   | owner / actor id (`(pool_a_ptr − 0x8110)/0x5c/8`) |
+| +0xb5  | `g_agent_slots`   | u8[] | agent-slot lookup (base agent indices into `g_pool_a`) |
+| +0xb6  | `g_agent_tmpl`    | u8[] | agent template bytes |
+| +0x11d | **squad/equip grid** | — | array of **40-byte rows** (squad member `j*40`); see below |
+| +0x40b | `g_e8a7`          | u8   | template-valid flag (set 1 after build) — *unnamed* |
+
+**Squad/equip grid** (each 40-byte row, member `j`):
+
+| row offset | field-view | type | meaning |
+|------------|-----------|------|---------|
+| +0x0 | `g_squad_id`   | u8   | member id/type (0xff = empty slot) |
+| +0x1 | `g_e5ba`       | u16  | value, 0x10 default / 0xffff empty — *unnamed* |
+| +0x3 | `g_e5bc`       | u16  | *unnamed* |
+| +0x7 | `g_squad_slot` | u8   | slot index (`i+1`) |
+| +0x8 | equip sub-array | — | per weapon/mod slot (`d*4`): `g_equip_qty` (u16) + `g_equip_kind` (u16) |
+
+The remaining low-offset field-views (`g_e4a4/a6/a8/ac/ad/bf`, `g_e553/555/587`) are
+narrow single-use fields left unnamed.
+
 ## Coding-style conventions (for writing matchable C)
 
 Patterns that recur across the corpus — follow them and the first compile lands close:

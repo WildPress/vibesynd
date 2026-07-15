@@ -89,6 +89,16 @@
   "type": "u8",
   "desc": "BIOS video mode captured at startup, restored on exit"
  },
+ "g_equip_kind": {
+  "addr": "e5c3",
+  "type": "u16[]",
+  "desc": "equip template: item kind, per squad member (j*40) x slot (d*4)"
+ },
+ "g_equip_qty": {
+  "addr": "e5c1",
+  "type": "u16[]",
+  "desc": "equip template: quantity, per squad member (j*40) x slot (d*4)"
+ },
  "g_frame_enable": {
   "addr": "a69a",
   "type": "u8[]",
@@ -234,6 +244,16 @@
   "type": "int[]",
   "desc": "budget field view of g_player_recs (== g_player_recs+4, 0x417 stride)"
  },
+ "g_player_flags": {
+  "addr": "e4aa",
+  "type": "u8",
+  "desc": "player-record flags (+0xe); bit 2 = active/remote player"
+ },
+ "g_player_owner": {
+  "addr": "e4ab",
+  "type": "u8",
+  "desc": "player-record owner/actor id (+0xf)"
+ },
  "g_player_recs": {
   "addr": "e49c",
   "type": "u8[]",
@@ -328,6 +348,16 @@
   "addr": "10b4a",
   "type": "u8",
   "desc": "sound driver enabled flag (result of sound_driver_init; -s clears it)"
+ },
+ "g_squad_id": {
+  "addr": "e5b9",
+  "type": "u8[]",
+  "desc": "squad grid: member id/type byte per 40-byte row (0xff = empty)"
+ },
+ "g_squad_slot": {
+  "addr": "e5c0",
+  "type": "u8[]",
+  "desc": "squad grid: slot index per row (i+1)"
  },
  "g_syndicate_recs": {
   "addr": "539c",

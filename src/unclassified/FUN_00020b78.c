@@ -13,7 +13,7 @@
    redundant `and edx,0xff`, but the final DL-vs-AL alloc and the two transpositions are
    not source-reachable. */
 extern short g_cur_player;
-extern unsigned char g_e5c3[];
+extern unsigned char g_equip_kind[];
 extern unsigned char g_roster_index[];
 unsigned char FUN_00020b78(unsigned char param_1)
 {
@@ -23,7 +23,7 @@ unsigned char FUN_00020b78(unsigned char param_1)
     do {
         int row = (int)si * 1047;
         unsigned char col = g_roster_index[param_1];
-        if (*(short *)(g_e5c3 + row + (int)col * 40 + (int)i * 4) == 0)
+        if (*(short *)(g_equip_kind + row + (int)col * 40 + (int)i * 4) == 0)
             break;
         count++;
         i++;

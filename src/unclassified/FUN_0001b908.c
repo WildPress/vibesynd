@@ -3,7 +3,7 @@
  * record schedule FUN_0004a63a(x+rec[2], y+rec[4], start+dur, rec[6]) with
  * g_5314 (time cursor) reset to `start` before each call and re-read after.
  * Duration: if rec[0]/6-0x29 in [0,8) it's remapped via the per-actor byte
- * table g_e4ab (actor id = (p-0x8110)/0x5c/8, stride 0x417), else rec[0] raw.
+ * table g_player_owner (actor id = (p-0x8110)/0x5c/8, stride 0x417), else rec[0] raw.
  * Recipe: -4s -oneatx -zp8 -s -zq.
  *
  * PARKED at 313/317 (true size 317; manifest says 315 -- undercounted, Ghidra
@@ -17,7 +17,7 @@ extern unsigned char *g_rec8_table;
 extern unsigned char *g_rec5_table;
 extern unsigned char *g_5340b; /* alias symbol for the compares (differ masks fixups) */
 extern volatile unsigned int g_5314;
-extern unsigned char g_e4ab[];
+extern unsigned char g_player_owner[];
 
 extern void FUN_0004a63a(int x, int y, unsigned int end, int arg4);
 
@@ -36,7 +36,7 @@ void FUN_0001b908(int p, unsigned short idx, int x, int y)
     if (rec > g_5340b) {
         off = (p - 0x8110) / 0x5c / 8 * 0x417;
         do {
-            base = g_e4ab[off] * 8 + 0x461;
+            base = g_player_owner[off] * 8 + 0x461;
             t = *(volatile unsigned short *)rec / 6 - 0x29;
             if (t < 8)
                 v = ((t & 7) + base) * 6;

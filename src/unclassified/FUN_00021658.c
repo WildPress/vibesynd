@@ -33,9 +33,9 @@
  *   zero the 10x24 word grid at g_7c07, copy g_7de8[e*501] = g_mod_byte_src[e], and
  *   take the absolute value of the signed dword g_7bf5[e*501].
  * Rebuild step 3 (equip templates): for each of 18 entries (stride 40) inside
- *   rec, roll a byte g_e5b9 = FUN_20c88(), set the HP word g_e5ba = 0x10, the
+ *   rec, roll a byte g_squad_id = FUN_20c88(), set the HP word g_e5ba = 0x10, the
  *   flags word g_e5bc = 0x1fff, and eight {qty=g_a73a[kind], kind} item slots
- *   at g_e5c1/g_e5c3 for the fixed kind list {6,6,1,0xc,0x11,0x11,7,7}.
+ *   at g_equip_qty/g_equip_kind for the fixed kind list {6,6,1,0xc,0x11,0x11,7,7}.
  *
  * STATUS: full readable-C decode, PARKED. Score vs TRUE size 1969:
  *   -4s -oneatx -zp8 -s -zq  ->  obj 1886B (delta -83B), first diff @0x2ab.
@@ -74,11 +74,11 @@ extern unsigned char g_7c05[];   /* conveyor-row capacity word */
 extern unsigned char g_7c07[];   /* conveyor-row 10x24 word body */
 extern unsigned char g_7de8[];   /* conveyor-row source byte */
 extern unsigned char g_mod_byte_src[];   /* per-row default source table */
-extern unsigned char g_e5b9[];   /* equip-template roll byte (in rec, stride 40) */
+extern unsigned char g_squad_id[];   /* equip-template roll byte (in rec, stride 40) */
 extern unsigned char g_e5ba[];   /* equip-template HP word */
 extern unsigned char g_e5bc[];   /* equip-template flags word */
-extern unsigned char g_e5c1[];   /* equip-template slot qty word */
-extern unsigned char g_e5c3[];   /* equip-template slot kind word */
+extern unsigned char g_equip_qty[];   /* equip-template slot qty word */
+extern unsigned char g_equip_kind[];   /* equip-template slot kind word */
 extern short         g_a73a[];   /* item kind -> default quantity table */
 
 extern int  FUN_0003aee6(unsigned char *bitset, int id);
@@ -172,25 +172,25 @@ void FUN_00021658(void)
          * slots (kinds 6,6,1,0xc,0x11,0x11,7,7) are fully unrolled */
         for (d = 0; d < 0x12; d++) {
             roll = keyboard_state_machine();
-            g_e5b9[0x417 * g_cur_player + d * 40] = (unsigned char)roll;
+            g_squad_id[0x417 * g_cur_player + d * 40] = (unsigned char)roll;
             *(short *)(g_e5ba + 0x417 * g_cur_player + d * 40) = 0x10;
             *(short *)(g_e5bc + 0x417 * g_cur_player + d * 40) = 0x1fff;
-            *(short *)(g_e5c1 + 0x417 * g_cur_player + d * 40 + 0x00) = g_a73a[6];
-            *(short *)(g_e5c3 + 0x417 * g_cur_player + d * 40 + 0x00) = 6;
-            *(short *)(g_e5c3 + 0x417 * g_cur_player + d * 40 + 0x04) = 6;
-            *(short *)(g_e5c1 + 0x417 * g_cur_player + d * 40 + 0x04) = g_a73a[6];
-            *(short *)(g_e5c3 + 0x417 * g_cur_player + d * 40 + 0x08) = 1;
-            *(short *)(g_e5c1 + 0x417 * g_cur_player + d * 40 + 0x08) = g_a73a[1];
-            *(short *)(g_e5c3 + 0x417 * g_cur_player + d * 40 + 0x0c) = 0xc;
-            *(short *)(g_e5c1 + 0x417 * g_cur_player + d * 40 + 0x0c) = g_a73a[0xc];
-            *(short *)(g_e5c3 + 0x417 * g_cur_player + d * 40 + 0x10) = 0x11;
-            *(short *)(g_e5c1 + 0x417 * g_cur_player + d * 40 + 0x10) = g_a73a[0x11];
-            *(short *)(g_e5c3 + 0x417 * g_cur_player + d * 40 + 0x14) = 0x11;
-            *(short *)(g_e5c1 + 0x417 * g_cur_player + d * 40 + 0x14) = g_a73a[0x11];
-            *(short *)(g_e5c3 + 0x417 * g_cur_player + d * 40 + 0x18) = 7;
-            *(short *)(g_e5c1 + 0x417 * g_cur_player + d * 40 + 0x18) = g_a73a[7];
-            *(short *)(g_e5c3 + 0x417 * g_cur_player + d * 40 + 0x1c) = 7;
-            *(short *)(g_e5c1 + 0x417 * g_cur_player + d * 40 + 0x1c) = g_a73a[7];
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x00) = g_a73a[6];
+            *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x00) = 6;
+            *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x04) = 6;
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x04) = g_a73a[6];
+            *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x08) = 1;
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x08) = g_a73a[1];
+            *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x0c) = 0xc;
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x0c) = g_a73a[0xc];
+            *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x10) = 0x11;
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x10) = g_a73a[0x11];
+            *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x14) = 0x11;
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x14) = g_a73a[0x11];
+            *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x18) = 7;
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x18) = g_a73a[7];
+            *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x1c) = 7;
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x1c) = g_a73a[7];
         }
     }
 }

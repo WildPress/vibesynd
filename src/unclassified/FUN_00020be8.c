@@ -10,14 +10,14 @@
    of independent ops; do-while/for, count/i decl order, increment order, and a return
    temp all leave the emitted schedule identical. Scheduling wall. */
 extern short g_cur_player;
-extern unsigned char g_e5c3[];
+extern unsigned char g_equip_kind[];
 unsigned char FUN_00020be8(unsigned char param_1)
 {
     short si = g_cur_player;
     unsigned char count = 0;
     unsigned char i = 0;
     do {
-        if (*(short *)(g_e5c3 + (int)si * 1047 + (int)param_1 * 40 + (int)i * 4) == 0)
+        if (*(short *)(g_equip_kind + (int)si * 1047 + (int)param_1 * 40 + (int)i * 4) == 0)
             break;
         count++;
         i++;

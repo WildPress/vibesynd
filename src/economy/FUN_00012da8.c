@@ -32,7 +32,7 @@
    Finds k's first active pool-A slot (bit 1 of +0x1c, base 0x8110, agent
    stride 0x2e0 = 8 slots x 0x5c) -> row header code k*8+slot in g_agent_slots
    (template row stride 0x417, cf. FUN_000223c8's docs); row word +0x356
-   (g_e8a7) = 1; clears the 18 template entry slot-no bytes (g_e5c0, entry
+   (g_e8a7) = 1; clears the 18 template entry slot-no bytes (g_squad_slot, entry
    stride 40). Marks g_c358[2k]=1 / g_c359[2k]=0. Then for each i < g_3eb5
    whose walking slot has flag 2: slot |= 0x10 at +0x1d, entry i gets
    slot-no i+1, word0 (g_e5ba) = 0x10, pair0 = (kind, count=g_a73a[kind])
@@ -48,9 +48,9 @@ extern unsigned char g_agent_slots[];
 extern unsigned char g_e8a7[];
 extern unsigned char g_e5ba[];
 extern unsigned char g_e5bc[];
-extern unsigned char g_e5c0[];
-extern unsigned char g_e5c1[];
-extern unsigned char g_e5c3[];
+extern unsigned char g_squad_slot[];
+extern unsigned char g_equip_qty[];
+extern unsigned char g_equip_kind[];
 extern unsigned char g_c358[];
 extern unsigned char g_c359[];
 extern unsigned char g_c368[];
@@ -83,13 +83,13 @@ void FUN_00012da8(unsigned char k)
     v = 1;
     *(unsigned short *)(g_e8a7 + k * 0x417) = v;
     for (c = 0; c < 18; c++)
-        g_e5c0[k * 0x417 + c * 40] = 0;
+        g_squad_slot[k * 0x417 + c * 40] = 0;
     g_c359[k * 2] = 0;
     g_c358[k * 2] = 1;
     for (i = 0; i < g_3eb5; i++) {
         if (rec[0x1c] & 2) {
             rec[0x1d] |= 0x10;
-            g_e5c0[k * 0x417 + i * 40] = i + 1;
+            g_squad_slot[k * 0x417 + i * 40] = i + 1;
             v = 0x10;
             *(unsigned short *)(g_e5ba + k * 0x417 + i * 40) = v;
             if (g_1beb1 == 0) {
@@ -113,13 +113,13 @@ void FUN_00012da8(unsigned char k)
                 }
                 {
                     unsigned short t = g_3ec1[besti * 2];
-                    *(unsigned short *)(g_e5c3 + k * 0x417 + i * 40) = t;
-                    *(unsigned short *)(g_e5c1 + k * 0x417 + i * 40) =
+                    *(unsigned short *)(g_equip_kind + k * 0x417 + i * 40) = t;
+                    *(unsigned short *)(g_equip_qty + k * 0x417 + i * 40) =
                         g_a73a[g_3ec1[besti * 2]];
                 }
             } else {
-                *(unsigned short *)(g_e5c3 + k * 0x417 + i * 40) = g_1beb1;
-                *(unsigned short *)(g_e5c1 + k * 0x417 + i * 40) =
+                *(unsigned short *)(g_equip_kind + k * 0x417 + i * 40) = g_1beb1;
+                *(unsigned short *)(g_equip_qty + k * 0x417 + i * 40) =
                     g_a73a[g_1beb1];
             }
             {
@@ -128,15 +128,15 @@ void FUN_00012da8(unsigned char k)
                 unsigned int e = k * 0x417 + i * 40 + 4;
                 v = 0xc;
                 w = 0xc7;
-                *(unsigned short *)(g_e5c3 + e) = v;
+                *(unsigned short *)(g_equip_kind + e) = v;
                 slot = 2;
-                *(unsigned short *)(g_e5c1 + e) = w;
+                *(unsigned short *)(g_equip_qty + e) = w;
             }
             if (g_1beaf != 0) {
                 v = 0x32;
                 w = 1;
-                *(unsigned short *)(g_e5c1 + k * 0x417 + i * 40 + slot * 4) = v;
-                *(unsigned short *)(g_e5c3 + k * 0x417 + i * 40 + slot * 4) = w;
+                *(unsigned short *)(g_equip_qty + k * 0x417 + i * 40 + slot * 4) = v;
+                *(unsigned short *)(g_equip_kind + k * 0x417 + i * 40 + slot * 4) = w;
             }
             }
             switch (g_3eb7) {

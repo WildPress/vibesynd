@@ -13,14 +13,14 @@
  * The record's field bases (all the same 1047-byte record, different C symbols):
  *   g_player_recs[rec]        -> funds dword (rec+0)             [refund target]
  *   g_agent_slots[rec]        -> base pool-A slot index byte (rec+0xb5)
- *   g_e5b9[rec+j*40]   -> template entry j roll byte  (0xff = empty)
+ *   g_squad_id[rec+j*40]   -> template entry j roll byte  (0xff = empty)
  *   g_e5ba[rec+j*40]   -> template entry j HP word
  *   g_e5bc[rec+j*40]   -> template entry j flags word
  *   g_e5be[rec+j*40]   -> template entry j spare word (cleared in the clear path)
- *   g_e5c0[rec+j*40]   -> template entry j present/slot byte (0 = absent)
- *   g_e5c1[rec+j*40+d*4]-> template entry j slot d qty word
- *   g_e5c3[rec+j*40+d*4]-> template entry j slot d kind word
- * (g_e5c0 == g_agent_slots+0x6f, so the outer loop's present-byte read is the sibling's
+ *   g_squad_slot[rec+j*40]   -> template entry j present/slot byte (0 = absent)
+ *   g_equip_qty[rec+j*40+d*4]-> template entry j slot d qty word
+ *   g_equip_kind[rec+j*40+d*4]-> template entry j slot d kind word
+ * (g_squad_slot == g_agent_slots+0x6f, so the outer loop's present-byte read is the sibling's
  * +0x6f entry field; entry stride 40, 8 {qty,kind} slot pairs -- identical layout
  * to 0x223c8's 18x40B template block.)
  *
@@ -37,7 +37,7 @@
  * g_cur_player (short current-player, reset to 0 on the reset path).
  *
  * FLOW (top): if g_radar_detail==0, for each of 18 template entries j whose present byte
- * g_e5c0[rec+j*40]!=0: locate the node; id = node-g_entity_pool.
+ * g_squad_slot[rec+j*40]!=0: locate the node; id = node-g_entity_pool.
  *   (A) if g_in_mission&2: scan ALL 256 pool-A records; for each whose +0x20==id and
  *       !(+0xb&1), credit funds by category (bit1->+0x32, bit8->+0x96, bit4->+0x96,
  *       bit0x10->+0x12c, all clear +0x20 & bump g_10afd), OR bit2 -> re-file the
@@ -74,7 +74,7 @@
  *   plus the funds load/store split + `mov cx,di` register pinning they induce).
  *
  *   WALL 2 (scaled-index / 2D address-association tie -- §3, same family as sibling
- *   0x223c8's scaled-index lea wall). For `g_e5c0[rec + j*40]` the target computes
+ *   0x223c8's scaled-index lea wall). For `g_squad_slot[rec + j*40]` the target computes
  *   `rec` first (EAX), spills it (`mov edx,eax`), rebuilds `40j` in EAX and PRE-ADDS
  *   (`add eax,edx`) -> `[eax+disp]`. Ours (addend-first spelling `j*40 + REC`, which
  *   already fixed a worse `[ecx + eax*8]` scale-8 fold) keeps both live in a
@@ -92,13 +92,13 @@ extern unsigned char g_entity_pool[];
 extern unsigned char g_pool_a[];
 extern unsigned char g_player_recs[];
 extern unsigned char g_agent_slots[];
-extern unsigned char g_e5b9[];
+extern unsigned char g_squad_id[];
 extern unsigned char g_e5ba[];
 extern unsigned char g_e5bc[];
 extern unsigned char g_e5be[];
-extern unsigned char g_e5c0[];
-extern unsigned char g_e5c1[];
-extern unsigned char g_e5c3[];
+extern unsigned char g_squad_slot[];
+extern unsigned char g_equip_qty[];
+extern unsigned char g_equip_kind[];
 extern unsigned char g_10afb;
 extern unsigned char g_in_mission;
 extern unsigned char g_10afd;
@@ -130,7 +130,7 @@ void FUN_00021e18(unsigned short param)
 
     if (g_radar_detail == 0) {
         for (j = 0; j < 0x12; j++) {
-            slot = g_e5c0[j * 40 + REC];
+            slot = g_squad_slot[j * 40 + REC];
             if (slot != 0) {
                 node = g_pool_a + (g_agent_slots[REC] + slot - 1) * 0x5c;
                 id = (int)(node - g_entity_pool);
@@ -170,15 +170,15 @@ void FUN_00021e18(unsigned short param)
                                 *(unsigned short *)(pr + 0x20) = 0;
                                 if (*(short *)(pr + 0x14) >= 0) {
                                     for (d = 0; d < 0x12; d++) {
-                                        if (g_e5b9[d * 40 + REC] == 0xff) {
+                                        if (g_squad_id[d * 40 + REC] == 0xff) {
                                             g_10afb++;
                                             *(unsigned short *)(g_e5bc + d * 40 + REC) =
                                                 *(unsigned short *)(pr + 0x3c);
                                             *(unsigned short *)(g_e5ba + d * 40 + REC) = 0x10;
-                                            g_e5b9[d * 40 + REC] = (unsigned char)keyboard_state_machine();
+                                            g_squad_id[d * 40 + REC] = (unsigned char)keyboard_state_machine();
                                             for (s = 0; s < 8; s++) {
-                                                *(unsigned short *)(g_e5c3 + d * 40 + s * 4 + REC) = 0;
-                                                *(unsigned short *)(g_e5c1 + d * 40 + s * 4 + REC) = 0;
+                                                *(unsigned short *)(g_equip_kind + d * 40 + s * 4 + REC) = 0;
+                                                *(unsigned short *)(g_equip_qty + d * 40 + s * 4 + REC) = 0;
                                             }
                                             break;
                                         }
@@ -194,13 +194,13 @@ void FUN_00021e18(unsigned short param)
                 if (*(short *)(node + 0x14) < 0) {
                     /* clear entry j */
                     *(unsigned short *)(g_e5ba + j * 40 + REC) = 0xffff;
-                    g_e5b9[j * 40 + REC] = 0xff;
+                    g_squad_id[j * 40 + REC] = 0xff;
                     *(unsigned short *)(g_e5be + j * 40 + REC) = 0;
                     *(unsigned short *)(g_e5bc + j * 40 + REC) = 0;
-                    g_e5c0[j * 40 + REC] = 0;
+                    g_squad_slot[j * 40 + REC] = 0;
                     for (d = 0; d < 8; d++) {
-                        *(unsigned short *)(g_e5c3 + j * 40 + d * 4 + REC) = 0;
-                        *(unsigned short *)(g_e5c1 + j * 40 + d * 4 + REC) = 0;
+                        *(unsigned short *)(g_equip_kind + j * 40 + d * 4 + REC) = 0;
+                        *(unsigned short *)(g_equip_qty + j * 40 + d * 4 + REC) = 0;
                     }
                 } else {
                     *(unsigned short *)(g_e5ba + j * 40 + REC) = 0x10;
@@ -208,17 +208,17 @@ void FUN_00021e18(unsigned short param)
                         *(unsigned short *)(node + 0x3c);
                     if (!(g_in_mission & 8)) {
                         for (d = 0; d < 8; d++) {
-                            *(unsigned short *)(g_e5c3 + j * 40 + d * 4 + REC) = 0;
-                            *(unsigned short *)(g_e5c1 + j * 40 + d * 4 + REC) = 0;
+                            *(unsigned short *)(g_equip_kind + j * 40 + d * 4 + REC) = 0;
+                            *(unsigned short *)(g_equip_qty + j * 40 + d * 4 + REC) = 0;
                         }
                         chain = *(unsigned short *)(node + 0x3a);
                         for (d = 0; chain != 0; ) {
                             if (d >= 8)
                                 break;
                             it = g_entity_pool + chain;
-                            *(unsigned short *)(g_e5c1 + j * 40 + d * 4 + REC) =
+                            *(unsigned short *)(g_equip_qty + j * 40 + d * 4 + REC) =
                                 *(unsigned short *)(it + 0x14);
-                            *(unsigned short *)(g_e5c3 + j * 40 + d * 4 + REC) = it[0x19];
+                            *(unsigned short *)(g_equip_kind + j * 40 + d * 4 + REC) = it[0x19];
                             d++;
                             chain = *(unsigned short *)(it + 0x1c);
                         }

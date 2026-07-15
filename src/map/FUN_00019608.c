@@ -59,7 +59,7 @@ extern unsigned char *g_tile_flags;     /* tile -> terrain-shape table          
 extern unsigned short g_grid_heads[];     /* 128x128 spatial-grid head ids          */
 extern unsigned char g_entity_pool[];     /* pool-A base - 2 (index by id)          */
 extern unsigned char g_pool_a[];     /* pool-A base                            */
-extern unsigned char g_e4ab[];     /* per-player template: team byte         */
+extern unsigned char g_player_owner[];     /* per-player template: team byte         */
 extern unsigned char g_blip_colours[];     /* team -> blip colour table              */
 extern unsigned char g_objectives[];    /* 8 objective slots, stride 14           */
 extern short g_cur_player;              /* current/owning player                  */
@@ -215,7 +215,7 @@ void FUN_00019608(unsigned char *agent, short zoom)
                                 *(short *)(blip + count * 6) = (short)blipX;
                                 *(short *)(blip + count * 6 + 2) = (short)blipY;
                                 blip[count * 6 + 4] = 3;
-                                blip[count * 6 + 5] = g_blip_colours[g_e4ab[owner * 0x417]];
+                                blip[count * 6 + 5] = g_blip_colours[g_player_owner[owner * 0x417]];
                                 count++;
                                 break;
                             }

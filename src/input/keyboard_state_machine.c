@@ -17,7 +17,7 @@
    (EDI push) because the live pre-value and the reloaded value can no longer share ESI. A
    dead load homed in ESI is not source-reachable here (register-role / dead-code wall). */
 extern short g_cur_player;
-extern unsigned char g_e5b9[];
+extern unsigned char g_squad_id[];
 extern unsigned char FUN_0000e568(int);
 
 unsigned char keyboard_state_machine(void)
@@ -42,7 +42,7 @@ top:
     si = g_cur_player;
     i = 0;
 body:
-    if (ch == g_e5b9[(int)si * 1047 + (int)i * 40]) {
+    if (ch == g_squad_id[(int)si * 1047 + (int)i * 40]) {
         ++ch;
         if (ch >= 0x45)
             ch = 0;
