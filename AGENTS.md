@@ -1253,6 +1253,16 @@ $env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot"
     tie-breaks: not flags, not version, not pragma, not wrong C, not source-reshapeable. Handle like the N64
     scene handles `asm/nonmatchings/`: keep the byte-exact `db` transcription for the build; parked C is the
     behaviourally-correct "equivalent" form. Walls do NOT block a byte-perfect final binary.
+  - **C++ also EXHAUSTIVELY checked** (`tools/cpptest.py`): the game banner says "C/C++", and we'd only ever
+    used the C compiler (wcc386). EXTRACTED 9.5b's C++ compiler `wpp386` from the download (W9532_01.img ->
+    WPACK, via tools/archive/wunpack95.sh; staged at toolchain/watcom95b/BIN/WPP386.EXE, git-ignored). C++
+    IS a real distinct codegen (different bytes on ~4/5 walls) BUT lands FURTHER from the original every time
+    (C=REGISTER-ROLE closest, C++=STRUCTURAL). All 115 parks as C++: **0 matches**. Game is a C (wcc386) build.
+  - **Upgraded permuter re-tried a register-alloc wall** (0x22768, 148B) with the NEW pad lever + annealing:
+    **146/148, no crack.** Confirms the improved search doesn't cross the register ties either. So the FULL
+    lever set is now closed: flags(640), compiler-version(7), C++(wpp386), hand-craft, upgraded-permuter --
+    the walls are irreducible 9.5 register/encoding tie-breaks. New tools this session: regdiff (+`--show`),
+    flagsweep (+`--extended`/`--resume`), compsweep (7-compiler), cpptest (C-vs-C++). All committed.
   - **Parks confirmed WALLS three independent ways:** source permuter + new `perm_pad_var_decl` stack-pad
     lever (didn't crack 0x2e5f8/0x338d8); flag permuter (above, 0 matches); and `tools/regdiff.py` — a
     REGISTER-NORMALISED instruction diff (mask relocations + branch displacements, align by structural key,

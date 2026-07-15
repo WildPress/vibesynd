@@ -41,3 +41,5 @@ tools/*.pyc
 run/
 /stdout.txt
 /stderr.txt
+# generated sweep/triage logs (regenerable)
+dashboard/_*
