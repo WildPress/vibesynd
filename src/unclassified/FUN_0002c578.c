@@ -14,7 +14,7 @@
  *   2. Advances a blink tick (g_10b46++) and rebuilds an 8-entry blink table:
  *      g_e394[k] = (g_10b46 / (k+1)) & 1   -- eight phase-shifted blink flags.
  *   3. For each of the player's 4 agents (i=0..3; entity =
- *      g_8110 + (g_e551[player*0x417] + i)*0x5c), if the agent is active
+ *      g_pool_a + (g_e551[player*0x417] + i)*0x5c), if the agent is active
  *      (entity[0x1d] & 4):
  *        - if entity[0xb] & 1 (firing / special): run a 0->1->2 muzzle-flash
  *          state machine in the per-agent cache byte +10, raise the panel flag
@@ -48,10 +48,10 @@
 
 extern unsigned char  g_10b46;      /* blink tick counter */
 extern unsigned char  g_e394[];     /* 8 phase-shifted blink flags */
-extern short          g_10b16;      /* current player index */
+extern short          g_cur_player;      /* current player index */
 extern unsigned char  g_e551[];     /* player record +0xb5: squad first-agent slot */
 extern signed char    g_e552[];     /* player record +0xb6: reference-entity delta */
-extern unsigned char  g_8110[];     /* pool A: entity record k at +k*0x5c */
+extern unsigned char  g_pool_a[];     /* pool A: entity record k at +k*0x5c */
 extern unsigned char  g_entity_pool[];     /* pool A base-2: node = g_entity_pool + id */
 extern unsigned char  g_5114[];     /* agent HUD panel table, stride 0x12: x@+0,y@+2,flag@+8 */
 extern unsigned char  g_df48[];     /* per-agent 11-byte HUD value cache */
@@ -110,7 +110,7 @@ void FUN_0002c578(void)
         g_e394[i] = (unsigned char)(((int)(unsigned char)g_10b46 / (i + 1)) & 1);
 
     for (i = 0; i < 4; i++) {
-        p = g_8110 + ((int)(unsigned char)g_e551[(int)g_10b16 * 0x417] + i) * 0x5c;
+        p = g_pool_a + ((int)(unsigned char)g_e551[(int)g_cur_player * 0x417] + i) * 0x5c;
 
         if ((p[0x1d] & 4) == 0)
             continue;
@@ -151,9 +151,9 @@ void FUN_0002c578(void)
 
     /* second pass: auxiliary progress bars hung off the reference entity */
     {
-        int base = (int)g_10b16 * 0x417;
+        int base = (int)g_cur_player * 0x417;
         int ref = (int)(unsigned char)g_e551[base] + (int)g_e552[base];
-        unsigned char *r = g_8110 + ref * 0x5c;
+        unsigned char *r = g_pool_a + ref * 0x5c;
         id = *(unsigned short *)(r + 0x3a);
         i = 0;
         while (id != 0) {

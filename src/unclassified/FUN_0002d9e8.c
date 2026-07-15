@@ -13,10 +13,10 @@
  * inline `&&` guard reproduces the target's double read exactly.
  *
  * FUN_0002d9e8 @ 0x2d9e8 (853B, leaf). Pool-A squad interference / threat
- * test for record pair (a, b): pool A records are 0x5c bytes at g_8110
+ * test for record pair (a, b): pool A records are 0x5c bytes at g_pool_a
  * (id = ptr - g_entity_pool), grouped 8-per-squad (0x2e0 bytes). Returns 0 at once
  * if b's link target (+0x20 id) or b itself lies in a's 8-record squad
- * (signed (ptr - g_8110)/0x5c/8 group compare). Otherwise scans the whole
+ * (signed (ptr - g_pool_a)/0x5c/8 group compare). Otherwise scans the whole
  * pool scoring members whose +0x20 id maps into a squad of interest
  * (unsigned (id-2)/0x2e0 group), skipping records with +0xb bit0 set, by
  * their +0x1c flag byte: bit1->5, bit2->4, bit3->3, bit4->2, bit0->1.
@@ -28,7 +28,7 @@
  * pointer g_10ae0 is loaded at entry and re-stored (unchanged) at every
  * exit -- single-exit source, Watcom tail-duplicates the return-1 blocks. */
 extern unsigned char g_entity_pool[];
-extern unsigned char g_8110[];
+extern unsigned char g_pool_a[];
 extern unsigned char *g_10ae0;
 extern unsigned char * volatile g_10ae0v;   /* volatile alias of g_10ae0: pins the
                                                entry load first (fixups are masked,
@@ -49,14 +49,14 @@ int FUN_0002d9e8(unsigned char *a, unsigned char *b)
     ca = 0;
     cb = 0;
     if (*(unsigned short *)(b + 0x20) != 0 &&
-        (g_entity_pool + *(unsigned short *)(b + 0x20) - g_8110) / 0x5c / 8 ==
-        (a - g_8110) / 0x5c / 8)
+        (g_entity_pool + *(unsigned short *)(b + 0x20) - g_pool_a) / 0x5c / 8 ==
+        (a - g_pool_a) / 0x5c / 8)
         goto fail;
-    if ((b - g_8110) / 0x5c / 8 == (a - g_8110) / 0x5c / 8)
+    if ((b - g_pool_a) / 0x5c / 8 == (a - g_pool_a) / 0x5c / 8)
         goto fail;
     if (*(b + 0x1c) & 2) {
         id_b = b - g_entity_pool;
-        for (nb = g_8110; nb < end; nb += 0x5c) {
+        for (nb = g_pool_a; nb < end; nb += 0x5c) {
             if ((*(nb + 0xb) & 1) == 0) {
                 g = (*(unsigned short *)(nb + 0x20) - 2) / 0x2e0u;
                 if (g == (id_b - 2) / 0x2e0u) {
@@ -95,7 +95,7 @@ int FUN_0002d9e8(unsigned char *a, unsigned char *b)
         r = 1;
         goto done;
     } else {
-        for (nb = g_8110; nb < end; nb += 0x5c) {
+        for (nb = g_pool_a; nb < end; nb += 0x5c) {
             g = (*(unsigned short *)(nb + 0x20) - 2) / 0x2e0u;
             if (g == (id_a - 2) / 0x2e0u && (*(nb + 0xb) & 1) == 0) {
                 if (*(nb + 0x1c) & 2)

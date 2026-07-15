@@ -41,9 +41,9 @@
    optional pair1 = (0xc, 0xc7) if g_1beae; optional next pair = (1, 0x32)
    if g_1beaf; ammo word (g_e5bc) = {0,0xaaa,0x1554,0x1ffe}[g_3eb7] via the
    jump table; and fills the 20-byte record at g_c368 + 20*(8k+i): 0xff,
-   g_1beb0, k at +7, zeros, +0xc = pool-A slot ptr g_8110+(code+i)*0x5c,
+   g_1beb0, k at +7, zeros, +0xc = pool-A slot ptr g_pool_a+(code+i)*0x5c,
    +0x10 = 0. Finally FUN_000223c8(k, 0x1002) applies the row. */
-extern unsigned char g_8110[];
+extern unsigned char g_pool_a[];
 extern unsigned char g_e551[];
 extern unsigned char g_e8a7[];
 extern unsigned char g_e5ba[];
@@ -73,7 +73,7 @@ void FUN_00012da8(unsigned char k)
     unsigned char *rec;
     int v, w;
 
-    rec = g_8110 + k * 0x2e0;
+    rec = g_pool_a + k * 0x2e0;
     code = k * 8;
     while (!(rec[0x1c] & 2)) {
         rec += 0x5c;
@@ -166,7 +166,7 @@ void FUN_00012da8(unsigned char k)
                 q[8] = 0;
                 *(unsigned short *)(q + 0xa) = 0;
                 *(unsigned char **)(q + 0xc) =
-                    g_8110 + (g_e551[k * 0x417] + i) * 0x5c;
+                    g_pool_a + (g_e551[k * 0x417] + i) * 0x5c;
                 *(int *)(q + 0x10) = 0;
             }
         }

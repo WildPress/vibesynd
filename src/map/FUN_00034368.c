@@ -4,9 +4,9 @@
    for E/W), computes the map column index (row = ((off+y)%0x6000)/0x100 <<7,
    col = ((off+x)&0xff00)/0x100) into the g_map_cols column-pointer table, reads the
    tile one level down ((z-1)/0x80 + column base), and returns 1 iff its type byte
-   g_10ac0[tile] equals the per-direction expected type (N=8, E=7, S=9, W=6),
+   g_tile_flags[tile] equals the per-direction expected type (N=8, E=7, S=9, W=6),
    else 0.  Signed div idioms: %0x6000 (idiv), /0x100 and /0x80 (sar-with-sbb).
-   g_map_cols/g_10ac0 pointer vars saved in ESI/EDI and re-stored at every return
+   g_map_cols/g_tile_flags pointer vars saved in ESI/EDI and re-stored at every return
    (single-exit).  Sibling idioms: FUN_00033fb8 / FUN_00028ec8 (g_map_cols column).
    Recipe: -4s -oneatx -zp8 -s -zq
 
@@ -25,14 +25,14 @@
    promotion nor move the entry-load order (first diff stayed at 0x4). Not
    source-reachable. */
 extern char **g_map_cols;
-extern unsigned char *g_10ac0;
+extern unsigned char *g_tile_flags;
 extern short g_dir_dx[];
 extern short g_dir_dy[];
 
 int FUN_00034368(short x, short y, short z, unsigned char dir)
 {
     char **base = g_map_cols;
-    unsigned char *tt = g_10ac0;
+    unsigned char *tt = g_tile_flags;
     int r;
     int row, col, idx;
     unsigned char tile;
@@ -73,7 +73,7 @@ int FUN_00034368(short x, short y, short z, unsigned char dir)
     }
     r = 0;
 done:
-    g_10ac0 = tt;
+    g_tile_flags = tt;
     g_map_cols = base;
     return r;
 }

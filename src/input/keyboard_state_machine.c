@@ -1,5 +1,5 @@
 /* frameless @ 0x20c88: keyboard/sequence state-machine over the 0xe5b9 strided table
-   (row stride 1047 = g_10b16, column stride 40 = i). Reads current key ch = FUN_e568(0x45),
+   (row stride 1047 = g_cur_player, column stride 40 = i). Reads current key ch = FUN_e568(0x45),
    then repeatedly scans columns i=0..17 of the current row for the byte matching ch; on a
    hit it advances ch (wrapping at 0x45) and rescans; when no column matches it writes the
    row counter back and returns ch. The `flag` local is the one-byte frame (sub esp,4); it
@@ -16,7 +16,7 @@
    of `mov si` (66 8b 35); making it live loads it into ESI correctly but spills a 3rd reg
    (EDI push) because the live pre-value and the reloaded value can no longer share ESI. A
    dead load homed in ESI is not source-reachable here (register-role / dead-code wall). */
-extern short g_10b16;
+extern short g_cur_player;
 extern unsigned char g_e5b9[];
 extern unsigned char FUN_0000e568(int);
 
@@ -27,26 +27,26 @@ unsigned char keyboard_state_machine(void)
     short si;
     unsigned char flag;
 
-    si = g_10b16;
+    si = g_cur_player;
     ch = FUN_0000e568(0x45);
     goto top;
 inc_i:
     if (++i < 0x12)
         goto body;
-    g_10b16 = si;
+    g_cur_player = si;
     if (flag)
         return ch;
     goto top;
 top:
     flag = 1;
-    si = g_10b16;
+    si = g_cur_player;
     i = 0;
 body:
     if (ch == g_e5b9[(int)si * 1047 + (int)i * 40]) {
         ++ch;
         if (ch >= 0x45)
             ch = 0;
-        g_10b16 = si;
+        g_cur_player = si;
         goto top;
     }
     goto inc_i;

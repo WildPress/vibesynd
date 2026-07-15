@@ -20,7 +20,7 @@
  *     spilled locals. Portable C cannot reproduce that exact stack layout, and
  *     every [ESP+disp] in the function keys off it.
  *  4. Three co-located jump tables (Watcom emits them in .text before the code):
- *       - table1 @ 0x19564, 16 entries, index g_10ac0[tile]  (terrain shape)
+ *       - table1 @ 0x19564, 16 entries, index g_tile_flags[tile]  (terrain shape)
  *       - table2 @ 0x195a4,  6 entries, index node[0x18]     (blip by type)
  *       - table3 @ 0x195bc, 17 entries, index objective type  (HUD markers)
  *     (lefix rule: literal L in `jmp CS:[eax*4+L]` -> manifest L+0xd748.)
@@ -35,7 +35,7 @@
  * around the agent's tile; subX/subY are the sub-tile scroll remainders.
  *
  * Phase 1 (terrain): for every tile (row,col) in view, look up its ground tile
- * through the g_map_cols column table, map it through g_10ac0 to a terrain shape
+ * through the g_map_cols column table, map it through g_tile_flags to a terrain shape
  * 0..15, and draw that shape as a filled quad via FUN_0003fb40(x,y,w,h,colour)
  * (colour 0xf / 7 / 0xa / 0 per shape class).
  *
@@ -55,14 +55,14 @@
  * types 1/2/3/5/0xf) via FUN_00014c58 (length) + FUN_00019318, returning.
  */
 extern char **g_map_cols;              /* map column-pointer table               */
-extern unsigned char *g_10ac0;     /* tile -> terrain-shape table            */
+extern unsigned char *g_tile_flags;     /* tile -> terrain-shape table            */
 extern unsigned short g_grid_heads[];     /* 128x128 spatial-grid head ids          */
 extern unsigned char g_entity_pool[];     /* pool-A base - 2 (index by id)          */
-extern unsigned char g_8110[];     /* pool-A base                            */
+extern unsigned char g_pool_a[];     /* pool-A base                            */
 extern unsigned char g_e4ab[];     /* per-player template: team byte         */
 extern unsigned char g_b46a[];     /* team -> blip colour table              */
 extern unsigned char g_1be3a[];    /* 8 objective slots, stride 14           */
-extern short g_10b16;              /* current/owning player                  */
+extern short g_cur_player;              /* current/owning player                  */
 extern short g_10b30;              /* selected-target countdown (pulse anim) */
 extern short g_a74e;               /* pulse-ring base radius                 */
 extern short g_3ef4;               /* objective-marker animation phase       */
@@ -114,7 +114,7 @@ void FUN_00019608(unsigned char *agent, short zoom)
             base = g_map_cols;
             slot = base + index;
             tile = *(unsigned char *)((int)*slot);   /* ground tile byte */
-            shape = g_10ac0[tile];
+            shape = g_tile_flags[tile];
             if (shape > 0xf)
                 continue;
 
@@ -162,8 +162,8 @@ void FUN_00019608(unsigned char *agent, short zoom)
                 if (node[0xb] & 1)
                     goto next_node;                       /* hidden */
                 if (node[0xa] & 1) {                       /* owned-agent flag */
-                    int rec = (int)((node - g_8110) / 0x5c) / 8;
-                    if (rec != g_10b16)
+                    int rec = (int)((node - g_pool_a) / 0x5c) / 8;
+                    if (rec != g_cur_player)
                         goto next_node;                   /* not our team */
                 }
 
@@ -191,7 +191,7 @@ void FUN_00019608(unsigned char *agent, short zoom)
                     short tgt = *(short *)(node + 0x20);
                     int owner = -1;
                     if (node[0x1c] & 2)
-                        owner = (int)((node - g_8110) / 0x5c) / 8;
+                        owner = (int)((node - g_pool_a) / 0x5c) / 8;
 
                     if (g_10b45 != 0) {
                         if ((node[0x1c] & 8) && tgt == 0) {
@@ -208,8 +208,8 @@ void FUN_00019608(unsigned char *agent, short zoom)
                             count++;
                         } else {
                             if (tgt != 0)
-                                owner = (int)((g_entity_pool + tgt - g_8110) / 0x5c) / 8;
-                            if (owner == g_10b16 || g_10b30 > 0) {
+                                owner = (int)((g_entity_pool + tgt - g_pool_a) / 0x5c) / 8;
+                            if (owner == g_cur_player || g_10b30 > 0) {
                                 if (tgt == -1)
                                     goto dot45;
                                 *(short *)(blip + count * 6) = (short)blipX;
@@ -241,7 +241,7 @@ void FUN_00019608(unsigned char *agent, short zoom)
                             count++;
                         } else {
                             if (tgt != 0)
-                                owner = (int)((g_entity_pool + tgt - g_8110) / 0x5c) / 8;
+                                owner = (int)((g_entity_pool + tgt - g_pool_a) / 0x5c) / 8;
                             if (tgt == -1) {
                                 if (g_e395 == 0)
                                     break;
@@ -251,7 +251,7 @@ void FUN_00019608(unsigned char *agent, short zoom)
                             *(short *)(blip + count * 6) = (short)blipX;
                             *(short *)(blip + count * 6 + 2) = (short)blipY;
                             blip[count * 6 + 4] = 3;
-                            if (owner == g_10b16) {
+                            if (owner == g_cur_player) {
                                 if (tgt != 0 && (node[0x1c] & 0x20))
                                     blip[count * 6 + 5] = (unsigned char)(g_e396 + 0xb);
                                 else

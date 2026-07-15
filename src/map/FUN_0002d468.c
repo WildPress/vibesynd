@@ -14,7 +14,7 @@
    DX). Named-base variant regresses (338B). If the 0x33fb8 g_map_cols retry finds
    the missing spelling, transplant it to BOTH twins. */
 extern char **g_map_cols;
-extern unsigned char *g_10ac0;
+extern unsigned char *g_tile_flags;
 extern volatile short g_e128;
 extern int FUN_LE_0000fa18(int a, int b, int c);
 extern int FUN_LE_0000fa88(int a, int b, int c);
@@ -28,7 +28,7 @@ int FUN_0002d468(short x, short y, int w, unsigned char *p)
     if (!(p[0x1c] & 2) && !(p[0x1d] & 8)) {
         slot = g_map_cols + ((*(short *)(p + 6) % 0x6000 / 0x100 << 7)
                         + (*(short *)(p + 4) & 0xff00) / 0x100);
-        switch (g_10ac0[*(unsigned char *)((int)*slot
+        switch (g_tile_flags[*(unsigned char *)((int)*slot
                                            + (*(short *)(p + 8) - 1) / 0x80)]) {
         case 1:
         case 2:

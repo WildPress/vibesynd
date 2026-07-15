@@ -40,7 +40,7 @@
    with flag bit0 (+0xb). Dispatches on type byte +0x18 via a 6-entry jump
    table (obj1:+0x4550 = manifest 0x11c98): types 0,3 -> miss;
    type 1 (ped):    also +0xa bit0; if (self[0x1c]&2) same-squad skip
-                    ((p-g_8110)/0x5c/8 equal); if self[0x1c]&0xc and node
+                    ((p-g_pool_a)/0x5c/8 equal); if self[0x1c]&0xc and node
                     +0x1c&0xc skip; skip if self is node's leader
                     (g_entity_pool + word(node+0x20)); box +-(rx/2 +0x20 slack),
                     +-(ry/2 +0x20), z in [node8-rz, node8+0x100].
@@ -59,7 +59,7 @@
    Caller 0x2e808-family: FUN_11d68(p, x, y, z, 0x80, 0x80, 0x100). */
 extern unsigned short g_grid_heads[];
 extern unsigned char g_entity_pool[];
-extern unsigned char g_8110[];
+extern unsigned char g_pool_a[];
 
 unsigned char *FUN_00011d68(unsigned char *a1, short xx, short yy, volatile short z,
                             short rx, short ryy, short rz)
@@ -116,8 +116,8 @@ unsigned char *FUN_00011d68(unsigned char *a1, short xx, short yy, volatile shor
                         fl = a1[0x1c];
                         q = node;
                         if (fl & 2) {
-                            ga = (int)(a1 - g_8110) / 0x5c / 8;
-                            if ((int)(node - g_8110) / 0x5c / 8 == ga)
+                            ga = (int)(a1 - g_pool_a) / 0x5c / 8;
+                            if ((int)(node - g_pool_a) / 0x5c / 8 == ga)
                                 goto skip;
                         }
                         if (a1[0x1c] & 0xc) {

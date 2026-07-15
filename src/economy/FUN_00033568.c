@@ -1,6 +1,6 @@
 /* frameless @ 0x33568: commit funding entry, 866 bytes (manifest size correct).
    Returns 2 if g_5595==0; 0 if g_5597==-1; 3 if price g_b95c[g_5597]*g_559b
-   exceeds the money int at 0xe49c+g_10b16*0x417 (else deducts it); finds the
+   exceeds the money int at 0xe49c+g_cur_player*0x417 (else deducts it); finds the
    first zero cell of the 10x24 short table g_559d, writes (g_5597+1)*10 plus
    the previous cell (row above's last column when col==0); returns 0 if the
    new value < 0x960, else 1, and on switch(g_5595) case 1/2 stamps 0x960 into
@@ -37,8 +37,8 @@ extern unsigned short g_5597w; /* word alias of g_5597 (fixups masked) */
 extern unsigned short g_559b;
 extern short g_559d[10][24];
 extern unsigned short g_b95c[];
-extern short g_10b16;
-extern unsigned char g_e49c[];
+extern short g_cur_player;
+extern unsigned char g_player_recs[];
 extern unsigned char g_5788[];
 extern unsigned char g_578a[];
 extern unsigned char g_596a[];
@@ -59,9 +59,9 @@ unsigned char FUN_00033568(void)
         goto ret0;
     {
         unsigned int cost = g_b95c[g_5597] * g_559b;
-        if (cost > *(unsigned int *)(g_e49c + g_10b16 * 0x417))
+        if (cost > *(unsigned int *)(g_player_recs + g_cur_player * 0x417))
             goto ret3;
-        *(unsigned int *)(g_e49c + g_10b16 * 0x417) -= cost;
+        *(unsigned int *)(g_player_recs + g_cur_player * 0x417) -= cost;
     }
     found = 0;
     for (r = 0; r < 10; r++) {

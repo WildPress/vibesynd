@@ -2,7 +2,7 @@
  * 0xf bytes at 0x1beb2 (compiler-unrolled x4 -- write the PLAIN loop, -oneatx unrolls small do-whiles x4 by itself and DOUBLES any hand-unrolling; mask 0xef hoisted to CL); copies
  * the 4 header bytes 0x1beaa..ad to 0x3eb4..b7 and zeroes the dwords 0x3eb8 /
  * 0x3ebc; stamps 0xd into byte 0 of the 0x40 20-byte records at 0xc36b; then
- * for every player k < g_3eb4 except self (g_10b16) with player-rec flag 2
+ * for every player k < g_3eb4 except self (g_cur_player) with player-rec flag 2
  * (g_e4aa[k*0x417]) calls 0x12da8(k). Recipe: -4s -oneatx -zp8 -s -zq
  */
 extern unsigned char g_1beb2[];
@@ -17,7 +17,7 @@ extern unsigned char g_3eb7;
 extern int g_3eb8;
 extern int g_3ebc;
 extern unsigned char g_c36b[];
-extern short g_10b16;
+extern short g_cur_player;
 extern unsigned char g_e4aa[];
 extern void FUN_00012da8(unsigned char k);
 
@@ -42,7 +42,7 @@ void FUN_00012ca8(void)
     for (j = 0; j < 0x40; j++)
         g_c36b[j * 20] = 0xd;
     for (k = 0; k < g_3eb4; k++) {
-        if (k != g_10b16 && (g_e4aa[k * 0x417] & 2))
+        if (k != g_cur_player && (g_e4aa[k * 0x417] & 2))
             FUN_00012da8((unsigned char)k);
     }
 }

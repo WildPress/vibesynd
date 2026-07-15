@@ -18,7 +18,7 @@
    early `i = 0`, int-typed counter (changes frame to 0x14, breaks 16-bit cmp).
    This is the 0x338d8 spill-slot-order wall — allocator-internal, decl-order
    proven byte-inert here; not source-reachable, cpermute can't touch slots. */
-extern unsigned char g_8110[];
+extern unsigned char g_pool_a[];
 extern short g_dir_dx[];
 extern short g_dir_dy[];
 extern int FUN_00014c58(int a, int b);
@@ -39,7 +39,7 @@ unsigned char *FUN_0002e5f8(unsigned char *p1, unsigned char *p2, int dist)
     unsigned char dir2;
 
     if (*(p1 + 0x1c) & 2) {
-        if ((p1 - g_8110) / 0x5c / 8 == (p2 - g_8110) / 0x5c / 8)
+        if ((p1 - g_pool_a) / 0x5c / 8 == (p2 - g_pool_a) / 0x5c / 8)
             return 0;
     }
     if (*(p2 + 0x19) == 0x17)

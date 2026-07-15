@@ -34,18 +34,18 @@
  * 0x13=0x33, 0x17=0x37, 0x18=0x38).
  *
  * Entry: rec = g_105d4 + id*0xe (14B command record, opcode at rec[0xd]);
- * tpl = g_e49c + id*0x417 (0x417 equip/research template row saved to [ESP+8]).
+ * tpl = g_player_recs + id*0x417 (0x417 equip/research template row saved to [ESP+8]).
  * tpl[0xb5] = pool-A base slot (byte), tpl[0xb6] = signed agent selector.
- * Common node address = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c.
- * Squad-loop bodies walk 4 pool-A records: p in [g_8110 + tpl[0xb5]*0x5c,
- * g_8110 + (tpl[0xb5]+4)*0x5c). Dominant callee FUN_0002f608 (aim/step).
+ * Common node address = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c.
+ * Squad-loop bodies walk 4 pool-A records: p in [g_pool_a + tpl[0xb5]*0x5c,
+ * g_pool_a + (tpl[0xb5]+4)*0x5c). Dominant callee FUN_0002f608 (aim/step).
  */
 extern unsigned char g_105d4[];
-extern unsigned char g_e49c[];
-extern unsigned char g_8110[];
+extern unsigned char g_player_recs[];
+extern unsigned char g_pool_a[];
 extern unsigned char g_entity_pool[];
 extern short g_10b0c;
-extern short g_10b16;
+extern short g_cur_player;
 extern short g_10b2e;
 extern unsigned short g_e553;
 extern unsigned char g_e4ab[];
@@ -74,13 +74,13 @@ extern unsigned char *FUN_00022b38(int a, int b, int c);
 void FUN_00023158(unsigned int idx)
 {
     unsigned char *rec = g_105d4 + (unsigned short)idx * 0xe;
-    unsigned char *tpl = g_e49c + (unsigned short)idx * 0x417;
+    unsigned char *tpl = g_player_recs + (unsigned short)idx * 0x417;
 
     switch (rec[0xd]) {
     case 0x01: case 0x21: {
         unsigned short k;
         if (g_10b0c > 1) {
-            if ((unsigned short)idx == g_10b16) {
+            if ((unsigned short)idx == g_cur_player) {
                 FUN_000229f8(0x26c, g_e553);
                 for (k = 0; k < g_10b0c; k++)
                     FUN_000223c8((unsigned short)k, 2);
@@ -91,13 +91,13 @@ void FUN_00023158(unsigned int idx)
             FUN_000229f8(0x26c, g_10b2e);
             FUN_000223c8((unsigned short)idx, 2);
         }
-        if ((unsigned short)idx == g_10b16)
+        if ((unsigned short)idx == g_cur_player)
             FUN_00029d88();
         break;
     }
 
     case 0x02: case 0x22: {
-        if ((unsigned short)idx == g_10b16) {
+        if ((unsigned short)idx == g_cur_player) {
             unsigned char v = g_10afc | 8;
             g_10afc = v;
             g_10afc = v & 0xfe;
@@ -115,7 +115,7 @@ void FUN_00023158(unsigned int idx)
     }
 
     case 0x18: case 0x38: {
-        unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
+        unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         if ((unsigned short)FUN_00023038(node))
             node[0x19] = 0;
         node[0x58] = 0;
@@ -123,7 +123,7 @@ void FUN_00023158(unsigned int idx)
     }
 
     case 0x03: {
-        unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
+        unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         if ((unsigned short)FUN_00023038(node))
             node[0x19] = 2;
         node[0x58] = 2;
@@ -136,7 +136,7 @@ void FUN_00023158(unsigned int idx)
     case 0x23: {
         int i;
         for (i = 0; i < 4; i++) {
-            unsigned char *node = g_8110 + (tpl[0xb5] + i) * 0x5c;
+            unsigned char *node = g_pool_a + (tpl[0xb5] + i) * 0x5c;
             if (node[0x1d] & 4) {
                 if ((unsigned short)FUN_00023038(node))
                     node[0x19] = 2;
@@ -154,7 +154,7 @@ void FUN_00023158(unsigned int idx)
     case 0x3a: {
         int i;
         for (i = 0; i < 4; i++) {
-            unsigned char *node = g_8110 + (tpl[0xb5] + i) * 0x5c;
+            unsigned char *node = g_pool_a + (tpl[0xb5] + i) * 0x5c;
             if (node[0x1d] & 4) {
                 if ((unsigned short)FUN_00023038(node))
                     node[0x19] = 2;
@@ -172,7 +172,7 @@ void FUN_00023158(unsigned int idx)
     }
 
     case 0x04: {
-        unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
+        unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         if ((unsigned short)FUN_00023038(node))
             node[0x19] = 4;
         node[0x58] = 4;
@@ -182,8 +182,8 @@ void FUN_00023158(unsigned int idx)
 
     case 0x24: {
         unsigned char *p;
-        for (p = g_8110 + tpl[0xb5] * 0x5c;
-             p < g_8110 + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
+        for (p = g_pool_a + tpl[0xb5] * 0x5c;
+             p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if (p[0x1d] & 4) {
                 if ((unsigned short)FUN_00023038(p))
                     p[0x19] = 4;
@@ -195,7 +195,7 @@ void FUN_00023158(unsigned int idx)
     }
 
     case 0x05: {
-        unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
+        unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         if ((unsigned short)FUN_00023038(node))
             node[0x19] = 5;
         if ((short)FUN_000377b8(node) >= 8)
@@ -208,8 +208,8 @@ void FUN_00023158(unsigned int idx)
 
     case 0x25: {
         unsigned char *p;
-        for (p = g_8110 + tpl[0xb5] * 0x5c;
-             p < g_8110 + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
+        for (p = g_pool_a + tpl[0xb5] * 0x5c;
+             p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if (p[0x1d] & 4) {
                 if ((unsigned short)FUN_00023038(p))
                     p[0x19] = 5;
@@ -228,7 +228,7 @@ void FUN_00023158(unsigned int idx)
         break;
 
     case 0x07: {
-        unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
+        unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         unsigned char *q = g_entity_pool + *(unsigned short *)rec;
         node[0x46] = 0;
         *(unsigned short *)(node + 0x44) = (unsigned short)(q - g_entity_pool);
@@ -237,14 +237,14 @@ void FUN_00023158(unsigned int idx)
 
     case 0x27: {
         unsigned char *carried = g_entity_pool + *(unsigned short *)rec;
-        unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
+        unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         unsigned char *p;
         node[0x46] = 0;
         *(unsigned short *)(node + 0x44) = (unsigned short)(carried - g_entity_pool);
-        for (p = g_8110 + tpl[0xb5] * 0x5c;
-             p < g_8110 + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
+        for (p = g_pool_a + tpl[0xb5] * 0x5c;
+             p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if (p[0x1d] & 4) {
-                if (p != g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c) {
+                if (p != g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c) {
                     unsigned char *nn = g_entity_pool + FUN_00037d08(p, 0, carried[0x19]);
                     if (nn[0x19] == carried[0x19])
                         *(unsigned short *)(p + 0x44) = (unsigned short)(nn - g_entity_pool);
@@ -256,7 +256,7 @@ void FUN_00023158(unsigned int idx)
     }
 
     case 0x08: {
-        unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
+        unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         unsigned char *p, *end;
         unsigned short link = *(unsigned short *)(node + 0x44);
         if (link != 0) {
@@ -269,8 +269,8 @@ void FUN_00023158(unsigned int idx)
         if ((*(unsigned short *)(node + 0x1c) & 0x1002) != 2)
             goto consume;
         end = g_10ae0;
-        if (g_8110 < end) {
-            p = g_8110;
+        if (g_pool_a < end) {
+            p = g_pool_a;
             do {
                 if (*(unsigned short *)(p + 0x20) ==
                     (unsigned short)(node - g_entity_pool))
@@ -285,9 +285,9 @@ void FUN_00023158(unsigned int idx)
     case 0x28: {
         unsigned char *node;
         int cur_id;
-        node = g_8110 + tpl[0xb5] * 0x5c;
+        node = g_pool_a + tpl[0xb5] * 0x5c;
         cur_id = node - g_entity_pool;
-        for (; node < g_8110 + (tpl[0xb5] + 4) * 0x5c;
+        for (; node < g_pool_a + (tpl[0xb5] + 4) * 0x5c;
              node += 0x5c, cur_id += 0x5c) {
             unsigned short link = *(unsigned short *)(node + 0x44);
             if (link != 0) {
@@ -299,8 +299,8 @@ void FUN_00023158(unsigned int idx)
             }
             if ((*(unsigned short *)(node + 0x1c) & 0x1002) == 2) {
                 unsigned char *p;
-                if (g_10ae0 > g_8110) {
-                    p = g_8110;
+                if (g_10ae0 > g_pool_a) {
+                    p = g_pool_a;
                     do {
                         if (*(unsigned short *)(p + 0x20) == (unsigned short)cur_id)
                             FUN_0002f608(p, *(short *)rec, *(short *)(rec + 2),
@@ -314,7 +314,7 @@ void FUN_00023158(unsigned int idx)
     }
 
     case 0x09: {
-        unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
+        unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         if ((unsigned short)FUN_00023038(node))
             node[0x19] = 5;
         node[0x58] = 6;
@@ -325,8 +325,8 @@ void FUN_00023158(unsigned int idx)
 
     case 0x29: {
         unsigned char *p;
-        for (p = g_8110 + tpl[0xb5] * 0x5c;
-             p < g_8110 + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
+        for (p = g_pool_a + tpl[0xb5] * 0x5c;
+             p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if (p[0x1d] & 4) {
                 if ((unsigned short)FUN_00023038(p))
                     p[0x19] = 5;
@@ -339,7 +339,7 @@ void FUN_00023158(unsigned int idx)
     }
 
     case 0x0a: case 0x2a: {
-        unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
+        unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         if ((unsigned short)FUN_00023038(node)) {
             node[0x19] = 0xa;
             node[0x58] = 0xa;
@@ -352,15 +352,15 @@ void FUN_00023158(unsigned int idx)
 
     case 0x0b: {
         int off = ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
-        *(unsigned short *)(g_8110 + off + 0x44) = 0;
-        g_8110[off + 0x46] = 0;
+        *(unsigned short *)(g_pool_a + off + 0x44) = 0;
+        g_pool_a[off + 0x46] = 0;
         break;
     }
 
     case 0x2b: {
         unsigned char *p;
-        for (p = g_8110 + tpl[0xb5] * 0x5c;
-             p < g_8110 + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
+        for (p = g_pool_a + tpl[0xb5] * 0x5c;
+             p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if (p[0x1d] & 4) {
                 *(unsigned short *)(p + 0x44) = 0;
                 p[0x46] = 0;
@@ -370,7 +370,7 @@ void FUN_00023158(unsigned int idx)
     }
 
     case 0x19: {
-        unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
+        unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         int col;
         if (*(unsigned short *)(node + 0x24) == 0)
             goto consume;
@@ -386,8 +386,8 @@ void FUN_00023158(unsigned int idx)
 
     case 0x39: {
         unsigned char *p;
-        for (p = g_8110 + tpl[0xb5] * 0x5c;
-             p < g_8110 + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
+        for (p = g_pool_a + tpl[0xb5] * 0x5c;
+             p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if ((p[0x1d] & 4) && *(unsigned short *)(p + 0x24) != 0) {
                 int col = (((*(short *)(p + 6) % 0x6000) / 0x100) << 7)
                           + ((*(short *)(p + 4) & 0xff00) / 0x100);
@@ -402,7 +402,7 @@ void FUN_00023158(unsigned int idx)
     }
 
     case 0x14: {
-        unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
+        unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         if (node[0xb] & 1)
             goto consume;
         if (*(short *)rec != -1)
@@ -417,8 +417,8 @@ void FUN_00023158(unsigned int idx)
 
     case 0x34: {
         unsigned char *p;
-        for (p = g_8110 + tpl[0xb5] * 0x5c;
-             p < g_8110 + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
+        for (p = g_pool_a + tpl[0xb5] * 0x5c;
+             p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if ((p[0x1d] & 4) && !(p[0xb] & 1)) {
                 if (*(short *)rec != -1)
                     p[0x49] = rec[0];
@@ -432,7 +432,7 @@ void FUN_00023158(unsigned int idx)
     }
 
     case 0x0c: {
-        unsigned char *node = g_8110 + (tpl[0xb5] + *(unsigned short *)rec) * 0x5c;
+        unsigned char *node = g_pool_a + (tpl[0xb5] + *(unsigned short *)rec) * 0x5c;
         if (node[0xb] & 1)
             goto consume;
         node[0x49] = rec[2];
@@ -441,8 +441,8 @@ void FUN_00023158(unsigned int idx)
 
     case 0x2c: {
         unsigned char *p;
-        for (p = g_8110 + tpl[0xb5] * 0x5c;
-             p < g_8110 + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
+        for (p = g_pool_a + tpl[0xb5] * 0x5c;
+             p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if ((p[0x1d] & 4) && !(p[0xb] & 1))
                 p[0x49] = rec[2];
         }
@@ -450,7 +450,7 @@ void FUN_00023158(unsigned int idx)
     }
 
     case 0x0d: {
-        unsigned char *node = g_8110 + (tpl[0xb5] + *(unsigned short *)rec) * 0x5c;
+        unsigned char *node = g_pool_a + (tpl[0xb5] + *(unsigned short *)rec) * 0x5c;
         if (node[0xb] & 1)
             goto consume;
         node[0x4d] = rec[2];
@@ -459,8 +459,8 @@ void FUN_00023158(unsigned int idx)
 
     case 0x2d: {
         unsigned char *p;
-        for (p = g_8110 + tpl[0xb5] * 0x5c;
-             p < g_8110 + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
+        for (p = g_pool_a + tpl[0xb5] * 0x5c;
+             p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if ((p[0x1d] & 4) && !(p[0xb] & 1))
                 p[0x4d] = rec[2];
         }
@@ -468,7 +468,7 @@ void FUN_00023158(unsigned int idx)
     }
 
     case 0x0e: {
-        unsigned char *node = g_8110 + (tpl[0xb5] + *(unsigned short *)rec) * 0x5c;
+        unsigned char *node = g_pool_a + (tpl[0xb5] + *(unsigned short *)rec) * 0x5c;
         if (node[0xb] & 1)
             goto consume;
         node[0x51] = rec[2];
@@ -477,8 +477,8 @@ void FUN_00023158(unsigned int idx)
 
     case 0x2e: {
         unsigned char *p;
-        for (p = g_8110 + tpl[0xb5] * 0x5c;
-             p < g_8110 + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
+        for (p = g_pool_a + tpl[0xb5] * 0x5c;
+             p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if ((p[0x1d] & 4) && !(p[0xb] & 1))
                 p[0x51] = rec[2];
         }
@@ -486,7 +486,7 @@ void FUN_00023158(unsigned int idx)
     }
 
     case 0x0f: {
-        unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
+        unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         if (node[0xa] & 8)
             goto consume;
         node[0x19] = 0x1c;
@@ -497,8 +497,8 @@ void FUN_00023158(unsigned int idx)
 
     case 0x2f: {
         unsigned char *p;
-        for (p = g_8110 + tpl[0xb5] * 0x5c;
-             p < g_8110 + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
+        for (p = g_pool_a + tpl[0xb5] * 0x5c;
+             p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if ((p[0x1d] & 4) && !(p[0xa] & 8) && p[0x19] == 0) {
                 p[0x19] = 0x1c;
                 p[0x58] = 0x1c;
@@ -509,7 +509,7 @@ void FUN_00023158(unsigned int idx)
     }
 
     case 0x10: {
-        unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
+        unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         int nid, k, n, i, a;
         unsigned char *n2;
         if (node[0xb] & 1)
@@ -564,8 +564,8 @@ void FUN_00023158(unsigned int idx)
 
     case 0x30: {
         unsigned char *p;
-        for (p = g_8110 + tpl[0xb5] * 0x5c;
-             p < g_8110 + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
+        for (p = g_pool_a + tpl[0xb5] * 0x5c;
+             p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             int nid, k, n, i, a;
             unsigned char *n2;
             if (!(p[0x1d] & 4) || (p[0xb] & 1))
@@ -609,7 +609,7 @@ void FUN_00023158(unsigned int idx)
     }
 
     case 0x11: {
-        unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
+        unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         unsigned short r = FUN_00037ad8(node, 0);
         node[0x49] = 0xff;
         node[0x4d] = 0xff;
@@ -620,8 +620,8 @@ void FUN_00023158(unsigned int idx)
 
     case 0x31: {
         unsigned char *p;
-        for (p = g_8110 + tpl[0xb5] * 0x5c;
-             p < g_8110 + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
+        for (p = g_pool_a + tpl[0xb5] * 0x5c;
+             p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if (p[0x1d] & 4) {
                 unsigned short r = FUN_00037ad8(p, 0);
                 p[0x49] = 0xff;
@@ -634,7 +634,7 @@ void FUN_00023158(unsigned int idx)
     }
 
     case 0x16: {
-        unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
+        unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         if (node[0xa] & 8)
             goto consume;
         *(unsigned short *)(node + 0x44) = FUN_00037d08(node, 0, rec[0]);
@@ -643,8 +643,8 @@ void FUN_00023158(unsigned int idx)
 
     case 0x36: {
         unsigned char *p;
-        for (p = g_8110 + tpl[0xb5] * 0x5c;
-             p < g_8110 + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
+        for (p = g_pool_a + tpl[0xb5] * 0x5c;
+             p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if (p[0x1d] & 4) {
                 unsigned char *nn = g_entity_pool + *(unsigned short *)(p + 0x44);
                 if (nn >= (unsigned char *)0x11670 &&
@@ -656,7 +656,7 @@ void FUN_00023158(unsigned int idx)
     }
 
     case 0x12: case 0x32: {
-        unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
+        unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         node[0x19] = 0x1f;
         node[0x58] = 0x1f;
         *(unsigned short *)(node + 0x2a) = *(unsigned short *)rec;
@@ -665,7 +665,7 @@ void FUN_00023158(unsigned int idx)
     }
 
     case 0x13: case 0x33: {
-        unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
+        unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         if (node[0xa] & 8)
             goto consume;
         node[0x19] = 0x20;

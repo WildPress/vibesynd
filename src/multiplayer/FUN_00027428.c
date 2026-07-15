@@ -45,7 +45,7 @@
  * 0x10644 (off @ +0, sel @ +4, stride 6).
  */
 extern short g_10b0c;                 /* number of players */
-extern short g_10b16;                 /* our index (-1 until registered) */
+extern short g_cur_player;                 /* our index (-1 until registered) */
 extern unsigned char g_10b4c;         /* input-echo flag */
 extern unsigned char g_e285;          /* abort/ESC flag */
 extern unsigned char g_df30[];        /* per-player ready byte */
@@ -98,26 +98,26 @@ readloop:
         g_df30[i] = 0;
 esccheck:
     if (g_e285 != 0) return -2;
-    g_10b16 = -1;
+    g_cur_player = -1;
     for (i = 0; i < g_10b0c; i++) {
         int r;
         strcpy(nbuf, g_name_buf);
         nbuf[strlen(nbuf) + 1] = 0;
         nbuf[strlen(nbuf)] = (char)(i + 0x30);
         r = FUN_00027fc8(g_conn[i], nbuf);
-        if (r == 0) { g_10b16 = i; goto found; }
+        if (r == 0) { g_cur_player = i; goto found; }
         if (r == -13) {
             FUN_00028118(g_conn[i], nbuf);
             i--;
         }
     }
 found:
-    if (g_10b16 == -1) goto esccheck;
+    if (g_cur_player == -1) goto esccheck;
     FUN_0003ad66(g_36ec);
     for (i = 0; i < g_10b0c; i++) {
-        if (i != g_10b16) {
-            _fstrcpy((char __far *)(g_conn[i] + 0x1a), (char __far *)(g_conn[g_10b16] + 0x1a));
-            g_conn[i][3] = g_conn[g_10b16][3];
+        if (i != g_cur_player) {
+            _fstrcpy((char __far *)(g_conn[i] + 0x1a), (char __far *)(g_conn[g_cur_player] + 0x1a));
+            g_conn[i][3] = g_conn[g_cur_player][3];
             FUN_0003a4fa(nbuf, g_3684, g_name_buf, i);
             FUN_00028228(g_conn[i], nbuf, 1, 0, 0);
         }
@@ -128,18 +128,18 @@ found:
     for (i = 0; i < g_10b0c; i++) {
         int r;
         g_df30[i] = 0;
-        if (i == g_10b16) continue;
+        if (i == g_cur_player) continue;
         if (g_conn[i][2] == 0) goto do_connect;
         if (g_conn[i][0x31] != 0xff) continue;
     do_connect:
         FUN_0003ad66(g_372c, i, g_conn[i][2], g_conn[i][0x31]);
         FUN_0003a4fa(nbuf, g_3684, g_name_buf, i);
-        r = FUN_00028368(g_conn[g_10b16], nbuf, 0, 0, 0);
+        r = FUN_00028368(g_conn[g_cur_player], nbuf, 0, 0, 0);
         if (r != 0) continue;
         FUN_0003ad66(g_3740, i);
         FUN_00028628(g_conn[i]);
-        _fstrcpy((char __far *)(g_conn[i] + 0xa), (char __far *)(g_conn[g_10b16] + 0xa));
-        g_conn[i][2] = g_conn[g_10b16][2];
+        _fstrcpy((char __far *)(g_conn[i] + 0xa), (char __far *)(g_conn[g_cur_player] + 0xa));
+        g_conn[i][2] = g_conn[g_cur_player][2];
         connected++;
         g_df30[i] = 1;
     }
@@ -153,7 +153,7 @@ poll:
             if (g_conn[i][2] == 0) goto check_my;
             if (g_conn[i][0x31] != 0xff) goto do_inc;
         check_my:
-            if (i != g_10b16) continue;
+            if (i != g_cur_player) continue;
         do_inc:
             count++;
         }
@@ -162,6 +162,6 @@ poll:
             goto poll;
         }
     }
-    g_105e1[g_10b16 * 14] = 1;
+    g_105e1[g_cur_player * 14] = 1;
     return connected;
 }

@@ -12,7 +12,7 @@
  * Recipe: -4s -oneatx -zp8 -s -zq
  */
 extern char **g_map_cols;
-extern unsigned char *g_10ac0;
+extern unsigned char *g_tile_flags;
 int FUN_00033fb8(short x, short y, short z)
 {
     int row = (y % 0x6000) / 256;
@@ -22,7 +22,7 @@ int FUN_00033fb8(short x, short y, short z)
     char **slot = base + index;
     unsigned char tile;
     tile = *(unsigned char *)(z / 128 + (int)*slot);
-    switch (g_10ac0[tile]) {
+    switch (g_tile_flags[tile]) {
     case 6:
     case 7:
     case 8:

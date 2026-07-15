@@ -11,7 +11,7 @@
  *
  * rec = 0x417*param (stride 1047, indexed by the passed player index `param`).
  * The record's field bases (all the same 1047-byte record, different C symbols):
- *   g_e49c[rec]        -> funds dword (rec+0)             [refund target]
+ *   g_player_recs[rec]        -> funds dword (rec+0)             [refund target]
  *   g_e551[rec]        -> base pool-A slot index byte (rec+0xb5)
  *   g_e5b9[rec+j*40]   -> template entry j roll byte  (0xff = empty)
  *   g_e5ba[rec+j*40]   -> template entry j HP word
@@ -24,7 +24,7 @@
  * +0x6f entry field; entry stride 40, 8 {qty,kind} slot pairs -- identical layout
  * to 0x223c8's 18x40B template block.)
  *
- * Pool-A node (node = g_8110 + (g_e551[rec] + slot - 1)*0x5c, id = node - g_entity_pool):
+ * Pool-A node (node = g_pool_a + (g_e551[rec] + slot - 1)*0x5c, id = node - g_entity_pool):
  *   node+0x14 hp word (signed), +0x19 type byte, +0x1c chain link (16-bit id),
  *   +0x3a carried-item chain head (16-bit id), +0x3c kind/flags word.
  * Pool-A world record `pr` in the refund scan (0x8110..0xdd10, 256x0x5c):
@@ -34,7 +34,7 @@
  * Globals: g_10b45 (byte, main-body gate: body runs iff 0), g_10afc (byte mode:
  * bit2 gates the refund scan, bit8 suppresses the slot copy in block B),
  * g_10afb / g_10afd (byte counters), g_10afe / g_10b02 (dword, final clamp),
- * g_10b16 (short current-player, reset to 0 on the reset path).
+ * g_cur_player (short current-player, reset to 0 on the reset path).
  *
  * FLOW (top): if g_10b45==0, for each of 18 template entries j whose present byte
  * g_e5c0[rec+j*40]!=0: locate the node; id = node-g_entity_pool.
@@ -50,8 +50,8 @@
  *       node's carried-item chain (head +0x3a, link +0x1c) into slots 0..7:
  *       qty=item[0x14], kind=item[0x19].
  * FLOW (tail, both the g_10b45!=0 skip and the normal fall-through): if param>0 &&
- * g_10b45!=0, memcpy-reset the record  FUN_4d1db(&g_e49c[rec], g_e49c, 0x417)  and
- * g_10b16 = 0. Finally clamp: if g_10afe > g_10b02, g_10afe = g_10b02.
+ * g_10b45!=0, memcpy-reset the record  FUN_4d1db(&g_player_recs[rec], g_player_recs, 0x417)  and
+ * g_cur_player = 0. Finally clamp: if g_10afe > g_10b02, g_10afe = g_10b02.
  *
  * NOTE (the "hook"): every one of the 5 refund/re-file branches ends with a
  * 2-argument cdecl call whose callee emits ZERO code in this build -- the bytes are
@@ -89,8 +89,8 @@
  */
 
 extern unsigned char g_entity_pool[];
-extern unsigned char g_8110[];
-extern unsigned char g_e49c[];
+extern unsigned char g_pool_a[];
+extern unsigned char g_player_recs[];
 extern unsigned char g_e551[];
 extern unsigned char g_e5b9[];
 extern unsigned char g_e5ba[];
@@ -104,7 +104,7 @@ extern unsigned char g_10afc;
 extern unsigned char g_10afd;
 extern unsigned int  g_10afe;
 extern unsigned int  g_10b02;
-extern short         g_10b16;
+extern short         g_cur_player;
 extern unsigned char g_10b45;
 
 extern int  keyboard_state_machine(void);
@@ -132,13 +132,13 @@ void FUN_00021e18(unsigned short param)
         for (j = 0; j < 0x12; j++) {
             slot = g_e5c0[j * 40 + REC];
             if (slot != 0) {
-                node = g_8110 + (g_e551[REC] + slot - 1) * 0x5c;
+                node = g_pool_a + (g_e551[REC] + slot - 1) * 0x5c;
                 id = (int)(node - g_entity_pool);
 
                 /* --- (A) refund scan over the whole pool --- */
                 if (g_10afc & 2) {
-                    pr = g_8110;
-                    if (pr < g_8110 + 256 * 0x5c) {
+                    pr = g_pool_a;
+                    if (pr < g_pool_a + 256 * 0x5c) {
                         do {
                             if ((unsigned short)id != *(unsigned short *)(pr + 0x20))
                                 continue;
@@ -146,22 +146,22 @@ void FUN_00021e18(unsigned short param)
                                 continue;
                             catf = pr[0x1c];
                             if (catf & 1) {
-                                *(int *)(g_e49c + REC) += 0x32;
+                                *(int *)(g_player_recs + REC) += 0x32;
                                 *(unsigned short *)(pr + 0x20) = 0;
                                 g_10afd++;
                                 req_hook(pr, param);
                             } else if (catf & 8) {
-                                *(int *)(g_e49c + REC) += 0x96;
+                                *(int *)(g_player_recs + REC) += 0x96;
                                 *(unsigned short *)(pr + 0x20) = 0;
                                 g_10afd++;
                                 req_hook(pr, param);
                             } else if (catf & 4) {
-                                *(int *)(g_e49c + REC) += 0x96;
+                                *(int *)(g_player_recs + REC) += 0x96;
                                 *(unsigned short *)(pr + 0x20) = 0;
                                 g_10afd++;
                                 req_hook(pr, param);
                             } else if (catf & 0x10) {
-                                *(int *)(g_e49c + REC) += 0x12c;
+                                *(int *)(g_player_recs + REC) += 0x12c;
                                 *(unsigned short *)(pr + 0x20) = 0;
                                 g_10afd++;
                                 req_hook(pr, param);
@@ -186,7 +186,7 @@ void FUN_00021e18(unsigned short param)
                                 }
                                 req_hook(pr, param);
                             }
-                        } while ((pr += 0x5c) < g_8110 + 256 * 0x5c);
+                        } while ((pr += 0x5c) < g_pool_a + 256 * 0x5c);
                     }
                 }
 
@@ -230,8 +230,8 @@ void FUN_00021e18(unsigned short param)
 
     /* --- tail: reset path (mutually exclusive with the main body) + clamp --- */
     if (param > 0 && g_10b45 != 0) {
-        FUN_0004d1db(g_e49c + REC, g_e49c, 0x417);
-        g_10b16 = 0;
+        FUN_0004d1db(g_player_recs + REC, g_player_recs, 0x417);
+        g_cur_player = 0;
     }
     if (g_10afe > g_10b02)
         g_10afe = g_10b02;

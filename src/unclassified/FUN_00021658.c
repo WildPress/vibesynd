@@ -11,8 +11,8 @@
  * in the first function jumps to 0x21e18; all exits funnel to the RET at
  * 0x21e08. Score with:  truediff.py FUN_00021658 1969
  *
- * The current player's economy/template record is  rec = g_e49c + 0x417*g_10b16
- * (stride 1047, indexed by the current-player short g_10b16 -- the 0x417 family,
+ * The current player's economy/template record is  rec = g_player_recs + 0x417*g_cur_player
+ * (stride 1047, indexed by the current-player short g_cur_player -- the 0x417 family,
  * cf. siblings 0x223c8 / 0x12da8 / 0x23158). rec+0x11 and rec+0x23 are two
  * 0x1a0-bit "owned-research" bitsets; FUN_0003aee6(bitset, id) tests bit `id`.
  * Six research tiers are probed by id (0x1a0,0x1ac,0x1bc,0x1c8,0x1d4,0x1e0),
@@ -59,13 +59,13 @@
  * tail, not a structural divergence.
  */
 
-extern short         g_10b16;
+extern short         g_cur_player;
 extern unsigned char g_539a;
 extern unsigned char g_10b52;
 extern unsigned char g_10b43;
 extern unsigned char g_10b48;
 
-extern unsigned char g_e49c[];   /* economy/template record region (stride 0x417) */
+extern unsigned char g_player_recs[];   /* economy/template record region (stride 0x417) */
 extern unsigned char g_5788[];   /* squad-grid record capacity word  (stride 491) */
 extern unsigned char g_578a[];   /* squad-grid 10x24 word body */
 extern unsigned char g_7bf4[];   /* conveyor-row type byte           (stride 501) */
@@ -96,33 +96,33 @@ void FUN_00021658(void)
     g_10b48 = 0;
 
     /* --- block A: research tier 0x1a0 --- */
-    if (FUN_0003aee6(g_e49c + 0x417 * g_10b16 + 0x23, 0x1a0) == 0 ||
-        FUN_0003aee6(g_e49c + 0x417 * g_10b16 + 0x11, 0x1a0) == 0)
+    if (FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1a0) == 0 ||
+        FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1a0) == 0)
         g_539a = 1;
 
     /* --- block B: research tier 0x1ac --- */
-    if (FUN_0003aee6(g_e49c + 0x417 * g_10b16 + 0x23, 0x1ac) == 0 ||
-        FUN_0003aee6(g_e49c + 0x417 * g_10b16 + 0x11, 0x1ac) == 0)
+    if (FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1ac) == 0 ||
+        FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1ac) == 0)
         g_10b52 = 1;
 
     /* --- block C: research tier 0x1bc --- */
-    if (FUN_0003aee6(g_e49c + 0x417 * g_10b16 + 0x23, 0x1bc) == 0 ||
-        FUN_0003aee6(g_e49c + 0x417 * g_10b16 + 0x11, 0x1bc) == 0)
+    if (FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1bc) == 0 ||
+        FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1bc) == 0)
         g_10b48 = 1;
 
     /* --- block D: research tier 0x1c8 -> also reset funds --- */
-    if (FUN_0003aee6(g_e49c + 0x417 * g_10b16 + 0x23, 0x1c8) == 0 ||
-        FUN_0003aee6(g_e49c + 0x417 * g_10b16 + 0x11, 0x1c8) == 0) {
+    if (FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1c8) == 0 ||
+        FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1c8) == 0) {
         g_10b43 = 1;
-        *(int *)(g_e49c + 0x417 * g_10b16) = 100000000;
+        *(int *)(g_player_recs + 0x417 * g_cur_player) = 100000000;
     }
 
     /* --- block E: research tier 0x1d4 -> funds + rebuild squad/conveyor --- */
-    if (FUN_0003aee6(g_e49c + 0x417 * g_10b16 + 0x23, 0x1d4) == 0 ||
-        FUN_0003aee6(g_e49c + 0x417 * g_10b16 + 0x11, 0x1d4) == 0) {
+    if (FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1d4) == 0 ||
+        FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1d4) == 0) {
         g_539a  = 1;
         g_10b43 = 1;
-        *(int *)(g_e49c + 0x417 * g_10b16) = 100000000;
+        *(int *)(g_player_recs + 0x417 * g_cur_player) = 100000000;
 
         for (d = 0; d < 0x12; d++) {
             *(short *)(g_5788 + d * 491) = 2400;
@@ -144,11 +144,11 @@ void FUN_00021658(void)
     }
 
     /* --- block F: research tier 0x1e0 -> rebuild + equip templates --- */
-    if (FUN_0003aee6(g_e49c + 0x417 * g_10b16 + 0x23, 0x1e0) == 0 ||
-        FUN_0003aee6(g_e49c + 0x417 * g_10b16 + 0x11, 0x1e0) == 0) {
+    if (FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1e0) == 0 ||
+        FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1e0) == 0) {
         g_539a  = 1;
         g_10b43 = 1;
-        *(int *)(g_e49c + 0x417 * g_10b16) = 100000000;
+        *(int *)(g_player_recs + 0x417 * g_cur_player) = 100000000;
 
         for (d = 0; d < 0x12; d++) {
             *(short *)(g_5788 + d * 491) = 2400;
@@ -172,25 +172,25 @@ void FUN_00021658(void)
          * slots (kinds 6,6,1,0xc,0x11,0x11,7,7) are fully unrolled */
         for (d = 0; d < 0x12; d++) {
             roll = keyboard_state_machine();
-            g_e5b9[0x417 * g_10b16 + d * 40] = (unsigned char)roll;
-            *(short *)(g_e5ba + 0x417 * g_10b16 + d * 40) = 0x10;
-            *(short *)(g_e5bc + 0x417 * g_10b16 + d * 40) = 0x1fff;
-            *(short *)(g_e5c1 + 0x417 * g_10b16 + d * 40 + 0x00) = g_a73a[6];
-            *(short *)(g_e5c3 + 0x417 * g_10b16 + d * 40 + 0x00) = 6;
-            *(short *)(g_e5c3 + 0x417 * g_10b16 + d * 40 + 0x04) = 6;
-            *(short *)(g_e5c1 + 0x417 * g_10b16 + d * 40 + 0x04) = g_a73a[6];
-            *(short *)(g_e5c3 + 0x417 * g_10b16 + d * 40 + 0x08) = 1;
-            *(short *)(g_e5c1 + 0x417 * g_10b16 + d * 40 + 0x08) = g_a73a[1];
-            *(short *)(g_e5c3 + 0x417 * g_10b16 + d * 40 + 0x0c) = 0xc;
-            *(short *)(g_e5c1 + 0x417 * g_10b16 + d * 40 + 0x0c) = g_a73a[0xc];
-            *(short *)(g_e5c3 + 0x417 * g_10b16 + d * 40 + 0x10) = 0x11;
-            *(short *)(g_e5c1 + 0x417 * g_10b16 + d * 40 + 0x10) = g_a73a[0x11];
-            *(short *)(g_e5c3 + 0x417 * g_10b16 + d * 40 + 0x14) = 0x11;
-            *(short *)(g_e5c1 + 0x417 * g_10b16 + d * 40 + 0x14) = g_a73a[0x11];
-            *(short *)(g_e5c3 + 0x417 * g_10b16 + d * 40 + 0x18) = 7;
-            *(short *)(g_e5c1 + 0x417 * g_10b16 + d * 40 + 0x18) = g_a73a[7];
-            *(short *)(g_e5c3 + 0x417 * g_10b16 + d * 40 + 0x1c) = 7;
-            *(short *)(g_e5c1 + 0x417 * g_10b16 + d * 40 + 0x1c) = g_a73a[7];
+            g_e5b9[0x417 * g_cur_player + d * 40] = (unsigned char)roll;
+            *(short *)(g_e5ba + 0x417 * g_cur_player + d * 40) = 0x10;
+            *(short *)(g_e5bc + 0x417 * g_cur_player + d * 40) = 0x1fff;
+            *(short *)(g_e5c1 + 0x417 * g_cur_player + d * 40 + 0x00) = g_a73a[6];
+            *(short *)(g_e5c3 + 0x417 * g_cur_player + d * 40 + 0x00) = 6;
+            *(short *)(g_e5c3 + 0x417 * g_cur_player + d * 40 + 0x04) = 6;
+            *(short *)(g_e5c1 + 0x417 * g_cur_player + d * 40 + 0x04) = g_a73a[6];
+            *(short *)(g_e5c3 + 0x417 * g_cur_player + d * 40 + 0x08) = 1;
+            *(short *)(g_e5c1 + 0x417 * g_cur_player + d * 40 + 0x08) = g_a73a[1];
+            *(short *)(g_e5c3 + 0x417 * g_cur_player + d * 40 + 0x0c) = 0xc;
+            *(short *)(g_e5c1 + 0x417 * g_cur_player + d * 40 + 0x0c) = g_a73a[0xc];
+            *(short *)(g_e5c3 + 0x417 * g_cur_player + d * 40 + 0x10) = 0x11;
+            *(short *)(g_e5c1 + 0x417 * g_cur_player + d * 40 + 0x10) = g_a73a[0x11];
+            *(short *)(g_e5c3 + 0x417 * g_cur_player + d * 40 + 0x14) = 0x11;
+            *(short *)(g_e5c1 + 0x417 * g_cur_player + d * 40 + 0x14) = g_a73a[0x11];
+            *(short *)(g_e5c3 + 0x417 * g_cur_player + d * 40 + 0x18) = 7;
+            *(short *)(g_e5c1 + 0x417 * g_cur_player + d * 40 + 0x18) = g_a73a[7];
+            *(short *)(g_e5c3 + 0x417 * g_cur_player + d * 40 + 0x1c) = 7;
+            *(short *)(g_e5c1 + 0x417 * g_cur_player + d * 40 + 0x1c) = g_a73a[7];
         }
     }
 }

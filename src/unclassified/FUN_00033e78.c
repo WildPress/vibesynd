@@ -19,19 +19,19 @@
  * literal 0x26718). Map-tile hit dispatcher: same map/tile lookup as
  * FUN_00033fb8 (row = (y % 0x6000)/256, col = (x & 0xff00)/256, slot =
  * g_map_cols + col + row*128, tile byte at (z-1)/128 + *slot) but instead of a
- * passability bool it dispatches on the tile class g_10ac0[tile]:
+ * passability bool it dispatches on the tile class g_tile_flags[tile]:
  *   6 -> FUN_00033b88(x,y,z)   7 -> FUN_00033c38(x,y,z)
  *   8 -> FUN_00033cf8(x,y,z)   9 -> FUN_00033db8(x,y,z)
  *   0xb -> try all four in that order, 1 on first hit
  *   0xa / anything else -> 0
- * Case map (table at 0x33e60, index = g_10ac0[tile] - 6, ja > 5 -> default):
+ * Case map (table at 0x33e60, index = g_tile_flags[tile] - 6, ja > 5 -> default):
  *   idx0->0x33f08 idx1->0x33f17 idx2->0x33f26 idx3->0x33f35
  *   idx4(0xa)->0x33fa8(default) idx5(0xb)->0x33f44.
  * Ghidra mis-decodes the case heads: each true body starts one byte earlier with
  * PUSH EDI (0x57) at 0x33f08/0x33f17/0x33f26/0x33f35/0x33f44.
  */
 extern char **volatile g_map_cols;
-extern unsigned char *g_10ac0;
+extern unsigned char *g_tile_flags;
 
 int FUN_00033b88(int x, int y, int z);
 int FUN_00033c38(int x, int y, int z);
@@ -53,7 +53,7 @@ unsigned short FUN_00033e78(short x, short y, short z)
     col = (xs & 0xff00) / 256;
     index = col + row * 128;
     tile = *(unsigned char *)((z - 1) / 128 + (int)*(g_map_cols + index));
-    switch (g_10ac0[tile]) {
+    switch (g_tile_flags[tile]) {
     case 6:
         return FUN_00033b88(xs, y, z);
     case 7:

@@ -5,7 +5,7 @@
  * a handful of fixed-address record tables and stamps their starting values.
  *
  * PARKED (decode-only). This lives in the WALLED 0x417-template region: the
- * per-player template row (g_e49c + p*0x417) and the 0x105d4 command record are
+ * per-player template row (g_player_recs + p*0x417) and the 0x105d4 command record are
  * the same records the parked siblings FUN_00023158 / FUN_000223c8 /
  * FUN_00012da8 consume, and they carry the same register-role tie-break wall
  * (the p*0x417 / si*0x1eb / di*0x1f5 imul-by-constant stride is re-materialised
@@ -40,10 +40,10 @@
  *
  * g_10b43 = "unlimited funds" flag (network / debug): money 100,000,000 vs
  * 30,000, and constant 0x960 vs the g_b474/g_b498 source tables.
- * g_10b51 = "keep syndicate colours" flag. g_10b16 = current player, reset 0.
+ * g_10b51 = "keep syndicate colours" flag. g_cur_player = current player, reset 0.
  */
 extern unsigned char g_105d4[];   /* 8 command records, stride 0xe            */
-extern unsigned char g_e49c[];    /* 8 player templates, stride 0x417         */
+extern unsigned char g_player_recs[];    /* 8 player templates, stride 0x417         */
 extern unsigned char g_539c[];    /* 50 syndicate records, stride 0xa         */
 extern unsigned char g_5788[];    /* 18 research records, stride 0x1eb        */
 extern unsigned char g_7bf4[];    /* 20 mod records, stride 0x1f5             */
@@ -54,7 +54,7 @@ extern short g_b498[];            /* mod source table (word)                  */
 extern unsigned char g_b830[];    /* mod byte source table                    */
 extern short g_108;               /* seed word copied into each command rec   */
 extern short g_a73e;              /* default value for slot-0 of each mod list */
-extern short g_10b16;             /* current player (reset to 0)              */
+extern short g_cur_player;             /* current player (reset to 0)              */
 extern unsigned char g_10b43;     /* unlimited-funds flag                     */
 extern unsigned char g_10b51;     /* keep-syndicate-colours flag              */
 
@@ -66,7 +66,7 @@ void new_campaign_reset(void)
 {
     unsigned short p, i, j, k, di, bx;
 
-    g_10b16 = 0;
+    g_cur_player = 0;
 
     /* ---- per-player state: 8 players ---- */
     for (p = 0; p < 8; p++) {
@@ -82,57 +82,57 @@ void new_campaign_reset(void)
 
         /* equip/research template (0xe49c, stride 0x417) */
         if (p == 0) {
-            g_e49c[p * 0x417 + 0x11] = 0;   /* g_e4ad */
-            g_e49c[p * 0x417 + 0xe]  = 1;   /* g_e4aa: player 0 human/active */
+            g_player_recs[p * 0x417 + 0x11] = 0;   /* g_e4ad */
+            g_player_recs[p * 0x417 + 0xe]  = 1;   /* g_e4aa: player 0 human/active */
         } else {
-            g_e49c[p * 0x417 + 0x11] = 0;
-            g_e49c[p * 0x417 + 0xe]  = 2;   /* other players AI syndicates */
+            g_player_recs[p * 0x417 + 0x11] = 0;
+            g_player_recs[p * 0x417 + 0xe]  = 2;   /* other players AI syndicates */
         }
 
         for (i = 0; i < 0x32; i++) {
-            g_e49c[p * 0x417 + 0xb9 + i] = 0;   /* g_e555: roster A */
-            g_e49c[p * 0x417 + 0xeb + i] = 0;   /* g_e587: roster B */
+            g_player_recs[p * 0x417 + 0xb9 + i] = 0;   /* g_e555: roster A */
+            g_player_recs[p * 0x417 + 0xeb + i] = 0;   /* g_e587: roster B */
         }
 
-        g_e49c[p * 0x417 + 0x10] = (unsigned char)p;   /* g_e4ac */
-        g_e49c[p * 0x417 + 0xf]  = (unsigned char)p;   /* g_e4ab: owner id */
-        *(int *)(g_e49c + p * 0x417 + 4)    = 0;        /* g_e4a0 */
-        *(short *)(g_e49c + p * 0x417 + 8)  = 1;        /* g_e4a4 */
-        *(short *)(g_e49c + p * 0x417 + 0xa) = 0x55;    /* g_e4a6 */
+        g_player_recs[p * 0x417 + 0x10] = (unsigned char)p;   /* g_e4ac */
+        g_player_recs[p * 0x417 + 0xf]  = (unsigned char)p;   /* g_e4ab: owner id */
+        *(int *)(g_player_recs + p * 0x417 + 4)    = 0;        /* g_e4a0 */
+        *(short *)(g_player_recs + p * 0x417 + 8)  = 1;        /* g_e4a4 */
+        *(short *)(g_player_recs + p * 0x417 + 0xa) = 0x55;    /* g_e4a6 */
         if (g_10b43)
-            *(int *)(g_e49c + p * 0x417 + 0) = 0x5f5e100;  /* 100,000,000 */
+            *(int *)(g_player_recs + p * 0x417 + 0) = 0x5f5e100;  /* 100,000,000 */
         else
-            *(int *)(g_e49c + p * 0x417 + 0) = 0x7530;     /* 30,000 */
-        g_e49c[p * 0x417 + 0xb6] = 0;                   /* g_e552 */
-        g_e49c[p * 0x417 + 0x11] = 0;                   /* g_e4ad */
-        g_e49c[p * 0x417 + 0x23] = 0;                   /* g_e4bf */
-        *(short *)(g_e49c + p * 0x417 + 0xc) = 0;       /* g_e4a8 */
-        g_e49c[p * 0x417 + 0xb5] = (unsigned char)(p * 8);  /* g_e551 base slot */
+            *(int *)(g_player_recs + p * 0x417 + 0) = 0x7530;     /* 30,000 */
+        g_player_recs[p * 0x417 + 0xb6] = 0;                   /* g_e552 */
+        g_player_recs[p * 0x417 + 0x11] = 0;                   /* g_e4ad */
+        g_player_recs[p * 0x417 + 0x23] = 0;                   /* g_e4bf */
+        *(short *)(g_player_recs + p * 0x417 + 0xc) = 0;       /* g_e4a8 */
+        g_player_recs[p * 0x417 + 0xb5] = (unsigned char)(p * 8);  /* g_e551 base slot */
 
         /* 18 weapon/mod slots per player, 40-byte records at +0x11d */
         for (j = 0; j < 0x12; j++) {
             int slot = p * 0x417 + 0x11d + j * 0x28;
             if (j < 8) {                                    /* active slot */
-                g_e49c[slot] = keyboard_state_machine();                       /* type */
-                *(short *)(g_e49c + slot + 1) = 0x10;                 /* ammo */
-                *(short *)(g_e49c + slot + 3) = (short)(FUN_0000e568(3) & 1);
+                g_player_recs[slot] = keyboard_state_machine();                       /* type */
+                *(short *)(g_player_recs + slot + 1) = 0x10;                 /* ammo */
+                *(short *)(g_player_recs + slot + 3) = (short)(FUN_0000e568(3) & 1);
             } else {                                        /* empty slot */
-                *(short *)(g_e49c + slot + 1) = -1;
-                *(short *)(g_e49c + slot + 3) = 0;
-                g_e49c[slot] = 0xff;
+                *(short *)(g_player_recs + slot + 1) = -1;
+                *(short *)(g_player_recs + slot + 3) = 0;
+                g_player_recs[slot] = 0xff;
             }
             if (j < 4) {
-                g_e49c[slot + 7] = (unsigned char)(j + 1);   /* g_e5c0 */
+                g_player_recs[slot + 7] = (unsigned char)(j + 1);   /* g_e5c0 */
                 g_10aa4[j] = (unsigned char)j;
             } else {
-                g_e49c[slot + 7] = 0;
+                g_player_recs[slot + 7] = 0;
             }
             for (k = 0; k < 8; k++) {
-                *(short *)(g_e49c + slot + 8 + k * 4) = 0;    /* g_e5c1 */
-                *(short *)(g_e49c + slot + 0xa + k * 4) = 0;  /* g_e5c3 */
+                *(short *)(g_player_recs + slot + 8 + k * 4) = 0;    /* g_e5c1 */
+                *(short *)(g_player_recs + slot + 0xa + k * 4) = 0;  /* g_e5c3 */
             }
-            *(short *)(g_e49c + slot + 0xa) = 2;             /* g_e5c3[0] */
-            *(short *)(g_e49c + slot + 8) = g_a73e;          /* g_e5c1[0] */
+            *(short *)(g_player_recs + slot + 0xa) = 2;             /* g_e5c3[0] */
+            *(short *)(g_player_recs + slot + 8) = g_a73e;          /* g_e5c1[0] */
         }
     }
 

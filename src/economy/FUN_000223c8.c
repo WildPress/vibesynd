@@ -2,7 +2,7 @@
  * jump-table case bodies hidden behind the CS:[eax*4+0x14c70] dispatch).
  * PARKED ~694/724 (-4s -oneatx -zp8 -s -zq; verify with truediff.py 724):
  * everything matches except the TWO node-pointer formations, where 9.5b
- * emits the 1-byte-shorter `imul ebp,edx,0x5c; add ebp,imm32(g_8110)` while
+ * emits the 1-byte-shorter `imul ebp,edx,0x5c; add ebp,imm32(g_pool_a)` while
  * the target has `imul edx,edx,0x5c; mov ebp,0x8110; add ebp,edx` (plus the
  * jz/jnz/jc disp bytes cascaded from the 2B length delta). Tried: plain,
  * (int)-cast base, named int prod, named ushort idx, two-statement init --
@@ -28,7 +28,7 @@
  * unless mode == 0x1002, every one of the 8 slots NOT touched above is
  * fully freed (chain + node) and zeroed (FUN_4d199(node,0,0x5c)). */
 extern unsigned char g_entity_pool[];
-extern unsigned char g_8110[];
+extern unsigned char g_pool_a[];
 extern unsigned char g_dcbc[];
 extern unsigned char g_e551[];
 extern void FUN_000269b8(unsigned char *p);
@@ -54,7 +54,7 @@ void FUN_000223c8(unsigned short row, unsigned short mode)
             *(int *)(g_dcbc + s * 0x20 + i * 4) = 0;
     for (j = 0; j < 0x12; j++) {
         if (*(unsigned char *)(g_e551 + row * 1047 + j * 40 + 0x6f) != 0) {
-            node = g_8110 + (*(unsigned char *)(g_e551 + row * 1047) +
+            node = g_pool_a + (*(unsigned char *)(g_e551 + row * 1047) +
                              *(unsigned char *)(g_e551 + row * 1047 + j * 40 + 0x6f) - 1) * 0x5c;
             used[*(unsigned char *)(g_e551 + row * 1047 + j * 40 + 0x6f) - 1] = 1;
             id = *(unsigned short *)(node + 0x3a);
@@ -102,7 +102,7 @@ void FUN_000223c8(unsigned short row, unsigned short mode)
     if (mode != 0x1002) {
         for (d = 0; d < 8; d++) {
             if (used[d] == 0) {
-                node = g_8110 + (d + *(unsigned char *)(g_e551 + row * 1047)) * 0x5c;
+                node = g_pool_a + (d + *(unsigned char *)(g_e551 + row * 1047)) * 0x5c;
                 id = *(unsigned short *)(node + 0x3a);
                 while (id != 0) {
                     p = g_entity_pool + id;

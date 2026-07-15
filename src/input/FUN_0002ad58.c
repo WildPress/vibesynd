@@ -12,7 +12,7 @@
    p[0]=word target-x/id, p[2]=word y, p[4]=word z, byte p[0xd]=action-code.
 
    SUBSYSTEM: combat/targeting cursor. Two walled record families are indexed here:
-   (a) 0x417-stride AGENT TEMPLATE records: idx=g_10b16(short); the SHL5;ADD;LEA*4;SUB;
+   (a) 0x417-stride AGENT TEMPLATE records: idx=g_cur_player(short); the SHL5;ADD;LEA*4;SUB;
        LEA*8;SUB chain materialises idx*0x417, indexing byte tables g_e551 (agent's first
        ped pool-id) and g_e552 (agent's current sub/selection offset). Appears ~12x.
    (b) pool-A ENTITY records (0x5c=92B stride): rec ptr = 0x8110 + pedid*0x5c
@@ -42,14 +42,14 @@ extern unsigned char  g_e296, g_e297, g_e2a3, g_e2a4;
 extern unsigned char  g_10b3e, g_10b3f, g_10b39, g_10b40, g_10b45;
 extern unsigned short g_e112, g_e114, g_e116, g_e118, g_e11a, g_e11c;
 extern unsigned short g_e120, g_e122, g_e124;
-extern short          g_10b10, g_10b12, g_10b14, g_10b16, g_10b1a;
+extern short          g_10b10, g_10b12, g_10b14, g_cur_player, g_10b1a;
 extern unsigned short g_10b1c, g_10b1e, g_10b20, g_cursor_x;
 extern unsigned short g_5390, g_5392, g_52f8;
 extern unsigned char  g_e551[], g_e552[];   /* 0x417-stride agent template byte tables */
 extern short          g_dir_dx[], g_dir_dy[];   /* direction tables (s16[256]) */
 
 /* pool-A entity record k -> byte ptr (0x8110 + k*0x5c). base = g_entity_pool+2. */
-extern unsigned char g_8110[];
+extern unsigned char g_pool_a[];
 
 extern int  FUN_0001ba48(int x, int y);
 extern void FUN_0002c468(void);
@@ -61,7 +61,7 @@ extern unsigned char *FUN_00037608(unsigned char *rec);
 
 #define AGENT_FIRST(idx)  ((unsigned int)g_e551[(int)(idx) * 0x417])
 #define AGENT_SEL(idx)    ((int)(signed char)g_e552[(int)(idx) * 0x417])
-#define PREC(k)           (g_8110 + (unsigned int)(k) * 0x5c)   /* pool-A record k */
+#define PREC(k)           (g_pool_a + (unsigned int)(k) * 0x5c)   /* pool-A record k */
 
 int FUN_0002ad58(unsigned short *p)
 {
@@ -80,7 +80,7 @@ int FUN_0002ad58(unsigned short *p)
 
     /* ---- "already have a target ped selected" fast path ---- */
     if (g_10b14 != 0 && g_10b3f != 0 && !(g_10b1a != 0 && g_10b3f != 0)) {
-        idx   = g_10b16;
+        idx   = g_cur_player;
         first = AGENT_FIRST(idx);
         rec   = PREC(g_10b14);                 /* node = ped id in g_10b14 */
         end   = PREC(first);                   /* agent's ped-block start  */
@@ -97,7 +97,7 @@ int FUN_0002ad58(unsigned short *p)
     }
 
     /* ---- main resolution (label 0x2af1c) ---- */
-    idx = g_10b16;
+    idx = g_cur_player;
     rec = PREC(AGENT_FIRST(idx) + AGENT_SEL(idx));   /* selected ped record */
     if ((*(rec + 0xb) & 1) == 0 && (*(rec + 0x1d) & 4) != 0)
         goto after_scan;                             /* -> 0x2b01b */
@@ -105,9 +105,9 @@ int FUN_0002ad58(unsigned short *p)
     /* scan the agent's ped block for a shootable target (0x2af88..0x2b019) */
     g_e124 = 0;
     {
-        unsigned char *e = PREC(AGENT_FIRST(g_10b16) + 4);
+        unsigned char *e = PREC(AGENT_FIRST(g_cur_player) + 4);
         unsigned short si = 0;
-        q = PREC(AGENT_FIRST(g_10b16));
+        q = PREC(AGENT_FIRST(g_cur_player));
         while (q < e) {
             if ((*(q + 0xb) & 1) == 0 && (*(q + 0x1d) & 4) != 0) {
                 g_e122 = g_e124;
@@ -121,7 +121,7 @@ int FUN_0002ad58(unsigned short *p)
 
 after_scan:                                          /* 0x2b01b */
     {
-        int b = AGENT_FIRST(g_10b16);
+        int b = AGENT_FIRST(g_cur_player);
         rec = PREC(b + (g_e124 - 1));
         if (g_e112 != 0 && g_e124 != 0 && (*(rec + 0x1d) & 4) != 0) {
             /* confirmed selection -> build move/attack order (0x2b06c) */
@@ -141,7 +141,7 @@ after_scan:                                          /* 0x2b01b */
     }
 
     /* ---- pick a fresh target under the cursor (0x2b11c) ---- */
-    rec = PREC(AGENT_FIRST(g_10b16) + AGENT_SEL(g_10b16));
+    rec = PREC(AGENT_FIRST(g_cur_player) + AGENT_SEL(g_cur_player));
     if (*(rec + 0x19) == 0
         && FUN_0002d7a8(rec, 0xa) > 0
         && FUN_0002d808(rec, 0x64) > 0
@@ -156,14 +156,14 @@ after_scan:                                          /* 0x2b01b */
 
     /* ---- adjacency / line-of-sight passes over the ped block (0x2b1d7 / 0x2b28f) ---- */
     if (g_e120 == 2) {
-        unsigned char *e = PREC(AGENT_FIRST(g_10b16) + 4);
+        unsigned char *e = PREC(AGENT_FIRST(g_cur_player) + 4);
         unsigned short di = 0;
-        q = PREC(AGENT_FIRST(g_10b16));
+        q = PREC(AGENT_FIRST(g_cur_player));
         while (q < e) {
             if ((*(q + 0x1d) & 4) != 0) {
                 unsigned short lk = *(unsigned short *)(q + 0x44);
                 if (di != lk) {
-                    unsigned char *o = g_8110 - 2 + lk;   /* 0x810e + lk */
+                    unsigned char *o = g_pool_a - 2 + lk;   /* 0x810e + lk */
                     if ((short)di > *(short *)(o + 0x14) && *(q + 0x19) != 0xa) {
                         *((unsigned char *)p + 0xd) = 0x16;
                         p[0] = *(o + 0x19);
@@ -173,11 +173,11 @@ after_scan:                                          /* 0x2b01b */
             q += 0x5c;
         }
     } else {
-        rec = PREC(AGENT_FIRST(g_10b16) + AGENT_SEL(g_10b16));
+        rec = PREC(AGENT_FIRST(g_cur_player) + AGENT_SEL(g_cur_player));
         {
             unsigned short lk = *(unsigned short *)(rec + 0x44);
             if (lk != 0) {
-                unsigned char *o = g_8110 - 2 + lk;
+                unsigned char *o = g_pool_a - 2 + lk;
                 if (*(short *)(o + 0x14) < 0 && *(rec + 0x19) != 0xa) {
                     *((unsigned char *)p + 0xd) = 0x16;
                     p[0] = *(o + 0x19);
@@ -187,7 +187,7 @@ after_scan:                                          /* 0x2b01b */
     }
 
     /* ---- clamp cursor to world/scroll and set the reticle window (0x2b2f8) ---- */
-    rec = PREC(AGENT_FIRST(g_10b16) + AGENT_SEL(g_10b16));
+    rec = PREC(AGENT_FIRST(g_cur_player) + AGENT_SEL(g_cur_player));
     if (g_5390 >= 0x80 && g_5392 >= 0x110) {
         int t;
         t = ((int)(0x100 / (int)g_52f8)) * ((int)g_5390 - 0x40) + *(short *)(rec + 0x4);

@@ -10,7 +10,7 @@
  *    target coords g_10b54/56/58, run the trajectory march FUN_00034198, snap
  *    the cursor to the facing (FUN_00034048 by octant), re-pick the passable
  *    facing (FUN_00034608) when the cursor moved off the target tile, probe the
- *    blocked-tile map (g_map_cols column table -> g_10ac0 class) and drop on a block,
+ *    blocked-tile map (g_map_cols column table -> g_tile_flags class) and drop on a block,
  *    then accumulate + commit as above.
  * Recipe: -4s -oneatx -zp8 -s -zq
  *
@@ -50,7 +50,7 @@ extern short g_10b54;
 extern short g_10b56;
 extern short g_10b58;
 extern char **g_map_cols;
-extern unsigned char *g_10ac0;
+extern unsigned char *g_tile_flags;
 
 extern int FUN_0003aed8(int x);
 extern unsigned char FUN_0004d221(int dx, int dy);
@@ -152,7 +152,7 @@ void FUN_00034858(unsigned char *p1, unsigned char *p2)
             char **base = g_map_cols;
             int index = col + row * 128;
             base += index;
-            if (g_10ac0[*(unsigned char *)((g_10b2c - 1) / 128 + (int)*base)] != 0)
+            if (g_tile_flags[*(unsigned char *)((g_10b2c - 1) / 128 + (int)*base)] != 0)
                 FUN_0002d998(p1);
         }
 

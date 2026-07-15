@@ -4,6 +4,11 @@
   "type": "u8*",
   "desc": "back screen buffer (blit target)"
  },
+ "g_cur_player": {
+  "addr": "10b16",
+  "type": "s16",
+  "desc": "current/owning player index (indexes the 0x417-stride player records)"
+ },
  "g_cursor_x": {
   "addr": "10b22",
   "type": "u16",
@@ -64,6 +69,16 @@
   "type": "u8*",
   "desc": "0x20-stride record table (map/objective slots)"
  },
+ "g_player_recs": {
+  "addr": "e49c",
+  "type": "u8[]",
+  "desc": "0x417-stride per-player record table (budget/day/year/accumulators)"
+ },
+ "g_pool_a": {
+  "addr": "8110",
+  "type": "u8[]",
+  "desc": "pool A: agent/entity array, stride 0x5c (== g_entity_pool + 2)"
+ },
  "g_rec8_table": {
   "addr": "5338",
   "type": "u8*",
@@ -93,5 +108,10 @@
   "addr": "10b4a",
   "type": "u8",
   "desc": "sound driver enabled flag (result of sound_driver_init; -s clears it)"
+ },
+ "g_tile_flags": {
+  "addr": "10ac0",
+  "type": "u8[]",
+  "desc": "per-tile terrain-shape/flags table (indexed by tile)"
  }
 }

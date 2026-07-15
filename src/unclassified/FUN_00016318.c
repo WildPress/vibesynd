@@ -1,5 +1,5 @@
 /* NEAR-MISS @ 0x16318 -- 280/287 masked (was ~242/287); PARKED on ONE window:
- * entry order. Target loads g_10b16 into SI BEFORE the param byte
+ * entry order. Target loads g_cur_player into SI BEFORE the param byte
  * (mov ch,[esp+0x10]); ours always emits the param load first. Failed flips
  * (this session + prior): volatile on/off (non-volatile SINKS the SI load to
  * first use mid-chain -- worse), decl order, statement-vs-initializer form,
@@ -17,13 +17,13 @@
  *
    0x16318 -- research funding tick for group g. Records are 10 bytes at
  * 0x539c: word +0 funding, byte +2 owner, byte +3 rate. If we own g
- * (owner == g_10b16): for each of the 8 links in g_b069[g*19 + i], a nonzero
+ * (owner == g_cur_player): for each of the 8 links in g_b069[g*19 + i], a nonzero
  * link owned by someone else adds +2 funding. Then funding drifts by
- * (rate - 30)/2, nudges 2 toward 30, and clamps to 0..0xff. g_10b16 is
+ * (rate - 30)/2, nudges 2 toward 30, and clamps to 0..0xff. g_cur_player is
  * saved in ESI and restored at the end (unmodified).
  * Recipe: -4s -oneatx -zp8 -s -zq
  */
-extern volatile short g_10b16;
+extern volatile short g_cur_player;
 extern unsigned char g_539c[];
 extern unsigned char g_539e[];
 extern unsigned char g_b069[];
@@ -33,7 +33,7 @@ void FUN_00016318(unsigned char g)
     unsigned char i;
     short save;
 
-    save = g_10b16;
+    save = g_cur_player;
     if (g_539e[g * 10] == save) {
         for (i = 0; i != 8; i++) {
             unsigned int idx = g * 19 + i;
@@ -51,5 +51,5 @@ void FUN_00016318(unsigned char g)
         *(short *)(g_539c + g * 10) = 0;
     else if (*(short *)(g_539c + g * 10) > 0xff)
         *(short *)(g_539c + g * 10) = 0xff;
-    g_10b16 = save;
+    g_cur_player = save;
 }

@@ -1,13 +1,13 @@
-/* 0x35b68 -- save game. Taxes the player's cash (dword at g_e49c + p*0x417)
+/* 0x35b68 -- save game. Taxes the player's cash (dword at g_player_recs + p*0x417)
  * by 10% when above 30000 (unsigned mul/div, RMW -=); builds the path with
  * sprintf(buf, fmt 0x3cf0, str 0xb970, n) like the matched reader 0x35c88;
  * opens 0x18828(buf, 0x222); if fd > 0 writes via 0x188c8: the 0x14-byte name,
- * player recs g_e49c (0x20b8), research g_539c (0x1f4), g_7bf4 (0x2724),
+ * player recs g_player_recs (0x20b8), research g_539c (0x1f4), g_7bf4 (0x2724),
  * g_5780 (0x2286), g_5594 (0x1e9), g_10aa4 (4), then closes 0x18878.
  * Recipe: -4s -oneatx -zp8 -s -zq
  */
-extern short g_10b16;
-extern unsigned char g_e49c[];
+extern short g_cur_player;
+extern unsigned char g_player_recs[];
 extern void FUN_0003a4fa(char *buf, char *fmt, char *s, int n);
 extern char g_3cf0[];
 extern char g_b970[];
@@ -25,14 +25,14 @@ void FUN_00035b68(char *name, int n)
     char buf[100];
     int fd;
 
-    if (*(unsigned int *)(g_e49c + g_10b16 * 0x417) > 0x7530)
-        *(unsigned int *)(g_e49c + g_10b16 * 0x417) -=
-            *(unsigned int *)(g_e49c + g_10b16 * 0x417) * 10 / 100;
+    if (*(unsigned int *)(g_player_recs + g_cur_player * 0x417) > 0x7530)
+        *(unsigned int *)(g_player_recs + g_cur_player * 0x417) -=
+            *(unsigned int *)(g_player_recs + g_cur_player * 0x417) * 10 / 100;
     FUN_0003a4fa(buf, g_3cf0, g_b970, n);
     fd = FUN_00018828(buf, 0x222);
     if (fd > 0) {
         FUN_000188c8(fd, name, 0x14);
-        FUN_000188c8(fd, g_e49c, 0x20b8);
+        FUN_000188c8(fd, g_player_recs, 0x20b8);
         FUN_000188c8(fd, g_539c, 0x1f4);
         FUN_000188c8(fd, g_7bf4, 0x2724);
         FUN_000188c8(fd, g_5780, 0x2286);

@@ -20,14 +20,14 @@
  *       (lea ecx,[edx+eax]; ... add eax,[ecx]); ours loads the pointer eagerly
  *       (mov ecx,[edx+eax]; add eax,ecx).
  *   (2) target reads the tile index into a PRE-CLEARED edx (xor edx; mov dl)
- *       and indexes g_10ac0 with base-in-EAX/idx-in-EDX; ours reads into AL,
+ *       and indexes g_tile_flags with base-in-EAX/idx-in-EDX; ours reads into AL,
  *       and eax,0xff, base-in-EDX. Classic xor-clear vs and-mask role tie-break.
  * char *col vs char **slot vs inline all converge to the eager-load/mask form.
  * Semantics 100%. TWIN 0x2d468 shares this exact idiom; decode via lefix.py.
  *
    0x2d5b8 -- path/passability probe at (x,y,w) for object p. Unless p is
  * flagged (+0x1c bit 1 / +0x1d bit 3), looks up the tile type under p
- * (column table g_map_cols, level (w8-1)/0x80, translated through the g_10ac0
+ * (column table g_map_cols, level (w8-1)/0x80, translated through the g_tile_flags
  * pointer table) and switches on it: types {6,7,8,9,0xb,0xf} are blocked
  * (case map recovered via tools/lefix.py from the 16-entry jump table at
  * manifest 0x2d574 -- obj1:+0x1fe2c). Blocked -> 0xfa18(x,y,w), open ->
@@ -36,7 +36,7 @@
  * Recipe: -4s -oneatx -zp8 -s -zq
  */
 extern char **g_map_cols;
-extern unsigned char *g_10ac0;
+extern unsigned char *g_tile_flags;
 extern volatile short g_e128;
 extern int FUN_LE_0000fa18(int a, int b, int c);
 extern int FUN_LE_0000fa88(int a, int b, int c);
@@ -51,7 +51,7 @@ int FUN_0002d5b8(short x, short y, int w, unsigned char *p)
     if (!(p[0x1c] & 2) && !(p[0x1d] & 8)) {
         slot = g_map_cols + ((*(short *)(p + 6) % 0x6000 / 0x100 << 7)
                         + (*(short *)(p + 4) & 0xff00) / 0x100);
-        switch (g_10ac0[*(unsigned char *)((int)*slot
+        switch (g_tile_flags[*(unsigned char *)((int)*slot
                                            + (*(short *)(p + 8) - 1) / 0x80)]) {
         case 0:
         case 1:

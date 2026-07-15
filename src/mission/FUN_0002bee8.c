@@ -8,8 +8,8 @@
  * Case map is the 0x2bca8 map shifted +1 (0=empty, 1=box, 2=inc, 3=check, 4=set1).
  *
  * Case 1 has an EXTRA gate the siblings lack: after box/sel selection it checks
- * the commanded agent's flag byte -- agent rec = g_8110 + 0x5c*(p[0xb]-1 +
- * g_e551[g_10b16*0x417]) must have bit 4 set at +0x1d, else skip. On activation
+ * the commanded agent's flag byte -- agent rec = g_pool_a + 0x5c*(p[0xb]-1 +
+ * g_e551[g_cur_player*0x417]) must have bit 4 set at +0x1d, else skip. On activation
  * it sets the cursor state words (g_e116/g_e114 + g_10b3f/g_10b3e) and advances
  * the command word by 2. Case 3 adds a g_e120==2 lockout before writing cmd=1.
  * Post-switch tail (when p[0xa]!=0, or unconditionally from active cases):
@@ -46,9 +46,9 @@ extern unsigned short g_e114, g_e116;     /* selection cursor state words */
 extern volatile unsigned short g_e114v, g_e116v;  /* same words, volatile view (case 3) */
 extern unsigned short g_e120;
 extern unsigned char  g_10b3e, g_10b3f;   /* selection cursor flags */
-extern short g_10b16;                     /* current player index */
+extern short g_cur_player;                     /* current player index */
 extern unsigned char g_e551[];            /* per-player block (0x417 stride) */
-extern unsigned char g_8110[];            /* agent records (0x5c stride) */
+extern unsigned char g_pool_a[];            /* agent records (0x5c stride) */
 extern unsigned char g_df48[], g_df49[], g_df4a[], g_df4b[], g_df4c[];
 extern unsigned char g_df4d[], g_df4e[], g_df4f[], g_df50[], g_df51[];
 extern short FUN_00029988(unsigned char *p);
@@ -83,8 +83,8 @@ unsigned short FUN_0002bee8(unsigned char *p, int sel, unsigned char setX, unsig
             if ((unsigned short)sel != *(signed char *)(p + 0xb)) goto Lcheck;
         A_58:
             {
-                int c = g_e551[(int)g_10b16 * 0x417];
-                unsigned char *a = g_8110 + (*(signed char *)(p + 0xb) - 1 + c) * 0x5c;
+                int c = g_e551[(int)g_cur_player * 0x417];
+                unsigned char *a = g_pool_a + (*(signed char *)(p + 0xb) - 1 + c) * 0x5c;
                 if ((a[0x1d] & 4) == 0) goto Lcheck;
             }
             g_e116 = 0;

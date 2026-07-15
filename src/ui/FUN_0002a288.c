@@ -8,9 +8,9 @@
  *    0x2a6ca, 0x10: 0x2a6f6, 0x11/12/13: 0x2a722; >0x13 -> 0x2a75a.
  *
  * Semantics: clears g_52ff, state=1. If word g_5390 >= 0x80: index the
- * 0x417-byte mission records at 0xe551 by (short)g_10b16; pool-A record
+ * 0x417-byte mission records at 0xe551 by (short)g_cur_player; pool-A record
  * p = 0x8110 + 0x5c*((uchar)rec[0] + (schar)rec[1]); state=2. If entity id
- * word g_10b14 is live (nonzero, its record (id/0x5c)>>3 != g_10b16, dead
+ * word g_10b14 is live (nonzero, its record (id/0x5c)>>3 != g_cur_player, dead
  * flag [+0xb]&1 clear): target id p[0x44] -> 0 => state 5 else LOS check
  * FUN_0002e5f8(p, ent, g_a6c2[weapon type]) => state 6/5. Else if word
  * g_10b12 live: same via FUN_0002e808 => 6/5. Else if g_10b1a: state 4,
@@ -56,7 +56,7 @@
  * BUT the coloring half is unbroken and its cause is now pinned: the
  * required BACKWARD st5 edge from block2 into block1 forces Watcom to
  * promote p into a callee-saved reg (ESI) -- seen at the VERY FIRST insn
- * (movsx esi,g_10b16 vs target's movsx ecx), evicting state->EDI and
+ * (movsx esi,g_cur_player vs target's movsx ecx), evicting state->EDI and
  * rotating e1->ECX (a full state/p/e1 3-cycle vs target ESI/ECX/EDI). The
  * chain form leaves p in volatile ECX (correct) precisely BECAUSE it lacks
  * that backward join. state=int (cont.21 derank lever, to steal ESI back)
@@ -69,12 +69,12 @@
  * fuzzer-reachable (fuzzer permutes source, can't change the allocator). */
 extern unsigned char g_52ff;
 extern unsigned short g_5390;
-extern short g_10b16;
+extern short g_cur_player;
 extern unsigned short g_10b14;
 extern unsigned short g_10b12;
 extern unsigned short g_10b1a;
 extern unsigned char g_e551[];
-extern unsigned char g_8110[];
+extern unsigned char g_pool_a[];
 extern unsigned char g_entity_pool[];
 extern short g_a6c2[];
 extern unsigned char g_e398;
@@ -110,13 +110,13 @@ void FUN_0002a288(void)
     g_52ff = 0;
     state = 1;
     if (g_5390 >= 0x80) {
-        k = g_10b16 * 0x417;
-        p = g_8110 + ((signed char)g_e551[k + 1] + g_e551[k]) * 0x5c;
+        k = g_cur_player * 0x417;
+        p = g_pool_a + ((signed char)g_e551[k + 1] + g_e551[k]) * 0x5c;
         id1 = g_10b14;
         e1 = g_entity_pool + id1;
         state = 2;
         if (id1 != 0
-            && ((unsigned int)id1 / 0x5c) >> 3 != g_10b16
+            && ((unsigned int)id1 / 0x5c) >> 3 != g_cur_player
             && (e1[0xb] & 1) == 0) {
             tid = *(unsigned short *)(p + 0x44);
             if (tid == 0) {

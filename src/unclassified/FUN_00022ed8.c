@@ -6,13 +6,13 @@
  */
 
 extern void FUN_0004d1db(void *dst, void *src, unsigned int len);
-extern unsigned char g_e49c[];
+extern unsigned char g_player_recs[];
 extern unsigned char g_105d4[];
 extern unsigned short g_10b2e;
 
 void FUN_00022ed8(unsigned short param_1)
 {
-    FUN_0004d1db(g_e49c, g_e49c + param_1 * 0x417, 0x417);
+    FUN_0004d1db(g_player_recs, g_player_recs + param_1 * 0x417, 0x417);
 
     *(unsigned short *)(g_105d4 + param_1 * 0xe + 0) = 0;
     *(unsigned short *)(g_105d4 + param_1 * 0xe + 2) = 0;
@@ -22,6 +22,6 @@ void FUN_00022ed8(unsigned short param_1)
     *(unsigned char *)(g_105d4 + param_1 * 0xe + 0xc) = (char)param_1;
     *(unsigned char *)(g_105d4 + param_1 * 0xe + 0xd) = 1;
 
-    *(char *)(g_e49c + param_1 * 0x417 + 0xb5) = (char)param_1 << 3;
-    *(unsigned short *)(g_e49c + param_1 * 0x417 + 0xb7) = g_10b2e;
+    *(char *)(g_player_recs + param_1 * 0x417 + 0xb5) = (char)param_1 << 3;
+    *(unsigned short *)(g_player_recs + param_1 * 0x417 + 0xb7) = g_10b2e;
 }

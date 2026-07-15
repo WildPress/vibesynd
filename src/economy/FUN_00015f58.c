@@ -5,18 +5,18 @@
    money/rate byte (g_3ee8) and commits the funding entry via FUN_33568 when the
    status g_5594 is 0 or 3, and if the record's time-budget dword can cover
    (param_1-1) days, spends them: money-=days, day++ (wrap at 0x16d -> year++),
-   then runs the 50-region economic sweep (FUN_16318 owner funding, g_e49c +=
+   then runs the 50-region economic sweep (FUN_16318 owner funding, g_player_recs +=
    FUN_16438 income, g_53a2[i] += 0x1f4-rand) and FUN_164c8 target reassignment.
    The fast path (g_10b45!=0) just spends the days with no sweep.  Overflow
    (not enough budget) advances by param_1/0x60 or 1 depending on g_10b52.
-   Record stride 0x417 based at g_e49c(accum)/g_e4a0(budget,day,year), indexed
-   by g_10b16, exactly as siblings FUN_16318/16438/164c8/16678/33568.
+   Record stride 0x417 based at g_player_recs(accum)/g_e4a0(budget,day,year), indexed
+   by g_cur_player, exactly as siblings FUN_16318/16438/164c8/16678/33568.
    Recipe: -4s -oneatx -zp8 -s -zq
 
    PARKED near-miss: ours 939B vs target 957B, difflib 0.571 (541/957),
-   structure byte-faithful. Levers that landed: per-block `int idx=g_10b16*0x417`
+   structure byte-faithful. Levers that landed: per-block `int idx=g_cur_player*0x417`
    (folds g_e4a0 into disp32, killed a 1381B recompute blowup); `g_5304 > 0`
-   (JBE not JE); named `money` load; volatile edge-flags + g_10b16 + g_10b50.
+   (JBE not JE); named `money` load; volatile edge-flags + g_cur_player + g_10b50.
    WALL (entry-scheduler, same class as sibling 0x16318's residue): g_5304 is a
    global register-cached in EDI across the whole fn (spill-before-call, reload-
    after). After the FUN_33568 call our reload `mov edi,[g_5304]` schedules EARLY
@@ -40,9 +40,9 @@ extern volatile unsigned char g_10b50;
 extern unsigned char g_10b45;
 extern unsigned char g_10b52;
 extern int g_10b06;
-extern volatile short g_10b16;
+extern volatile short g_cur_player;
 extern unsigned char g_e4a0[];
-extern unsigned char g_e49c[];
+extern unsigned char g_player_recs[];
 extern unsigned char g_3ee8;
 extern unsigned char g_5594;
 extern unsigned char g_53a2[];
@@ -85,7 +85,7 @@ char FUN_00015f58(unsigned int param_1)
         }
         g_10b50 = 0;
         {
-            int idx = g_10b16 * 0x417;
+            int idx = g_cur_player * 0x417;
             unsigned char v = *(unsigned int *)(g_e4a0 + idx) / (param_1 / 0x18);
             if (v != g_3ee8) {
                 unsigned char sst = g_5594;
@@ -95,7 +95,7 @@ char FUN_00015f58(unsigned int param_1)
             }
         }
         {
-            int idx = g_10b16 * 0x417;
+            int idx = g_cur_player * 0x417;
             money = *(unsigned int *)(g_e4a0 + idx);
             if (param_1 - 1 <= money) {
                 ret = 1;
@@ -107,7 +107,7 @@ char FUN_00015f58(unsigned int param_1)
                 }
                 for (i = 0; i < 0x32; i++) {
                     FUN_00016318(i);
-                    *(int *)(g_e49c + g_10b16 * 0x417) += FUN_00016438(i);
+                    *(int *)(g_player_recs + g_cur_player * 0x417) += FUN_00016438(i);
                     *(int *)(g_53a2 + i * 10) += 0x1f4 - (FUN_0000e568(0x3e8) & 0xffff);
                 }
                 FUN_000164c8();
@@ -122,7 +122,7 @@ char FUN_00015f58(unsigned int param_1)
             }
         }
     } else {
-        int idx = g_10b16 * 0x417;
+        int idx = g_cur_player * 0x417;
         money = *(unsigned int *)(g_e4a0 + idx);
         if (param_1 <= money) {
             ret = 1;
