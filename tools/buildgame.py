@@ -139,6 +139,7 @@ def main():
     man_fns = json.load(open("manifest/functions.json"))["functions"]
     man_names = {f["name"] for f in man_fns}
     name_of = {f["addr"]: f["name"] for f in man_fns}
+    addr_of = {f["name"]: f["addr"] for f in man_fns}   # short OBJ names key on addr (names may be semantic)
     names = sorted(os.path.basename(p)[:-2] for p in glob.glob("src/**/*.c", recursive=True)
                    if os.path.basename(p)[:-2] in man_names)
     DEFAULT = "-4s -oneatx -zp8 -s -zq"
@@ -188,7 +189,7 @@ def main():
         pubs, exts, _ = r
         defs |= pubs
         refs |= set(exts)
-        short = "F%X.OBJ" % int(nm[4:], 16)
+        short = "F%X.OBJ" % (int(addr_of[nm], 16) & 0xFFFFFF)   # unique per addr; handles semantic names
         shutil.copy(obj, os.path.join(WORK, short))
         objlist.append(short)
 
