@@ -25,7 +25,7 @@
 extern unsigned char g_entity_pool[];
 extern char **g_map_cols;
 extern void FUN_0002d998(unsigned char *p);
-extern void FUN_00026c78(unsigned char *node, int x, int y, int z);
+extern void move_entity_xyz(unsigned char *node, int x, int y, int z);
 
 void FUN_0002fca8(unsigned char *p)
 {
@@ -95,6 +95,6 @@ void FUN_0002fca8(unsigned char *p)
             break;
         id = *(unsigned short *)(node + 0x24);
     }
-    FUN_00026c78(p, *(short *)(node + 4), *(short *)(node + 6),
+    move_entity_xyz(p, *(short *)(node + 4), *(short *)(node + 6),
                  *(short *)(node + 8));
 }

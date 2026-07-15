@@ -15,7 +15,7 @@ extern void FUN_0002d3b8(unsigned char *p);
 extern short g_level_step;
 extern unsigned short FUN_000269d8(unsigned char *p);
 extern void FUN_0002d998(unsigned char *p);
-extern char FUN_0002dd48(unsigned char *p);
+extern char entity_event_dispatch(unsigned char *p);
 
 void FUN_00030508(unsigned char *p)
 {
@@ -38,5 +38,5 @@ void FUN_00030508(unsigned char *p)
             FUN_0002d998(p);
         }
     }
-    p[0x19] = FUN_0002dd48(p);
+    p[0x19] = entity_event_dispatch(p);
 }

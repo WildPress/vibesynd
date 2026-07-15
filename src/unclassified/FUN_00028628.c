@@ -31,7 +31,7 @@ extern unsigned char __far *g_5056fp;   /* buffer far ptr (one 6-byte global) */
 extern unsigned char __far *g_5056fp2;  /* alias of the same */
 extern unsigned char __far *g_5056fp3;  /* alias for the return re-read */
 extern char g_376c[];
-extern short FUN_00027d88(unsigned int off, unsigned short sel);
+extern short submit_ncb(unsigned int off, unsigned short sel);
 extern void FUN_000289a8(char *s, int b, int c);
 
 short FUN_00028628(unsigned int off, unsigned short sel)
@@ -42,7 +42,7 @@ short FUN_00028628(unsigned int off, unsigned short sel)
     p[0] = 0x35;
     w = *(unsigned short __far *)((sel :> (unsigned char *)off) + 0x40);
     *(unsigned short __far *)(p + 6) = w;
-    if (FUN_00027d88((unsigned)p, *((unsigned short *)&g_5056fp2 + 2)) == -1)
+    if (submit_ncb((unsigned)p, *((unsigned short *)&g_5056fp2 + 2)) == -1)
         return -0x63;
     while (g_5056fp[0x31] == 0xff)
         ;

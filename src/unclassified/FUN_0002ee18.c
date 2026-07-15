@@ -22,7 +22,7 @@
 extern unsigned char g_entity_pool[];
 extern unsigned char g_pool_a[];
 extern unsigned char *g_10ae0;
-extern unsigned char *FUN_0002e5f8(unsigned char *a, unsigned char *rec, short p);
+extern unsigned char *los_trace(unsigned char *a, unsigned char *rec, short p);
 
 unsigned char *FUN_0002ee18(unsigned char *a, short p2, short p3)
 {
@@ -43,7 +43,7 @@ unsigned char *FUN_0002ee18(unsigned char *a, short p2, short p3)
                 && (*(unsigned short *)(rec + 0x44) != 0 || (rec[0x1c] & 2))
                 && !(*(unsigned short *)(rec + 0xa) & 0x109)
                 && *(unsigned short *)(rec + 0x20) == 0) {
-                if (FUN_0002e5f8(a, rec, p2) == rec)
+                if (los_trace(a, rec, p2) == rec)
                     return rec;
             }
         }

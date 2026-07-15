@@ -27,7 +27,7 @@ extern int FUN_0002d7a8(unsigned char *node, int range);
 extern unsigned char *FUN_0002ee18(unsigned char *node, int dist, int d);
 extern void FUN_0002f608(unsigned char *node, int x, int y, int z);
 extern void FUN_000269d8(unsigned char *node);
-extern unsigned char FUN_0002dd48(unsigned char *node);
+extern unsigned char entity_event_dispatch(unsigned char *node);
 
 void FUN_00030868(unsigned char *node)
 {
@@ -64,5 +64,5 @@ void FUN_00030868(unsigned char *node)
     if (*(unsigned short *)(node + 0x42) == 0)
         FUN_0002d998(node);
     *(unsigned short *)(node + 0x42) -= 1;
-    node[0x19] = FUN_0002dd48(node);
+    node[0x19] = entity_event_dispatch(node);
 }

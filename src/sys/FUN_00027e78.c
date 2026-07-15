@@ -15,7 +15,7 @@
    close it. -ot/-os diverge far earlier (0x19, they drop the far-ptr CSE). */
 
 extern void __far *FUN_0003b239(unsigned n);
-extern short FUN_00027d88(unsigned char __far *p);
+extern short submit_ncb(unsigned char __far *p);
 
 extern unsigned char __far *g_5056;   /* far ptr: off @0x5056, sel @0x505a */
 
@@ -25,7 +25,7 @@ int FUN_00027e78(void)
     if (blk == 0)
         return -1;
     g_5056[0] = 0x7f;
-    if (FUN_00027d88(g_5056) != -1)
+    if (submit_ncb(g_5056) != -1)
         goto check;
     return -1;
 check:

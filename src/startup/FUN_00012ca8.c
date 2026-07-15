@@ -19,7 +19,7 @@ extern int g_3ebc;
 extern unsigned char g_c36b[];
 extern short g_cur_player;
 extern unsigned char g_player_flags[];
-extern void FUN_00012da8(unsigned char k);
+extern void build_equip_row(unsigned char k);
 
 void FUN_00012ca8(void)
 {
@@ -43,6 +43,6 @@ void FUN_00012ca8(void)
         g_c36b[j * 20] = 0xd;
     for (k = 0; k < g_3eb4; k++) {
         if (k != g_cur_player && (g_player_flags[k * 0x417] & 2))
-            FUN_00012da8((unsigned char)k);
+            build_equip_row((unsigned char)k);
     }
 }

@@ -56,8 +56,8 @@ extern void FUN_00036698(char *s, unsigned short x, int a3, int a4, unsigned sho
 extern void FUN_00036208(char *a, unsigned short b, unsigned short c, unsigned short d,
                          unsigned short e, signed char f, unsigned char g);
 extern void FUN_0003a4fa(char *buf, char *fmt, ...);
-extern void FUN_000265d8(unsigned char p);
-extern char FUN_000264a8(unsigned char p);
+extern void stats_panel_draw(unsigned char p);
+extern char slot_claim_test(unsigned char p);
 
 void FUN_00025d58(unsigned char param1)
 {
@@ -84,7 +84,7 @@ void FUN_00025d58(unsigned char param1)
     /* section 3: owner/claim gate */
     if ((unsigned short)g_syndicate_recs[param1 * 10 + 2] == g_cur_player
         || *(unsigned short *)(g_syndicate_recs + param1 * 10) == 0xff) {
-        FUN_000265d8(param1);
+        stats_panel_draw(param1);
         FUN_00036698(*(char **)((char *)g_46a8 + g_language * 4), 0xc2, 0x16a, 0xf, 0x166,
                      g_text_pal, -2, 8, 0, 0);
         if (*(unsigned short *)(g_syndicate_recs + param1 * 10) == 0xff) {
@@ -100,7 +100,7 @@ void FUN_00025d58(unsigned char param1)
                      g_text_pal, -2, 8, 0, 0);
         FUN_00036698(*(char **)((char *)g_46c0 + g_language * 4), 0xc2, 0x16a, 0xf, 0x166,
                      g_text_pal, -2, 8, 0, 0);
-        if (FUN_000264a8(param1) == 1) {
+        if (slot_claim_test(param1) == 1) {
             if (g_mouse_y > 0x15a && g_mouse_y < 0x174 && g_mouse_x > 0x10 && g_mouse_x < 0x92)
                 colour = 0x166;
             else

@@ -20,8 +20,8 @@
  * FUN_00033fb8 (row = (y % 0x6000)/256, col = (x & 0xff00)/256, slot =
  * g_map_cols + col + row*128, tile byte at (z-1)/128 + *slot) but instead of a
  * passability bool it dispatches on the tile class g_tile_flags[tile]:
- *   6 -> FUN_00033b88(x,y,z)   7 -> FUN_00033c38(x,y,z)
- *   8 -> FUN_00033cf8(x,y,z)   9 -> FUN_00033db8(x,y,z)
+ *   6 -> FUN_00033b88(x,y,z)   7 -> grid_hit_x(x,y,z)
+ *   8 -> grid_hit_y(x,y,z)   9 -> FUN_00033db8(x,y,z)
  *   0xb -> try all four in that order, 1 on first hit
  *   0xa / anything else -> 0
  * Case map (table at 0x33e60, index = g_tile_flags[tile] - 6, ja > 5 -> default):
@@ -34,8 +34,8 @@ extern char **volatile g_map_cols;
 extern unsigned char *g_tile_flags;
 
 int FUN_00033b88(int x, int y, int z);
-int FUN_00033c38(int x, int y, int z);
-int FUN_00033cf8(int x, int y, int z);
+int grid_hit_x(int x, int y, int z);
+int grid_hit_y(int x, int y, int z);
 int FUN_00033db8(int x, int y, int z);
 
 unsigned short FUN_00033e78(short x, short y, short z)
@@ -57,19 +57,19 @@ unsigned short FUN_00033e78(short x, short y, short z)
     case 6:
         return FUN_00033b88(xs, y, z);
     case 7:
-        return FUN_00033c38(xs, y, z);
+        return grid_hit_x(xs, y, z);
     case 8:
-        return FUN_00033cf8(xs, y, z);
+        return grid_hit_y(xs, y, z);
     case 9:
         return FUN_00033db8(xs, y, z);
     case 0xb:
         r = FUN_00033b88(xs, y, z);
         if (r != 0)
             return 1;
-        r = FUN_00033c38(xs, y, z);
+        r = grid_hit_x(xs, y, z);
         if (r != 0)
             return 1;
-        r = FUN_00033cf8(xs, y, z);
+        r = grid_hit_y(xs, y, z);
         if (r != 0)
             return 1;
         r = FUN_00033db8(xs, y, z);

@@ -49,10 +49,10 @@
  *
  * Tail: FUN_0003f4b4 / FUN_0003f636 recentre the radar on the followed agent;
  * two passes over the blip buffer draw each blip (shadow then sprite) via the
- * matched FUN_00018d18; FUN_00019318 draws the selected-agent pulse ring; and
+ * matched FUN_00018d18; draw_circle draws the selected-agent pulse ring; and
  * the phase-3 loop scans 8 objective slots (0x1be3a, stride 14) and draws the
  * first active one's animated marker (fixed-coord type 0x10, or node-tracking
- * types 1/2/3/5/0xf) via FUN_00014c58 (length) + FUN_00019318, returning.
+ * types 1/2/3/5/0xf) via FUN_00014c58 (length) + draw_circle, returning.
  */
 extern char **g_map_cols;              /* map column-pointer table               */
 extern unsigned char *g_tile_flags;     /* tile -> terrain-shape table            */
@@ -77,7 +77,7 @@ extern void FUN_0003fb40(int x, int y, int w, int h, int colour); /* fill quad *
 extern void FUN_0003f4b4(int a, int b, int c, int d);   /* radar x recentre    */
 extern void FUN_0003f636(int a, int b, int c, int d);   /* radar y recentre    */
 extern void FUN_00018d18(int x, int y, int chr, int colour);      /* draw blip  */
-extern void FUN_00019318(int x, int y, int r, int colour);        /* draw ring  */
+extern void draw_circle(int x, int y, int r, int colour);        /* draw ring  */
 extern int  FUN_00014c58(int a, int b);                 /* marker anim length  */
 extern void FUN_00035f28(int a, int b);                 /* off-screen indicator*/
 
@@ -303,7 +303,7 @@ void FUN_00019608(unsigned char *agent, short zoom)
         int ring = (int)g_pulse_ring_r / 4 + g_pulse_ring_r;   /* g_pulse_ring_r * 5/4 */
         if (g_target_countdown > 0) {
             int r = 90 * (ring - g_target_countdown) / ring;
-            FUN_00019318(sel_x, sel_y, r, 0xc);
+            draw_circle(sel_x, sel_y, r, 0xc);
         }
     }
 
@@ -358,9 +358,9 @@ void FUN_00019608(unsigned char *agent, short zoom)
 
             if (mx >= 0 && mx < 0x80 && my >= 0 && my < 0x80) {
                 int colour = (0xe - g_e397 * 8) & 0xff;
-                FUN_00019318(mx, my, zoom * 3, colour);   /* on-screen marker */
+                draw_circle(mx, my, zoom * 3, colour);   /* on-screen marker */
             } else {
-                FUN_00019318(mx, my, g_marker_anim, 0xc);        /* off-screen ring  */
+                draw_circle(mx, my, g_marker_anim, 0xc);        /* off-screen ring  */
             }
             return;
         }

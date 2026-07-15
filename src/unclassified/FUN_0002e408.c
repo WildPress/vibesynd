@@ -27,7 +27,7 @@
  */
 extern short g_dir_dx[];
 extern short g_dir_dy[];
-extern int FUN_0002d468(int x, int y, int z, unsigned char *obj);
+extern int path_probe_y(int x, int y, int z, unsigned char *obj);
 extern short FUN_00014c58(int dx, int dy);
 
 int FUN_0002e408(unsigned char *p, char step)
@@ -36,7 +36,7 @@ int FUN_0002e408(unsigned char *p, char step)
     short i = 0;
 
     do {
-        if ((short)FUN_0002d468(
+        if ((short)path_probe_y(
                 (short)((g_dir_dx[(unsigned char)d] * p[0x54] >> 8) + *(short *)(p + 4)),
                 (short)(*(short *)(p + 6) + (g_dir_dy[(unsigned char)d] * p[0x54] >> 8)),
                 *(short *)(p + 8), p) != 0)

@@ -8,7 +8,7 @@
 extern unsigned char g_entity_pool[];
 extern unsigned short g_a6c2[];
 extern void FUN_00023158(int a);
-extern int FUN_0002e808(unsigned char *a, unsigned char *b, int c);
+extern int los_trace_far(unsigned char *a, unsigned char *b, int c);
 
 void FUN_00014078(unsigned char *s, unsigned char *m, unsigned char idx,
                   unsigned char *o)
@@ -20,7 +20,7 @@ void FUN_00014078(unsigned char *s, unsigned char *m, unsigned char idx,
         s[5] = 1;
         return;
     }
-    if (FUN_0002e808(*(unsigned char **)(s + 0xc), *(unsigned char **)(s + 0x10),
+    if (los_trace_far(*(unsigned char **)(s + 0xc), *(unsigned char **)(s + 0x10),
                      (short)(g_a6c2[o[0x19]] * 9 / 10)) != 0) {
         unsigned short i = idx;
 

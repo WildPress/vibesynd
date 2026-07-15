@@ -6,7 +6,7 @@
  * 0x2d0d8, each with its 2-bit mode from w3c (>>7, >>9, >>11).
  * Recipe: -4s -oneatx -zp8 -s -zq
  */
-extern void FUN_0002d0d8(unsigned char *p, unsigned char *q, unsigned char *r,
+extern void rate_byte_drift(unsigned char *p, unsigned char *q, unsigned char *r,
                          int a, int b, int c);
 
 void FUN_0002d228(unsigned char *b)
@@ -32,10 +32,10 @@ void FUN_0002d228(unsigned char *b)
             break;
         }
     }
-    FUN_0002d0d8(b + 0x49, b + 0x47, b + 0x48, b[0x4a], b[0x53],
+    rate_byte_drift(b + 0x49, b + 0x47, b + 0x48, b[0x4a], b[0x53],
                  (unsigned char)((unsigned short)(*(unsigned short *)(b + 0x3c) & 0x180) >> 7));
-    FUN_0002d0d8(b + 0x4d, b + 0x4b, b + 0x4c, b[0x4e], b[0x53],
+    rate_byte_drift(b + 0x4d, b + 0x4b, b + 0x4c, b[0x4e], b[0x53],
                  (unsigned char)((unsigned short)(*(unsigned short *)(b + 0x3c) & 0x600) >> 9));
-    FUN_0002d0d8(b + 0x51, b + 0x4f, b + 0x50, b[0x52], b[0x53],
+    rate_byte_drift(b + 0x51, b + 0x4f, b + 0x50, b[0x52], b[0x53],
                  (unsigned char)((unsigned short)(*(unsigned short *)(b + 0x3c) & 0x1800) >> 11));
 }

@@ -5,7 +5,7 @@
  * (3165/5280 order-preserving bytes; positional is drift-inflated). Every case
  * body is decoded and structurally correct; the residue is the SAME register-
  * role tie-break the two smaller siblings that consume this 0x417 template are
- * parked on (FUN_000223c8 694/724, FUN_00012da8 1090/1188): the target keeps
+ * parked on (FUN_000223c8 694/724, build_equip_row 1090/1188): the target keeps
  * tpl live in EDX from entry and reads `movsx eax,[edx+0xb6]` (0fbe82b6) in
  * some bodies, `movsx edx,[edx+0xb6]` (0fbe92b6) in others, `movsx eax,
  * [eax+0xb6]` (0fbe80b6) in others -- an allocator choice that varies PER BODY

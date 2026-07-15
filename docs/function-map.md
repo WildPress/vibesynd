@@ -2,10 +2,12 @@
 
 Semantic names + descriptions over the `FUN_<addr>` anchors (source filename stays `FUN_<addr>`; this is the readable layer). Full machine-readable map in `manifest/names.json`.
 
-## Intro path (boot -> Bullfrog logo -> main menu), 129 functions that execute
+## Intro path (boot -> Bullfrog logo -> main menu), 132 functions that execute
 
 | addr | name | subsystem | what it does |
 |---|---|---|---|
+| `0xd928` | ***(unnamed)*** |  |  |
+| `0xe568` | ***(unnamed)*** | unclassified | prefix @ 0xe568 -- 16-bit LCG pseudo-random + modulo (previously-undecoded render-path prefix). * Advance the  |
 | `0x17998` | ***(unnamed)*** |  |  |
 | `0x179f8` | ***(unnamed)*** |  |  |
 | `0x17b48` | ***(unnamed)*** |  |  |
@@ -28,9 +30,10 @@ Semantic names + descriptions over the `FUN_<addr>` anchors (source filename sta
 | `0x254a8` | ***(unnamed)*** |  |  |
 | `0x28b88` | ***(unnamed)*** |  |  |
 | `0x34c28` | ***(unnamed)*** |  |  |
+| `0x34d48` | ***(unnamed)*** | lib | -- db-transcription (hand-asm/library). |
 | `0x35d08` | ***(unnamed)*** |  |  |
 | `0x35e68` | ***(unnamed)*** |  |  |
-| `0x38c28` | ***(unnamed)*** | unclassified | guarded alloc/read helper @ 0x38c28 |
+| `0x38c28` | ***(unnamed)*** | unclassified | guarded alloc/read helper @ 0x38c28. * * NEAR-MISS (NOT matched). Register-ROLE wall: the target's ESI/EDI ass |
 | `0x38cf8` | ***(unnamed)*** |  |  |
 | `0x39280` | ***(unnamed)*** | lib | -- db-transcription (hand-asm/library). |
 | `0x392ac` | ***(unnamed)*** |  |  |
@@ -95,7 +98,7 @@ Semantic names + descriptions over the `FUN_<addr>` anchors (source filename sta
 | `0x3ba80` | ***(unnamed)*** | lib | C runtime: stream teardown / _fclose core @ 0x3ba80 (CLIB3S, Watcom 9.5). FILE* at [ebp+0x10], flag [ebp+0x14] |
 | `0x3c44d` | ***(unnamed)*** | lib | C runtime: isatty @ 0x3c44d (CLIB3S). DOS IOCTL 0x4400 get-device-info, test the char-device bit -> 0/1. int21 |
 | `0x3c46d` | ***(unnamed)*** | lib | Decomp target #1 - original @ 0x0003c46d (6 bytes) * * Original machine code: B8 3C 1E 01 00 C3 * Disassembly: |
-| `0x3c491` | ***(unnamed)*** | lib | -- db-transcription (hand-asm/library). |
+| `0x3c491` | ***(unnamed)*** | lib | @ 0x3c491 -- framed CLIB helper: if(flag) p = FUN_0003c4b9(p); return p. |
 | `0x3c529` | ***(unnamed)*** | lib | C runtime: fd->stream lookup @ 0x3c529 (CLIB3S, Watcom 9.5). Returns the stream table entry ds:0xc07c[fd*4] af |
 | `0x3c57b` | ***(unnamed)*** | lib | C runtime: handle-release helper @ 0x3c57b (CLIB3S, Watcom 9.5). Stores the handle (arg1) OR'd with 0x40 in it |
 | `0x3c594` | ***(unnamed)*** |  |  |

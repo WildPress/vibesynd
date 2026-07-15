@@ -39,7 +39,7 @@ extern int  sound_driver_init(unsigned short a, unsigned short b, unsigned short
 extern int  xmidi_music_init(int a1, int a2, unsigned short a, unsigned short b, unsigned short c);
 extern void FUN_0001c168(void);
 extern void guarded_init_alloc(void);
-extern void FUN_0000d928(void);
+extern void main_game_loop(void);
 extern void FUN_000252d8(void);
 extern void FUN_00025348(void);
 extern void FUN_000183e8(char *p);
@@ -189,7 +189,7 @@ void startup_main(short argc, char **argv)
         FUN_0001c168();
     } else {
         guarded_init_alloc();
-        FUN_0000d928();
+        main_game_loop();
         start = (short)g_10ad8;
         while ((unsigned int)(g_10ad8 - start) <= 0x48)
             i++;

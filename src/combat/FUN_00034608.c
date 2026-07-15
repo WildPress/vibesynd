@@ -2,7 +2,7 @@
  * If dir is vertical (0 / 0x80) and the point's x tile differs from the target
  * x tile (g_10b54), first try the direction FUN_0004d221(dx,0) computed from
  * the tile delta; then try dir itself, dir-0x40, dir+0x40, each tested with
- * the 4-way tile lookup FUN_00034368(x=g_shot_x, y=g_shot_y, z=g_shot_level, d).
+ * the 4-way tile lookup compass_tile_probe(x=g_shot_x, y=g_shot_y, z=g_shot_level, d).
  * Horizontal dirs (0xc0 / 0x40) mirror with y tiles (g_shot_y vs g_10b56) and
  * FUN_0004d221(0,dy). Returns the chosen direction (dir unchanged if nothing
  * passes). Recipe: -4s -oneatx -zp8 -s -zq
@@ -24,7 +24,7 @@ extern short g_shot_level;
 extern short g_shot_y;
 extern short g_shot_x;
 extern unsigned short FUN_0004d221(int dx, int dy);
-extern int FUN_00034368(int x, int y, int z, int dir);
+extern int compass_tile_probe(int x, int y, int z, int dir);
 
 unsigned short FUN_00034608(unsigned char dir)
 {
@@ -35,16 +35,16 @@ unsigned short FUN_00034608(unsigned char dir)
         if (g_shot_x >> 8 != g_10b54 >> 8) {
             short d = (g_10b54 >> 8) - (g_shot_x >> 8);
             nd1 = FUN_0004d221(d, 0);
-            if ((short)FUN_00034368(g_shot_x, g_shot_y, g_shot_level, (unsigned char)nd1) != 0)
+            if ((short)compass_tile_probe(g_shot_x, g_shot_y, g_shot_level, (unsigned char)nd1) != 0)
                 return (unsigned char)nd1;
         }
-        if ((short)FUN_00034368(g_shot_x, g_shot_y, g_shot_level, dir) != 0)
+        if ((short)compass_tile_probe(g_shot_x, g_shot_y, g_shot_level, dir) != 0)
             return dir;
-        if ((short)FUN_00034368(g_shot_x, g_shot_y, g_shot_level, (unsigned char)(dir - 0x40)) != 0) {
+        if ((short)compass_tile_probe(g_shot_x, g_shot_y, g_shot_level, (unsigned char)(dir - 0x40)) != 0) {
             unsigned int t = dir;
             return (unsigned short)(t - 0x40);
         }
-        if ((short)FUN_00034368(g_shot_x, g_shot_y, g_shot_level, (unsigned char)(dir + 0x40)) != 0) {
+        if ((short)compass_tile_probe(g_shot_x, g_shot_y, g_shot_level, (unsigned char)(dir + 0x40)) != 0) {
             unsigned int t = dir;
             return (unsigned short)(t + 0x40);
         }
@@ -52,16 +52,16 @@ unsigned short FUN_00034608(unsigned char dir)
         if (g_shot_y >> 8 != g_10b56 >> 8) {
             short d = (g_10b56 >> 8) - (g_shot_y >> 8);
             nd2 = FUN_0004d221(0, d);
-            if ((short)FUN_00034368(g_shot_x, g_shot_y, g_shot_level, (unsigned char)nd2) != 0)
+            if ((short)compass_tile_probe(g_shot_x, g_shot_y, g_shot_level, (unsigned char)nd2) != 0)
                 return (unsigned char)nd2;
         }
-        if ((short)FUN_00034368(g_shot_x, g_shot_y, g_shot_level, dir) != 0)
+        if ((short)compass_tile_probe(g_shot_x, g_shot_y, g_shot_level, dir) != 0)
             return dir;
-        if ((short)FUN_00034368(g_shot_x, g_shot_y, g_shot_level, (unsigned char)(dir - 0x40)) != 0) {
+        if ((short)compass_tile_probe(g_shot_x, g_shot_y, g_shot_level, (unsigned char)(dir - 0x40)) != 0) {
             unsigned int t = dir;
             return (unsigned short)(t - 0x40);
         }
-        if ((short)FUN_00034368(g_shot_x, g_shot_y, g_shot_level, (unsigned char)(dir + 0x40)) != 0) {
+        if ((short)compass_tile_probe(g_shot_x, g_shot_y, g_shot_level, (unsigned char)(dir + 0x40)) != 0) {
             unsigned int t = dir;
             return (unsigned short)(t + 0x40);
         }
