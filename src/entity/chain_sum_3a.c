@@ -2,7 +2,7 @@
    and sum a 16-bit table value g_a7b4[node[0x19]] over every node. */
 extern unsigned char g_entity_pool[];
 extern unsigned short g_a7b4[];
-int FUN_000376f8(unsigned char *p)
+int chain_sum_3a(unsigned char *p)
 {
     unsigned short id = *(unsigned short *)(p + 0x3a);
     unsigned short sum = 0;

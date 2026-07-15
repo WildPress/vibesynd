@@ -2,7 +2,7 @@
    (base g_entity_pool, link +0x1c) calling FUN_000269b8 on every node. */
 extern unsigned char g_entity_pool[];
 extern void FUN_000269b8(unsigned char *node);
-void FUN_00037a48(unsigned char *p)
+void detach_chain_3a(unsigned char *p)
 {
     unsigned short id = *(unsigned short *)(p + 0x3a);
     if (id != 0) {

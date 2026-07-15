@@ -15,9 +15,9 @@ extern unsigned char g_e13c[];
 extern unsigned short g_cur_player;
 extern unsigned char g_b069[];
 extern unsigned char g_539e[];
-extern int FUN_000165f8(int slot);
-extern unsigned short FUN_0000e568(unsigned short n);
-extern int FUN_00016638(int d, int slot);
+extern int count_syndicate_recs(int slot);
+extern unsigned short lcg_rand(unsigned short n);
+extern int scan_syndicate_recs(int d, int slot);
 
 void FUN_000164c8(void)
 {
@@ -33,15 +33,15 @@ void FUN_000164c8(void)
         t = i;
         if ((unsigned short)t == g_cur_player)
             continue;
-        x = FUN_000165f8(i);
+        x = count_syndicate_recs(i);
         if (x == 0x32)
             return;
         if (x == 0)
             continue;
         d = x;
         if (x != 1)
-            d = FUN_0000e568(x - 1) + 1;
-        r = FUN_00016638(d, i);
+            d = lcg_rand(x - 1) + 1;
+        r = scan_syndicate_recs(d, i);
         for (j = 0; j < 8; j++) {
             if (g_b069[j + r * 19] == 0)
                 continue;
@@ -49,7 +49,7 @@ void FUN_000164c8(void)
                 continue;
             if ((unsigned short)g_539e[(g_b069[j + r * 19] - 1) * 10] == g_cur_player)
                 break;
-            if (FUN_0000e568(0x64) >= 0x32)
+            if (lcg_rand(0x64) >= 0x32)
                 break;
             g_539e[(g_b069[j + r * 19] - 1) * 10] = i;
             g_e13c[i] = r;

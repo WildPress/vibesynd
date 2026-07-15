@@ -3,11 +3,11 @@
 extern void FUN_0003eda6(void);
 extern void blit_backbuffer(void);
 extern void FUN_0003ee21(void);
-extern void FUN_00035538(void);
+extern void bulk_dword_copy(void);
 void FUN_00015d98(void)
 {
     FUN_0003eda6();
     blit_backbuffer();
     FUN_0003ee21();
-    FUN_00035538();
+    bulk_dword_copy();
 }

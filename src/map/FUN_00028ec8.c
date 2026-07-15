@@ -18,7 +18,7 @@
  * Recipe: -4s -oneatx -zp8 -s -zq
  */
 extern char **g_map_cols;
-extern short FUN_00034048(int cur, int step);
+extern short snap_direction(int cur, int step);
 extern void FUN_000269b8(unsigned char *b);
 
 void FUN_00028ec8(unsigned char *b)
@@ -39,8 +39,8 @@ void FUN_00028ec8(unsigned char *b)
     } else {
         *(short *)(b + 8) -= 8;
     }
-    *(short *)(b + 4) = FUN_00034048(*(short *)(b + 4), 0x80);
-    *(short *)(b + 6) = FUN_00034048(*(short *)(b + 6), 0x80);
+    *(short *)(b + 4) = snap_direction(*(short *)(b + 4), 0x80);
+    *(short *)(b + 6) = snap_direction(*(short *)(b + 6), 0x80);
     if (*(short *)(b + 8) < 0)
         FUN_000269b8(b);
 }

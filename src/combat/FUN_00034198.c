@@ -49,7 +49,7 @@ extern short g_dir_dy[];
 extern unsigned short FUN_00034608(short dir);
 extern unsigned char *shot_collision_query(void);
 extern void FUN_00034118(unsigned char *dst, unsigned char *src, unsigned short thr);
-extern void FUN_00034168(unsigned char *p, unsigned short n);
+extern void clamp_dec_field54(unsigned char *p, unsigned short n);
 
 void FUN_00034198(unsigned char *p2, unsigned char *p, unsigned short count)
 {
@@ -81,7 +81,7 @@ void FUN_00034198(unsigned char *p2, unsigned char *p, unsigned short count)
                 if (i < 1)
                     p[0x54] = 0;
                 else
-                    FUN_00034168(p, 0x10);
+                    clamp_dec_field54(p, 0x10);
                 hit = 0x3e7;
                 break;
             }
@@ -99,7 +99,7 @@ void FUN_00034198(unsigned char *p2, unsigned char *p, unsigned short count)
         goto no_turn;
     if (hit < 0)
         goto no_turn;
-    FUN_00034168(p, 8);
+    clamp_dec_field54(p, 8);
     if (p[0x54] < p[0x55] / 2)
         p[0x54] = (unsigned char)(p[0x55] / 2);
     goto done;

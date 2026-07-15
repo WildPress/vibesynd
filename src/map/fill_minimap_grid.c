@@ -3,7 +3,7 @@
    address = x*0x10 + y + g_minimap (x sign-extended then <<4). */
 extern unsigned char g_minimap[];
 extern unsigned char g_10b4f;
-void FUN_0001a8c8(void)
+void fill_minimap_grid(void)
 {
     short y = 0;
     do {

@@ -4,15 +4,15 @@
  *   code<2 -> HP=-1; ==2 -> HP-=8; ==3 -> HP-=4; else unchanged;
  *   HP<0 -> set +0x19=0x19, +0xa|=0x109; else clear +0xa&=0xfdf7, call 0x2d998.
  */
-extern unsigned short FUN_000269d8(unsigned char *);
-extern void           FUN_0002d998(unsigned char *);
+extern unsigned short advance_linked_index(unsigned char *);
+extern void           recompute_state_code(unsigned char *);
 
 void FUN_00030708(unsigned char *p)
 {
     unsigned short c;
 
     c = 0;
-    if ((short)FUN_000269d8(p) == 0)
+    if ((short)advance_linked_index(p) == 0)
         return;
     if ((*(unsigned char *)(p + 0x1d) & 0x10) == 0)
         c = (unsigned short)(*(unsigned short *)(p + 0x3c) & 0x60) >> 5;
@@ -39,5 +39,5 @@ hp:
         return;
     }
     *(unsigned short *)(p + 0xa) &= ~0x208;
-    FUN_0002d998(p);
+    recompute_state_code(p);
 }

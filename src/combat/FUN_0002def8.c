@@ -23,9 +23,9 @@ extern short g_aim_level;
 extern int FUN_00014c58(int dx, int dy);
 extern int projectile_step(unsigned char *obj, unsigned char dir);
 extern unsigned short FUN_0002d6c8(unsigned char *obj, unsigned char dir);
-extern int FUN_00026aa8(short a, short b);
+extern int max_abs(short a, short b);
 extern void find_projectile_step(unsigned char *obj, char dir);
-extern unsigned char FUN_0000e568(int a);
+extern unsigned char lcg_rand(int a);
 extern void FUN_00026ad8(unsigned short mult, unsigned short idx);
 extern int FUN_0002d3b8(int obj);
 extern void FUN_0004d1db(void *a, void *b, unsigned int n);
@@ -75,7 +75,7 @@ void FUN_0002def8(unsigned char *obj, int tgt)
     buf1[0x1a] = dA - 0x40;
     buf1[0x5a] = dA - 0x40;
     buf1[0x54] = 0x80;
-    *(short *)(buf1 + 0x1e) = FUN_00026aa8(
+    *(short *)(buf1 + 0x1e) = max_abs(
         (short)(*(short *)(buf1 + 0x2e) - *(short *)(buf1 + 4)),
         (short)(*(short *)(buf1 + 0x30) - *(short *)(buf1 + 6)));
 
@@ -83,7 +83,7 @@ void FUN_0002def8(unsigned char *obj, int tgt)
     buf2[0x1a] = dA + 0x40;
     buf2[0x5a] = dA + 0x40;
     buf2[0x54] = 0x80;
-    *(short *)(buf2 + 0x1e) = FUN_00026aa8(
+    *(short *)(buf2 + 0x1e) = max_abs(
         (short)(*(short *)(buf2 + 0x2e) - *(short *)(buf2 + 4)),
         (short)(*(short *)(buf2 + 0x30) - *(short *)(buf2 + 6)));
 
@@ -103,7 +103,7 @@ void FUN_0002def8(unsigned char *obj, int tgt)
         *(short *)(buf2 + 4) = *(short *)(buf2 + 4) + (g_dir_dx[buf2[0x1a]] * 0x80 >> 8);
         *(short *)(buf2 + 6) = *(short *)(buf2 + 6) + (g_dir_dy[buf2[0x1a]] * 0x80 >> 8);
         *(short *)(buf2 + 8) = *(short *)(buf2 + 8) + g_level_step;
-        rng = FUN_00026aa8(
+        rng = max_abs(
             (short)(*(short *)(buf2 + 0x2e) - *(short *)(buf2 + 4)),
             (short)(*(short *)(buf2 + 0x30) - *(short *)(buf2 + 6)));
         if (rng < *(unsigned short *)(buf2 + 0x1e)) {
@@ -122,7 +122,7 @@ void FUN_0002def8(unsigned char *obj, int tgt)
         *(short *)(buf1 + 4) = *(short *)(buf1 + 4) + (g_dir_dx[buf1[0x1a]] * 0x80 >> 8);
         *(short *)(buf1 + 6) = *(short *)(buf1 + 6) + (g_dir_dy[buf1[0x1a]] * 0x80 >> 8);
         *(short *)(buf1 + 8) = *(short *)(buf1 + 8) + g_level_step;
-        rng = FUN_00026aa8(
+        rng = max_abs(
             (short)(*(short *)(buf1 + 0x2e) - *(short *)(buf1 + 4)),
             (short)(*(short *)(buf1 + 0x30) - *(short *)(buf1 + 6)));
         if (rng < *(unsigned short *)(buf1 + 0x1e)) {
@@ -180,7 +180,7 @@ fallback:
             break;
         dA += 0x40;
     }
-    dA = dA + ((FUN_0000e568(2) * 2 - 1) << 5);
+    dA = dA + ((lcg_rand(2) * 2 - 1) << 5);
     g_aim_x = *(short *)(obj + 4);
     g_aim_y = *(short *)(obj + 6);
     g_aim_level = *(short *)(obj + 8);

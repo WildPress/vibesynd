@@ -24,7 +24,7 @@
    first type-2 ancestor and re-place p at its coords via FUN_26c78. */
 extern unsigned char g_entity_pool[];
 extern char **g_map_cols;
-extern void FUN_0002d998(unsigned char *p);
+extern void recompute_state_code(unsigned char *p);
 extern void move_entity_xyz(unsigned char *node, int x, int y, int z);
 
 void FUN_0002fca8(unsigned char *p)
@@ -75,7 +75,7 @@ void FUN_0002fca8(unsigned char *p)
                     else
                         p[0x1a] = r[0x54];
                     p[0x58] = 7;
-                    FUN_0002d998(p);
+                    recompute_state_code(p);
                     return;
                 }
             }
@@ -85,7 +85,7 @@ void FUN_0002fca8(unsigned char *p)
         p[0x55] = node[0x28];
         p[0xa] &= 0xf7;
         p[0x58] = p[0x19];
-        FUN_0002d998(p);
+        recompute_state_code(p);
         return;
     }
     id = *(unsigned short *)(p + 0x24);

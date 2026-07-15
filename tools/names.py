@@ -73,6 +73,20 @@ LABELS = {
     "0002d868": "interp_scale_c",         "0002d808": "interp_scale_b",
     "000146f8": "eligibility_test",       "00036648": "text_width_kern",
     "00035ed8": "zero_even_bytes",        "00035f28": "record_max",
+    "0001a8c8": "fill_minimap_grid",     "00035538": "bulk_dword_copy",
+    "00035588": "bulk_dword_copy_b",     "00036c28": "walk_chain_1c",
+    "0002d998": "recompute_state_code",  "00025168": "init_call5",
+    "0000dc08": "oneshot_state_setter",  "00037778": "walk_chain_3a",
+    "00037a48": "detach_chain_3a",       "000376f8": "chain_sum_3a",
+    "000269d8": "advance_linked_index",  "00034048": "snap_direction",
+    "00016638": "scan_syndicate_recs",   "00020d18": "relocate_map_columns",
+    "000165f8": "count_syndicate_recs",  "00028cc8": "build_two_buffers",
+    "00037738": "pool_accessor_44",      "0000e568": "lcg_rand",
+    "00026aa8": "max_abs",               "000377b8": "chain_length",
+    "00034168": "clamp_dec_field54",     "00014998": "walk_15byte_chain",
+    "00018ab8": "store_4_globals",       "00018488": "sub_and_call",
+    "00027ed8": "guarded_call_2arg",     "00025378": "add_c_stride6",
+    "00014cc8": "scan_pool_4",           "00013a98": "forward_if_flag",
 }
 
 

@@ -10,7 +10,7 @@
    `volatile int x` reproduces the target's slot-homed x (every access via
    [esp+4]); decl orders inert; 4000 cpermute variants no match. */
 extern unsigned char g_entity_pool[];
-extern int FUN_0000e568(int cap);
+extern int lcg_rand(int cap);
 extern int FUN_0000fa18(int x, int y, int z);
 extern void move_entity_xyz(unsigned char *node, int x, int y, int z);
 
@@ -33,8 +33,8 @@ void drop_carried_items(unsigned char *p)
             *(unsigned short *)(node + 0x20) = 0;
             *(unsigned short *)(node + 0x1c) = 0;
             node[0xa] &= 0xfe;
-            x = (*(unsigned short *)(p + 4) & 0xff) + FUN_0000e568(0xff) - 0x64;
-            y = (*(unsigned short *)(p + 6) & 0xff) + FUN_0000e568(0xff) - 0x64;
+            x = (*(unsigned short *)(p + 4) & 0xff) + lcg_rand(0xff) - 0x64;
+            y = (*(unsigned short *)(p + 6) & 0xff) + lcg_rand(0xff) - 0x64;
             if ((short)x >= 0x100)
                 x -= 0x64;
             if ((short)y >= 0x100)

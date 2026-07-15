@@ -3,12 +3,12 @@
    target: r = FUN_00026bc8(obj[0x54], obj[0x2e]-g_aim_x, obj[0x30]-g_aim_y) where the
    coord diffs are signed shorts. FUN_00026bc8 returns short (the copy-to-EDX + TEST AX
    codegen only reproduces with a short return). If r >= 0 store the facing obj[0x1a]=(char)r,
-   otherwise call FUN_0002d998(obj). */
+   otherwise call recompute_state_code(obj). */
 extern short g_aim_x;
 extern short g_aim_y;
 extern int anim_speed_select(unsigned char *obj, short a);
 extern short FUN_00026bc8(unsigned short spd, int dx, int dy);
-extern void FUN_0002d998(unsigned char *obj);
+extern void recompute_state_code(unsigned char *obj);
 void combat_aim_update(unsigned char *obj)
 {
     short r;
@@ -20,5 +20,5 @@ void combat_aim_update(unsigned char *obj)
         obj[0x1a] = (char)r;
         return;
     }
-    FUN_0002d998(obj);
+    recompute_state_code(obj);
 }

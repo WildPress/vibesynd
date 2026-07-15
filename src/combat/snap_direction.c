@@ -25,7 +25,7 @@
    and the cross-xor/imm32 forms only occur with the swapped role; the target
    breaks that correlation. No source form or recipe (-oneatx/-ot/-os/-or/-oi/none)
    crosses it. Genuine encoding-tie-break wall, same family as 0x34088 / 0x26e18. */
-int FUN_00034048(int cur, int tgt)
+int snap_direction(int cur, int tgt)
 {
     int m = cur & 0xffff00ff;
     int d = m - tgt;

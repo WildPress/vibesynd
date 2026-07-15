@@ -4,7 +4,7 @@
 extern int int386(int a, void *b, void *c);
 extern void FUN_0003ab59(int x);
 extern int g_df3c;
-void FUN_00028cc8(void)
+void build_two_buffers(void)
 {
     char b[0x1c];
     char a[0x1c];

@@ -5,7 +5,7 @@
    (count in EBX, dst in EDX, src in EAX) -- found by the permuter's statement reorder. */
 extern unsigned int *g_screen_buf;
 extern unsigned int *g_back_buf;
-void FUN_00035538(void)
+void bulk_dword_copy(void)
 {
     unsigned n = 15999;
     unsigned int *dst = g_screen_buf;

@@ -7,7 +7,7 @@ Semantic names + descriptions over the `FUN_<addr>` anchors (source filename sta
 | addr | name | subsystem | what it does |
 |---|---|---|---|
 | `0xd928` | ***(unnamed)*** |  |  |
-| `0xe568` | ***(unnamed)*** | unclassified | prefix @ 0xe568 -- 16-bit LCG pseudo-random + modulo (previously-undecoded render-path prefix). * Advance the  |
+| `0xe568` | ***(unnamed)*** |  |  |
 | `0x17998` | ***(unnamed)*** |  |  |
 | `0x179f8` | ***(unnamed)*** |  |  |
 | `0x17b48` | ***(unnamed)*** |  |  |

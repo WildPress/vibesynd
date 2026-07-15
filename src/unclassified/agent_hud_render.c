@@ -9,7 +9,7 @@
  *   `PUSH EBX/ESI/EDI/EBP; SUB ESP,8` prologue. => manifest size must be 2387.
  *
  * WHAT IT DOES
- *   1. Clears the panel region (FUN_00018ab8(0,0,0x80,0x190) stores the clip
+ *   1. Clears the panel region (store_4_globals(0,0,0x80,0x190) stores the clip
  *      rectangle globals g_5380..g_538c = 0,0,128,400).
  *   2. Advances a blink tick (g_blink_tick++) and rebuilds an 8-entry blink table:
  *      g_e394[k] = (g_blink_tick / (k+1)) & 1   -- eight phase-shifted blink flags.
@@ -34,7 +34,7 @@
  *   FUN_0003feb3(x, y, w, h, color)   -- filled rectangle / bar segment.
  *   FUN_0003f575(y0, y1, x, color)    -- clipped vertical line (bar end cap).
  *   FUN_0001b908(entity, idx, x, y)   -- draw the agent's weapon/inventory icon.
- *   FUN_00018ab8(a, b, c, d)          -- store the 4 clip-rect globals.
+ *   store_4_globals(a, b, c, d)          -- store the 4 clip-rect globals.
  *
  * The three IPA channels are byte-identical in the binary apart from their entity
  * field, cache offset, y position and colour pair; they are captured here by the
@@ -60,7 +60,7 @@ extern unsigned char  g_auxbar_panel[];     /* aux-bar panel table, stride 0x12:
 extern unsigned short g_a73a[];     /* per-frame max/quantity table */
 extern unsigned char  g_frame_enable[];     /* per-frame enable flags */
 
-extern void FUN_00018ab8(int a, int b, int c, int d);
+extern void store_4_globals(int a, int b, int c, int d);
 extern void FUN_0003feb3(int x, int y, int w, int h, int color);
 extern void FUN_0003f575(int y0, int y1, int x, int color);
 extern void FUN_0001b908(int p, unsigned short idx, int x, int y);
@@ -103,7 +103,7 @@ void agent_hud_render(void)
     unsigned char *p;
     unsigned short id;
 
-    FUN_00018ab8(0, 0, 0x80, 0x190);
+    store_4_globals(0, 0, 0x80, 0x190);
 
     g_blink_tick++;
     for (i = 0; i < 8; i++)

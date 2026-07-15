@@ -58,7 +58,7 @@ extern short g_cur_player;             /* current player (reset to 0)           
 extern unsigned char g_unlimited_funds;     /* unlimited-funds flag                     */
 extern unsigned char g_keep_synd_colours;     /* keep-syndicate-colours flag              */
 
-extern int FUN_0000e568(int n);            /* random in [0,n)                 */
+extern int lcg_rand(int n);            /* random in [0,n)                 */
 extern unsigned char keyboard_state_machine(void);   /* random weapon/type byte         */
 extern void FUN_0004d199(unsigned char *dst, int val, int len); /* memset      */
 
@@ -115,7 +115,7 @@ void new_campaign_reset(void)
             if (j < 8) {                                    /* active slot */
                 g_player_recs[slot] = keyboard_state_machine();                       /* type */
                 *(short *)(g_player_recs + slot + 1) = 0x10;                 /* ammo */
-                *(short *)(g_player_recs + slot + 3) = (short)(FUN_0000e568(3) & 1);
+                *(short *)(g_player_recs + slot + 3) = (short)(lcg_rand(3) & 1);
             } else {                                        /* empty slot */
                 *(short *)(g_player_recs + slot + 1) = -1;
                 *(short *)(g_player_recs + slot + 3) = 0;
@@ -141,10 +141,10 @@ void new_campaign_reset(void)
         if (g_keep_synd_colours && i != 0)
             g_syndicate_recs[i * 0xa + 2] = 0;                         /* g_539e */
         else
-            g_syndicate_recs[i * 0xa + 2] = (unsigned char)(FUN_0000e568(7) + 1);
+            g_syndicate_recs[i * 0xa + 2] = (unsigned char)(lcg_rand(7) + 1);
         *(short *)(g_syndicate_recs + i * 0xa + 0) = 0;                /* g_syndicate_recs */
         *(int *)(g_syndicate_recs + i * 0xa + 6) =
-            ((FUN_0000e568(0x14) & 0xffff) + 0x28) * 1000000; /* g_syndicate_money money */
+            ((lcg_rand(0x14) & 0xffff) + 0x28) * 1000000; /* g_syndicate_money money */
         g_syndicate_recs[i * 0xa + 3] = 0x1e;                          /* g_539f */
         g_syndicate_recs[i * 0xa + 4] = 0x1e;                          /* g_53a0 */
     }

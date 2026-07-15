@@ -50,7 +50,7 @@ extern unsigned char commit_funding(void);
 extern void FUN_00016318(unsigned char i);
 extern unsigned int FUN_00016438(unsigned char i);
 extern void FUN_000164c8(void);
-extern unsigned short FUN_0000e568(unsigned short n);
+extern unsigned short lcg_rand(unsigned short n);
 
 char economy_daily_tick(unsigned int param_1)
 {
@@ -108,7 +108,7 @@ char economy_daily_tick(unsigned int param_1)
                 for (i = 0; i < 0x32; i++) {
                     FUN_00016318(i);
                     *(int *)(g_player_recs + g_cur_player * 0x417) += FUN_00016438(i);
-                    *(int *)(g_syndicate_money + i * 10) += 0x1f4 - (FUN_0000e568(0x3e8) & 0xffff);
+                    *(int *)(g_syndicate_money + i * 10) += 0x1f4 - (lcg_rand(0x3e8) & 0xffff);
                 }
                 FUN_000164c8();
             } else {

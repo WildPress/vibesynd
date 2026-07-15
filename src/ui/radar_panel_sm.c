@@ -14,7 +14,7 @@
  * flag [+0xb]&1 clear): target id p[0x44] -> 0 => state 5 else LOS check
  * los_trace(p, ent, g_a6c2[weapon type]) => state 6/5. Else if word
  * g_10b12 live: same via los_trace_far => 6/5. Else if g_10b1a: state 4,
- * n = FUN_000377b8(p) (carried-item count). Dispatch switch(state):
+ * n = chain_length(p) (carried-item count). Dispatch switch(state):
  *  1/2 -> g_5324 = g_5308 + 6*state; return.   3 -> nothing.
  *  4   -> g_52ff=1; e = g_entity_pool + g_10b1a; if g_e398==0 and n<8: inner
  *         switch on type e[0x19] queues a draw-list node
@@ -87,7 +87,7 @@ extern int g_5308;
 extern int g_5324;
 extern unsigned char *los_trace(unsigned char *a, unsigned char *rec, short p);
 extern unsigned char *los_trace_far(unsigned char *p1, unsigned char *p2, int dist);
-extern int FUN_000377b8(unsigned char *p);
+extern int chain_length(unsigned char *p);
 extern void FUN_0001b858(unsigned short a, short x, short y);
 extern int FUN_0003fb40();
 extern void center_string_16(int a, int b);
@@ -142,7 +142,7 @@ void radar_panel_sm(void)
                 }
             } else if (g_10b1a != 0) {
                 state = 4;
-                n = FUN_000377b8(p);
+                n = chain_length(p);
             }
         }
     }

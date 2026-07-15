@@ -32,7 +32,7 @@ extern short g_1be32, g_1be34, g_1be36, g_1be38;
 extern int g_marker_phase_a, g_marker_phase_b;
 extern int FUN_00045f8a();
 extern int FUN_00045e61();
-extern void FUN_0001a8c8(void);
+extern void fill_minimap_grid(void);
 
 void sel_marker_dispatch(short sel)
 {
@@ -46,7 +46,7 @@ void sel_marker_dispatch(short sel)
         if (g_marker_phase_a == 0x18) { g_marker_phase_a = 0; kA = 0x18; }
         else { g_marker_phase_a = g_marker_phase_a + 1; kA = g_marker_phase_a - 1; }
         FUN_00045f8a((short)(g_map_cursor_x + 0x18), (short)(g_map_cursor_y + 0x18), 0x10, g_marker_phase_b, kA);
-        FUN_0001a8c8();
+        fill_minimap_grid();
         return;
     case 4: /* NW */
         if ((short)g_map_cursor_x <= g_1be32) goto edge_N;
@@ -54,7 +54,7 @@ void sel_marker_dispatch(short sel)
         g_map_cursor_x = g_map_cursor_x - 1; g_map_cursor_y = g_map_cursor_y - 1;
         if (g_marker_phase_a == 0) g_marker_phase_a = 0x18; else g_marker_phase_a = g_marker_phase_a - 1;
         FUN_00045f8a((short)g_map_cursor_x, (short)g_map_cursor_y, 0x10, g_marker_phase_b, g_marker_phase_a);
-        FUN_0001a8c8();
+        fill_minimap_grid();
         return;
     case 2: /* NE */
         if ((short)g_map_cursor_x >= g_1be36) goto edge_N;
@@ -78,7 +78,7 @@ void sel_marker_dispatch(short sel)
         if (g_marker_phase_b == 0) g_marker_phase_b = 0xf; else g_marker_phase_b = g_marker_phase_b - 1;
         FUN_00045e61((short)g_map_cursor_x, (short)g_map_cursor_y, 0x19, g_marker_phase_b, g_marker_phase_a);
         FUN_00045f8a((short)g_map_cursor_x, (short)g_map_cursor_y, 0x10, g_marker_phase_b, g_marker_phase_a);
-        FUN_0001a8c8();
+        fill_minimap_grid();
         return;
     case 6: edge_N: /* N */
         if ((short)g_map_cursor_y <= g_1be34) break;
@@ -97,7 +97,7 @@ void sel_marker_dispatch(short sel)
         if (g_marker_phase_b == 0) g_marker_phase_b = 0xf; else g_marker_phase_b = g_marker_phase_b - 1;
         FUN_00045f8a((short)(g_map_cursor_x + 0x18), (short)(g_map_cursor_y + 0x18), 0x10, g_marker_phase_b, kA);
         FUN_00045e61((short)g_map_cursor_x, (short)g_map_cursor_y, 0x19, g_marker_phase_b, g_marker_phase_a);
-        FUN_0001a8c8();
+        fill_minimap_grid();
         return;
     case 10: edge_E: /* E */
         if ((short)g_map_cursor_x >= g_1be36) break;
@@ -110,5 +110,5 @@ void sel_marker_dispatch(short sel)
         FUN_00045e61((short)(g_map_cursor_x + 0xf), (short)(g_map_cursor_y - 0xf), 0x19, kB, g_marker_phase_a);
         break;
     }
-    FUN_0001a8c8();
+    fill_minimap_grid();
 }

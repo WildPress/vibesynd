@@ -1,5 +1,5 @@
 /* frameless status logic @ 0x2d998: recompute p->b58 (a state code) then mirror to p->b19 */
-void FUN_0002d998(unsigned char *p)
+void recompute_state_code(unsigned char *p)
 {
     if (p[0x19] == p[0x58] || p[0x58] == 0) {
         if (*(unsigned short *)(p + 0x20) != 0)

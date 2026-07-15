@@ -3,12 +3,12 @@
 
    If ((u16)obj[0x1c] & 0x1002) is set: pick a duration slot from the 2-bit field
    (obj[0x3c] & 0x18) >> 3, form base = slot*10000 + 1000, and subtract the
-   pool-chain elapsed sum FUN_000376f8(obj). When that remainder goes negative
+   pool-chain elapsed sum chain_sum_3a(obj). When that remainder goes negative
    (elapsed overran the base) scale param_2 down by the overrun fraction
    (param_2 * (1000 - labs(rem)) / 1000, stride 0x3e8 = 1000) and floor to 0x10.
    Feed the (u16) value to the ramp sibling interp_scale_c and floor its result to
    0x10. When the flag bit is clear, run the ramp on raw param_2 and floor to 0xc.
-   labs = FUN_0003aed8; pool-chain sum = FUN_000376f8. Same idiv-by-1000 /
+   labs = FUN_0003aed8; pool-chain sum = chain_sum_3a. Same idiv-by-1000 /
    labs shape as the 0x2d7a8 / 0x2d808 / 0x2d868 sibling trio (this is their
    dispatcher). Stack calling convention (-4s): params read from [ESP+0x10/0x14].
 
@@ -18,7 +18,7 @@
    3rd callee-saved reg it pushes) and holds both params in EBX/ESI up front, while
    our Watcom keeps the chain in EAX and pushes only EBX/ESI. First diff is the entry
    `push edi` (byte 0x2); no C form makes the allocator reserve EDI here. Wall. */
-extern int FUN_000376f8(unsigned char *obj);
+extern int chain_sum_3a(unsigned char *obj);
 extern int FUN_0003aed8(int v);
 extern int interp_scale_c(unsigned char *obj, unsigned int v);
 
@@ -28,7 +28,7 @@ int anim_speed_select(unsigned char *obj, short param_2)
 
     if (*(unsigned short *)(obj + 0x1c) & 0x1002) {
         int base = ((*(unsigned short *)(obj + 0x3c) & 0x18) >> 3) * 10000 + 1000;
-        int rem = base - FUN_000376f8(obj);
+        int rem = base - chain_sum_3a(obj);
         int sel = param_2;
         if (rem < 0) {
             sel = param_2 * (1000 - FUN_0003aed8(rem)) / 1000;

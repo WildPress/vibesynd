@@ -18,7 +18,7 @@
    dead load homed in ESI is not source-reachable here (register-role / dead-code wall). */
 extern short g_cur_player;
 extern unsigned char g_squad_id[];
-extern unsigned char FUN_0000e568(int);
+extern unsigned char lcg_rand(int);
 
 unsigned char keyboard_state_machine(void)
 {
@@ -28,7 +28,7 @@ unsigned char keyboard_state_machine(void)
     unsigned char flag;
 
     si = g_cur_player;
-    ch = FUN_0000e568(0x45);
+    ch = lcg_rand(0x45);
     goto top;
 inc_i:
     if (++i < 0x12)

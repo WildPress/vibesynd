@@ -15,8 +15,8 @@ extern unsigned char g_5591w; /* same address; write alias so the store schedule
 extern int g_10aa0;
 extern void FUN_0004987e(int a);
 extern void FUN_00039ca0(int a, int b, char *c);
-extern void FUN_00035588(void);
-extern void FUN_00035538(void);
+extern void bulk_dword_copy_b(void);
+extern void bulk_dword_copy(void);
 extern char g_b958[];
 
 void FUN_00035638(int i)
@@ -30,7 +30,7 @@ void FUN_00035638(int i)
         g_5591w = 0;
     }
     FUN_00039ca0(0, 0, g_b958);
-    FUN_00035588();
-    FUN_00035538();
+    bulk_dword_copy_b();
+    bulk_dword_copy();
     g_506c = 1;
 }

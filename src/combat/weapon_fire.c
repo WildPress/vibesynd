@@ -2,13 +2,13 @@
  * top-level modes on the firing entity's type byte p2[0x19]:
  *  - type 5/6 (guided/tracking): step the shot cursor (g_aim_x/g_aim_y) one
  *    tile toward the shooter's target coords, pick facing via FUN_0004d221,
- *    snap the off-axis coord toward centre via FUN_00034048, adjust the charge
+ *    snap the off-axis coord toward centre via snap_direction, adjust the charge
  *    byte p1[0x54] by the remaining tile distance, drop the shot if it reached
- *    the tile (FUN_0002d998), accumulate the shot vector (FUN_00026ad8) and
+ *    the tile (recompute_state_code), accumulate the shot vector (FUN_00026ad8) and
  *    commit the cursor (move_entity_xyz).
  *  - otherwise: publish the shot accumulators g_shot_x/g_shot_y/g_shot_level and the
  *    target coords g_10b54/56/58, run the trajectory march FUN_00034198, snap
- *    the cursor to the facing (FUN_00034048 by octant), re-pick the passable
+ *    the cursor to the facing (snap_direction by octant), re-pick the passable
  *    facing (FUN_00034608) when the cursor moved off the target tile, probe the
  *    blocked-tile map (g_map_cols column table -> g_tile_flags class) and drop on a block,
  *    then accumulate + commit as above.
@@ -54,8 +54,8 @@ extern unsigned char *g_tile_flags;
 
 extern int FUN_0003aed8(int x);
 extern unsigned char FUN_0004d221(int dx, int dy);
-extern short FUN_00034048(int cur, int step);
-extern void FUN_0002d998(unsigned char *p);
+extern short snap_direction(int cur, int step);
+extern void recompute_state_code(unsigned char *p);
 extern void FUN_00026ad8(unsigned short mult, unsigned short idx);
 extern void FUN_00034198(unsigned char *p2, unsigned char *p, unsigned short count);
 extern unsigned short FUN_00034608(int dir);
@@ -72,11 +72,11 @@ void weapon_fire(unsigned char *p1, unsigned char *p2)
 
         if ((short)dxa > (short)dya) {
             p2[0x29] = FUN_0004d221((short)(*(short *)(p1 + 0x2e) - g_aim_x), 0);
-            g_aim_y = FUN_00034048(g_aim_y, 0x80);
+            g_aim_y = snap_direction(g_aim_y, 0x80);
             steps = dxa;
         } else {
             p2[0x29] = FUN_0004d221(0, (short)(*(short *)(p1 + 0x30) - g_aim_y));
-            g_aim_x = FUN_00034048(g_aim_x, 0x80);
+            g_aim_x = snap_direction(g_aim_x, 0x80);
             steps = dya;
         }
 
@@ -102,7 +102,7 @@ void weapon_fire(unsigned char *p1, unsigned char *p2)
 
         if (g_aim_x >> 8 == *(short *)(p1 + 0x2e) >> 8
             && g_aim_y >> 8 == *(short *)(p1 + 0x30) >> 8)
-            FUN_0002d998(p1);
+            recompute_state_code(p1);
 
         FUN_00026ad8((unsigned short)p1[0x54], (unsigned short)p2[0x29]);
         z = *(short *)(p2 + 8);
@@ -117,16 +117,16 @@ void weapon_fire(unsigned char *p1, unsigned char *p2)
 
         switch (p2[0x1a]) {
         case 0x00:
-            g_aim_x = FUN_00034048(g_aim_x, 0xc0);
+            g_aim_x = snap_direction(g_aim_x, 0xc0);
             break;
         case 0x40:
-            g_aim_y = FUN_00034048(g_aim_y, 0x40);
+            g_aim_y = snap_direction(g_aim_y, 0x40);
             break;
         case 0x80:
-            g_aim_x = FUN_00034048(g_aim_x, 0x40);
+            g_aim_x = snap_direction(g_aim_x, 0x40);
             break;
         case 0xc0:
-            g_aim_y = FUN_00034048(g_aim_y, 0xc0);
+            g_aim_y = snap_direction(g_aim_y, 0xc0);
             break;
         }
 
@@ -153,7 +153,7 @@ void weapon_fire(unsigned char *p1, unsigned char *p2)
             int index = col + row * 128;
             base += index;
             if (g_tile_flags[*(unsigned char *)((g_aim_level - 1) / 128 + (int)*base)] != 0)
-                FUN_0002d998(p1);
+                recompute_state_code(p1);
         }
 
         if (p1[0x54] > 0)

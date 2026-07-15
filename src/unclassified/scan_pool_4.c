@@ -2,7 +2,7 @@
    record's flag byte [+0xb] has bit 0 set, advance; return 1 on the first
    record whose bit is clear, 0 if all 4 have it set. */
 extern unsigned char g_pool_a[];
-char FUN_00014cc8(void)
+char scan_pool_4(void)
 {
     unsigned char *rec = g_pool_a;
     unsigned char i = 0;

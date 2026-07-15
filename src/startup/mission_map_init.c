@@ -34,8 +34,8 @@ extern short g_1bc70, g_1bc72;
 extern unsigned short g_1bc74;
 extern unsigned char g_1bc76, g_1bc77, g_1bc78, g_1bc79, g_1bc7a, g_1bc7b;
 extern short g_1be34;
-extern void FUN_00020d18(int);
-extern void FUN_00025378(int, int, int);
+extern void relocate_map_columns(int);
+extern void add_c_stride6(int, int, int);
 extern void FUN_00012ca8(void);
 extern void FUN_00020d98(void);
 extern void FUN_000498ef(int);
@@ -51,9 +51,9 @@ void mission_map_init(void)
 {
     char buf[20];
 
-    FUN_00020d18(g_535c);
-    FUN_00025378(g_5314, g_5318, g_5330);
-    FUN_00025378(g_531c, g_5320, g_5334);
+    relocate_map_columns(g_535c);
+    add_c_stride6(g_5314, g_5318, g_5330);
+    add_c_stride6(g_531c, g_5320, g_5334);
     g_10ac8 = 0;
     if (g_radar_detail == 0)
         FUN_00012ca8();

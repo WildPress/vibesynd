@@ -13,8 +13,8 @@ extern unsigned short FUN_LE_0000e568(unsigned short a);
 extern void FUN_00026ad8(unsigned short a, unsigned short b);
 extern void FUN_0002d3b8(unsigned char *p);
 extern short g_level_step;
-extern unsigned short FUN_000269d8(unsigned char *p);
-extern void FUN_0002d998(unsigned char *p);
+extern unsigned short advance_linked_index(unsigned char *p);
+extern void recompute_state_code(unsigned char *p);
 extern char entity_event_dispatch(unsigned char *p);
 
 void FUN_00030508(unsigned char *p)
@@ -27,7 +27,7 @@ void FUN_00030508(unsigned char *p)
     FUN_0002d3b8(p);
     if (g_level_step < -0x40)
         (*(short *)(p + 0x14))--;
-    if (FUN_000269d8(p) != 0) {
+    if (advance_linked_index(p) != 0) {
         if (*(short *)(p + 0x14) < 0) {
             p[0x19] = 0x18;
         } else {
@@ -35,7 +35,7 @@ void FUN_00030508(unsigned char *p)
             *(short *)(p + 0xa) &= ~0x208;
             p[0x19] = 0x16;
             p[0x5b] = p[0x1a];
-            FUN_0002d998(p);
+            recompute_state_code(p);
         }
     }
     p[0x19] = entity_event_dispatch(p);

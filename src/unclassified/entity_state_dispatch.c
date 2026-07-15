@@ -41,16 +41,16 @@ extern unsigned char g_c358[];
 extern unsigned short g_a73a[];
 extern unsigned short g_a6c2[];
 extern void FUN_00023158(unsigned int);
-extern unsigned short FUN_0000e568(int);
+extern unsigned short lcg_rand(int);
 extern unsigned char *pool_list_dispatch(unsigned char *, unsigned char *, int);
-extern char FUN_00013a98(unsigned short *, unsigned char *, unsigned char *, unsigned char);
+extern char forward_if_flag(unsigned short *, unsigned char *, unsigned char *, unsigned char);
 extern char FUN_000139a8(unsigned char *, unsigned char *, unsigned char);
 extern void palette_flash3(short *, int, int, unsigned char, unsigned char *);
 extern void reset_flash_palette(unsigned char *, unsigned short *, unsigned char);
 extern void FUN_00013c98(unsigned short *, unsigned char *, unsigned char,
                          unsigned char, unsigned char *, unsigned char *);
 extern void FUN_00014588(unsigned char *);
-extern unsigned char *FUN_00014998(unsigned char *);
+extern unsigned char *walk_15byte_chain(unsigned char *);
 extern char FUN_000141f8(unsigned char *, unsigned char *, unsigned char,
                          unsigned char, unsigned short *);
 extern void FUN_00014828(unsigned char *);
@@ -81,7 +81,7 @@ void entity_state_dispatch(unsigned char *param_1, unsigned char param_2, unsign
     hnd = *(unsigned char **)(param_1 + 0xc);
     if (hnd[0xc] & 0x40) {
         if (*(short *)(hnd + 0x14) < 2) {
-            if (FUN_0000e568(0x64) < 5) {
+            if (lcg_rand(0x64) < 5) {
                 param_1[3] = 4;
                 goto dispatch;
             }
@@ -121,7 +121,7 @@ dispatch:
             param_1[3] = 0;
             if (t[0] != 0)
                 t[1] = 0;
-            rec = FUN_00014998(rec);
+            rec = walk_15byte_chain(rec);
             goto tail;
         }
         if (FUN_000141f8(rec, param_1, param_2, param_3, param_4)) {
@@ -149,14 +149,14 @@ dispatch:
         FUN_00023158((unsigned short)param_3);
         goto tail;
     case 6:
-        if (FUN_00013a98(param_4, tnode, param_1, param_3)) {
+        if (forward_if_flag(param_4, tnode, param_1, param_3)) {
             q = (short)((int)(unsigned short)g_a6c2[cur[0x19]] * 9 / 10);
             n = pool_list_dispatch(*(unsigned char **)(param_1 + 0xc), tnode, q);
             param_1[3] = (n == tnode) + 9;
         }
         goto tail;
     case 10:
-        if (!FUN_00013a98(param_4, tnode, param_1, param_3))
+        if (!forward_if_flag(param_4, tnode, param_1, param_3))
             goto tail;
         q = (short)((int)(unsigned short)g_a6c2[cur[0x19]] * 9 / 10);
         n = pool_list_dispatch(*(unsigned char **)(param_1 + 0xc), tnode, q);
@@ -178,7 +178,7 @@ dispatch:
         }
         goto tail;
     case 9:
-        if (!FUN_00013a98(param_4, tnode, param_1, param_3))
+        if (!forward_if_flag(param_4, tnode, param_1, param_3))
             goto tail;
         if (FUN_000139a8(param_1, tnode, param_3)) {
             q = (short)((int)(unsigned short)g_a6c2[cur[0x19]] * 9 / 10);

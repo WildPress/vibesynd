@@ -48,11 +48,11 @@
   "desc": "0x139a8 -- kill-credit eligibility test. n's cause flags at +0x1c pick a * rule bit in b[1]: &4 -> b[1]&1; &2 -> owner p = ((n - g_pool_a)/0x5c)/8, if * player-rec flag (g_player_flags[p*0x417] & 2) t",
   "runs_in_intro": false
  },
- "FUN_00013a98": {
+ "forward_if_flag": {
   "addr": "00013a98",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x13a98: if arg2->[0xb] bit 0 is set, forward to FUN_13ac8 with reordered args and return 0; otherwise return 1.",
+  "label": "forward_if_flag",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "reset_flash_palette": {
@@ -90,11 +90,11 @@
   "desc": "",
   "runs_in_intro": false
  },
- "FUN_00014998": {
+ "walk_15byte_chain": {
   "addr": "00014998",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x14998: walk a chain of 15-byte records at g_1beb2, following the link at record+2, until the link is zero. (do-while form)",
+  "label": "walk_15byte_chain",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_000149e8": {
@@ -111,11 +111,11 @@
   "desc": "sum of squares then call. * mov eax,[esp+4]; mov edx,[esp+8]; imul eax,eax; imul edx,edx; add eax,edx; * push eax; call 0x4d393; add esp,4; ret -> return g(a*a + b*b)",
   "runs_in_intro": false
  },
- "FUN_00014cc8": {
+ "scan_pool_4": {
   "addr": "00014cc8",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x14cc8: scan up to 4 records at g_pool_a (stride 0x5c). While a record's flag byte [+0xb] has bit 0 set, advance; return 1 on the first record whose bit is clear, 0 if all 4 have it set.",
+  "label": "scan_pool_4",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00015d98": {
@@ -167,18 +167,18 @@
   "desc": "0x164c8 -- per-player target (re)assignment sweep. For each player slot i<8: * resets g_e13c[i]=0xff, skips self (g_cur_player); x=FUN_165f8(i) rates the slot * (0x32 aborts the whole sweep, 0 skips);",
   "runs_in_intro": false
  },
- "FUN_000165f8": {
+ "count_syndicate_recs": {
   "addr": "000165f8",
-  "label": "",
-  "subsystem": "economy",
-  "desc": "frameless @ 0x165f8: count how many of the 50 ten-byte records at g_539e have their leading byte equal to param. Sibling of 0x16638. Returns the count.",
+  "label": "count_syndicate_recs",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_00016638": {
+ "scan_syndicate_recs": {
   "addr": "00016638",
-  "label": "",
-  "subsystem": "economy",
-  "desc": "frameless @ 0x16638: scan a table of 10-byte records at g_539e, wrapping the index at 0x32, and return the index of the count-th record whose byte equals val. Returns 0xff if count is zero.",
+  "label": "scan_syndicate_recs",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00016678": {
@@ -244,11 +244,11 @@
   "desc": "",
   "runs_in_intro": true
  },
- "FUN_00018488": {
+ "sub_and_call": {
   "addr": "00018488",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless push-ebx @ 0x18488: g_3ef0 -= b; FUN_0003ab59(a);",
+  "label": "sub_and_call",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "realloc_block_descriptor": {
@@ -300,11 +300,11 @@
   "desc": "",
   "runs_in_intro": true
  },
- "FUN_00018ab8": {
+ "store_4_globals": {
   "addr": "00018ab8",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless global setter @ 0x18ab8: store 4 args into 4 consecutive globals",
+  "label": "store_4_globals",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00018ae8": {
@@ -342,11 +342,11 @@
   "desc": "NEAR-MISS (parked) @ 0x1a458 -- jump-table dispatcher, 45-entry table at * manifest 0x1a39c = jmp CS:[edx*4+0xcc54]; table precedes the fn, 8B gap. * TRUE SIZE 845 (0x34d): 0x1a458..0x1a7a4 incl (mani",
   "runs_in_intro": false
  },
- "FUN_0001a8c8": {
+ "fill_minimap_grid": {
   "addr": "0001a8c8",
-  "label": "",
-  "subsystem": "map",
-  "desc": "frameless @ 0x1a8c8: fill a 0x19-row x 0x10-col byte grid (row stride 0x10) at g_minimap with 1, then set the flag g_10b4f. Outer counter y (ECX) 0..0xf, inner x (EAX) 0..0x18; address = x*0x10 + y + ",
+  "label": "fill_minimap_grid",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "minimap_mark_rect": {
@@ -468,11 +468,11 @@
   "desc": "",
   "runs_in_intro": true
  },
- "FUN_00020d18": {
+ "relocate_map_columns": {
   "addr": "00020d18",
-  "label": "",
-  "subsystem": "map",
-  "desc": "frameless @ 0x20d18: relocate the map column-offset table. The caller passes a block base; the column table starts at base+0xc and holds 0x3000 int entries that are stored on disk as relative offsets.",
+  "label": "relocate_map_columns",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00020d98": {
@@ -587,11 +587,11 @@
   "desc": "",
   "runs_in_intro": true
  },
- "FUN_00025168": {
+ "init_call5": {
   "addr": "00025168",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless linear call-seq @ 0x25168: g(ptr) five times with fixed pointers",
+  "label": "init_call5",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "guarded_init_alloc": {
@@ -622,11 +622,11 @@
   "desc": "NEAR-MISS @ 0x25348 -- instruction stream byte-IDENTICAL (masked); only an alignment pad differs. * * target 43B: e8<28cc8> 8d80 00000000 8d52 00 8bdb 31c0 66a1<df12> 50 8b15<df0e> 52 6a09 e8<b273> 83",
   "runs_in_intro": false
  },
- "FUN_00025378": {
+ "add_c_stride6": {
   "addr": "00025378",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless push-ebx loop @ 0x25378: for(p=a; p<b; p+=6bytes) *p += c",
+  "label": "add_c_stride6",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "pool_records_add": {
@@ -685,18 +685,18 @@
   "desc": "forward arg to a callee, then clear a field. * mov edx,[esp+4]; push edx; call 0x26da8; add esp,4; * mov eax,[esp+4]; mov byte[eax+0x18],0; ret",
   "runs_in_intro": false
  },
- "FUN_000269d8": {
+ "advance_linked_index": {
   "addr": "000269d8",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x269d8: advance a linked index through a table of 8-byte records. g_rec8_table points to the record array; p[0x10] is the current record index (u16). Set p[0x10] to the record's \"next\" fi",
+  "label": "advance_linked_index",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_00026aa8": {
+ "max_abs": {
   "addr": "00026aa8",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless push-ebx @ 0x26aa8: return max(abs(a),abs(b)) with 16-bit compare",
+  "label": "max_abs",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00026ad8": {
@@ -776,11 +776,11 @@
   "desc": "",
   "runs_in_intro": false
  },
- "FUN_00027ed8": {
+ "guarded_call_2arg": {
   "addr": "00027ed8",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x27ed8: if(p1||p2) FUN_000287c8(p1,(unsigned short)p2). NEAR-MISS (parked). Logic exact but the target loads p2 (16-bit `mov ax,[esp+8]`) BEFORE p1 and no source form flips that schedulin",
+  "label": "guarded_call_2arg",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "dpmi_alloc_5para": {
@@ -881,11 +881,11 @@
   "desc": "",
   "runs_in_intro": true
  },
- "FUN_00028cc8": {
+ "build_two_buffers": {
   "addr": "00028cc8",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x28cc8: build two local buffers, zero a word in one, call int386(0x33, b, a); then if global g_df3c is set, call FUN_0003ab59(g_df3c).",
+  "label": "build_two_buffers",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00028d08": {
@@ -1098,11 +1098,11 @@
   "desc": "",
   "runs_in_intro": false
  },
- "FUN_0002d998": {
+ "recompute_state_code": {
   "addr": "0002d998",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless status logic @ 0x2d998: recompute p->b58 (a state code) then mirror to p->b19",
+  "label": "recompute_state_code",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_0002d9e8": {
@@ -1287,11 +1287,11 @@
   "desc": "MATCHED 137/137 (reloc-aware) -- frameless map-passability check @ 0x33fb8. * Levers that closed the old g_map_cols register wall (cont. 22): pointer-variable * decl `char **g_map_cols`; `base = g_map",
   "runs_in_intro": false
  },
- "FUN_00034048": {
+ "snap_direction": {
   "addr": "00034048",
-  "label": "",
-  "subsystem": "combat",
-  "desc": "frameless @ 0x34048: snap a direction value `cur` toward target `tgt`. m = cur with byte-1 cleared (cur & 0xffff00ff); d = (short)(m - tgt). Clamp: d < -0x20 -> cur+0x20; d > 0x20 -> cur-0x20; else cu",
+  "label": "snap_direction",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "shot_collision_query": {
@@ -1308,11 +1308,11 @@
   "desc": "frameless @ 0x34118: from src->[0x1c] (id into object pool g_entity_pool), take the node's byte[0x54]; if it exceeds threshold thr, store (byte-0x54 - thr) into dst[0x54], else store 0. Was parked as ",
   "runs_in_intro": false
  },
- "FUN_00034168": {
+ "clamp_dec_field54": {
   "addr": "00034168",
-  "label": "",
-  "subsystem": "combat",
-  "desc": "frameless push-ebx @ 0x34168: field p[0x54] (uchar) clamp-decrement by n (u16)",
+  "label": "clamp_dec_field54",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00034198": {
@@ -1350,18 +1350,18 @@
   "desc": "",
   "runs_in_intro": true
  },
- "FUN_00035538": {
+ "bulk_dword_copy": {
   "addr": "00035538",
-  "label": "",
-  "subsystem": "render",
-  "desc": "frameless @ 0x35538: bulk dword copy. Copy 15999 dwords from the buffer pointed to by g_back_buf (src) into the buffer pointed to by g_screen_buf (dst), loop unrolled x3 (15999 = 5333 * 3). Mirror of ",
+  "label": "bulk_dword_copy",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_00035588": {
+ "bulk_dword_copy_b": {
   "addr": "00035588",
-  "label": "",
-  "subsystem": "render",
-  "desc": "frameless @ 0x35588: bulk dword copy, mirror of 0x35538. Copy 15999 dwords from the buffer pointed to by g_screen_buf (src) into the buffer pointed to by g_back_buf (dst), loop unrolled x3. Same decla",
+  "label": "bulk_dword_copy_b",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "blit_backbuffer": {
@@ -1497,11 +1497,11 @@
   "desc": "@ 0x36808: PARKED near-miss (987B target, -4s -oneatx -zp8 -s -zq). Structure is byte-faithful; the whole divergence cascades from a single \u00a73 register-role tie: `cur` (param5, ESI in target) and `len",
   "runs_in_intro": false
  },
- "FUN_00036c28": {
+ "walk_chain_1c": {
   "addr": "00036c28",
-  "label": "",
-  "subsystem": "entity",
-  "desc": "frameless @ 0x36c28: walk the chain from p->[0x1c] (base g_entity_pool, link +0x22); for each node call detach_entity_type, copy p->[0x16] into node->[0x16], set node[0x19]=0x14 and node[0xa] |= 8.",
+  "label": "walk_chain_1c",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "pool_chain_reset": {
@@ -1525,32 +1525,32 @@
   "desc": "FUN_00037658 @ 0x37658 (leaf) - link param_1 into param_2's chain. * Chain nodes live in the g_entity_pool pool; next-link is node[0x1c]. * Returns 0 only when the chain is already full (>6); other pa",
   "runs_in_intro": false
  },
- "FUN_000376f8": {
+ "chain_sum_3a": {
   "addr": "000376f8",
-  "label": "",
-  "subsystem": "entity",
-  "desc": "frameless @ 0x376f8: walk the chain from p->[0x3a] (base g_entity_pool, link +0x1c) and sum a 16-bit table value g_a7b4[node[0x19]] over every node.",
+  "label": "chain_sum_3a",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_00037738": {
+ "pool_accessor_44": {
   "addr": "00037738",
-  "label": "",
-  "subsystem": "entity",
-  "desc": "frameless @ 0x37738: from p->[0x44] (id into object pool base g_entity_pool), if the node is live (signed word at +0x14 >= 0) store g_a6fe[node[0x19]] into p[0x46]. NOTE: the field is loaded INLINE tw",
+  "label": "pool_accessor_44",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_00037778": {
+ "walk_chain_3a": {
   "addr": "00037778",
-  "label": "",
-  "subsystem": "entity",
-  "desc": "frameless @ 0x37778: walk the chain from p->[0x3a] (base g_entity_pool, link +0x1c); return 1 if any node has byte[0x19] == val, else 0.",
+  "label": "walk_chain_3a",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
- "FUN_000377b8": {
+ "chain_length": {
   "addr": "000377b8",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x377b8: count the length of a linked chain starting from a 16-bit id in p->[0x3a], following link at node+0x1c",
+  "label": "chain_length",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_000377e8": {
@@ -1581,11 +1581,11 @@
   "desc": "",
   "runs_in_intro": false
  },
- "FUN_00037a48": {
+ "detach_chain_3a": {
   "addr": "00037a48",
-  "label": "",
-  "subsystem": "entity",
-  "desc": "frameless @ 0x37a48: detach the chain at p->[0x3a] then walk the old chain (base g_entity_pool, link +0x1c) calling FUN_000269b8 on every node.",
+  "label": "detach_chain_3a",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00037ad8": {
@@ -3492,18 +3492,18 @@
   "desc": "-- db-transcription (hand-asm/library).",
   "runs_in_intro": false
  },
- "FUN_0000e568": {
+ "lcg_rand": {
   "addr": "0000e568",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "prefix @ 0xe568 -- 16-bit LCG pseudo-random + modulo (previously-undecoded render-path prefix). * Advance the seed g_rng_seed = seed*0x24a1 + 0x24df (kept as a 16-bit global), then return seed % range",
+  "label": "lcg_rand",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": true
  },
- "FUN_0000dc08": {
+ "oneshot_state_setter": {
   "addr": "0000dc08",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "prefix @ 0xdc08 -- guarded one-shot state setter (previously-undecoded render-path prefix). * If neither bit 1/2 of flag g_in_mission is set: stamp g_532c=0x10, set bit 2 of g_in_mission, copy * g_10a",
+  "label": "oneshot_state_setter",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "z_probe_b": {

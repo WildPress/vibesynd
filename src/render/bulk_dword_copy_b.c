@@ -3,7 +3,7 @@
    unrolled x3. Same declaration-order trick (n, dst, src) as its sibling. */
 extern unsigned int *g_screen_buf;
 extern unsigned int *g_back_buf;
-void FUN_00035588(void)
+void bulk_dword_copy_b(void)
 {
     unsigned n = 15999;
     unsigned int *dst = g_back_buf;

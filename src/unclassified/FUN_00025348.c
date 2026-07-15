@@ -10,13 +10,13 @@
  * loop-alignment NOPs, and that also unrolls) -> code-alignment wall, not source-reachable
  * with the fixed recipe. Logic: call 0x28cc8; then FUN_0003b273(9, g_df0e, g_df12), whose
  * dispatch tail mirrors the matched 0x252d8 (df08/df0c -> df0e/df12, arg 8 -> 9). */
-extern void FUN_00028cc8(void);
+extern void build_two_buffers(void);
 extern void FUN_0003b273(int a, int b, unsigned short c);
 extern int g_df0e;
 extern unsigned short g_df12;
 
 void FUN_00025348(void)
 {
-    FUN_00028cc8();
+    build_two_buffers();
     FUN_0003b273(9, g_df0e, g_df12);
 }

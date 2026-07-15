@@ -9,7 +9,7 @@
    uses <-> forcing a persistent register. */
 extern unsigned char g_entity_pool[];
 extern unsigned char g_a6fe[];
-void FUN_00037738(unsigned char *p)
+void pool_accessor_44(unsigned char *p)
 {
     if (*(unsigned short *)(p + 0x44) != 0) {
         unsigned char *node = g_entity_pool + *(unsigned short *)(p + 0x44);

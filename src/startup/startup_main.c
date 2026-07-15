@@ -27,7 +27,7 @@ extern void int386(int inter, void *in, void *out);   /* int386 */
 extern void FUN_0003af38(void *s);
 extern long FUN_0003a526(char *s);                          /* atol */
 extern int  parse_hex_arg(char *s);                          /* hex parse */
-extern void FUN_00025168(void);
+extern void init_call5(void);
 extern void FUN_0003ad89(int code);
 #pragma aux FUN_0003ad89 aborts;
 extern void FUN_0003ad66(char *fmt, char *s);
@@ -153,7 +153,7 @@ void startup_main(short argc, char **argv)
             case '?':
                 *(unsigned short *)buf = mode;
                 int386(0x10, buf, buf);
-                FUN_00025168();
+                init_call5();
                 FUN_0003ad89(1);
                 break;
             case 'N':

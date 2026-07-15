@@ -24,7 +24,7 @@
        codegen our 9.5b does not emit -- same conclusion as the original park,
        but now isolated to the fold + one role swap. */
 extern char **g_map_cols;
-void FUN_00020d18(int param_1)
+void relocate_map_columns(int param_1)
 {
     char *base = (char *)param_1 + 0xc;
     short i = 0;

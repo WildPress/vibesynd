@@ -10,7 +10,7 @@ extern unsigned short g_532c;
 extern int g_10ad8, g_c34c, g_c354;
 extern void record_max(int a, int b);
 
-void FUN_0000dc08(void)
+void oneshot_state_setter(void)
 {
     if ((g_in_mission & 6) == 0) {
         g_532c = 0x10;

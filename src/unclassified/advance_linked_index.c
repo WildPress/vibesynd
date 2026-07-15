@@ -19,7 +19,7 @@
    g_rec8_table twice, no caching). Consistent with a Watcom minor-version codegen
    preference; documented recipe-wall near-miss. */
 extern unsigned char *g_rec8_table;
-unsigned short FUN_000269d8(unsigned char *p)
+unsigned short advance_linked_index(unsigned char *p)
 {
     *(unsigned short *)(p + 0x10) =
         *(unsigned short *)(g_rec8_table + (unsigned)*(unsigned short *)(p + 0x10) * 8 + 6);

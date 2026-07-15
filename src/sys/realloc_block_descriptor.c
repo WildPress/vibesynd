@@ -16,7 +16,7 @@
  * Sibling: walk_records_2c (same DPMI free idiom).
  */
 extern void int386(int a, void *in, void *out);
-extern void FUN_00018488(int a, int b);
+extern void sub_and_call(int a, int b);
 extern int  global_add_and_call(int a);
 extern int  FUN_00018828(void *a, int b);
 extern int  open_detect_rnc_header(void *a);
@@ -62,7 +62,7 @@ ret_m1:
         } else {
             /* resize existing normal block */
             if (**(int **)(p + 0x1c) != 0) {
-                FUN_00018488(**(int **)(p + 0x1c), *(int *)(p + 0x24));
+                sub_and_call(**(int **)(p + 0x1c), *(int *)(p + 0x24));
                 **(int **)(p + 0x1c) = 0;
             }
             addr = global_add_and_call(*(int *)(p + 0x24));
@@ -106,7 +106,7 @@ ret_m1:
     } else {
         /* fresh normal block */
         if (**(int **)(p + 0x1c) != 0) {
-            FUN_00018488(**(int **)(p + 0x1c), *(int *)(p + 0x24));
+            sub_and_call(**(int **)(p + 0x1c), *(int *)(p + 0x24));
             **(int **)(p + 0x1c) = 0;
         }
         *(int *)(p + 0x24) = open_detect_rnc_header(p);

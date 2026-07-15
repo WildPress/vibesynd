@@ -22,11 +22,11 @@ extern unsigned char g_a6c2[];
 extern short g_e12e;
 extern int interp_scale_b(unsigned char *node, int cap);
 extern unsigned short FUN_00037ad8(unsigned char *node, int flag);
-extern void FUN_0002d998(unsigned char *node);
+extern void recompute_state_code(unsigned char *node);
 extern int interp_scale_a(unsigned char *node, int range);
 extern unsigned char *FUN_0002ee18(unsigned char *node, int dist, int d);
 extern void entity_aim_helper(unsigned char *node, int x, int y, int z);
-extern void FUN_000269d8(unsigned char *node);
+extern void advance_linked_index(unsigned char *node);
 extern unsigned char entity_event_dispatch(unsigned char *node);
 
 void FUN_00030868(unsigned char *node)
@@ -46,7 +46,7 @@ void FUN_00030868(unsigned char *node)
         if (*(short *)(p2 + 0x14) < 0) {
             t = FUN_00037ad8(node, 0);
             if (t == *(unsigned short *)(node + 0x44))
-                FUN_0002d998(node);
+                recompute_state_code(node);
             else
                 *(unsigned short *)(node + 0x44) = t;
         }
@@ -60,9 +60,9 @@ void FUN_00030868(unsigned char *node)
                          (short)(*(unsigned short *)(q + 8) + 0x80));
         }
     }
-    FUN_000269d8(node);
+    advance_linked_index(node);
     if (*(unsigned short *)(node + 0x42) == 0)
-        FUN_0002d998(node);
+        recompute_state_code(node);
     *(unsigned short *)(node + 0x42) -= 1;
     node[0x19] = entity_event_dispatch(node);
 }

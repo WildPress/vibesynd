@@ -2,7 +2,7 @@
    index at 0x32, and return the index of the count-th record whose byte equals
    val. Returns 0xff if count is zero. */
 extern unsigned char g_539e[];
-char FUN_00016638(unsigned char count, unsigned char val)
+char scan_syndicate_recs(unsigned char count, unsigned char val)
 {
     signed char idx = 0xff;
     if (count != 0) {

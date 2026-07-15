@@ -3,7 +3,7 @@
    node[0x19]=0x14 and node[0xa] |= 8. */
 extern unsigned char g_entity_pool[];
 extern void detach_entity_type(unsigned char *node);
-void FUN_00036c28(unsigned char *p)
+void walk_chain_1c(unsigned char *p)
 {
     unsigned short id = *(unsigned short *)(p + 0x1c);
     while (id != 0) {
