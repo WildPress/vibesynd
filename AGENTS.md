@@ -1233,6 +1233,38 @@ $env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot"
 
 ## Session Log
 
+- **2026-07-15 — FLAGS SETTLED, PARKS CONFIRMED WALLS (3 ways), NEW-COVERAGE PATH OPENED.**
+  - **Compiler flags are correct + understood.** Built `tools/flagsweep.py` (a FLAG permuter: holds C fixed,
+    sweeps `{-3,-4}x{s,r} x opt x frame x packing` in one DOSBox/dosemu batch, scores each with regdiff).
+    Swept ALL 115 parked fns x 160 combos: **zero byte-matches** -> flags are NOT the blocker. The -3/-4
+    split is a real TWO-BUILD MODEL, not overfitting: **game code (<0x39000) = -4 (486) 121/121; linked
+    Watcom CLIB (>=0x39000) = -3 (386)**. Many opt sub-flags (-ol/-oi/-of/-zp) are byte-inert per fn (why a
+    recipe only records "one that worked"). The 23 CLIB `-4` recipes are -3/-4 ties (harmless mislabels).
+  - **Parks confirmed WALLS three independent ways:** source permuter + new `perm_pad_var_decl` stack-pad
+    lever (didn't crack 0x2e5f8/0x338d8); flag permuter (above, 0 matches); and `tools/regdiff.py` — a
+    REGISTER-NORMALISED instruction diff (mask relocations + branch displacements, align by structural key,
+    classify PURE-ALLOC/REGISTER-ROLE/STRUCTURAL). ⚠ regdiff's STRUCTURAL bucket OVER-promises: allocation
+    also REORDERS instructions (scheduling), which reads as structural (e.g. 0x2e408 "sar vs add" is the
+    documented register-role wall, not a fixable bug). So "STRUCTURAL" != "fixable".
+  - **The 499-fn corpus is genuinely mined out.** Coverage now only grows by decoding NEW functions (the
+    render-path prefix/sub-graph in `build/obj1_full.bin`, base 0xd748, never C-decoded — only db-transcribed).
+    **First new match landed: `0xfee8`** (24B copy-if-set, frameless stack-calling, no relocs) -> byte-exact C
+    (`src/unclassified/FUN_0000fee8.c`, -4s). Target bytes come from obj1_full.bin[addr-0xd748], NOT linear.bin.
+    Next new targets (obj1_full, undecoded prefix): 0xf898(377B), 0xfa18/0xfa88(111B), 0xfb48(413B), 0xd758(448B).
+    ⚠ prefix fns are <0x10000 so the linear.bin tooling (`off=addr-0x10000`) can't verify them — read obj1_full
+    directly; wiring a C-decoded prefix fn into the build means editing `prefix_obj.py` (still db-transcription).
+  - **⚠ WSL STABILITY: do NOT run the dosemu2/KVM path (`WCC_DOSEMU=1`) at high parallelism.** dosemu guests
+    run via /dev/kvm (nested virt); churning many at once CRASHES the whole WSL2 VM (killed all the user's
+    sessions twice). The memory cap held (~140MB) — it's KVM instability, not RAM. Use the **DOSBox path**
+    (`WCC_DOSEMU` unset — pure emulation, no KVM, stable) for bulk/parallel work, or keep dosemu concurrency low.
+  - **New tools (all committed):** `regdiff.py` (register-normalised diff/triage), `flagsweep.py` (flag permuter,
+    `--triage`/`--resume`, memory-cap the container), `progress.py` (decomp.dev-style local mosaic + git-history
+    chart -> dashboard/progress.html), `permwatch.py` (live permuter TUI, reads `cpermute --status`),
+    `treemap.py` (static SVG treemap -> docs/treemap.svg, embedded in README), `cpermute.py` (+`--status`,
+    +`perm_pad_var_decl`). Fixed `.gitattributes` (force LF on *.sh — autocrlf was CRLF-ing scripts, breaking
+    the container's bash). Ghidra MCP: both programs open (linear.bin base 0 == manifest addrs directly;
+    obj1_full.bin base 0xd748 for the prefix). Pass `program=` explicitly.
+
 - **2026-07-10**, Project defined (matching decomp, function-level + manifest).
   Confirmed Watcom/LE/DOS-4GW. Chose hybrid hosting (container core in WSL2 Docker
   + native host RE tools). Built `synd-decomp` image, proved compile+disassemble
