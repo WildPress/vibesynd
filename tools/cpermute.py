@@ -102,7 +102,7 @@ USAGE
 Reads src/<FUNC>.c (the seed), leaves it untouched, and on success writes the winning
 variant to src/<FUNC>.c.match. pycparser is auto-installed if missing.
 """
-import json, subprocess, sys, re, os, copy, random, difflib, itertools
+import json, subprocess, sys, re, os, copy, random, difflib, itertools, time
 import multiprocessing as mp
 try:
     from pycparser import c_parser, c_generator, c_ast
@@ -321,6 +321,27 @@ def make_decl(name, expr, typ):
     d = PARSER.parse(f"void __f(void){{ {typ} {name} = {GEN.visit(expr)}; }}")
     return d.ext[0].body.block_items[0]
 
+
+# Types for stack-padding pads. Scalars shift a slot by their width; arrays force a stack home (harder
+# for Watcom to elide) and shift by their whole size, so the search can hit several frame deltas.
+PAD_TYPES = ["char", "short", "int", "long", "char[2]", "char[4]", "char[8]", "char[16]"]
+
+def make_pad(name, typ):
+    """Build an UNUSED local declaration `typ name;` (scalar) or `base name[N];` (array). Inserting one
+    into the decl block is decomp-permuter's perm_pad_var_decl: a dead local that shifts Watcom's
+    esp-relative spill-slot / register assignment for the REAL locals -- the one lever that can move a
+    slot-TRANSPOSE near-miss (0x2e5f8 y<->i, 0x338d8 counters) that decl REORDER leaves byte-inert.
+    Watcom may elide a truly-dead local; array/larger pads resist elision and shift by their full size.
+    The search discovers empirically which pad (if any) lands the target layout -- an elided pad just
+    scores as identity and costs nothing."""
+    if "[" in typ:
+        base, rest = typ.split("[", 1)                 # "char[4]" -> base="char", rest="4]"
+        decl = f"{base.strip()} {name}[{rest};"        # -> "char __padN[4];"
+    else:
+        decl = f"{typ} {name};"
+    d = PARSER.parse(f"void __f(void){{ {decl} }}")
+    return d.ext[0].body.block_items[0]
+
 def type_sites(body):
     """IdentifierType nodes of scalar (non-pointer) top-level local declarations. Mutating
     `.names` on one of these changes the declared type of that local (see TYPES)."""
@@ -381,7 +402,7 @@ def declblock_len(body):
 
 
 def apply_mutations(ast, loop_flags, comm_flags, rewrite_flags, hoist_types,
-                    local_types, order_seed, inline_flags=(), decl_perm=None):
+                    local_types, order_seed, inline_flags=(), decl_perm=None, pads=()):
     """Apply one variant's chosen mutations to `ast` in place. Each *_flags tuple is
     parallel to the corresponding *_sites list. Order of application matters and is chosen
     so earlier structural edits don't invalidate later site lookups: loop-form swaps and
@@ -485,6 +506,22 @@ def apply_mutations(ast, loop_flags, comm_flags, rewrite_flags, hoist_types,
             head = [items[j] for j in decl_perm]
             body.block_items = head + items[k:]
 
+    # (9) STACK PADDING (decomp-permuter perm_pad_var_decl): insert dead local decls to shift Watcom's
+    # spill-slot / register assignment for the real locals. Each pad is (pos, typ); inserted in order at
+    # its index within the (post-perm) leading decl block, so several pads keep a stable relative order.
+    # This is the lever that reaches slot-TRANSPOSE walls that decl-reorder (step 8) leaves byte-inert.
+    if pads:
+        items = body.block_items or []
+        k = declblock_len(body)
+        for j, (pos, typ) in enumerate(pads):
+            try:
+                d = make_pad(f"__pad{j}", typ)
+            except Exception:
+                continue
+            items.insert(max(0, min(pos, k)), d)
+            k += 1
+        body.block_items = items
+
 
 # ---------------------------------------------------------------------------
 # Scoring: relocation-aware byte comparison against the target.
@@ -565,6 +602,14 @@ def try_batch(batch):
     return out
 
 
+def rand_pads(rng, ndecl):
+    """0-2 stack pads at random decl-block positions with random widths. Kept sparse (most variants get
+    none) so padding composes with the other levers rather than dominating the sample."""
+    if rng.random() >= 0.35:
+        return ()
+    return tuple((rng.randint(0, ndecl), rng.choice(PAD_TYPES)) for _ in range(rng.randint(1, 2)))
+
+
 def rand_spec(rng, nloop, ncomm, nrw, nhoist, ntype, ninline, ndecl, ID):
     """One random variant spec: a FEW simultaneous mutations (most sites off)."""
     return (tuple(rng.randint(0, 1) for _ in range(nloop)),
@@ -574,7 +619,8 @@ def rand_spec(rng, nloop, ncomm, nrw, nhoist, ntype, ninline, ndecl, ID):
             tuple(rng.choice(TYPES) if rng.random() < 0.25 else None for _ in range(ntype)),
             rng.randint(0, 10**9) if rng.random() < 0.5 else None,
             tuple(rng.randint(0, 1) for _ in range(ninline)),
-            tuple(rng.sample(range(ndecl), ndecl)) if (ndecl >= 2 and rng.random() < 0.5) else ID)
+            tuple(rng.sample(range(ndecl), ndecl)) if (ndecl >= 2 and rng.random() < 0.5) else ID,
+            rand_pads(rng, ndecl))
 
 
 def perturb(spec, rng):
@@ -584,7 +630,9 @@ def perturb(spec, rng):
     lf, cf, rw, hf, lt, od, inf = (list(spec[0]), list(spec[1]), list(spec[2]), list(spec[3]),
                                    list(spec[4]), spec[5], list(spec[6]))
     dp = list(spec[7]) if spec[7] is not None else None
-    dims = ["od"]
+    pads = list(spec[8]) if len(spec) > 8 else []
+    ndecl = len(dp) if dp is not None else 0
+    dims = ["od", "pad"]                                # 'pad' always available (can add the first pad)
     for nm, seq in (("lf", lf), ("cf", cf), ("rw", rw), ("hf", hf), ("lt", lt), ("inf", inf)):
         if seq: dims.append(nm)
     if dp and len(dp) >= 2: dims.append("dp")
@@ -597,8 +645,20 @@ def perturb(spec, rng):
     elif d == "lt": i = rng.randrange(len(lt)); lt[i] = None if rng.random() < 0.4 else rng.choice(TYPES)
     elif d == "od": od = None if rng.random() < 0.3 else rng.randint(0, 10**9)
     elif d == "dp": i, j = rng.sample(range(len(dp)), 2); dp[i], dp[j] = dp[j], dp[i]
+    elif d == "pad":
+        # add / remove / retype / move a stack pad -- the move that walks through frame layouts
+        if pads and rng.random() < 0.4:
+            i = rng.randrange(len(pads))
+            if rng.random() < 0.5:                      # retype or move this pad
+                pos, typ = pads[i]
+                pads[i] = ((rng.randint(0, max(ndecl, 0)), typ) if rng.random() < 0.5
+                           else (pos, rng.choice(PAD_TYPES)))
+            else:
+                pads.pop(i)                             # remove
+        else:
+            pads.append((rng.randint(0, max(ndecl, 0)), rng.choice(PAD_TYPES)))   # add
     return (tuple(lf), tuple(cf), tuple(rw), tuple(hf), tuple(lt), od, tuple(inf),
-            tuple(dp) if dp is not None else None)
+            tuple(dp) if dp is not None else None, tuple(pads))
 
 
 def main():
@@ -607,6 +667,10 @@ def main():
     workers = int(sys.argv[sys.argv.index("--workers")+1]) if "--workers" in sys.argv else 24
     N = int(sys.argv[sys.argv.index("--n")+1]) if "--n" in sys.argv else 4000   # variants to try
     seed = int(sys.argv[sys.argv.index("--seed")+1]) if "--seed" in sys.argv else 0
+    # --status DIR: emit a per-function progress JSON (DIR/<name>.json) at each anneal step, for the
+    # live monitor (tools/permwatch.py) to read. Written atomically; cadence == the print cadence, so
+    # it adds no measurable cost to the search.
+    status_dir = sys.argv[sys.argv.index("--status")+1] if "--status" in sys.argv else None
     B = 40                                                                       # batch size
 
     # ---- target bytes ----
@@ -632,7 +696,7 @@ def main():
     ninline = len(inline_sites(body_of(ast0)))
     ndecl = declblock_len(body_of(ast0))
     print(f"{name}: {nloop} loop, {ncomm} commutative, {nrw} rewrite, {nhoist} hoist, "
-          f"{ntype} type, {ninline} inline, {ndecl} decl sites; sampling {N} variants, "
+          f"{ntype} type, {ninline} inline, {ndecl} decl sites, +stack-pad; sampling {N} variants, "
           f"target={len(target)}B", flush=True)
 
     # ---- PHASE 1: broad seed sample (identity + decl-block perms + random combos) ----
@@ -643,7 +707,7 @@ def main():
     SEED = min(N, max(400, N // 3))
     seen, specs = set(), []
     ident = (tuple([0]*nloop), tuple([0]*ncomm), tuple([0]*nrw),
-             tuple([None]*nhoist), tuple([None]*ntype), None, tuple([0]*ninline), ID)
+             tuple([None]*nhoist), tuple([None]*ntype), None, tuple([0]*ninline), ID, ())
     specs.append(ident); seen.add(ident)
     base = ident[:7]                                   # decl-block perms with everything else identity
     if 2 <= ndecl <= 7:
@@ -665,7 +729,8 @@ def main():
         a = copy.deepcopy(ast0)                        # never mutate the shared seed
         try:
             apply_mutations(a, spec[0], spec[1], spec[2], spec[3], spec[4], spec[5], spec[6],
-                            spec[7] if len(spec) > 7 else None)
+                            spec[7] if len(spec) > 7 else None,
+                            spec[8] if len(spec) > 8 else ())
             return watcom_out(GEN.visit(a))            # restore __far/__near for compilation
         except Exception:
             return "void __broken(void){}"             # unrenderable -> will fail to match
@@ -678,6 +743,27 @@ def main():
     reg = {}                                           # variant idx -> (spec, source)
     ctr = [0]
     best = [(-1, None, None)]                          # (score, spec, source)
+
+    t_start = time.time()
+    def emit(phase, cur=None, T=None, matched=False, done=False):
+        """Write DIR/<name>.json (atomically) so tools/permwatch.py can render this run live.
+        No-op unless --status DIR was given. Called on the print cadence, so it's free."""
+        if not status_dir:
+            return
+        try:
+            os.makedirs(status_dir, exist_ok=True)
+            el = max(time.time() - t_start, 1e-6)
+            rec = {"name": name, "target": len(target), "best": best[0][0], "cur": cur,
+                   "iters": ctr[0], "total": N, "phase": phase, "T": T,
+                   "rate": ctr[0] / el, "matched": matched, "done": done, "ts": time.time()}
+            p = os.path.join(status_dir, name + ".json")
+            with open(p + ".tmp", "w") as fh:
+                fh.write(json.dumps(rec))
+            os.replace(p + ".tmp", p)
+        except Exception:
+            pass
+    emit("start")
+
     class _Hit(Exception):
         pass
 
@@ -705,6 +791,7 @@ def main():
         # PHASE 1 -- seed
         run(specs)
         print(f"  [seed {ctr[0]}] best={best[0][0]}/{len(target)}", flush=True)
+        emit("seed", cur=best[0][0])
         # PHASE 2 -- simulated-annealing hill-climb from the best seed. Small single-dimension moves
         # from the current point converge on register/scheduling near-misses that random sampling can't
         # reach; occasional downhill moves (Boltzmann-accepted) escape local optima.
@@ -719,8 +806,11 @@ def main():
                     cur_spec, cur_s = reg[idx][0], sc   # accept the move (uphill, or downhill by temp)
             T *= 0.95
             print(f"  [anneal {ctr[0]}] best={best[0][0]}/{len(target)} cur={cur_s} T={T:.1f}", flush=True)
+            emit("anneal", cur=cur_s, T=T)
     except _Hit:
+        emit("done", matched=True, done=True)
         return
+    emit("done", cur=best[0][0], done=True)
     pool.close(); pool.join()
     # No exact match: print the best near-miss + source so a human can read off the remaining divergence.
     print(f"\nno exact match. best {best[0][0]}/{len(target)} bytes. winning C:\n"
