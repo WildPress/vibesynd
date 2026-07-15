@@ -1563,5 +1563,9 @@
  "FUN_00039158": {
   "addr": "00039158",
   "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "FUN_00036188": {
+  "addr": "00036188",
+  "flags": "-4s -oneatx -zp8 -s -zq"
  }
 }

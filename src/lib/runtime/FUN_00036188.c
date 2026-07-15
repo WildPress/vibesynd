@@ -1,8 +1,12 @@
-/* @ 0x36188 (27B) -- db-transcription (hand-asm/library). */
-
-extern void __db_FUN_00036188_0(void);
-#pragma aux __db_FUN_00036188_0 = "db 83" "db 128" "db 61" "db 74" "db 11" "db 1" "db 0" "db 0" "db 116" "db 15" "db 139" "db 21" "db 236" "db 29" "db 1" "db 0" "db 82" "db 232" "db 113" "db 57" "db 0" "db 0" "db 131" "db 196" "db 4" "db 91" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_00036188 modify [eax ebx ecx edx esi edi ebp];
-void FUN_00036188(void) {
-    __db_FUN_00036188_0();
+/* @ 0x36188 (27B): if (g_sound_enabled) FUN_00039b0f(g_11dec);
+ * Dead callee-save wall (3rd sibling of 0x36168/0x39188): dead push ebx/pop ebx because
+ * 0x39b0f is declared to clobber ebx and this fn must preserve ebx for its caller. */
+extern unsigned char g_sound_enabled;
+extern int g_11dec;
+extern void FUN_00039b0f(int);
+#pragma aux FUN_00039b0f modify [ebx];
+void FUN_00036188(void)
+{
+    if (g_sound_enabled != 0)
+        FUN_00039b0f(g_11dec);
 }
