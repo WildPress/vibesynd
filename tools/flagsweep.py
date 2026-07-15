@@ -16,6 +16,7 @@ a byte match, and otherwise the best register-normalised score per combo.
 Grid (default): {-3,-4}x{s,r} CPU/calling  x  optimisation level  x  {frame}  x  {packing}, + `-s -zq`.
 """
 import json, os, sys, glob, subprocess
+import multiprocessing as mp
 import regdiff
 from omf import text_bytes_and_fixups
 
@@ -76,24 +77,43 @@ def sweep(name, combos=None):
     return {"target": len(tb), "n": len(combos), "results": out}
 
 
+def _worker(name):
+    """Pool worker: sweep one function, return (name, top-result-or-None). Each process owns a distinct
+    /tmp/fs_<pid> workdir + dosemu session, so N functions sweep concurrently (one core each) -- this is
+    what saturates the box; a lone --triage runs one dosemu at a time (~1 core)."""
+    try:
+        s = sweep(name)
+    except Exception:
+        return (name, None)
+    return (name, s["results"][0] if s else None)
+
+
 def main():
     if "--triage" in sys.argv:
+        workers = (int(sys.argv[sys.argv.index("--workers") + 1]) if "--workers" in sys.argv
+                   else max(2, min(28, (os.cpu_count() or 4) - 2)))
         man = json.load(open(regdiff.MAN))["functions"]
         SRC = {os.path.basename(p)[:-2] for p in glob.glob("src/**/*.c", recursive=True)}
         parks = [f for f in man if f.get("status") == "unmatched"
                  and (f["name"] in SRC or ("FUN_" + f["addr"]) in SRC)]
-        wins, best_only = [], 0
-        for f in sorted(parks, key=lambda f: f["size"]):
-            s = sweep(f["name"])
-            if not s:
-                print(f"{f['name']:<26} SWEEP-FAIL"); continue
-            top = s["results"][0]
-            if top[1]:                                   # an exact byte match under SOME flag combo
-                wins.append((f["name"], top[0]))
-                print(f"{f['name']:<26} *** BYTE MATCH  under: {top[0]}")
-            else:
-                best_only += 1
-                print(f"{f['name']:<26} best {top[2]*100:5.1f}% {top[3]:<14} {top[0]}")
+        names = [f["name"] for f in sorted(parks, key=lambda f: f["size"])]
+        if os.path.isdir("/work/toolchain/watcom95") and not os.path.isdir("/tmp/wat"):
+            subprocess.run("cp -r /work/toolchain/watcom95 /tmp/wat", shell=True)   # native compiler tree
+        print(f"flag-sweep triage: {len(names)} parked fns x {len(grid())} flag combos, "
+              f"{workers} workers", flush=True)
+        wins, best_only, done = [], 0, 0
+        with mp.Pool(workers) as pool:
+            for name, top in pool.imap_unordered(_worker, names):
+                done += 1
+                if top is None:
+                    print(f"[{done}/{len(names)}] {name:<26} SWEEP-FAIL", flush=True); continue
+                if top[1]:                               # exact byte match under SOME flag combo
+                    wins.append((name, top[0]))
+                    print(f"[{done}/{len(names)}] {name:<26} *** BYTE MATCH  under: {top[0]}", flush=True)
+                else:
+                    best_only += 1
+                    print(f"[{done}/{len(names)}] {name:<26} best {top[2]*100:5.1f}% "
+                          f"{top[3]:<14} {top[0]}", flush=True)
         print(f"\n=== flag-sweep triage: {len(wins)} newly byte-match under some flag combo, "
               f"{best_only} still no exact ===")
         for n, fl in wins:
