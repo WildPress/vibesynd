@@ -1,5 +1,5 @@
 /* FUN_00038fe8 @ 0x38fe8 - sound/channel state select. */
-extern char g_10b49;
+extern char g_music_enabled;
 extern char g_10b4d;
 extern signed char g_bbec;
 extern int g_11e0c[];
@@ -10,7 +10,7 @@ extern void FUN_00039bb9(int, int);
 void FUN_00038fe8(signed char param_1)
 {
     signed char cur;
-    if (g_10b49 != 0 && g_10b4d != 0) {
+    if (g_music_enabled != 0 && g_10b4d != 0) {
         cur = g_bbec;
         if (cur != param_1) {
             if (cur >= 0)

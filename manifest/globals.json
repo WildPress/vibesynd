@@ -29,6 +29,11 @@
   "type": "u8[]",
   "desc": "entity/object pool A, base-2; node = g_entity_pool + id (id is a byte offset)"
  },
+ "g_entry_video_mode": {
+  "addr": "10b38",
+  "type": "u8",
+  "desc": "BIOS video mode captured at startup, restored on exit"
+ },
  "g_grid_heads": {
   "addr": "10e",
   "type": "u16[]",
@@ -43,6 +48,16 @@
   "addr": "db2c",
   "type": "u8[]",
   "desc": "0x19 x 0x10 minimap grid"
+ },
+ "g_music_enabled": {
+  "addr": "10b49",
+  "type": "u8",
+  "desc": "XMIDI music enabled flag (result of xmidi_music_init; -s clears it)"
+ },
+ "g_name_buf": {
+  "addr": "5044",
+  "type": "char[]",
+  "desc": "player/agent name buffer (-n<name> startup arg strcpy target)"
  },
  "g_objective_slots": {
   "addr": "5350",
@@ -73,5 +88,10 @@
   "addr": "10b5c",
   "type": "s16",
   "desc": "shot cursor: y accumulator (collision walk)"
+ },
+ "g_sound_enabled": {
+  "addr": "10b4a",
+  "type": "u8",
+  "desc": "sound driver enabled flag (result of sound_driver_init; -s clears it)"
  }
 }

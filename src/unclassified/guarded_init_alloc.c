@@ -18,7 +18,7 @@
    reserves EBX yet still reloads g_defc, i.e. EBX holds nothing -- the cluster
    dead-callee-save wall (identical to parked 0x36168, 0x39188). Not source-
    reachable at this compiler; block/reg permuter may close it. */
-extern unsigned char g_10b4a, g_10b49;
+extern unsigned char g_sound_enabled, g_music_enabled;
 extern int g_defc;
 
 extern void FUN_00017a70(void);
@@ -36,7 +36,7 @@ extern void __far *g_df08;   /* off @0xdf08, seg @0xdf0c */
 
 void guarded_init_alloc(void)
 {
-    if (g_10b4a != 0 || g_10b49 != 0) {
+    if (g_sound_enabled != 0 || g_music_enabled != 0) {
         g_defc = FUN_00039625((void *)FUN_00017a70);
         if (g_defc != -1) {
             timer_rate_critsec(g_defc, 0x48);

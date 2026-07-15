@@ -15,7 +15,7 @@
  *    clean source.  Same class as the cont.21 "dead test reg,reg" family but
  *    with no recoverable source form.
  * 2. REGISTER-ROLE cascade (downstream, pervasive 1B flips).  With the init
- *    spliced in, positional bytes still diverge throughout: g_5044 base lives
+ *    spliced in, positional bytes still diverge throughout: g_name_buf base lives
  *    in EBX (target) vs EBP (ours); assorted push esi/edi order; and the
  *    zero-register reuse in byte compares (`cmp byte gs:[eax+2],0` /
  *    `cmp byte[0xe285],0` in target vs `cmp dl,gs:2[eax]` / `cmp bl,[g_e285]`
@@ -36,7 +36,7 @@
  *
  * FUN_00027428 @ 0x27428 - multiplayer session setup (NetBIOS/DPMI family of
  * 0x27fc8/0x28118/0x28228/0x28368/0x28628). Prompts for player count (2..8),
- * registers our name (g_5044 + digit) via 0x27fc8 (retrying the delete 0x28118
+ * registers our name (g_name_buf + digit) via 0x27fc8 (retrying the delete 0x28118
  * on a -13 name-conflict), broadcasts our name to the other connection records
  * (far strcpy of the +0x1a name field + byte +3, then 0x28228), then tries to
  * connect to each peer via 0x28368, copying its +0xa name + byte +2 and
@@ -50,7 +50,7 @@ extern unsigned char g_10b4c;         /* input-echo flag */
 extern unsigned char g_e285;          /* abort/ESC flag */
 extern unsigned char g_df30[];        /* per-player ready byte */
 extern unsigned char g_105e1[];       /* per-player status (stride 14) */
-extern char g_5044[];                 /* base session name */
+extern char g_name_buf[];                 /* base session name */
 extern char g_36b8[], g_36cc[], g_36ec[], g_370c[];
 extern char g_372c[], g_3740[], g_375c[], g_3684[];
 extern unsigned char __far *g_conn[]; /* connection records (far ptrs) @ 0x10644 */
@@ -101,7 +101,7 @@ esccheck:
     g_10b16 = -1;
     for (i = 0; i < g_10b0c; i++) {
         int r;
-        strcpy(nbuf, g_5044);
+        strcpy(nbuf, g_name_buf);
         nbuf[strlen(nbuf) + 1] = 0;
         nbuf[strlen(nbuf)] = (char)(i + 0x30);
         r = FUN_00027fc8(g_conn[i], nbuf);
@@ -118,7 +118,7 @@ found:
         if (i != g_10b16) {
             _fstrcpy((char __far *)(g_conn[i] + 0x1a), (char __far *)(g_conn[g_10b16] + 0x1a));
             g_conn[i][3] = g_conn[g_10b16][3];
-            FUN_0003a4fa(nbuf, g_3684, g_5044, i);
+            FUN_0003a4fa(nbuf, g_3684, g_name_buf, i);
             FUN_00028228(g_conn[i], nbuf, 1, 0, 0);
         }
         g_df30[i] = 0;
@@ -133,7 +133,7 @@ found:
         if (g_conn[i][0x31] != 0xff) continue;
     do_connect:
         FUN_0003ad66(g_372c, i, g_conn[i][2], g_conn[i][0x31]);
-        FUN_0003a4fa(nbuf, g_3684, g_5044, i);
+        FUN_0003a4fa(nbuf, g_3684, g_name_buf, i);
         r = FUN_00028368(g_conn[g_10b16], nbuf, 0, 0, 0);
         if (r != 0) continue;
         FUN_0003ad66(g_3740, i);

@@ -10,9 +10,9 @@
  *   h/H  g_105 = 2
  *   i/I  sound card: -iirqN (g_4d94), -idmaN (g_4d96), -iioNNN (g_4d98 via 0x24b08)
  *   l/L  g_105 = 4
- *   n/N  strcpy(g_5044, arg+2)
+ *   n/N  strcpy(g_name_buf, arg+2)
  *   p/P  g_10b53 = atol(arg+2); clamp >0x10 -> 0x10
- *   s/S  g_10b4a = g_10b49 = 0
+ *   s/S  g_sound_enabled = g_music_enabled = 0
  *   else printf(0x356c, arg+1); exit(1)
  * After the loop: init/report per g_105 (0x18338), install pool records (0x253a8),
  * bring up subsystems (0x25338/34c28), optional sound init (0x35d08 / 0x38cf8),
@@ -51,15 +51,15 @@ extern char *strcat(char *dst, const char *src);
 #pragma intrinsic(strcpy)
 #pragma intrinsic(strcat)
 
-extern unsigned char  g_10b38;
+extern unsigned char  g_entry_video_mode;
 extern unsigned short g_10b2e, g_1be30, g_506c;
 extern unsigned char  g_105;
 extern unsigned char  g_10b45, g_10b42, g_10b44, g_10b3b, g_10b3a, g_10b4c;
-extern unsigned char  g_10b47, g_10b43, g_10b4a, g_10b49, g_539a;
+extern unsigned char  g_10b47, g_10b43, g_sound_enabled, g_music_enabled, g_539a;
 extern unsigned char  g_10b51, g_a50d, g_10b53, g_10b52, g_10b48;
 extern volatile int   g_10ad8;
 extern unsigned short g_4d94, g_4d96, g_4d98;
-extern char           g_5044[];
+extern char           g_name_buf[];
 extern unsigned char *g_5308, *g_530c, *g_5324;
 extern int            g_5310;
 extern char           g_4d9c[], g_4ea4[];
@@ -79,7 +79,7 @@ void startup_main(short argc, char **argv)
     int386(0x10, buf, buf);
     mode = ((unsigned char *)buf)[0];
     *(struct s12 *)cmdbuf = *(struct s12 *)g_355c;
-    g_10b38 = mode;
+    g_entry_video_mode = mode;
 
     for (i = 1; i < argc; i++) {
         strcat(cmdbuf, g_3568);
@@ -98,8 +98,8 @@ void startup_main(short argc, char **argv)
     g_10b4c = 0;
     g_10b47 = 1;
     g_10b43 = 0;
-    g_10b4a = 1;
-    g_10b49 = 1;
+    g_sound_enabled = 1;
+    g_music_enabled = 1;
     g_539a = 0;
     g_10ad8 = 0;
     g_10b51 = 0;
@@ -147,8 +147,8 @@ void startup_main(short argc, char **argv)
                 break;
             case 'S':
             case 's':
-                g_10b4a = 0;
-                g_10b49 = 0;
+                g_sound_enabled = 0;
+                g_music_enabled = 0;
                 break;
             case '?':
                 *(unsigned short *)buf = mode;
@@ -158,7 +158,7 @@ void startup_main(short argc, char **argv)
                 break;
             case 'N':
             case 'n':
-                strcpy(g_5044, argv[i] + 2);
+                strcpy(g_name_buf, argv[i] + 2);
                 break;
             default:
                 FUN_0003ad66(g_356c, argv[i] + 1);
@@ -180,10 +180,10 @@ void startup_main(short argc, char **argv)
     init_input_subsystem();
     noop_ret();
 
-    if (g_10b4a != 0)
-        g_10b4a = (unsigned char)sound_driver_init(g_4d94, g_4d96, g_4d98);
-    if (g_10b49 != 0)
-        g_10b49 = (unsigned char)xmidi_music_init((int)g_3594, (int)g_3584, g_4d94, g_4d96, g_4d98);
+    if (g_sound_enabled != 0)
+        g_sound_enabled = (unsigned char)sound_driver_init(g_4d94, g_4d96, g_4d98);
+    if (g_music_enabled != 0)
+        g_music_enabled = (unsigned char)xmidi_music_init((int)g_3594, (int)g_3584, g_4d94, g_4d96, g_4d98);
 
     if (g_10b42 != 0) {
         FUN_0001c168();
