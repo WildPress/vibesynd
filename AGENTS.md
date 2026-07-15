@@ -229,6 +229,21 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 
 ## Current Status  (update every session)
 
+### ✅ CRACK 2026-07-15 — dead callee-save wall (0x36168, 114->113 parked). A guarded call
+### `if(g) FUN_000395b6(0)` whose target wraps the body in a DEAD `push ebx`/`pop ebx` (ebx never
+### used). Mechanism: the fn must preserve ebx for ITS caller (callee-saved contract); declaring the
+### callee `#pragma aux FUN_000395b6 modify [ebx];` (the callee clobbers ebx per the original TU's
+### header ABI) makes Watcom save/restore ebx around the whole body -> exact bytes. `modify [reg]` only
+### adds reg to the clobber set (does NOT touch arg passing), so it's safe to add to any callee.
+### This is the ONLY C construction that yields the phantom save (any real ebx use emits loads/stores).
+### TOOLING: tools/crackreg.py (compiles each parked fn, disassembles both sides addr-masked, ranks by
+### instruction-distance, flags pure dead-callee-save); tools/crackfix.py (batch-applies modify-[reg]).
+### Detector found 0x36168 was a SINGLETON pure callee-save; the other 112 parked are the proven
+### register-role / encoding-tie-break / scheduling walls (re-confirmed by byte-level diff, e.g. 0x27ed8
+### esp+4-before-esp+8 load scheduling is irreducible across all source forms + 8 flag sets; 0x34048 is
+### dual encoding-tie: cross-xor `30 e6` + asymmetric imm32-add `05 20000000`).
+
+
 ### 🏷️ SEMANTIC NAMES (2026-07-14): FUN_<addr> is NO LONGER special — the anchor is now the manifest
 ### `name` (== source filename == the name tools take; match_reloc looks up by name->addr). `tools/names.py`
 ### -> `manifest/names.json` (all 499: label+desc from src headers+subsystem) + `docs/function-map.md`.

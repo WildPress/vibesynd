@@ -12,6 +12,14 @@ targets to a constant), and compare the instruction sequences. Report the class:
 
 Run in-container:
   docker run --rm -v "$PWD":/work -w /work synd-decomp python3 tools/crackreg.py [--only NAME]
+  docker run ... python3 tools/crackreg.py --diff NAME [NAME ...]   # aligned insn diff
+
+LIMITATION: our compiled .obj has UNRESOLVED relocations (global addresses = 0), while the
+target has them resolved. So `mov eax,[0]` vs `mov eax,[A]`, `add eax,0` vs `add eax,A`, and
+`[eax*2]` vs `[eax*2+A]` in --diff output are RELOCATION ARTIFACTS, not real differences, and
+they inflate the distance ranking for global-heavy functions. When triaging, mentally filter
+`0`<->`A` operand pairs; the REAL wall is whatever remains (a register-role swap, cmp operand
+order, movsx width, scheduling reorder, ...). match95.sh's reloc-aware YES/NO is ground truth.
 """
 import os, sys, json, glob, subprocess
 sys.path.insert(0, "tools")
