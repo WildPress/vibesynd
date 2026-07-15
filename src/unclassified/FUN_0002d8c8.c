@@ -10,7 +10,14 @@
    0x10. When the flag bit is clear, run the ramp on raw param_2 and floor to 0xc.
    labs = FUN_0003aed8; pool-chain sum = FUN_000376f8. Same idiv-by-1000 /
    labs shape as the 0x2d7a8 / 0x2d808 / 0x2d868 sibling trio (this is their
-   dispatcher). Stack calling convention (-4s): params read from [ESP+0x10/0x14]. */
+   dispatcher). Stack calling convention (-4s): params read from [ESP+0x10/0x14].
+
+   NEAR-MISS (195/197B, NOT matched). Field 0x3c is read as a WORD in the target
+   (mov ax,word[obj+0x3c]) -- the source now matches that. The residual wall is a
+   register-ROLE tie: the target routes the slot*10000 multiply chain through EDI (a
+   3rd callee-saved reg it pushes) and holds both params in EBX/ESI up front, while
+   our Watcom keeps the chain in EAX and pushes only EBX/ESI. First diff is the entry
+   `push edi` (byte 0x2); no C form makes the allocator reserve EDI here. Wall. */
 extern int FUN_000376f8(unsigned char *obj);
 extern int FUN_0003aed8(int v);
 extern int FUN_0002d868(unsigned char *obj, unsigned int v);
@@ -20,7 +27,7 @@ int FUN_0002d8c8(unsigned char *obj, short param_2)
     int r;
 
     if (*(unsigned short *)(obj + 0x1c) & 0x1002) {
-        int base = ((obj[0x3c] & 0x18) >> 3) * 10000 + 1000;
+        int base = ((*(unsigned short *)(obj + 0x3c) & 0x18) >> 3) * 10000 + 1000;
         int rem = base - FUN_000376f8(obj);
         int sel = param_2;
         if (rem < 0) {
