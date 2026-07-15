@@ -1,6 +1,6 @@
 /* framed @ 0x16678.  TRUE extent 0x16678-0x16735 = 190B (0xbe); manifest size
    64 is UNDER-COUNTED (Ghidra bounds stop at 0x166b7, mid-body, before the RET
-   at 0x16735).  Reads the current record g_e4a0[g_cur_player] (record stride 0x417),
+   at 0x16735).  Reads the current record g_player_budget[g_cur_player] (record stride 0x417),
    divides its leading dword by 168 to get an index clamped to <=23, formats a
    string from (idx, x, y) via fn_3a4fa and draws it via fn_36698.
 
@@ -16,7 +16,7 @@
    param) x 7 recipes all emit 6a70.  This single 3-byte divergence also accounts
    for the entire 190-vs-187 length gap. */
 extern short g_cur_player;
-extern unsigned char g_e4a0[];
+extern unsigned char g_player_budget[];
 extern int g_11be4;
 extern void fn_3a4fa();
 extern void fn_36698();
@@ -26,11 +26,11 @@ void FUN_00016678(void)
     char buf[40];
     unsigned short idx;
 
-    idx = *(unsigned *)(g_e4a0 + (int)g_cur_player * 0x417) / 0xa8;
+    idx = *(unsigned *)(g_player_budget + (int)g_cur_player * 0x417) / 0xa8;
     if (idx == 0x18)
         idx = 0x17;
     fn_3a4fa(buf, 0x70, idx,
-             *(unsigned short *)(g_e4a0 + (int)g_cur_player * 0x417 + 4),
-             *(unsigned short *)(g_e4a0 + (int)g_cur_player * 0x417 + 6));
+             *(unsigned short *)(g_player_budget + (int)g_cur_player * 0x417 + 4),
+             *(unsigned short *)(g_player_budget + (int)g_cur_player * 0x417 + 6));
     fn_36698(buf, 0x1f4, 0xa, 0x10, 0x166, g_11be4, -2, 0xe, 0, 0);
 }

@@ -96,14 +96,14 @@ void new_campaign_reset(void)
 
         g_player_recs[p * 0x417 + 0x10] = (unsigned char)p;   /* g_e4ac */
         g_player_recs[p * 0x417 + 0xf]  = (unsigned char)p;   /* g_e4ab: owner id */
-        *(int *)(g_player_recs + p * 0x417 + 4)    = 0;        /* g_e4a0 */
+        *(int *)(g_player_recs + p * 0x417 + 4)    = 0;        /* g_player_budget */
         *(short *)(g_player_recs + p * 0x417 + 8)  = 1;        /* g_e4a4 */
         *(short *)(g_player_recs + p * 0x417 + 0xa) = 0x55;    /* g_e4a6 */
         if (g_unlimited_funds)
             *(int *)(g_player_recs + p * 0x417 + 0) = 0x5f5e100;  /* 100,000,000 */
         else
             *(int *)(g_player_recs + p * 0x417 + 0) = 0x7530;     /* 30,000 */
-        g_player_recs[p * 0x417 + 0xb6] = 0;                   /* g_e552 */
+        g_player_recs[p * 0x417 + 0xb6] = 0;                   /* g_agent_tmpl */
         g_player_recs[p * 0x417 + 0x11] = 0;                   /* g_e4ad */
         g_player_recs[p * 0x417 + 0x23] = 0;                   /* g_e4bf */
         *(short *)(g_player_recs + p * 0x417 + 0xc) = 0;       /* g_e4a8 */

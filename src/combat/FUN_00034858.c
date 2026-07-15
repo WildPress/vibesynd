@@ -1,6 +1,6 @@
 /* @ 0x34858: top-level weapon-fire routine (964B, 8 distinct callees). Two
  * top-level modes on the firing entity's type byte p2[0x19]:
- *  - type 5/6 (guided/tracking): step the shot cursor (g_10b28/g_10b2a) one
+ *  - type 5/6 (guided/tracking): step the shot cursor (g_aim_x/g_aim_y) one
  *    tile toward the shooter's target coords, pick facing via FUN_0004d221,
  *    snap the off-axis coord toward centre via FUN_00034048, adjust the charge
  *    byte p1[0x54] by the remaining tile distance, drop the shot if it reached
@@ -32,7 +32,7 @@
  *      a NEAR `0f82` jc where our -oneatx emits the rel8 `72` that fits (a Watcom
  *      jump-encoding peephole, same class as the push imm8/imm32 wall); case-body
  *      reorder to the target's physical order fixes the dispatch but breaks the
- *      case-0/0x80 g_10b28 cross-jump (+5B), so the two are mutually exclusive.
+ *      case-0/0x80 g_aim_x cross-jump (+5B), so the two are mutually exclusive.
  *   3. g_map_cols column lookup: byte-structurally identical to target AFTER the
  *      `base += index` in-place lever (gives `add edi,eax` not `lea`), residual is
  *      a consistent EDI<->ECX register-role swap of the divisor/row/base triangle
@@ -40,8 +40,8 @@
  *   4. tile-class widen: target `xor edx,edx; mov dl,[eax]` vs ours `mov al;
  *      and eax,0xff` (uchar and-form vs xor-first; FUN_0002d5b8 wall).
  */
-extern short g_10b28;
-extern short g_10b2a;
+extern short g_aim_x;
+extern short g_aim_y;
 extern short g_10b2c;
 extern short g_shot_x;
 extern short g_shot_y;
@@ -66,17 +66,17 @@ void FUN_00034858(unsigned char *p1, unsigned char *p2)
     int z;
 
     if (p2[0x19] == 5 || p2[0x19] == 6) {
-        int dxa = FUN_0003aed8((*(short *)(p1 + 0x2e) >> 8) - (g_10b28 >> 8));
-        int dya = FUN_0003aed8((*(short *)(p1 + 0x30) >> 8) - (g_10b2a >> 8));
+        int dxa = FUN_0003aed8((*(short *)(p1 + 0x2e) >> 8) - (g_aim_x >> 8));
+        int dya = FUN_0003aed8((*(short *)(p1 + 0x30) >> 8) - (g_aim_y >> 8));
         unsigned short steps;
 
         if ((short)dxa > (short)dya) {
-            p2[0x29] = FUN_0004d221((short)(*(short *)(p1 + 0x2e) - g_10b28), 0);
-            g_10b2a = FUN_00034048(g_10b2a, 0x80);
+            p2[0x29] = FUN_0004d221((short)(*(short *)(p1 + 0x2e) - g_aim_x), 0);
+            g_aim_y = FUN_00034048(g_aim_y, 0x80);
             steps = dxa;
         } else {
-            p2[0x29] = FUN_0004d221(0, (short)(*(short *)(p1 + 0x30) - g_10b2a));
-            g_10b28 = FUN_00034048(g_10b28, 0x80);
+            p2[0x29] = FUN_0004d221(0, (short)(*(short *)(p1 + 0x30) - g_aim_y));
+            g_aim_x = FUN_00034048(g_aim_x, 0x80);
             steps = dya;
         }
 
@@ -100,15 +100,15 @@ void FUN_00034858(unsigned char *p1, unsigned char *p2)
             break;
         }
 
-        if (g_10b28 >> 8 == *(short *)(p1 + 0x2e) >> 8
-            && g_10b2a >> 8 == *(short *)(p1 + 0x30) >> 8)
+        if (g_aim_x >> 8 == *(short *)(p1 + 0x2e) >> 8
+            && g_aim_y >> 8 == *(short *)(p1 + 0x30) >> 8)
             FUN_0002d998(p1);
 
         FUN_00026ad8((unsigned short)p1[0x54], (unsigned short)p2[0x29]);
         z = *(short *)(p2 + 8);
     } else {
-        g_shot_x = g_10b28;
-        g_shot_y = g_10b2a;
+        g_shot_x = g_aim_x;
+        g_shot_y = g_aim_y;
         g_shot_level = g_10b2c;
         g_10b54 = *(short *)(p1 + 0x2e);
         g_10b56 = *(short *)(p1 + 0x30);
@@ -117,27 +117,27 @@ void FUN_00034858(unsigned char *p1, unsigned char *p2)
 
         switch (p2[0x1a]) {
         case 0x00:
-            g_10b28 = FUN_00034048(g_10b28, 0xc0);
+            g_aim_x = FUN_00034048(g_aim_x, 0xc0);
             break;
         case 0x40:
-            g_10b2a = FUN_00034048(g_10b2a, 0x40);
+            g_aim_y = FUN_00034048(g_aim_y, 0x40);
             break;
         case 0x80:
-            g_10b28 = FUN_00034048(g_10b28, 0x40);
+            g_aim_x = FUN_00034048(g_aim_x, 0x40);
             break;
         case 0xc0:
-            g_10b2a = FUN_00034048(g_10b2a, 0xc0);
+            g_aim_y = FUN_00034048(g_aim_y, 0xc0);
             break;
         }
 
-        if (g_10b28 >> 8 != *(short *)(p1 + 0x34) >> 8
-            || g_10b2a >> 8 != *(short *)(p1 + 0x36) >> 8) {
-            g_shot_x = g_10b28;
-            g_shot_y = g_10b2a;
+        if (g_aim_x >> 8 != *(short *)(p1 + 0x34) >> 8
+            || g_aim_y >> 8 != *(short *)(p1 + 0x36) >> 8) {
+            g_shot_x = g_aim_x;
+            g_shot_y = g_aim_y;
             g_shot_level = g_10b2c;
             p2[0x1a] = (unsigned char)FUN_00034608(p2[0x1a]);
-            *(short *)(p1 + 0x34) = g_10b28;
-            *(short *)(p1 + 0x36) = g_10b2a;
+            *(short *)(p1 + 0x34) = g_aim_x;
+            *(short *)(p1 + 0x36) = g_aim_y;
         }
 
         if (!(p1[0x1c] & 2) && (p2[0xd] & 2)) {
@@ -145,10 +145,10 @@ void FUN_00034858(unsigned char *p1, unsigned char *p2)
             p2[0xd] &= ~2;
         }
 
-        if (g_10b28 >> 8 == *(short *)(p1 + 0x2e) >> 8
-            && g_10b2a >> 8 == *(short *)(p1 + 0x30) >> 8) {
-            int row = (g_10b2a % 0x6000) / 256;
-            int col = (g_10b28 & 0xff00) / 256;
+        if (g_aim_x >> 8 == *(short *)(p1 + 0x2e) >> 8
+            && g_aim_y >> 8 == *(short *)(p1 + 0x30) >> 8) {
+            int row = (g_aim_y % 0x6000) / 256;
+            int col = (g_aim_x & 0xff00) / 256;
             char **base = g_map_cols;
             int index = col + row * 128;
             base += index;
@@ -161,5 +161,5 @@ void FUN_00034858(unsigned char *p1, unsigned char *p2)
         z = g_10b2c;
     }
 
-    FUN_00026c78(p2, g_10b28, g_10b2a, z);
+    FUN_00026c78(p2, g_aim_x, g_aim_y, z);
 }

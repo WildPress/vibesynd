@@ -4,7 +4,7 @@
  * Round facing to a quadrant d = ((obj[0x1a]+0x20)>>6<<6)-0x40. Search up to 4
  * quadrants clockwise with the two step probes (0x2d738 for dA, 0x2d6c8 for dB).
  * If 0x2d6c8 found none, take the fallback: search again from dA+0x20, add a random
- * +/-0x20 spread, seed the shot cursor (g_10b28/2a/2c) and commit via 0x26ad8 + 0x2d3b8.
+ * +/-0x20 spread, seed the shot cursor (g_aim_x/2a/2c) and commit via 0x26ad8 + 0x2d3b8.
  * Otherwise stamp obj (aim, quadrant dB->0x5a, speed 4->0x59, tgt->0x42) and simulate
  * two candidate trajectories in stack copies of the entity (buf2 turned +0x40, buf1
  * turned -0x40), marching each 32 steps via 0x2e4f8 + a direction-table step, tracking
@@ -16,8 +16,8 @@ extern short g_5300;
 extern short g_dir_dx[];
 extern short g_dir_dy[];
 extern short g_e128;
-extern short g_10b28;
-extern short g_10b2a;
+extern short g_aim_x;
+extern short g_aim_y;
 extern short g_10b2c;
 
 extern int FUN_00014c58(int dx, int dy);
@@ -181,8 +181,8 @@ fallback:
         dA += 0x40;
     }
     dA = dA + ((FUN_0000e568(2) * 2 - 1) << 5);
-    g_10b28 = *(short *)(obj + 4);
-    g_10b2a = *(short *)(obj + 6);
+    g_aim_x = *(short *)(obj + 4);
+    g_aim_y = *(short *)(obj + 6);
     g_10b2c = *(short *)(obj + 8);
     obj[0x1a] = dA;
     FUN_00026ad8(obj[0x54], dA);

@@ -21,9 +21,9 @@
  *         FUN_0001b858(*(ushort*)(g_5348+OFS), g_auxbar_panel[n*9], g_auxbar_panel[n*9+1]),
  *         OFS = 0x242+8*(type-1) for 1..0xc, 0x2b2 for 0xd/e/f, 0x2ba for
  *         0x10, 0x2c2 for 0x11/12/13; type 0xc also centers string
- *         tbl_4b10[type-1][g_a50d] into field 0x10584; then if g_frame_enable[type]
+ *         tbl_4b10[type-1][g_language] into field 0x10584; then if g_frame_enable[type]
  *         draw gauge FUN_0003fb40(x+4, y+0x18, 0x17, 4, 0xc). Always:
- *         center tbl_4b10[type-1][g_a50d] into 0x10584; g_5324 = g_5308 +
+ *         center tbl_4b10[type-1][g_language] into 0x10584; g_5324 = g_5308 +
  *         6*state; return.
  *  5/6 -> g_5324 = g_5308 + 6*state; fall out.
  *
@@ -82,7 +82,7 @@ extern unsigned char *g_5348;
 extern short g_auxbar_panel[];
 extern unsigned char g_frame_enable[];
 extern int tbl_4b10[][3];
-extern unsigned char g_a50d;
+extern unsigned char g_language;
 extern int g_5308;
 extern int g_5324;
 extern unsigned char *FUN_0002e5f8(unsigned char *a, unsigned char *rec, short p);
@@ -205,7 +205,7 @@ void FUN_0002a288(void)
             case 0xc:
                 m = n * 9;
                 FUN_0001b858(*(unsigned short *)(g_5348 + 0x29a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
-                FUN_000299c8(0x10584, tbl_4b10[e[0x19] - 1][g_a50d]);
+                FUN_000299c8(0x10584, tbl_4b10[e[0x19] - 1][g_language]);
                 break;
             case 0xd:
             case 0xe:
@@ -231,7 +231,7 @@ void FUN_0002a288(void)
                 FUN_0003fb40((unsigned short)g_auxbar_panel[n * 9] + 4,
                              (unsigned short)g_auxbar_panel[n * 9 + 1] + 0x18, 0x17, 4, 0xc);
         }
-        FUN_000299c8(0x10584, tbl_4b10[e[0x19] - 1][g_a50d]);
+        FUN_000299c8(0x10584, tbl_4b10[e[0x19] - 1][g_language]);
         g_5324 = g_5308 + state * 6;
         return;
     case 5:

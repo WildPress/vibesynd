@@ -14,7 +14,7 @@
    SUBSYSTEM: combat/targeting cursor. Two walled record families are indexed here:
    (a) 0x417-stride AGENT TEMPLATE records: idx=g_cur_player(short); the SHL5;ADD;LEA*4;SUB;
        LEA*8;SUB chain materialises idx*0x417, indexing byte tables g_e551 (agent's first
-       ped pool-id) and g_e552 (agent's current sub/selection offset). Appears ~12x.
+       ped pool-id) and g_agent_tmpl (agent's current sub/selection offset). Appears ~12x.
    (b) pool-A ENTITY records (0x5c=92B stride): rec ptr = 0x8110 + pedid*0x5c
        (0x8110 = pool base g_entity_pool + 2). Fields used: +0x4/+0x6/+0x8 coords, +0xb/+0x1d
        flags, +0x19 type, +0x1a facing, +0x44 link id, +0x46 byte. id<->ptr via +0x810e.
@@ -40,12 +40,12 @@
 extern unsigned char  g_e285, g_e286, g_e287, g_e288, g_e289;
 extern unsigned char  g_e296, g_e297, g_e2a3, g_e2a4;
 extern unsigned char  g_10b3e, g_10b3f, g_10b39, g_10b40, g_radar_detail;
-extern unsigned short g_e112, g_e114, g_e116, g_e118, g_e11a, g_e11c;
+extern unsigned short g_e112, g_e114, g_sel_cursor, g_e118, g_e11a, g_e11c;
 extern unsigned short g_e120, g_e122, g_e124;
 extern short          g_10b10, g_10b12, g_10b14, g_cur_player, g_10b1a;
 extern unsigned short g_10b1c, g_10b1e, g_10b20, g_cursor_x;
 extern unsigned short g_5390, g_5392, g_52f8;
-extern unsigned char  g_e551[], g_e552[];   /* 0x417-stride agent template byte tables */
+extern unsigned char  g_e551[], g_agent_tmpl[];   /* 0x417-stride agent template byte tables */
 extern short          g_dir_dx[], g_dir_dy[];   /* direction tables (s16[256]) */
 
 /* pool-A entity record k -> byte ptr (0x8110 + k*0x5c). base = g_entity_pool+2. */
@@ -60,7 +60,7 @@ extern int  FUN_000377e8(unsigned char *rec);
 extern unsigned char *FUN_00037608(unsigned char *rec);
 
 #define AGENT_FIRST(idx)  ((unsigned int)g_e551[(int)(idx) * 0x417])
-#define AGENT_SEL(idx)    ((int)(signed char)g_e552[(int)(idx) * 0x417])
+#define AGENT_SEL(idx)    ((int)(signed char)g_agent_tmpl[(int)(idx) * 0x417])
 #define PREC(k)           (g_pool_a + (unsigned int)(k) * 0x5c)   /* pool-A record k */
 
 int FUN_0002ad58(unsigned short *p)
@@ -125,7 +125,7 @@ after_scan:                                          /* 0x2b01b */
         rec = PREC(b + (g_e124 - 1));
         if (g_e112 != 0 && g_e124 != 0 && (*(rec + 0x1d) & 4) != 0) {
             /* confirmed selection -> build move/attack order (0x2b06c) */
-            if (g_e116 != 0) g_e120 = 1;
+            if (g_sel_cursor != 0) g_e120 = 1;
             FUN_0002c468();
             *((unsigned char *)p + 0xd) = 0x6;
             p[0] = g_e124 - 1;
@@ -135,7 +135,7 @@ after_scan:                                          /* 0x2b01b */
                              (*(short *)(rec + 0x6) - 0x200 - z) >> 7);
             }
             g_10b3f = 0; g_10b3e = g_10b3f;
-            g_e116 = g_10b3e; g_e114 = g_10b3e;
+            g_sel_cursor = g_10b3e; g_e114 = g_10b3e;
             return 0;
         }
     }

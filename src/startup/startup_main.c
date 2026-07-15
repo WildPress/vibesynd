@@ -5,7 +5,7 @@
  * and passes it to 0x3af38, then sets a wall of default flags. It then walks argv a
  * second time dispatching single-letter options ('-'/'/' prefix, case-insensitive):
  *   ?    restore video, print usage (0x25168), exit(1)
- *   c/C  g_a50d = atol(arg+2); clamp >=3 -> 0
+ *   c/C  g_language = atol(arg+2); clamp >=3 -> 0
  *   d/D  g_input_echo = 1
  *   h/H  g_105 = 2
  *   i/I  sound card: -iirqN (g_4d94), -idmaN (g_4d96), -iioNNN (g_4d98 via 0x24b08)
@@ -56,7 +56,7 @@ extern unsigned short g_10b2e, g_1be30, g_506c;
 extern unsigned char  g_105;
 extern unsigned char  g_radar_detail, g_10b42, g_10b44, g_10b3b, g_10b3a, g_input_echo;
 extern unsigned char  g_10b47, g_unlimited_funds, g_sound_enabled, g_music_enabled, g_539a;
-extern unsigned char  g_keep_synd_colours, g_a50d, g_10b53, g_10b52, g_10b48;
+extern unsigned char  g_keep_synd_colours, g_language, g_10b53, g_10b52, g_10b48;
 extern volatile int   g_10ad8;
 extern unsigned short g_4d94, g_4d96, g_4d98;
 extern char           g_name_buf[];
@@ -103,7 +103,7 @@ void startup_main(short argc, char **argv)
     g_539a = 0;
     g_10ad8 = 0;
     g_keep_synd_colours = 0;
-    g_a50d = 0;
+    g_language = 0;
     g_10b53 = 0;
     g_10b52 = 0;
     g_10b48 = 0;
@@ -114,9 +114,9 @@ void startup_main(short argc, char **argv)
             switch (c) {
             case 'C':
             case 'c':
-                g_a50d = (unsigned char)FUN_0003a526(argv[i] + 2);
-                if (g_a50d >= 3)
-                    g_a50d = 0;
+                g_language = (unsigned char)FUN_0003a526(argv[i] + 2);
+                if (g_language >= 3)
+                    g_language = 0;
                 break;
             case 'D':
             case 'd':

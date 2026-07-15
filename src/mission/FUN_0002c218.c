@@ -12,7 +12,7 @@
  *
  * NEAR-MISS (byte-faithful structure; same -ox scheduler walls as the sibling PLUS a
  * register-role wall, playbook Section 3):
- *   1. Same `mov reg,1; mov [g_e116],reg` vs immediate on the first flag=1 store, and
+ *   1. Same `mov reg,1; mov [g_sel_cursor],reg` vs immediate on the first flag=1 store, and
  *      the same entry early-return fold — identical to FUN_0002bca8.
  *   2. REGISTER-ROLE: the target colours result->ESI and sel->EDI (because result is
  *      read in case 2, giving it more uses); our compile colours sel->ESI, result->EDI
@@ -31,7 +31,7 @@
  *     x-block registers (schar->EAX flips to EDX). Reverted.
  */
 extern volatile unsigned short g_cursor_x, g_cursor_y;   /* cursor point (x, y) */
-extern unsigned short g_e114, g_e116;     /* selection cursor state words */
+extern unsigned short g_e114, g_sel_cursor;     /* selection cursor state words */
 extern unsigned char  g_10b3e, g_10b3f;   /* selection cursor flags */
 extern unsigned char  g_df75[];           /* record-indexed flag table (tail clears) */
 extern short FUN_00029988(unsigned char *p);
@@ -64,8 +64,8 @@ unsigned short FUN_0002c218(unsigned char *p, int sel, unsigned char setX, unsig
         A_47:
             if ((unsigned short)sel != *(signed char *)(p + 0xb)) goto Lcheck;
         A_58:
-            g_e116 = 0;
-            if (setX) { g_10b3f = 0; g_e116 = 1; }
+            g_sel_cursor = 0;
+            if (setX) { g_10b3f = 0; g_sel_cursor = 1; }
             g_e114 = 0;
             if (setY) { g_10b3e = 0; g_e114 = 1; }
             {
@@ -100,8 +100,8 @@ unsigned short FUN_0002c218(unsigned char *p, int sel, unsigned char setX, unsig
                 y += p[7];
                 if (g_cursor_y >= y) goto C_93;
             }
-            g_e116 = 0;
-            if (setX) { g_10b3f = 0; g_e116 = 1; }
+            g_sel_cursor = 0;
+            if (setX) { g_10b3f = 0; g_sel_cursor = 1; }
             g_e114 = 0;
             if (setY) { g_10b3e = 0; g_e114 = 1; }
             p[0xa] = 2;

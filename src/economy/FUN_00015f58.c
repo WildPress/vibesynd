@@ -9,13 +9,13 @@
    FUN_16438 income, g_53a2[i] += 0x1f4-rand) and FUN_164c8 target reassignment.
    The fast path (g_radar_detail!=0) just spends the days with no sweep.  Overflow
    (not enough budget) advances by param_1/0x60 or 1 depending on g_10b52.
-   Record stride 0x417 based at g_player_recs(accum)/g_e4a0(budget,day,year), indexed
+   Record stride 0x417 based at g_player_recs(accum)/g_player_budget(budget,day,year), indexed
    by g_cur_player, exactly as siblings FUN_16318/16438/164c8/16678/33568.
    Recipe: -4s -oneatx -zp8 -s -zq
 
    PARKED near-miss: ours 939B vs target 957B, difflib 0.571 (541/957),
    structure byte-faithful. Levers that landed: per-block `int idx=g_cur_player*0x417`
-   (folds g_e4a0 into disp32, killed a 1381B recompute blowup); `g_5304 > 0`
+   (folds g_player_budget into disp32, killed a 1381B recompute blowup); `g_5304 > 0`
    (JBE not JE); named `money` load; volatile edge-flags + g_cur_player + g_10b50.
    WALL (entry-scheduler, same class as sibling 0x16318's residue): g_5304 is a
    global register-cached in EDI across the whole fn (spill-before-call, reload-
@@ -41,7 +41,7 @@ extern unsigned char g_radar_detail;
 extern unsigned char g_10b52;
 extern int g_10b06;
 extern volatile short g_cur_player;
-extern unsigned char g_e4a0[];
+extern unsigned char g_player_budget[];
 extern unsigned char g_player_recs[];
 extern unsigned char g_3ee8;
 extern unsigned char g_5594;
@@ -86,7 +86,7 @@ char FUN_00015f58(unsigned int param_1)
         g_10b50 = 0;
         {
             int idx = g_cur_player * 0x417;
-            unsigned char v = *(unsigned int *)(g_e4a0 + idx) / (param_1 / 0x18);
+            unsigned char v = *(unsigned int *)(g_player_budget + idx) / (param_1 / 0x18);
             if (v != g_3ee8) {
                 unsigned char sst = g_5594;
                 g_3ee8 = v;
@@ -96,14 +96,14 @@ char FUN_00015f58(unsigned int param_1)
         }
         {
             int idx = g_cur_player * 0x417;
-            money = *(unsigned int *)(g_e4a0 + idx);
+            money = *(unsigned int *)(g_player_budget + idx);
             if (param_1 - 1 <= money) {
                 ret = 1;
-                *(unsigned int *)(g_e4a0 + idx) = money - (param_1 - 1);
-                *(unsigned short *)(g_e4a0 + idx + 4) += 1;
-                if (*(unsigned short *)(g_e4a0 + idx + 4) > 0x16d) {
-                    *(unsigned short *)(g_e4a0 + idx + 6) += 1;
-                    *(unsigned short *)(g_e4a0 + idx + 4) = 1;
+                *(unsigned int *)(g_player_budget + idx) = money - (param_1 - 1);
+                *(unsigned short *)(g_player_budget + idx + 4) += 1;
+                if (*(unsigned short *)(g_player_budget + idx + 4) > 0x16d) {
+                    *(unsigned short *)(g_player_budget + idx + 6) += 1;
+                    *(unsigned short *)(g_player_budget + idx + 4) = 1;
                 }
                 for (i = 0; i < 0x32; i++) {
                     FUN_00016318(i);
@@ -114,30 +114,30 @@ char FUN_00015f58(unsigned int param_1)
             } else {
                 if (g_10b52 != 0) {
                     g_10b06 += param_1 / 0x60;
-                    *(unsigned int *)(g_e4a0 + idx) = money + param_1 / 0x60;
+                    *(unsigned int *)(g_player_budget + idx) = money + param_1 / 0x60;
                 } else {
-                    *(unsigned int *)(g_e4a0 + idx) = money + 1;
+                    *(unsigned int *)(g_player_budget + idx) = money + 1;
                     g_10b06 += 1;
                 }
             }
         }
     } else {
         int idx = g_cur_player * 0x417;
-        money = *(unsigned int *)(g_e4a0 + idx);
+        money = *(unsigned int *)(g_player_budget + idx);
         if (param_1 <= money) {
             ret = 1;
-            *(unsigned int *)(g_e4a0 + idx) = money - param_1;
-            *(unsigned short *)(g_e4a0 + idx + 4) += 1;
-            if (*(unsigned short *)(g_e4a0 + idx + 4) > 0x16d) {
-                *(unsigned short *)(g_e4a0 + idx + 6) += 1;
-                *(unsigned short *)(g_e4a0 + idx + 4) = 1;
+            *(unsigned int *)(g_player_budget + idx) = money - param_1;
+            *(unsigned short *)(g_player_budget + idx + 4) += 1;
+            if (*(unsigned short *)(g_player_budget + idx + 4) > 0x16d) {
+                *(unsigned short *)(g_player_budget + idx + 6) += 1;
+                *(unsigned short *)(g_player_budget + idx + 4) = 1;
             }
         } else {
             if (g_10b52 != 0) {
-                *(unsigned int *)(g_e4a0 + idx) += param_1 / 0x60;
+                *(unsigned int *)(g_player_budget + idx) += param_1 / 0x60;
                 g_10b06 += param_1 / 0x60;
             } else {
-                *(unsigned int *)(g_e4a0 + idx) = money + 1;
+                *(unsigned int *)(g_player_budget + idx) = money + 1;
                 g_10b06 += 1;
             }
         }

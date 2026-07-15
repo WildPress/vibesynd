@@ -1,4 +1,19 @@
 {
+ "g_agent_tmpl": {
+  "addr": "e552",
+  "type": "u8[]",
+  "desc": "0x417-stride agent-template byte tables (per player)"
+ },
+ "g_aim_x": {
+  "addr": "10b28",
+  "type": "s16",
+  "desc": "aim cursor world x, 8.8 fixed-point (snapped by 0x34048; copied to g_shot_x)"
+ },
+ "g_aim_y": {
+  "addr": "10b2a",
+  "type": "s16",
+  "desc": "aim cursor world y, 8.8 fixed-point (snapped by 0x34048; copied to g_shot_y)"
+ },
  "g_auxbar_panel": {
   "addr": "5258",
   "type": "u8[]",
@@ -89,6 +104,11 @@
   "type": "u8",
   "desc": "keep-syndicate-colours flag"
  },
+ "g_language": {
+  "addr": "a50d",
+  "type": "u8",
+  "desc": "language/locale index 0..2 (indexes string tables *3; -c startup arg, clamped <3)"
+ },
  "g_map_cols": {
   "addr": "5358",
   "type": "int*",
@@ -149,6 +169,11 @@
   "type": "u8",
   "desc": "off-screen-objective indicator flag"
  },
+ "g_player_budget": {
+  "addr": "e4a0",
+  "type": "int[]",
+  "desc": "budget field view of g_player_recs (== g_player_recs+4, 0x417 stride)"
+ },
  "g_player_recs": {
   "addr": "e49c",
   "type": "u8[]",
@@ -198,6 +223,11 @@
   "addr": "5368",
   "type": "u8*",
   "desc": "front screen buffer (blit target)"
+ },
+ "g_sel_cursor": {
+  "addr": "e116",
+  "type": "u16",
+  "desc": "selection cursor state words"
  },
  "g_shot_level": {
   "addr": "10b5a",

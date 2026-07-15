@@ -50,7 +50,7 @@ extern unsigned char  g_blink_tick;      /* blink tick counter */
 extern unsigned char  g_e394[];     /* 8 phase-shifted blink flags */
 extern short          g_cur_player;      /* current player index */
 extern unsigned char  g_e551[];     /* player record +0xb5: squad first-agent slot */
-extern signed char    g_e552[];     /* player record +0xb6: reference-entity delta */
+extern signed char    g_agent_tmpl[];     /* player record +0xb6: reference-entity delta */
 extern unsigned char  g_pool_a[];     /* pool A: entity record k at +k*0x5c */
 extern unsigned char  g_entity_pool[];     /* pool A base-2: node = g_entity_pool + id */
 extern unsigned char  g_hud_panel[];     /* agent HUD panel table, stride 0x12: x@+0,y@+2,flag@+8 */
@@ -152,7 +152,7 @@ void FUN_0002c578(void)
     /* second pass: auxiliary progress bars hung off the reference entity */
     {
         int base = (int)g_cur_player * 0x417;
-        int ref = (int)(unsigned char)g_e551[base] + (int)g_e552[base];
+        int ref = (int)(unsigned char)g_e551[base] + (int)g_agent_tmpl[base];
         unsigned char *r = g_pool_a + ref * 0x5c;
         id = *(unsigned short *)(r + 0x3a);
         i = 0;

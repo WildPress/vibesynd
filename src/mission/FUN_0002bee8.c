@@ -10,7 +10,7 @@
  * Case 1 has an EXTRA gate the siblings lack: after box/sel selection it checks
  * the commanded agent's flag byte -- agent rec = g_pool_a + 0x5c*(p[0xb]-1 +
  * g_e551[g_cur_player*0x417]) must have bit 4 set at +0x1d, else skip. On activation
- * it sets the cursor state words (g_e116/g_e114 + g_10b3f/g_10b3e) and advances
+ * it sets the cursor state words (g_sel_cursor/g_e114 + g_10b3f/g_10b3e) and advances
  * the command word by 2. Case 3 adds a g_e120==2 lockout before writing cmd=1.
  * Post-switch tail (when p[0xa]!=0, or unconditionally from active cases):
  * clears TEN per-record flag bytes g_df48..g_df51 (each an 11-stride column,
@@ -38,11 +38,11 @@
  *      `*(short *)(p += 0x12)` both fail to flip it).
  * Case-1 x-block needs ushort+schar operand order (schar->EDX); the y-block
  * and both case-3 blocks keep the sibling spellings. g_e116v/g_e114v are
- * link-time ALIASES of g_e114/g_e116 (fixup masking ignores names): declare
+ * link-time ALIASES of g_e114/g_sel_cursor (fixup masking ignores names): declare
  * the same word volatile ONLY where the volatile codegen is wanted.
  */
 extern volatile unsigned short g_cursor_x, g_cursor_y;   /* cursor point (x, y) */
-extern unsigned short g_e114, g_e116;     /* selection cursor state words */
+extern unsigned short g_e114, g_sel_cursor;     /* selection cursor state words */
 extern volatile unsigned short g_e114v, g_e116v;  /* same words, volatile view (case 3) */
 extern unsigned short g_e120;
 extern unsigned char  g_10b3e, g_10b3f;   /* selection cursor flags */
@@ -87,7 +87,7 @@ unsigned short FUN_0002bee8(unsigned char *p, int sel, unsigned char setX, unsig
                 unsigned char *a = g_pool_a + (*(signed char *)(p + 0xb) - 1 + c) * 0x5c;
                 if ((a[0x1d] & 4) == 0) goto Lcheck;
             }
-            g_e116 = 0;
+            g_sel_cursor = 0;
             if (setX) { g_10b3f = 0; g_e116v = 1; }
             g_e114 = 0;
             if (setY) { g_10b3e = 0; g_e114v = 1; }

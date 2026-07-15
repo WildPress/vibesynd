@@ -10,9 +10,9 @@
  *
  * NEAR-MISS (byte-faithful structure; residual diffs are -ox scheduler / phase-order
  * walls, playbook Section 3 — every source spelling + recipe I tried shuffles them):
- *   1. `g_e116 = 1` (the FIRST flag=1 store in each of the two select blocks) emits
- *      `mov reg,1; mov [g_e116],reg` where the target uses the immediate `mov word
- *      [g_e116],1`. This is a pure -ox delay-slot-fill; the SECOND flag=1 (g_e114) is
+ *   1. `g_sel_cursor = 1` (the FIRST flag=1 store in each of the two select blocks) emits
+ *      `mov reg,1; mov [g_sel_cursor],reg` where the target uses the immediate `mov word
+ *      [g_sel_cursor],1`. This is a pure -ox delay-slot-fill; the SECOND flag=1 (g_e114) is
  *      immediate in both. Adds ~+3B each => length +6..8 => most other "diff regions"
  *      are just cascaded jump-displacement fallout.
  *   2. Entry: the duplicated early-return tail folds `return result` (result==0) to
@@ -33,7 +33,7 @@
  *     `cmp byte[esp+18],0` + IMMEDIATE `=0` stores) -- but THIS target keeps
  *     register-loaded setX/setY tests and reg-form `=0`, so bee8's target genuinely
  *     differed there; our first-`=1` reg-form is the same wall as bee8's CASE 1.
- *   - store-order swap `{ g_e116 = 1; g_10b3f = 0; }`: scheduler reorders back, still
+ *   - store-order swap `{ g_sel_cursor = 1; g_10b3f = 0; }`: scheduler reorders back, still
  *     `mov ecx,1` reg-form. The imm-vs-reg pick is register-availability driven (2nd
  *     `=1` is imm only because ECX is wanted by the following `mov cx,[ebx]`).
  *   - `goto Lret;` to a shared final return: Watcom CROSS-JUMPS (jz rel32) instead of
@@ -45,7 +45,7 @@
  *     the playbook 2 structured-loop-var entry. Target = do-while shared bottom test.
  */
 extern volatile unsigned short g_cursor_x, g_cursor_y;   /* cursor point (x, y) */
-extern unsigned short g_e114, g_e116;     /* selection cursor state words */
+extern unsigned short g_e114, g_sel_cursor;     /* selection cursor state words */
 extern unsigned char  g_10b3e, g_10b3f;   /* selection cursor flags */
 extern short FUN_00029988(unsigned char *p);
 
@@ -77,8 +77,8 @@ unsigned short FUN_0002bca8(unsigned char *p, int sel, unsigned char setX, unsig
         A_47:
             if ((unsigned short)sel != *(signed char *)(p + 0xb)) goto Lnext;
         A_58:
-            g_e116 = 0;
-            if (setX) { g_10b3f = 0; g_e116 = 1; }
+            g_sel_cursor = 0;
+            if (setX) { g_10b3f = 0; g_sel_cursor = 1; }
             g_e114 = 0;
             if (setY) { g_10b3e = 0; g_e114 = 1; }
             {
@@ -111,8 +111,8 @@ unsigned short FUN_0002bca8(unsigned char *p, int sel, unsigned char setX, unsig
                 y += p[7];
                 if (g_cursor_y >= y) goto C_93;
             }
-            g_e116 = 0;
-            if (setX) { g_10b3f = 0; g_e116 = 1; }
+            g_sel_cursor = 0;
+            if (setX) { g_10b3f = 0; g_sel_cursor = 1; }
             g_e114 = 0;
             if (setY) { g_10b3e = 0; g_e114 = 1; }
             goto Lpa;

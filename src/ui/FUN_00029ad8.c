@@ -10,7 +10,7 @@
  * set: done. If flags g_in_mission & 6: bit1 -> FUN_00029a28, bit2 (re-read
  * after the call) -> FUN_00029a68. Else scan the 8 14-byte slots at
  * 0x1be3a: first slot with dword+0 == 0 and known kind (word+4) centers
- * the per-language string tbl_44xx[g_a50d] into field 0x10564 and, if the
+ * the per-language string tbl_44xx[g_language] into field 0x10564 and, if the
  * slot index changed (g_532e), stores it and resets blink counter g_532c
  * to 0x10. Epilogue centers string 0x3828 into field 0x10574.
  *
@@ -38,7 +38,7 @@ extern unsigned char g_in_mission;
 extern unsigned short g_537c;
 extern unsigned short g_532e;
 extern unsigned short g_532c;
-extern unsigned char g_a50d;
+extern unsigned char g_language;
 extern unsigned char g_objectives[];
 extern int tbl_4408[];
 extern int tbl_4414[];
@@ -65,29 +65,29 @@ void FUN_00029ad8(int a, int b)
                     continue;
                 switch (*(unsigned short *)&g_objectives[bx * 14 + 4]) {
                 case 5:
-                    FUN_000299c8(0x10564, tbl_4408[g_a50d]);
+                    FUN_000299c8(0x10564, tbl_4408[g_language]);
                     goto hit;
                 case 0xe:
-                    FUN_000299c8(0x10564, tbl_4414[g_a50d]);
+                    FUN_000299c8(0x10564, tbl_4414[g_language]);
                     goto hit;
                 case 0xf:
-                    FUN_000299c8(0x10564, tbl_4420[g_a50d]);
+                    FUN_000299c8(0x10564, tbl_4420[g_language]);
                     goto hit;
                 case 0x10:
-                    FUN_000299c8(0x10564, tbl_442c[g_a50d]);
+                    FUN_000299c8(0x10564, tbl_442c[g_language]);
                     goto hit;
                 case 1:
-                    FUN_000299c8(0x10564, tbl_4438[g_a50d]);
+                    FUN_000299c8(0x10564, tbl_4438[g_language]);
                     goto hit;
                 case 3:
-                    FUN_000299c8(0x10564, tbl_4444[g_a50d]);
+                    FUN_000299c8(0x10564, tbl_4444[g_language]);
                     goto hit;
                 case 2:
                 case 0xa:
-                    FUN_000299c8(0x10564, tbl_4450[g_a50d]);
+                    FUN_000299c8(0x10564, tbl_4450[g_language]);
                     goto hit;
                 case 0xb:
-                    FUN_000299c8(0x10564, tbl_445c[g_a50d]);
+                    FUN_000299c8(0x10564, tbl_445c[g_language]);
                     break;
                 case 0:
                 case 4:
