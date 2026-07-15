@@ -1242,6 +1242,17 @@ $env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot"
     split is a real TWO-BUILD MODEL, not overfitting: **game code (<0x39000) = -4 (486) 121/121; linked
     Watcom CLIB (>=0x39000) = -3 (386)**. Many opt sub-flags (-ol/-oi/-of/-zp) are byte-inert per fn (why a
     recipe only records "one that worked"). The 23 CLIB `-4` recipes are -3/-4 ties (harmless mislabels).
+  - **COMPILER VERSION also EXHAUSTIVELY checked** (`tools/compsweep.py`): all 115 parks x **7 Watcom builds**
+    (9.01, 9.5, 9.5a, 9.5b, 9.5c, 10.0a, 10.0LA) = 805 compiles, **zero byte-matches**. The 9.5 family
+    (9.5/a/b/c) is byte-IDENTICAL and lands CLOSEST (REGISTER-ROLE = identical instructions) -> confirms the
+    original is the 9.5 family. 10.0a genuinely diverges DIFFERENTLY on **101/115** (proves version matters)
+    but never matches; 10.0LA ~= 9.5; 9.01 won't compile our C. So the ONLY lever with leverage left is the
+    EXACT original 9.5 point-build/config (which we reverse-engineered, don't have) -- like N64 decomps having
+    the exact IDO. Hand-crafting confirmed too: 0x38c28 is a pure ESI<->EDI entry-load tie, 2 reasoned source
+    reshapings (local copies, operand swap) did NOT flip it. The walls are compiler-internal register/encoding
+    tie-breaks: not flags, not version, not pragma, not wrong C, not source-reshapeable. Handle like the N64
+    scene handles `asm/nonmatchings/`: keep the byte-exact `db` transcription for the build; parked C is the
+    behaviourally-correct "equivalent" form. Walls do NOT block a byte-perfect final binary.
   - **Parks confirmed WALLS three independent ways:** source permuter + new `perm_pad_var_decl` stack-pad
     lever (didn't crack 0x2e5f8/0x338d8); flag permuter (above, 0 matches); and `tools/regdiff.py` — a
     REGISTER-NORMALISED instruction diff (mask relocations + branch displacements, align by structural key,
