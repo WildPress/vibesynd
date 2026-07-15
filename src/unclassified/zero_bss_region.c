@@ -4,7 +4,7 @@
 extern unsigned char g_rng_seed[];
 extern unsigned char g_1c632[];
 extern void FUN_0004d199(void *dst, int val, int n);
-void FUN_00022708(void)
+void zero_bss_region(void)
 {
     FUN_0004d199(g_rng_seed, 0, g_1c632 - g_rng_seed);
 }

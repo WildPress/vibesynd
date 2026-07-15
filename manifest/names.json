@@ -391,11 +391,11 @@
   "desc": "",
   "runs_in_intro": false
  },
- "FUN_0001c168": {
+ "noop_ret_b": {
   "addr": "0001c168",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "empty @ 0x0001c168: no-op (single ret).",
+  "label": "noop_ret_b",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "spawn_pool_15e70": {
@@ -517,11 +517,11 @@
   "desc": "frameless init @ 0x226a8: r=g1(p->w4,p->w6,p->w8); if(r){ init fields; g2(r,p);} return r",
   "runs_in_intro": false
  },
- "FUN_00022708": {
+ "zero_bss_region": {
   "addr": "00022708",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x22708: zero the region from g_rng_seed up to g_1c632. Calls FUN_0004d199(g_rng_seed, 0, g_1c632 - g_rng_seed); the size is the runtime difference of the two symbol addresses (end - start",
+  "label": "zero_bss_region",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00022768": {
@@ -601,11 +601,11 @@
   "desc": "",
   "runs_in_intro": true
  },
- "FUN_000252d8": {
+ "timer_setup": {
   "addr": "000252d8",
-  "label": "",
-  "subsystem": "startup",
-  "desc": "frameless linear call-seq @ 0x252d8: guard on two flags, then PIT timer setup + d_setvec",
+  "label": "timer_setup",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "init_input_subsystem": {
@@ -916,11 +916,11 @@
   "desc": "frameless two table-lookup calls @ 0x29a28",
   "runs_in_intro": false
  },
- "FUN_00029a68": {
+ "draw_localized": {
   "addr": "00029a68",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless table-lookup call @ 0x29a68: g(0x10564, tbl_4480[g_language])",
+  "label": "draw_localized",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "mission_statusline": {
@@ -2169,11 +2169,11 @@
   "desc": "C runtime: labs @ 0x3aed8 (CLIB3S). long abs value. -d2 forces the leaf frame.",
   "runs_in_intro": false
  },
- "FUN_0003aee6": {
+ "stricmp_call": {
   "addr": "0003aee6",
-  "label": "",
-  "subsystem": "lib",
-  "desc": "framed 2-arg forwarder @ 0x3aee6: push [ebp+c]; push [ebp+8]; call 0x3aef9; add esp,8",
+  "label": "stricmp_call",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_0003aef9": {
@@ -2435,11 +2435,11 @@
   "desc": "C runtime: printf conversion-specifier dispatcher @ 0x3c019 (CLIB3S, Watcom 9.5). The %-format engine core. Args at [ebp+0x18..0x20]; a 0x14-byte local frame and a pushed ES make its own prologue (pus",
   "runs_in_intro": false
  },
- "FUN_0003c42d": {
+ "strupr": {
   "addr": "0003c42d",
-  "label": "",
-  "subsystem": "lib",
-  "desc": "@ 0x3c42d -- strupr: uppercase each char of s via toupper (0x3dce5). Recipe: -3s -d2 -os.",
+  "label": "strupr",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_0003c44d": {
@@ -2512,11 +2512,11 @@
   "desc": "C runtime: near-heap FREE core @ 0x3c63f-0x3c74e (CLIB3S, Watcom 9.5). Register-calling hand-asm: EAX=payload ptr, DX=arena segment (loaded into DS), EBX=arena descriptor. Clears the in-use bit, coale",
   "runs_in_intro": true
  },
- "FUN_0003c74f": {
+ "heap_boundary_check": {
   "addr": "0003c74f",
-  "label": "",
-  "subsystem": "lib",
-  "desc": "@ 0x3c74f -- heap boundary check: if last block's next-ptr hits the break, return it.",
+  "label": "heap_boundary_check",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_0003c772": {
@@ -2533,11 +2533,11 @@
   "desc": "C runtime: heap-grow / sbrk-style allocator core @ 0x3c816 (CLIB3S, Watcom 9.5). Rounds the requested size (arg at [ebp+0x10]) up to a paragraph, honours the DOS memory model flag g_c2da (1/9 = protec",
   "runs_in_intro": true
  },
- "FUN_0003ca0d": {
+ "clib_ret_zero": {
   "addr": "0003ca0d",
-  "label": "",
-  "subsystem": "lib",
-  "desc": "@ 0x3ca0d -- CLIB leaf stub: returns 0. (framed leaf, -d2 recipe)",
+  "label": "clib_ret_zero",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_0003ca18": {
@@ -3632,11 +3632,11 @@
   "desc": "-- db-transcription (hand-asm/library).",
   "runs_in_intro": false
  },
- "FUN_00022728": {
+ "init_call_seq": {
   "addr": "00022728",
-  "label": "",
-  "subsystem": "lib",
-  "desc": "@ 0x22728 -- init call sequence with a conditional third step.",
+  "label": "init_call_seq",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00022c58": {
@@ -3646,11 +3646,11 @@
   "desc": "-- db-transcription (hand-asm/library).",
   "runs_in_intro": false
  },
- "FUN_00022ca8": {
+ "init_squad_slots": {
   "addr": "00022ca8",
-  "label": "",
-  "subsystem": "lib",
-  "desc": "@ 0x22ca8 -- init all 8 squad slots: FUN_00023158(i) for i = 0..7.",
+  "label": "init_squad_slots",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00022cc8": {
@@ -3674,11 +3674,11 @@
   "desc": "-- db-transcription (hand-asm/library).",
   "runs_in_intro": false
  },
- "FUN_00026998": {
+ "init_subsystems": {
   "addr": "00026998",
-  "label": "",
-  "subsystem": "lib",
-  "desc": "@ 0x26998 -- subsystem init call sequence.",
+  "label": "init_subsystems",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00026a18": {
@@ -3793,11 +3793,11 @@
   "desc": "-- db-transcription (hand-asm/library).",
   "runs_in_intro": false
  },
- "FUN_00039158": {
+ "seq_active_check": {
   "addr": "00039158",
-  "label": "",
-  "subsystem": "lib",
-  "desc": "@ 0x39158 -- returns (FUN_00039bd7(g_seq_ctx, g_seq_state[g_cur_seq]) == 1).",
+  "label": "seq_active_check",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00039b0f": {

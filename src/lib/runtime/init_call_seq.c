@@ -3,7 +3,7 @@ extern void walk_records_2c(int a);
 extern void FUN_00036188(void);
 extern char g_sound_enabled;
 
-void FUN_00022728(void)
+void init_call_seq(void)
 {
     walk_records_2c(0x3f08);
     walk_records_2c(0x4144);

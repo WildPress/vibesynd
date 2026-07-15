@@ -14,7 +14,7 @@
  * The current player's economy/template record is  rec = g_player_recs + 0x417*g_cur_player
  * (stride 1047, indexed by the current-player short g_cur_player -- the 0x417 family,
  * cf. siblings 0x223c8 / 0x12da8 / 0x23158). rec+0x11 and rec+0x23 are two
- * 0x1a0-bit "owned-research" bitsets; FUN_0003aee6(bitset, id) tests bit `id`.
+ * 0x1a0-bit "owned-research" bitsets; stricmp_call(bitset, id) tests bit `id`.
  * Six research tiers are probed by id (0x1a0,0x1ac,0x1bc,0x1c8,0x1d4,0x1e0),
  * each requiring the bit set in BOTH bitsets to count as owned:
  *   tier 0x1a0 -> g_539a   (not-owned => 1)
@@ -81,7 +81,7 @@ extern unsigned char g_equip_qty[];   /* equip-template slot qty word */
 extern unsigned char g_equip_kind[];   /* equip-template slot kind word */
 extern short         g_a73a[];   /* item kind -> default quantity table */
 
-extern int  FUN_0003aee6(unsigned char *bitset, int id);
+extern int  stricmp_call(unsigned char *bitset, int id);
 extern int  keyboard_state_machine(void);
 
 void new_game_reset(void)
@@ -96,30 +96,30 @@ void new_game_reset(void)
     g_10b48 = 0;
 
     /* --- block A: research tier 0x1a0 --- */
-    if (FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1a0) == 0 ||
-        FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1a0) == 0)
+    if (stricmp_call(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1a0) == 0 ||
+        stricmp_call(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1a0) == 0)
         g_539a = 1;
 
     /* --- block B: research tier 0x1ac --- */
-    if (FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1ac) == 0 ||
-        FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1ac) == 0)
+    if (stricmp_call(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1ac) == 0 ||
+        stricmp_call(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1ac) == 0)
         g_10b52 = 1;
 
     /* --- block C: research tier 0x1bc --- */
-    if (FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1bc) == 0 ||
-        FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1bc) == 0)
+    if (stricmp_call(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1bc) == 0 ||
+        stricmp_call(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1bc) == 0)
         g_10b48 = 1;
 
     /* --- block D: research tier 0x1c8 -> also reset funds --- */
-    if (FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1c8) == 0 ||
-        FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1c8) == 0) {
+    if (stricmp_call(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1c8) == 0 ||
+        stricmp_call(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1c8) == 0) {
         g_unlimited_funds = 1;
         *(int *)(g_player_recs + 0x417 * g_cur_player) = 100000000;
     }
 
     /* --- block E: research tier 0x1d4 -> funds + rebuild squad/conveyor --- */
-    if (FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1d4) == 0 ||
-        FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1d4) == 0) {
+    if (stricmp_call(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1d4) == 0 ||
+        stricmp_call(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1d4) == 0) {
         g_539a  = 1;
         g_unlimited_funds = 1;
         *(int *)(g_player_recs + 0x417 * g_cur_player) = 100000000;
@@ -144,8 +144,8 @@ void new_game_reset(void)
     }
 
     /* --- block F: research tier 0x1e0 -> rebuild + equip templates --- */
-    if (FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1e0) == 0 ||
-        FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1e0) == 0) {
+    if (stricmp_call(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1e0) == 0 ||
+        stricmp_call(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1e0) == 0) {
         g_539a  = 1;
         g_unlimited_funds = 1;
         *(int *)(g_player_recs + 0x417 * g_cur_player) = 100000000;

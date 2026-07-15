@@ -4,7 +4,7 @@ extern void FUN_0003b22d(int port, int val);
 extern void FUN_0003b273(int a, int b, int c);
 extern int g_df08;
 extern unsigned short g_df0c;
-void FUN_000252d8(void)
+void timer_setup(void)
 {
     if (g_sound_enabled != 0)
         return;

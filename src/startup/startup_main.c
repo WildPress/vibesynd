@@ -37,10 +37,10 @@ extern void init_input_subsystem(void);
 extern void noop_ret(void);
 extern int  sound_driver_init(unsigned short a, unsigned short b, unsigned short c);
 extern int  xmidi_music_init(int a1, int a2, unsigned short a, unsigned short b, unsigned short c);
-extern void FUN_0001c168(void);
+extern void noop_ret_b(void);
 extern void guarded_init_alloc(void);
 extern void main_game_loop(void);
-extern void FUN_000252d8(void);
+extern void timer_setup(void);
 extern void FUN_00025348(void);
 extern void walk_records_2c(char *p);
 extern void FUN_00039188(void);
@@ -186,14 +186,14 @@ void startup_main(short argc, char **argv)
         g_music_enabled = (unsigned char)xmidi_music_init((int)g_3594, (int)g_3584, g_4d94, g_4d96, g_4d98);
 
     if (g_10b42 != 0) {
-        FUN_0001c168();
+        noop_ret_b();
     } else {
         guarded_init_alloc();
         main_game_loop();
         start = (short)g_10ad8;
         while ((unsigned int)(g_10ad8 - start) <= 0x48)
             i++;
-        FUN_000252d8();
+        timer_setup();
     }
 
     FUN_00025348();

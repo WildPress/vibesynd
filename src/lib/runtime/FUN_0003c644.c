@@ -11,7 +11,7 @@
    four #pragma aux (DOS line limit; Watcom concatenates contiguously so internal jumps
    -- including the leading stub and the backward guards -- resolve).
    NOTE: the manifest lists addr=0x3c644 (the ENTRY) but the function body is 0x3c63f..0x3c74e;
-   match95's window (addr..addr+size) is therefore shifted +5 and overruns FUN_0003c74f.
+   match95's window (addr..addr+size) is therefore shifted +5 and overruns heap_boundary_check.
    Verified byte-exact against the true [0x3c63f, 0x3c74e] window. */
 
 extern void __db_FUN_0003c644_0(void);

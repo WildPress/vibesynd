@@ -2,7 +2,7 @@
 extern unsigned char g_language;
 extern int tbl_4480[];
 extern void center_string_16(int a, int b);
-void FUN_00029a68(void)
+void draw_localized(void)
 {
     center_string_16(0x10564, tbl_4480[g_language]);
 }

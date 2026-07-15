@@ -87,6 +87,14 @@ LABELS = {
     "00018ab8": "store_4_globals",       "00018488": "sub_and_call",
     "00027ed8": "guarded_call_2arg",     "00025378": "add_c_stride6",
     "00014cc8": "scan_pool_4",           "00013a98": "forward_if_flag",
+    # cont.28 batch 4
+    "000252d8": "timer_setup",           "00022728": "init_call_seq",
+    "0003c74f": "heap_boundary_check",   "0003c42d": "strupr",
+    "00026998": "init_subsystems",       "00022708": "zero_bss_region",
+    "00022ca8": "init_squad_slots",      "0003ca0d": "clib_ret_zero",
+    "0001c168": "noop_ret_b",            "00039158": "seq_active_check",
+    "00029a68": "draw_localized",        "0003aee6": "stricmp_call",
+    "0000fee8": "copy_if_set",           "0000fa18": "z_probe",
 }
 
 

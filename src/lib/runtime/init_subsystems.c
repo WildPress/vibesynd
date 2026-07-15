@@ -2,7 +2,7 @@
 extern void FUN_00026a18(void), FUN_00031858(void), FUN_000380b8(void),
             FUN_0001c2c8(void), FUN_00029088(void), FUN_00036fd8(void);
 
-void FUN_00026998(void)
+void init_subsystems(void)
 {
     FUN_00026a18();
     FUN_00031858();
