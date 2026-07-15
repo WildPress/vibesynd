@@ -28,7 +28,12 @@ OUTDIR = os.path.join(ROOT, "dashboard")
 SEG_BYTES = 261620   # OBJECT1 code segment size, for "% of segment attributed" context
 
 # ---- palette (matches tools/dashboard.py; theme-aware) ----------------------------------------
-MATCHED, PARKED, NOC = "matched", "parked", "no-c"
+MATCHED, EQUIV, PARKED, NOC = "matched", "equivalent", "parked", "no-c"
+# parked fns whose only diff is register/encoding (from classify_equiv.py) -> "equivalent" (complete).
+_eqf = os.path.join(ROOT, "manifest", "equivalence.json")
+EQSET = ({n for n, v in json.load(open(_eqf)).items()
+          if v and v.get("verdict") in ("MATCH", "PURE-ALLOC", "REGISTER-ROLE")}
+         if os.path.exists(_eqf) else set())
 
 
 def load_manifest_at(ref=None):
@@ -55,7 +60,9 @@ def subsystem_map():
 def klass(f, has_src):
     if f.get("status") == "matched":
         return MATCHED
-    return PARKED if has_src else NOC
+    if not has_src:
+        return NOC
+    return EQUIV if f["name"] in EQSET else PARKED
 
 
 def build_history():
@@ -141,6 +148,7 @@ def main():
     tot = len(fns)
     tby = sum(f["size"] for f in fns)
     mfn = sum(1 for f in fns if f["_k"] == MATCHED)
+    efn = sum(1 for f in fns if f["_k"] == EQUIV)
     pfn = sum(1 for f in fns if f["_k"] == PARKED)
     nfn = sum(1 for f in fns if f["_k"] == NOC)
     mby = sum(f["size"] for f in fns if f["_k"] == MATCHED)
@@ -178,7 +186,7 @@ def main():
 
     os.makedirs(OUTDIR, exist_ok=True)
     doc = PAGE.format(
-        covb=f"{covb:.1f}", covf=f"{covf:.1f}", mfn=mfn, tot=tot, pfn=pfn, nfn=nfn,
+        covb=f"{covb:.1f}", covf=f"{covf:.1f}", mfn=mfn, tot=tot, efn=efn, pfn=pfn, nfn=nfn,
         mby=f"{mby:,}", tby=f"{tby:,}", pby=f"{pby:,}", nsub=len(subs),
         segpct=f"{100.0*tby/SEG_BYTES:.0f}",
         mosaic=mosaic, subrows="\n".join(sub_html), chart=chart,
@@ -193,16 +201,16 @@ def main():
 
 CSS = """
 :root{--bg:#0e1316;--surface:#161d21;--surface2:#1d262b;--border:#26323a;--ink:#dbe2e7;
-  --muted:#7f8d98;--faint:#5a6771;--accent:#e2a24a;--ok:#59bd8c;--wip:#e2a24a;--none:#3a4650;
+  --muted:#7f8d98;--faint:#5a6771;--accent:#e2a24a;--ok:#59bd8c;--wip:#e2a24a;--none:#3a4650;--blue:#388bfd;
   --mono:ui-monospace,"Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
   --ui:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
 @media (prefers-color-scheme:light){:root{--bg:#e8edf0;--surface:#fff;--surface2:#f1f5f7;
   --border:#d5dde2;--ink:#16222b;--muted:#5c6a75;--faint:#8b98a2;--accent:#a86713;
-  --ok:#2c8f65;--wip:#c98a1e;--none:#c2ccd3;}}
+  --ok:#2c8f65;--wip:#c98a1e;--none:#c2ccd3;--blue:#2f6fdb;}}
 :root[data-theme=dark]{--bg:#0e1316;--surface:#161d21;--surface2:#1d262b;--border:#26323a;
-  --ink:#dbe2e7;--muted:#7f8d98;--faint:#5a6771;--accent:#e2a24a;--ok:#59bd8c;--wip:#e2a24a;--none:#3a4650;}
+  --ink:#dbe2e7;--muted:#7f8d98;--faint:#5a6771;--accent:#e2a24a;--ok:#59bd8c;--wip:#e2a24a;--none:#3a4650;--blue:#388bfd;}
 :root[data-theme=light]{--bg:#e8edf0;--surface:#fff;--surface2:#f1f5f7;--border:#d5dde2;
-  --ink:#16222b;--muted:#5c6a75;--faint:#8b98a2;--accent:#a86713;--ok:#2c8f65;--wip:#c98a1e;--none:#c2ccd3;}
+  --ink:#16222b;--muted:#5c6a75;--faint:#8b98a2;--accent:#a86713;--ok:#2c8f65;--wip:#c98a1e;--none:#c2ccd3;--blue:#2f6fdb;}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:14px;line-height:1.5}
 .wrap{max-width:1180px;margin:0 auto;padding:0 20px 64px}
@@ -229,12 +237,12 @@ h1{font-family:var(--mono);font-size:24px;margin:30px 0 2px}
 .legend{display:flex;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:12px}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .sw{width:11px;height:11px;border-radius:3px;display:inline-block}
-.sw.matched{background:var(--ok)}.sw.parked{background:var(--wip)}.sw.no-c{background:var(--none)}
+.sw.matched{background:var(--ok)}.sw.parked{background:var(--wip)}.sw.no-c{background:var(--none)}.sw.equivalent{background:var(--blue)}
 .mosaic{display:flex;width:100%;height:38px;border-radius:6px;overflow:hidden;background:var(--surface2);
   border:1px solid var(--border);gap:1px}
 .mosaic.mini{height:16px;border-radius:4px}
 .mosaic .c{min-width:1px;height:100%;display:block;transition:opacity .1s}
-.mosaic .c.matched{background:var(--ok)}.mosaic .c.parked{background:var(--wip)}.mosaic .c.no-c{background:var(--none)}
+.mosaic .c.matched{background:var(--ok)}.mosaic .c.parked{background:var(--wip)}.mosaic .c.no-c{background:var(--none)}.mosaic .c.equivalent{background:var(--blue)}
 .mosaic .c:hover{opacity:.65}
 .readout{font-family:var(--mono);font-size:12.5px;color:var(--ink);margin-top:10px;min-height:1.4em}
 .readout .a{color:var(--accent)}.readout .m{color:var(--faint)}
@@ -283,6 +291,7 @@ PAGE = """<!doctype html><meta charset="utf-8">
   <div class="tiles">
     <div class="tile"><div class="k">Functions matched</div><div class="v">{mfn}<small>/{tot}</small></div></div>
     <div class="tile"><div class="k">Code bytes matched</div><div class="v">{mby}<small> / {tby}</small></div></div>
+    <div class="tile"><div class="k">Equivalent <small>(reg-only)</small></div><div class="v">{efn}</div></div>
     <div class="tile"><div class="k">Parked (decoded)</div><div class="v">{pfn}<small> · {pby} B</small></div></div>
     <div class="tile"><div class="k">Undecoded</div><div class="v">{nfn}</div></div>
     <div class="tile"><div class="k">Subsystems</div><div class="v">{nsub}</div></div>
@@ -296,6 +305,7 @@ PAGE = """<!doctype html><meta charset="utf-8">
     <div class="readout" id="readout">Hover a cell…</div>
     <div class="legend">
       <span><i class="sw matched"></i>matched — byte-exact</span>
+      <span><i class="sw equivalent"></i>equivalent — complete, register/encoding-only diff</span>
       <span><i class="sw parked"></i>parked — decoded, on a codegen wall</span>
       <span><i class="sw no-c"></i>undecoded</span>
     </div>

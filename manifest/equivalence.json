@@ -1,0 +1,577 @@
+{
+"FUN_00015e38": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.7937
+},
+"FUN_000133a8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.3652
+},
+"FUN_00012da8": {
+"verdict": "STRUCTURAL",
+"flags": "-4r -oneatx -zp8 -s -zq",
+"score": 0.5991
+},
+"FUN_00011d68": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.6788
+},
+"FUN_00015f58": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.5617
+},
+"FUN_00016678": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.8276
+},
+"FUN_00016318": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.9701
+},
+"alloc_init_with_errcode": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.6667
+},
+"FUN_000183e8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.6341
+},
+"FUN_00019318": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.8264
+},
+"FUN_00019608": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.3767
+},
+"FUN_000128b8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.9741
+},
+"FUN_00012ae8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.9236
+},
+"FUN_0001b858": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.6372
+},
+"FUN_0001b798": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.6308
+},
+"container_load": {
+"verdict": "STRUCTURAL",
+"flags": "-4r -oneatx -zp8 -s -zq",
+"score": 0.5138
+},
+"FUN_0001bc28": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.1241
+},
+"FUN_00018ae8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.8483
+},
+"FUN_00020018": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.9163
+},
+"FUN_00020568": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.4368
+},
+"FUN_000205f8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.5419
+},
+"FUN_00018d18": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.2111
+},
+"FUN_00020728": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.443
+},
+"FUN_00020b78": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.6944
+},
+"FUN_00020be8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.9394
+},
+"keyboard_state_machine": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.7333
+},
+"FUN_00020d18": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.6842
+},
+"FUN_00020d98": {
+"verdict": "STRUCTURAL",
+"flags": "-4r -oneatx -zp8 -s -zq",
+"score": 0.4783
+},
+"new_campaign_reset": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.2368
+},
+"FUN_00021658": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.6205
+},
+"FUN_00021e18": {
+"verdict": "STRUCTURAL",
+"flags": "-4r -oneatx -zp8 -s -zq",
+"score": 0.289
+},
+"FUN_000223c8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.5693
+},
+"FUN_00022768": {
+"verdict": "REGISTER-ROLE",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 1.0
+},
+"FUN_00022858": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.9286
+},
+"FUN_0001a458": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.7261
+},
+"parse_hex_arg": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.496
+},
+"FUN_00023158": {
+"verdict": "STRUCTURAL",
+"flags": "-4r -oneatx -zp8 -s -zq",
+"score": 0.2445
+},
+"guarded_init_alloc": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.2
+},
+"FUN_00025348": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.4
+},
+"FUN_00025d58": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.4348
+},
+"FUN_000264a8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.4574
+},
+"FUN_000269d8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.6286
+},
+"FUN_00026778": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.8399
+},
+"FUN_00026bc8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.4954
+},
+"FUN_00026c78": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.8778
+},
+"FUN_00026da8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.8056
+},
+"FUN_00027d88": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.4638
+},
+"FUN_00027e78": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.9153
+},
+"FUN_00027428": {
+"verdict": "STRUCTURAL",
+"flags": "-4r -oneatx -zp8 -s -zq",
+"score": 0.2344
+},
+"FUN_00027ed8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.7826
+},
+"FUN_00027f08": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.9784
+},
+"FUN_00027fc8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.8636
+},
+"FUN_00028118": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.914
+},
+"FUN_00028228": {
+"verdict": "STRUCTURAL",
+"flags": "-4r -oneatx -zp8 -s -zq",
+"score": 0.7287
+},
+"FUN_00028368": {
+"verdict": "STRUCTURAL",
+"flags": "-4r -oneatx -zp8 -s -zq",
+"score": 0.753
+},
+"FUN_00028728": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.6389
+},
+"FUN_000287e8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.766
+},
+"FUN_000288f8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.704
+},
+"FUN_000299c8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.7126
+},
+"FUN_0002a288": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.3812
+},
+"FUN_0002bbe8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.6609
+},
+"FUN_0002ad58": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.2093
+},
+"FUN_0002bca8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.5722
+},
+"FUN_0002bee8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.4942
+},
+"FUN_0002c218": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.5838
+},
+"FUN_0002cf28": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.4813
+},
+"FUN_0002c578": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.3808
+},
+"FUN_0002d038": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.8
+},
+"FUN_0002d0d8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.9453
+},
+"FUN_0002d468": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.733
+},
+"FUN_0002d7a8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.7576
+},
+"FUN_0002d808": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.7385
+},
+"FUN_0002d5b8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.7248
+},
+"FUN_0002d868": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.7576
+},
+"FUN_0002d8c8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.7258
+},
+"FUN_0002dd48": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.7402
+},
+"FUN_0002e408": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.9886
+},
+"FUN_0002def8": {
+"verdict": "STRUCTURAL",
+"flags": "-4r -oneatx -zp8 -s -zq",
+"score": 0.457
+},
+"FUN_0002e588": {
+"verdict": "STRUCTURAL",
+"flags": "-4r -oneatx -zp8 -s -zq",
+"score": 0.5057
+},
+"FUN_0002e5f8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.915
+},
+"FUN_0002e808": {
+"verdict": "STRUCTURAL",
+"flags": "-4r -oneatx -zp8 -s -zq",
+"score": 0.4444
+},
+"FUN_0002ed28": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.9855
+},
+"FUN_0002f608": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.5
+},
+"FUN_0002fbc8": {
+"verdict": "REGISTER-ROLE",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 1.0
+},
+"FUN_00030868": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.5323
+},
+"FUN_00033568": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.7689
+},
+"FUN_000338d8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.7752
+},
+"FUN_00033b88": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.9541
+},
+"FUN_00033db8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.955
+},
+"FUN_00033e78": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.6909
+},
+"FUN_00034048": {
+"verdict": "REGISTER-ROLE",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 1.0
+},
+"FUN_00034088": {
+"verdict": "REGISTER-ROLE",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 1.0
+},
+"FUN_00034198": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.9109
+},
+"FUN_00034368": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.5681
+},
+"FUN_00034608": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.2353
+},
+"FUN_00034858": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.2864
+},
+"sound_driver_init": {
+"verdict": "STRUCTURAL",
+"flags": "-4r -oneatx -zp8 -s -zq",
+"score": 0.2193
+},
+"walk_sound_record_table": {
+"verdict": "REGISTER-ROLE",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 1.0
+},
+"FUN_00035f78": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.918
+},
+"FUN_00036168": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.2667
+},
+"FUN_000363d8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.8927
+},
+"FUN_000365e8": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.8158
+},
+"FUN_00036648": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.9412
+},
+"FUN_00036698": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.7456
+},
+"FUN_00036808": {
+"verdict": "STRUCTURAL",
+"flags": "-4r -oneatx -zp8 -s -zq",
+"score": 0.6708
+},
+"FUN_00036d18": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.8193
+},
+"FUN_00037818": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.9565
+},
+"FUN_00037918": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.6458
+},
+"FUN_00038c28": {
+"verdict": "REGISTER-ROLE",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 1.0
+},
+"xmidi_music_init": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.4322
+},
+"FUN_00041a44": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.0
+},
+"FUN_0004287e": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.0
+},
+"FUN_000436b2": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.0
+},
+"FUN_0004483d": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.0
+},
+"FUN_0001b908": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.9608
+}
+}

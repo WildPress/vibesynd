@@ -11,9 +11,10 @@ for byte, one function at a time. A project to learn how decompilation works.
 ![Decompilation progress treemap: functions sized by code bytes, coloured by match status](docs/treemap.svg)
 
 Every function in the code segment, area proportional to its size, grouped by subsystem.
-**Green** = our C compiles to bytes identical to the original; **amber** = decoded but parked on a
-compiler-codegen wall. Regenerate with `python tools/treemap.py`; a live, hover-able version and a
-matched-over-time chart are in `tools/progress.py` (local `dashboard/progress.html`).
+**Green** = our C compiles byte-identical to the original; **blue** = complete but not byte-identical
+(same instructions, differs only in a register or equivalent encoding the compiler chose); **amber** =
+decoded but still parked on a codegen wall. Regenerate with `python tools/treemap.py`; a live,
+hover-able version and a matched-over-time chart are in `tools/progress.py` (local `dashboard/progress.html`).
 
 ## Start with the wiki
 
