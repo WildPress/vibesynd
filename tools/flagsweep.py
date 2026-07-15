@@ -28,8 +28,26 @@ FRAME = ["", "-of"]                              # omit vs force a stack frame
 PACK = ["-zp8", "-zp1"]                          # struct packing (8 = default-ish, 1 = tight)
 FIXED = "-s -zq"                                 # no stack-overflow check, quiet -- always on
 
+# --extended: the untested-but-plausible flags (loop unroll, branch reorder, inline-expansion
+# thresholds, math/fp, debug levels). These are what could still surprise us; packing is dropped to
+# -zp8 only (our struct-free pointer-arith C is packing-inert, validated) to keep the count bounded.
+EXT_OPT = OPT + ["-oneatx -ol+", "-oneatx -ob", "-oneatx -oe", "-oneatx -oe=50",
+                 "-oneatx -om", "-oneatx -op", "-oneatx -oc", "-oneatx -ok", "-od", "-obmiler"]
+EXT_DEBUG = ["", "-d1", "-d2"]
+_EXT = [False]                                   # set by main(); fork-inherited by pool workers
+
 
 def grid():
+    if _EXT[0]:
+        combos = []
+        for cc in CPU_CALL:
+            for opt in EXT_OPT:
+                for fr in FRAME:
+                    for dbg in EXT_DEBUG:
+                        f = " ".join(" ".join(x for x in (cc, opt, fr, dbg, "-zp8", FIXED) if x).split())
+                        if f not in combos:
+                            combos.append(f)
+        return combos
     combos = []
     for cc in CPU_CALL:
         for opt in OPT:
@@ -89,6 +107,7 @@ def _worker(name):
 
 
 def main():
+    _EXT[0] = "--extended" in sys.argv
     if "--triage" in sys.argv:
         workers = (int(sys.argv[sys.argv.index("--workers") + 1]) if "--workers" in sys.argv
                    else max(2, min(28, (os.cpu_count() or 4) - 2)))
