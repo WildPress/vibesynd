@@ -134,6 +134,16 @@
   "type": "u16[]",
   "desc": "mod source table (word)"
  },
+ "g_mouse_x": {
+  "addr": "5390",
+  "type": "u16",
+  "desc": "screen pointer x (hit-tested against UI element bounds)"
+ },
+ "g_mouse_y": {
+  "addr": "5392",
+  "type": "u16",
+  "desc": "screen pointer y (hit-tested against UI element bounds)"
+ },
  "g_music_enabled": {
   "addr": "10b49",
   "type": "u8",
@@ -258,6 +268,11 @@
   "addr": "10b30",
   "type": "u8",
   "desc": "selected-target countdown (pulse anim)"
+ },
+ "g_text_pal": {
+  "addr": "11be4",
+  "type": "u8*",
+  "desc": "current text colour/translation table (tbl arg to FUN_00036698 text draw)"
  },
  "g_tile_flags": {
   "addr": "10ac0",

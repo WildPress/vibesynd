@@ -7,7 +7,7 @@
  *    0: 0x2a75a (skip), 1..0xc: 0x2a454+0x2f*k (per-type draw), 0xd/e/f:
  *    0x2a6ca, 0x10: 0x2a6f6, 0x11/12/13: 0x2a722; >0x13 -> 0x2a75a.
  *
- * Semantics: clears g_52ff, state=1. If word g_5390 >= 0x80: index the
+ * Semantics: clears g_52ff, state=1. If word g_mouse_x >= 0x80: index the
  * 0x417-byte mission records at 0xe551 by (short)g_cur_player; pool-A record
  * p = 0x8110 + 0x5c*((uchar)rec[0] + (schar)rec[1]); state=2. If entity id
  * word g_10b14 is live (nonzero, its record (id/0x5c)>>3 != g_cur_player, dead
@@ -38,7 +38,7 @@
  * and state-as-tid spellings all flip state->EDI and rotate p/e1 (a
  * coloring/layout DEADLOCK: the chain form places state=5 before the
  * call block, the target wants 6-first with one shared st5 -- no spelling
- * gives both). Residues: that layout inversion; entry loads g_5390 via DX
+ * gives both). Residues: that layout inversion; entry loads g_mouse_x via DX
  * vs direct cmp mem,imm (+2B); e1 id built di-load form vs target
  * xor-eax + mov edi,0x810e + add (uint id1 fixes the form but rotates
  * p->EDI); div quotient EDX vs EBP; case-body y-reg EDX vs ECX and
@@ -68,7 +68,7 @@
  * 0x34048/0x19318) coupled to the layout; not source-reachable, not
  * fuzzer-reachable (fuzzer permutes source, can't change the allocator). */
 extern unsigned char g_52ff;
-extern unsigned short g_5390;
+extern unsigned short g_mouse_x;
 extern short g_cur_player;
 extern unsigned short g_10b14;
 extern unsigned short g_10b12;
@@ -109,7 +109,7 @@ void FUN_0002a288(void)
 
     g_52ff = 0;
     state = 1;
-    if (g_5390 >= 0x80) {
+    if (g_mouse_x >= 0x80) {
         k = g_cur_player * 0x417;
         p = g_pool_a + ((signed char)g_e551[k + 1] + g_e551[k]) * 0x5c;
         id1 = g_10b14;

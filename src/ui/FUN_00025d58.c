@@ -24,14 +24,14 @@
    rows via the 0x36698 text drawer, then two owner/claim-gated sections.
    Strings come from per-language pointer tables (index g_language*4); the title
    table g_41a4 is 2D (row = g_b072[id]*12). */
-extern unsigned char *g_11be4;
+extern unsigned char *g_text_pal;
 extern unsigned char g_language;
 extern unsigned char g_b072[];
 extern unsigned char g_syndicate_recs[];
 extern unsigned char g_player_recs[];
 extern unsigned short g_cur_player;
-extern unsigned short g_5390;
-extern unsigned short g_5392;
+extern unsigned short g_mouse_x;
+extern unsigned short g_mouse_y;
 extern char *g_41a4[];
 extern char *g_469c[];
 extern char *g_46b4[];
@@ -70,25 +70,25 @@ void FUN_00025d58(unsigned char param1)
         *(char **)((char *)g_41a4 + g_language * 4 + g_b072[param1 * 19] * 12),
         (unsigned short)(0xb8 + (0x118 - FUN_00036648(
             *(char **)((char *)g_41a4 + g_language * 4 + g_b072[param1 * 19] * 12),
-            g_11be4, 0x54, -2, 8)) / 2),
-        0x13a, 0xf, 0x54, g_11be4, -2, 8, 0, 0);
+            g_text_pal, 0x54, -2, 8)) / 2),
+        0x13a, 0xf, 0x54, g_text_pal, -2, 8, 0, 0);
 
     /* section 2 */
     FUN_00036698(*(char **)((char *)g_469c + g_language * 4), 0xc2, 0x14e, 0xf, 0x166,
-                 g_11be4, -2, 8, 0, 0);
+                 g_text_pal, -2, 8, 0, 0);
     FUN_0003a4fa(buf, g_365c, *(unsigned int *)(g_syndicate_recs + param1 * 10 + 6));
-    FUN_00036698(buf, 0x10c, 0x14e, 0xf, 0x54, g_11be4, -2, 8, 0, 0);
+    FUN_00036698(buf, 0x10c, 0x14e, 0xf, 0x54, g_text_pal, -2, 8, 0, 0);
     FUN_00036698(*(char **)((char *)g_46b4 + g_language * 4), 0xc2, 0x15c, 0xf, 0x166,
-                 g_11be4, -2, 8, 0, 0);
+                 g_text_pal, -2, 8, 0, 0);
 
     /* section 3: owner/claim gate */
     if ((unsigned short)g_syndicate_recs[param1 * 10 + 2] == g_cur_player
         || *(unsigned short *)(g_syndicate_recs + param1 * 10) == 0xff) {
         FUN_000265d8(param1);
         FUN_00036698(*(char **)((char *)g_46a8 + g_language * 4), 0xc2, 0x16a, 0xf, 0x166,
-                     g_11be4, -2, 8, 0, 0);
+                     g_text_pal, -2, 8, 0, 0);
         if (*(unsigned short *)(g_syndicate_recs + param1 * 10) == 0xff) {
-            if (g_5392 > 0x15a && g_5392 < 0x174 && g_5390 > 0x10 && g_5390 < 0x92)
+            if (g_mouse_y > 0x15a && g_mouse_y < 0x174 && g_mouse_x > 0x10 && g_mouse_x < 0x92)
                 colour = 0x166;
             else
                 colour = 0x1ef;
@@ -97,11 +97,11 @@ void FUN_00025d58(unsigned char param1)
         }
     } else {
         FUN_00036698(*(char **)((char *)g_46cc + g_language * 4), 0x10c, 0x15c, 0xf, 0x54,
-                     g_11be4, -2, 8, 0, 0);
+                     g_text_pal, -2, 8, 0, 0);
         FUN_00036698(*(char **)((char *)g_46c0 + g_language * 4), 0xc2, 0x16a, 0xf, 0x166,
-                     g_11be4, -2, 8, 0, 0);
+                     g_text_pal, -2, 8, 0, 0);
         if (FUN_000264a8(param1) == 1) {
-            if (g_5392 > 0x15a && g_5392 < 0x174 && g_5390 > 0x10 && g_5390 < 0x92)
+            if (g_mouse_y > 0x15a && g_mouse_y < 0x174 && g_mouse_x > 0x10 && g_mouse_x < 0x92)
                 colour = 0x166;
             else
                 colour = 0x1ef;
@@ -130,5 +130,5 @@ void FUN_00025d58(unsigned char param1)
         FUN_0003a4fa(buf, g_3660,
                      g_player_recs + g_syndicate_recs[param1 * 10 + 2] * 1047 + 0x23);
     }
-    FUN_00036698(buf, 0x10c, 0x16a, 0xf, 0x54, g_11be4, -2, 8, 0, 0);
+    FUN_00036698(buf, 0x10c, 0x16a, 0xf, 0x54, g_text_pal, -2, 8, 0, 0);
 }

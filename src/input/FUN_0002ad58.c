@@ -18,7 +18,7 @@
    (b) pool-A ENTITY records (0x5c=92B stride): rec ptr = 0x8110 + pedid*0x5c
        (0x8110 = pool base g_entity_pool + 2). Fields used: +0x4/+0x6/+0x8 coords, +0xb/+0x1d
        flags, +0x19 type, +0x1a facing, +0x44 link id, +0x46 byte. id<->ptr via +0x810e.
-   Direction tables g_dir_dx/g_dir_dy (s16[256]). Screen/scroll g_5390/g_5392/g_52f8.
+   Direction tables g_dir_dx/g_dir_dy (s16[256]). Screen/scroll g_mouse_x/g_mouse_y/g_52f8.
 
    CALLEES: 0x2c468 (pool field-copy, void), 0x1ba48 (clamp+draw cursor diagonal),
    0x2d7a8/0x2d808 (R/G/B reticle-ramp interpolate -- 0x2d7a8 is itself a PARKED
@@ -44,7 +44,7 @@ extern unsigned short g_e112, g_e114, g_sel_cursor, g_e118, g_e11a, g_e11c;
 extern unsigned short g_e120, g_e122, g_e124;
 extern short          g_10b10, g_10b12, g_10b14, g_cur_player, g_10b1a;
 extern unsigned short g_10b1c, g_10b1e, g_10b20, g_cursor_x;
-extern unsigned short g_5390, g_5392, g_52f8;
+extern unsigned short g_mouse_x, g_mouse_y, g_52f8;
 extern unsigned char  g_e551[], g_agent_tmpl[];   /* 0x417-stride agent template byte tables */
 extern short          g_dir_dx[], g_dir_dy[];   /* direction tables (s16[256]) */
 
@@ -188,14 +188,14 @@ after_scan:                                          /* 0x2b01b */
 
     /* ---- clamp cursor to world/scroll and set the reticle window (0x2b2f8) ---- */
     rec = PREC(AGENT_FIRST(g_cur_player) + AGENT_SEL(g_cur_player));
-    if (g_5390 >= 0x80 && g_5392 >= 0x110) {
+    if (g_mouse_x >= 0x80 && g_mouse_y >= 0x110) {
         int t;
-        t = ((int)(0x100 / (int)g_52f8)) * ((int)g_5390 - 0x40) + *(short *)(rec + 0x4);
+        t = ((int)(0x100 / (int)g_52f8)) * ((int)g_mouse_x - 0x40) + *(short *)(rec + 0x4);
         g_10b20 = (unsigned short)t;
         if ((unsigned short)t > 0x7f00) g_10b20 = 0x7f00;
         else if ((unsigned short)t < 0x100) g_10b20 = 0x100;
 
-        t = ((int)(0x100 / (int)g_52f8)) * ((int)g_5392 - 0x150) + *(short *)(rec + 0x6);
+        t = ((int)(0x100 / (int)g_52f8)) * ((int)g_mouse_y - 0x150) + *(short *)(rec + 0x6);
         g_10b1e = (unsigned short)t;
         if ((unsigned short)t > 0x5f00) g_10b1e = 0x5f00;
         else if ((unsigned short)t < 0x100) g_10b1e = 0x100;

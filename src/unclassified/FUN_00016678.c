@@ -17,7 +17,7 @@
    for the entire 190-vs-187 length gap. */
 extern short g_cur_player;
 extern unsigned char g_player_budget[];
-extern int g_11be4;
+extern int g_text_pal;
 extern void fn_3a4fa();
 extern void fn_36698();
 
@@ -32,5 +32,5 @@ void FUN_00016678(void)
     fn_3a4fa(buf, 0x70, idx,
              *(unsigned short *)(g_player_budget + (int)g_cur_player * 0x417 + 4),
              *(unsigned short *)(g_player_budget + (int)g_cur_player * 0x417 + 6));
-    fn_36698(buf, 0x1f4, 0xa, 0x10, 0x166, g_11be4, -2, 0xe, 0, 0);
+    fn_36698(buf, 0x1f4, 0xa, 0x10, 0x166, g_text_pal, -2, 0xe, 0, 0);
 }
