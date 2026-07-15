@@ -108,8 +108,11 @@ def omf_rec(rt, body):
 
 
 def build(name, fn_addr, fn_size, mode):
-    seg = open(SEG1, "rb").read()
-    body = bytearray(seg[fn_addr - CODE_LO: fn_addr - CODE_LO + fn_size])
+    if fn_addr < CODE_LO and os.path.exists("build/obj1_full.bin"):   # prefix fn: not in linear.bin
+        body = bytearray(open("build/obj1_full.bin", "rb").read()[fn_addr - 0xd748:fn_addr - 0xd748 + fn_size])
+    else:
+        seg = open(SEG1, "rb").read()
+        body = bytearray(seg[fn_addr - CODE_LO: fn_addr - CODE_LO + fn_size])
     relocs = find_relocs(fn_addr, bytes(body), fn_size)
     resolved = []
     for off, size, self_rel, tgt, kind in relocs:

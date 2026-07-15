@@ -49,7 +49,10 @@ def helper_items(n):
 
 
 def fn_bytes(f, base):
-    off = int(f["addr"], 16) - base
+    addr = int(f["addr"], 16)
+    if addr < base and os.path.exists("build/obj1_full.bin"):     # prefix fn: not in linear.bin
+        return open("build/obj1_full.bin", "rb").read()[addr - 0xd748:addr - 0xd748 + f["size"]]
+    off = addr - base
     return open(SEG, "rb").read()[off:off + f["size"]]
 
 
