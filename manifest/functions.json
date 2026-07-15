@@ -505,6 +505,7 @@
     {"addr": "0004d513", "name": "FUN_0004d513", "size": 25, "calls": 0, "data_refs": 1, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/lib/gfx/FUN_0004d513.c"},
     {"addr": "0000e568", "name": "FUN_0000e568", "size": 50, "calls": 0, "data_refs": 0, "incoming": 0, "status": "matched", "match_pct": 100.0, "src": "src/unclassified/FUN_0000e568.c"},
     {"addr": "0000dc08", "name": "FUN_0000dc08", "size": 65, "calls": 0, "data_refs": 0, "incoming": 0, "status": "unmatched", "match_pct": "", "src": "src/unclassified/FUN_0000dc08.c"},
-    {"addr": "0000fa88", "name": "FUN_0000fa88", "size": 112, "calls": 0, "data_refs": 0, "incoming": 0, "status": "unmatched", "match_pct": "", "src": "src/unclassified/FUN_0000fa88.c"}
+    {"addr": "0000fa88", "name": "FUN_0000fa88", "size": 112, "calls": 0, "data_refs": 0, "incoming": 0, "status": "unmatched", "match_pct": "", "src": "src/unclassified/FUN_0000fa88.c"},
+    {"addr": "0000f898", "name": "FUN_0000f898", "size": 378, "calls": 0, "data_refs": 0, "incoming": 0, "status": "unmatched", "match_pct": "", "src": "src/unclassified/FUN_0000f898.c"}
   ]
 }
