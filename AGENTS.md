@@ -229,6 +229,20 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 
 ## Current Status  (update every session)
 
+### ✅ CRACK 2026-07-15c — WHOLE-MODULE build cracks cross-fn tail-merge (0x37818 -> 439 matched).
+### 0x37818's return-0 has NO local stub: it jumps BACKWARD (jb 0x3780f) into sibling 0x377e8's
+### `xor eax,eax; ret`. Watcom's cross-jump opt is intra-OBJECT, so the two must be in ONE translation
+### unit. Merged into src/unclassified/FUN_000377e8.c (0x377e8 FIRST; 0x37818 now returns `unsigned
+### short` so its return-0 stub is byte-identical & shareable). New infra: a source file may define
+### MULTIPLE fns; manifest `"unit": <primary>` tags members; tools/match_combo.py verifies the whole
+### contiguous region reloc-aware (cross-fn branch checked byte-exact). buildgame.py links the combined
+### obj fine (both PUBDEFs) -- and its short-OBJ-name bug (int(name[4:],16) crashed on semantic names)
+### is FIXED (keys on manifest addr), so the whole-game link works again (GAME.EXE 371825B, missing 0).
+### tools/xfnjumps.py scans all parked fns for jcc/jmp landing outside their range: 0x37818 was the
+### SOLE true cross-fn tail-merge (only new_campaign_reset else, and that's an undersized-manifest self
+### jump). So this vein = 1 fn, now closed. NOTE: unit members are verified by match_combo.py, NOT the
+### per-fn match95.sh/wcc_95.sh (which find src/<name>.c and will 'no such source' on a merged member).
+###
 ### ✅ CRACK 2026-07-15 — dead callee-save wall (0x36168, 114->113 parked). A guarded call
 ### `if(g) FUN_000395b6(0)` whose target wraps the body in a DEAD `push ebx`/`pop ebx` (ebx never
 ### used). Mechanism: the fn must preserve ebx for ITS caller (callee-saved contract); declaring the
