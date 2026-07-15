@@ -1,8 +1,8 @@
 /* GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). RLE/sprite-stream decoder @ 0x3a033.
    Framed hand-asm (its own PUSH EBP; MOV EBP,ESP; ADD ESP,-0x10 prologue, LEAVE/RET
    epilogue). Reads the frame header from globals g_bdd8/g_bdda (dims) and g_bddc
-   (height), calls the setup/unpack routine 0x3a7c4(g_bdd0, g_5370, height-6), then walks
-   the control stream at g_5370 decoding into the destination surface g_5368: each word's
+   (height), calls the setup/unpack routine 0x3a7c4(g_bdd0, g_back_buf, height-6), then walks
+   the control stream at g_back_buf decoding into the destination surface g_screen_buf: each word's
    AH top bits select skip (TEST AH,0x80/0x40 -> signed pixel/row advance via
    MOVSX/NEG/IMUL of the row stride) vs literal-run copy (byte count DL, sign decides two
    copy directions), storing 16-bit pixel pairs. Loops g_bdd8 (=[ebp-8]) scanlines.

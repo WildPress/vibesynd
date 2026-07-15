@@ -12,12 +12,12 @@
    the s16 table 0xa6c2 via `xor edx,edx; mov dl,type; add edx,edx;
    mov dx,[edx+0xa6c2]; and edx,0xffff` (doubled index as a VALUE + disp32 +
    named-ushort and-widen, 22B); ours always folds the doubling into SIB
-   `[eax*2+sym]` (20B) — 7 spellings tried (array index, byte-array *2, <<1,
+   `[eax*2+sym]` (20B) ï¿½ 7 spellings tried (array index, byte-array *2, <<1,
    x+x CSE, stride-2 struct, cross-statement int/uint/ushort offset locals,
    compound self-add). Note the binary DOES use the SIB form for the same table
    elsewhere (0x23158), so the original source spelled this site differently in
    a way 9.5 no longer distinguishes for us. Everything else byte-matches. */
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern unsigned char g_a6c2[];
 extern short g_e12e;
 extern int FUN_0002d808(unsigned char *node, int cap);
@@ -42,7 +42,7 @@ void FUN_00030868(unsigned char *node)
     d = FUN_0002d808(node, 0x64);
     node[0x46] = 0;
     if (*(unsigned short *)(node + 0x44) != 0) {
-        p2 = g_810e + *(unsigned short *)(node + 0x44);
+        p2 = g_entity_pool + *(unsigned short *)(node + 0x44);
         if (*(short *)(p2 + 0x14) < 0) {
             t = FUN_00037ad8(node, 0);
             if (t == *(unsigned short *)(node + 0x44))

@@ -16,7 +16,7 @@
  * g_10b12 live: same via FUN_0002e808 => 6/5. Else if g_10b1a: state 4,
  * n = FUN_000377b8(p) (carried-item count). Dispatch switch(state):
  *  1/2 -> g_5324 = g_5308 + 6*state; return.   3 -> nothing.
- *  4   -> g_52ff=1; e = g_810e + g_10b1a; if g_e398==0 and n<8: inner
+ *  4   -> g_52ff=1; e = g_entity_pool + g_10b1a; if g_e398==0 and n<8: inner
  *         switch on type e[0x19] queues a draw-list node
  *         FUN_0001b858(*(ushort*)(g_5348+OFS), g_5258[n*9], g_5258[n*9+1]),
  *         OFS = 0x242+8*(type-1) for 1..0xc, 0x2b2 for 0xd/e/f, 0x2ba for
@@ -75,7 +75,7 @@ extern unsigned short g_10b12;
 extern unsigned short g_10b1a;
 extern unsigned char g_e551[];
 extern unsigned char g_8110[];
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern short g_a6c2[];
 extern unsigned char g_e398;
 extern unsigned char *g_5348;
@@ -113,7 +113,7 @@ void FUN_0002a288(void)
         k = g_10b16 * 0x417;
         p = g_8110 + ((signed char)g_e551[k + 1] + g_e551[k]) * 0x5c;
         id1 = g_10b14;
-        e1 = g_810e + id1;
+        e1 = g_entity_pool + id1;
         state = 2;
         if (id1 != 0
             && ((unsigned int)id1 / 0x5c) >> 3 != g_10b16
@@ -121,7 +121,7 @@ void FUN_0002a288(void)
             tid = *(unsigned short *)(p + 0x44);
             if (tid == 0) {
                 state = 5;
-            } else if (FUN_0002e5f8(p, e1, g_a6c2[g_810e[tid + 0x19]])) {
+            } else if (FUN_0002e5f8(p, e1, g_a6c2[g_entity_pool[tid + 0x19]])) {
                 state = 6;
             } else {
                 state = 5;
@@ -129,12 +129,12 @@ void FUN_0002a288(void)
         } else {
             id2 = g_10b12;
             if (id2 != 0) {
-                e2 = g_810e + id2;
+                e2 = g_entity_pool + id2;
                 if ((e2[0xb] & 1) == 0) {
                     dx = *(unsigned short *)(p + 0x44);
                     if (dx == 0) {
                         state = 5;
-                    } else if (FUN_0002e808(p, e2, g_a6c2[g_810e[dx + 0x19]])) {
+                    } else if (FUN_0002e808(p, e2, g_a6c2[g_entity_pool[dx + 0x19]])) {
                         state = 6;
                     } else {
                         state = 5;
@@ -155,7 +155,7 @@ void FUN_0002a288(void)
         break;
     case 4:
         g_52ff = 1;
-        e = g_810e + g_10b1a;
+        e = g_entity_pool + g_10b1a;
         if (g_e398 == 0 && n < 8) {
             switch (e[0x19]) {
             case 1:

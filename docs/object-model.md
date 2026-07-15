@@ -66,20 +66,24 @@ colour channels** (R/G/B ramps) — a strong guess for the next function in that
 
 ## Global data catalogue (what the fixed addresses hold)
 
-| symbol | type | role |
+Named globals carry a semantic name in `src/` (the address is the anchor, kept in
+`manifest/globals.json`; `mkdata.py` resolves name → address registry-first so the data
+image is unaffected). Rename more with `tools/rename_global.py`.
+
+| symbol (addr) | type | role |
 |--------|------|------|
-| `g_810e` | `u8[]` | pool A base − 2 (entity pool; index by id) |
-| `g_10e` | `u16[]` | 128×128 spatial-grid head table (cell → first entity id) |
-| `g_ab60`, `g_ad60` | `s16[256]` | direction → (dx, dy) vectors (256-step angle) |
-| `g_5368`, `g_5370` | `u8*` | the two screen/back buffers (blit targets) |
-| `g_5338` | `u8*` | table of 8-byte records (linked via `+6`, flag `+5`) |
-| `g_5350` | `u8*` | a `0x20`-stride record table (map/objective slots) |
-| `g_5358` | `int*` | map column-pointer table (built by 0x20d18) |
-| `g_10b5a/c/e` | s16 | shot cursor: level / y / x accumulators (collision walk) |
-| `g_10b22/24` | u16 | a cursor point (x, y) tested against record boxes |
-| `g_db2c` | `u8[]` | 0x19×0x10 minimap grid |
-| `g_11bec/g_11bed` | `u8[]` | paired flag/value tables (0x35ed8 clears, 0x35f28 writes) |
-| `g_a6fe`, `g_a686`, `g_b46a` | `u8[]` | byte translation / palette tables |
+| `g_entity_pool` (0x810e) | `u8[]` | pool A base − 2 (entity pool; index by id) |
+| `g_grid_heads` (0x10e) | `u16[]` | 128×128 spatial-grid head table (cell → first entity id) |
+| `g_dir_dx`, `g_dir_dy` (0xab60/0xad60) | `s16[256]` | direction → (dx, dy) vectors (256-step angle) |
+| `g_screen_buf`, `g_back_buf` (0x5368/0x5370) | `u8*` | the two screen/back buffers (blit targets) |
+| `g_rec8_table` (0x5338) | `u8*` | table of 8-byte records (linked via `+6`, flag `+5`) |
+| `g_objective_slots` (0x5350) | `u8*` | a `0x20`-stride record table (map/objective slots) |
+| `g_map_cols` (0x5358) | `int*` | map column-pointer table (built by 0x20d18) |
+| `g_shot_level/y/x` (0x10b5a/c/e) | s16 | shot cursor: level / y / x accumulators (collision walk) |
+| `g_cursor_x/y` (0x10b22/24) | u16 | a cursor point (x, y) tested against record boxes |
+| `g_minimap` (0xdb2c) | `u8[]` | 0x19×0x10 minimap grid |
+| `g_11bec/g_11bed` | `u8[]` | paired flag/value tables (0x35ed8 clears, 0x35f28 writes) — *unnamed* |
+| `g_a6fe`, `g_a686`, `g_b46a` | `u8[]` | byte translation / palette tables — *unnamed* |
 
 ## Coding-style conventions (for writing matchable C)
 

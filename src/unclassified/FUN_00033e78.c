@@ -3,22 +3,22 @@
  * ret at 0x33fad). Entry block, tile lookup tail, switch, and ALL EIGHT case
  * bodies are byte-identical; the residue is one block at obj 0x31..0x54:
  * row homed EDI vs target ECX (3 x 1-byte reg digits) and the slot formation
- * order -- ours `lea eax,[eax*4]; mov ecx,[g_5358](6B); movsx edi,z` vs target
- * `movsx edi,z; lea ecx,[eax*4]; mov eax,[g_5358](A1,5B)` (the +1 byte).
+ * order -- ours `lea eax,[eax*4]; mov ecx,[g_map_cols](6B); movsx edi,z` vs target
+ * `movsx edi,z; lea ecx,[eax*4]; mov eax,[g_map_cols](A1,5B)` (the +1 byte).
  * LEVERS THAT WORKED (kept): (1) ONE int local xs holds the 0x6000 modulo
  * divisor AND then x -- the call-crossing web forces ESI, giving the target's
  * be/f7fe divisor and clean `push esi` case bodies (with int-param helper
  * protos; short protos re-derive via movsx eax,cx); (2) volatile on the
- * g_5358 pointer decl keeps its load out of the far-hoist slot. WALL: the
+ * g_map_cols pointer decl keeps its load out of the far-hoist slot. WALL: the
  * row->ECX / scaled->lea-ECX / base->A1-EAX triangle is allocator-internal;
- * int-cast slot spellings (scaled + (int)g_5358) flip lea to ECX but break
+ * int-cast slot spellings (scaled + (int)g_map_cols) flip lea to ECX but break
  * the tile staging (xor edx/mov dl) and re-home xs -- same register-role
  * family as the parked twins FUN_00033b88/FUN_00033db8 (playbook 3).
  *
  * @ 0x33e78 (jump-table dispatcher, 6-entry table at manifest 0x33e60, jmp
  * literal 0x26718). Map-tile hit dispatcher: same map/tile lookup as
  * FUN_00033fb8 (row = (y % 0x6000)/256, col = (x & 0xff00)/256, slot =
- * g_5358 + col + row*128, tile byte at (z-1)/128 + *slot) but instead of a
+ * g_map_cols + col + row*128, tile byte at (z-1)/128 + *slot) but instead of a
  * passability bool it dispatches on the tile class g_10ac0[tile]:
  *   6 -> FUN_00033b88(x,y,z)   7 -> FUN_00033c38(x,y,z)
  *   8 -> FUN_00033cf8(x,y,z)   9 -> FUN_00033db8(x,y,z)
@@ -30,7 +30,7 @@
  * Ghidra mis-decodes the case heads: each true body starts one byte earlier with
  * PUSH EDI (0x57) at 0x33f08/0x33f17/0x33f26/0x33f35/0x33f44.
  */
-extern char **volatile g_5358;
+extern char **volatile g_map_cols;
 extern unsigned char *g_10ac0;
 
 int FUN_00033b88(int x, int y, int z);
@@ -52,7 +52,7 @@ unsigned short FUN_00033e78(short x, short y, short z)
     xs = x;
     col = (xs & 0xff00) / 256;
     index = col + row * 128;
-    tile = *(unsigned char *)((z - 1) / 128 + (int)*(g_5358 + index));
+    tile = *(unsigned char *)((z - 1) / 128 + (int)*(g_map_cols + index));
     switch (g_10ac0[tile]) {
     case 6:
         return FUN_00033b88(xs, y, z);

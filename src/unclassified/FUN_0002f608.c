@@ -12,14 +12,14 @@
  * EDX for the p+6 field (target `mov dx,[ebx+6]; sub eax,edx` reg-reg) where our
  * EAX-id gives `sub ax,[ebx+6]` reg-mem, and swaps the dx/dy cache regs ESI<->EDI
  * (so the arg pushes read 56 57 vs 57 56); this also makes ours 154B vs 156B.
- * The g_810e+id materialization, both guards, all globals, all field offsets and
+ * The g_entity_pool+id materialization, both guards, all globals, all field offsets and
  * arithmetic are correct. Tried: node materialization, stmt/decl reorder,
  * nested-if vs early-return, inline-vs-named-temp, recipes -oneatx/-or/-ot/-oe/
  * -os/-ox/-oh/-oa/-ob/-oi/-od/-op and -4s/-5s/-6s -- all give byte-identical
  * output; id->EAX is deterministic and not source-reachable.
  */
 
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern unsigned char FUN_0004d221(int a, int b);
 extern short FUN_00014c58(int a, int b);
 extern void FUN_00037738(unsigned char *p);
@@ -35,7 +35,7 @@ void FUN_0002f608(unsigned char *p, int x, int y, int z)
     id = *(unsigned short *)(p + 0x44);
     if (id == 0)
         return;
-    node = g_810e + id;
+    node = g_entity_pool + id;
     if (*(short *)(node + 0x14) < 0)
         return;
 

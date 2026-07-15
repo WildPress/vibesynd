@@ -2,7 +2,7 @@
    353/353, all fixup sites aligned. Register-role wall (see below).
 
    Semantics: find a live ped (pool-A type 1) near (x,y,z). Scans the 3x3
-   g_10e grid cells whose top-left is the tile of (x - rx/2 - 0x100,
+   g_grid_heads grid cells whose top-left is the tile of (x - rx/2 - 0x100,
    y - ry/2 - 0x100), walking each cell's id chain (bounded at 0x400 nodes).
    A node matches when type[0x18]==1, flag bit (node[0xb] & type) clear,
    (link word +0x1c & mask) != 0, and its coords fall inside the box
@@ -29,8 +29,8 @@
    test [eax+0xb],dl instead of a zero-extended dword test; goto-style
    negative guards (direct jl/jg senses) instead of an && chain; named t
    for the type byte; i++/id-reload/bound-check order in the chain walk. */
-extern unsigned short g_10e[];
-extern unsigned char g_810e[];
+extern unsigned short g_grid_heads[];
+extern unsigned char g_entity_pool[];
 
 unsigned char *FUN_000128b8(int unused, unsigned short mask, short x, short y,
                             short z, int rx, int ry, int rz)
@@ -48,7 +48,7 @@ unsigned char *FUN_000128b8(int unused, unsigned short mask, short x, short y,
 
     hry = ry / 2;
     cy = y - hry;
-    p = g_10e + ((((cy - 0x100) & 0x7f00) >> 1) | (((x - rx / 2 - 0x100) >> 8) & 0x7f));
+    p = g_grid_heads + ((((cy - 0x100) & 0x7f00) >> 1) | (((x - rx / 2 - 0x100) >> 8) & 0x7f));
     hrx = rx / 2;
     for (iy = 0; iy < 3; iy++) {
         for (ix = 0; ix < 3; ix++) {
@@ -56,7 +56,7 @@ unsigned char *FUN_000128b8(int unused, unsigned short mask, short x, short y,
             id = *p;
             if (id != 0) {
                 do {
-                    node = g_810e + id;
+                    node = g_entity_pool + id;
                     t = node[0x18];
                     if (t != 1)
                         goto skip;

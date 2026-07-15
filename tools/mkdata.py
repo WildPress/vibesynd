@@ -32,11 +32,29 @@ OBJ4_BASE = 0x14a60
 
 
 def collect_globals():
-    addrs = set()
+    """Every g_* referenced in src -> its data-image address. Resolution is REGISTRY-FIRST:
+    a semantic name (g_screen_buf) gets its address from manifest/globals.json; a bare g_<hex>
+    name gets it from the hex. So globals can be renamed for readability without breaking the
+    data image (the address is the anchor, not the name -- mirrors names.json for functions)."""
+    reg = {}
+    try:
+        reg = json.load(open("manifest/globals.json"))
+    except (FileNotFoundError, ValueError):
+        pass
+    name2addr = {}
     for p in glob.glob("src/**/*.c", recursive=True):
-        for m in re.findall(r"\bg_([0-9a-fA-F]+)\b", open(p, encoding="utf-8", errors="replace").read()):
-            addrs.add(int(m, 16))
-    return sorted(addrs)
+        txt = open(p, encoding="utf-8", errors="replace").read()
+        for tok in re.findall(r"\bg_[0-9A-Za-z_]+\b", txt):
+            if tok in name2addr:
+                continue
+            if tok in reg:                                   # renamed global: addr from registry
+                name2addr[tok] = int(reg[tok]["addr"], 16)
+            else:
+                m = re.fullmatch(r"g_([0-9a-fA-F]+)", tok)   # bare g_<hex>: addr from the hex
+                if m:
+                    name2addr[tok] = int(m.group(1), 16)
+                # else: unknown semantic name not in registry -> skip (would be link-stubbed)
+    return name2addr
 
 
 def rec(rtype, body):
@@ -56,7 +74,8 @@ def pstr(s):
 
 def main():
     reloc = "--reloc-ptrs" in sys.argv
-    addrs = collect_globals()
+    globs = collect_globals()                # name -> addr
+    addrs = sorted(set(globs.values()))
     maxa = addrs[-1]
     seglen = maxa + 0x1000                    # room for the highest global's object
     d2 = bytearray(open(OBJ2, "rb").read())
@@ -112,8 +131,8 @@ def main():
         if ent:
             out.extend(rec(0x91, idx(1) + idx(1) + bytes(ent)))
             ent = bytearray()
-    for a in addrs:
-        e = pstr("g_%x" % a) + struct.pack("<I", a) + idx(0)
+    for name, a in sorted(globs.items(), key=lambda kv: kv[1]):
+        e = pstr(name) + struct.pack("<I", a) + idx(0)   # PUBDEF uses the SOURCE name (semantic or hex)
         if len(ent) + len(e) > 1000:
             flush_pub()
         ent += e

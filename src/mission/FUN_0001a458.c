@@ -30,7 +30,7 @@
  *
  * Sprite-frame selector: switch on entity type b[0x19] (0..0x2c), compute a
  * frame number from anim state word b+0xe, facing byte b+0x1a and (for armed
- * types) the equipped item's type (node = g_810e + word b+0x44, guarded
+ * types) the equipped item's type (node = g_entity_pool + word b+0x44, guarded
  * against the pool bound g_11670); then if frame != cached word b+0x12,
  * store sprite g_5348[frame] to b+0x10 and cache frame at b+0x12.
  *
@@ -45,7 +45,7 @@
  *   0x2b  -> N (tables a636/a596)                    0x2c -> 0xec
  *   0x2a, default -> frame unchanged (uninitialised)
  */
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern unsigned char g_11670;
 extern unsigned short *g_5348;
 extern unsigned short g_a546[];
@@ -69,7 +69,7 @@ void FUN_0001a458(unsigned char *b)
         if (anim != 1)
             goto Aelse;
         {
-            unsigned char *node = g_810e + *(unsigned short *)(b + 0x44);
+            unsigned char *node = g_entity_pool + *(unsigned short *)(b + 0x44);
             if (node >= &g_11670)
                 dtype = node[0x19];
             frame = g_a5e6[dtype] + *(unsigned short *)(b + 0xe)
@@ -78,7 +78,7 @@ void FUN_0001a458(unsigned char *b)
         break;
     Aelse:
         {
-            unsigned char *node = g_810e + *(unsigned short *)(b + 0x44);
+            unsigned char *node = g_entity_pool + *(unsigned short *)(b + 0x44);
             if (node >= &g_11670)
                 dtype = node[0x19];
             frame = *(unsigned short *)(dtype * 2 + (char *)g_a546)
@@ -92,13 +92,13 @@ void FUN_0001a458(unsigned char *b)
     {
         unsigned short dtype = 0;
         if (*(unsigned short *)(b + 0xe) == 1) {
-            unsigned char *node = g_810e + *(unsigned short *)(b + 0x44);
+            unsigned char *node = g_entity_pool + *(unsigned short *)(b + 0x44);
             if (node >= &g_11670)
                 dtype = node[0x19];
             frame = *(unsigned short *)(b + 0xe) + g_a60e[dtype]
                   + ((b[0x1a] + 0x10) / 32 & 7);
         } else {
-            unsigned char *node = g_810e + *(unsigned short *)(b + 0x44);
+            unsigned char *node = g_entity_pool + *(unsigned short *)(b + 0x44);
             if (node >= &g_11670)
                 dtype = node[0x19];
             frame = *(unsigned short *)(b + 0xe) + g_a56e[dtype]
@@ -174,7 +174,7 @@ void FUN_0001a458(unsigned char *b)
         if (*(unsigned short *)(b + 0xe) != 1)
             goto Nelse;
         {
-            unsigned char *node = g_810e + *(unsigned short *)(b + 0x44);
+            unsigned char *node = g_entity_pool + *(unsigned short *)(b + 0x44);
             if (node >= &g_11670)
                 dtype = node[0x19];
             frame = g_a636[dtype] + *(unsigned short *)(b + 0xe)
@@ -183,7 +183,7 @@ void FUN_0001a458(unsigned char *b)
         break;
     Nelse:
         {
-            unsigned char *node = g_810e + *(unsigned short *)(b + 0x44);
+            unsigned char *node = g_entity_pool + *(unsigned short *)(b + 0x44);
             if (node >= &g_11670)
                 dtype = node[0x19];
             frame = *(unsigned short *)(b + 0xe)

@@ -52,7 +52,7 @@ extern short          g_10b16;      /* current player index */
 extern unsigned char  g_e551[];     /* player record +0xb5: squad first-agent slot */
 extern signed char    g_e552[];     /* player record +0xb6: reference-entity delta */
 extern unsigned char  g_8110[];     /* pool A: entity record k at +k*0x5c */
-extern unsigned char  g_810e[];     /* pool A base-2: node = g_810e + id */
+extern unsigned char  g_entity_pool[];     /* pool A base-2: node = g_entity_pool + id */
 extern unsigned char  g_5114[];     /* agent HUD panel table, stride 0x12: x@+0,y@+2,flag@+8 */
 extern unsigned char  g_df48[];     /* per-agent 11-byte HUD value cache */
 extern unsigned char  g_df76[];     /* aux-bar value cache (8 bytes) */
@@ -162,7 +162,7 @@ void FUN_0002c578(void)
 
             if (i >= 8)
                 break;
-            node = g_810e + id;
+            node = g_entity_pool + id;
             frame = node[0x19];
             w = g_a73a[frame];
             if (g_a69a[frame] != 0) {

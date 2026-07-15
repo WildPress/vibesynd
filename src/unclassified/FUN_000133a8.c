@@ -31,11 +31,11 @@
  *   code physical case order: 0,1,2,4,6,10,9,8,11,12 (= source order).
  *
  * Model: p1 = command/state struct; p4 = anim-request struct (ushort*);
- * hnd = p1[0xc] (pointer, re-read); cur = g_810e + hnd[0x3a] (pool-A node,
+ * hnd = p1[0xc] (pointer, re-read); cur = g_entity_pool + hnd[0x3a] (pool-A node,
  * cached in a slot); rec = g_1beb2 + p1[0]*15 (15-byte record); tnode =
- * g_810e + p1[0xa] (pool-A node). See docs/object-model.md.
+ * g_entity_pool + p1[0xa] (pool-A node). See docs/object-model.md.
  */
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern unsigned char g_1beb2[];
 extern unsigned char g_c358[];
 extern unsigned short g_a73a[];
@@ -72,7 +72,7 @@ void FUN_000133a8(unsigned char *param_1, unsigned char param_2, unsigned char p
         return;
     }
     rec = g_1beb2 + *param_1 * 0xf;
-    cur = g_810e + *(unsigned short *)(hnd + 0x3a);
+    cur = g_entity_pool + *(unsigned short *)(hnd + 0x3a);
     *(short *)(cur + 0x14) = (short)((int)(unsigned short)g_a73a[cur[0x19]] / 4);
     *param_4 = (unsigned short)param_2;
     *((unsigned char *)param_4 + 0xd) = 6;
@@ -104,7 +104,7 @@ void FUN_000133a8(unsigned char *param_1, unsigned char param_2, unsigned char p
         return;
 
 dispatch:
-    tnode = g_810e + *(unsigned short *)(param_1 + 0xa);
+    tnode = g_entity_pool + *(unsigned short *)(param_1 + 0xa);
     if (param_1[3] > 0xc)
         goto tail;
     switch (param_1[3]) {

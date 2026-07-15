@@ -20,14 +20,14 @@
  * 40B each at row+0x69: {word ->node+0x14, word ->node+0x3c, byte 1-based
  * slot no, 8 x (short count, ushort kind) pairs at +7}. For each present
  * entry: free the node's carried-item chain (FUN_269b8 each, link +0x1c,
- * base g_810e), reset node fields (+0x3a=0, +0x3c/+0x14 from template,
+ * base g_entity_pool), reset node fields (+0x3a=0, +0x3c/+0x14 from template,
  * +0x1c = mode|0x400, +0xa &= ~0x109, +0x19=0, +0xc=0), set size bytes
  * +0x55/+0x56 = 0x28/0x30/0x38/0x40 by (node[0x3c]&6)>>1 (4-entry jump
  * table at 0x14c70), then create up to 8 items FUN_226a8(node, kind, count)
  * storing the results in g_dcbc[j][d] (dword [j*0x20 + d*4]). Finally,
  * unless mode == 0x1002, every one of the 8 slots NOT touched above is
  * fully freed (chain + node) and zeroed (FUN_4d199(node,0,0x5c)). */
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern unsigned char g_8110[];
 extern unsigned char g_dcbc[];
 extern unsigned char g_e551[];
@@ -59,7 +59,7 @@ void FUN_000223c8(unsigned short row, unsigned short mode)
             used[*(unsigned char *)(g_e551 + row * 1047 + j * 40 + 0x6f) - 1] = 1;
             id = *(unsigned short *)(node + 0x3a);
             while (id != 0) {
-                p = g_810e + id;
+                p = g_entity_pool + id;
                 id = *(unsigned short *)(p + 0x1c);
                 FUN_000269b8(p);
             }
@@ -105,7 +105,7 @@ void FUN_000223c8(unsigned short row, unsigned short mode)
                 node = g_8110 + (d + *(unsigned char *)(g_e551 + row * 1047)) * 0x5c;
                 id = *(unsigned short *)(node + 0x3a);
                 while (id != 0) {
-                    p = g_810e + id;
+                    p = g_entity_pool + id;
                     id = *(unsigned short *)(p + 0x1c);
                     FUN_000269b8(p);
                 }

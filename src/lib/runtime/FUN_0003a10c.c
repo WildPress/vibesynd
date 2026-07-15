@@ -2,8 +2,8 @@
    Framed hand-asm sibling of 0x3a033 (its own PUSH EBP; MOV EBP,ESP; ADD ESP,-4 prologue,
    LEAVE/RET epilogue), a simpler byte-oriented variant. Same header read from
    g_bdd8/g_bdda (dims into [ebp-2]/[ebp-4]) and g_bddc (height-6), same setup call
-   0x3a7c4(g_bdd0, g_5370, height-6), then walks the control stream at g_5370 into surface
-   g_5368: per row, the signed control byte DL selects add-run vs subtract-run of the
+   0x3a7c4(g_bdd0, g_back_buf, height-6), then walks the control stream at g_back_buf into surface
+   g_screen_buf: per row, the signed control byte DL selects add-run vs subtract-run of the
    accumulator CX (sign-extended via MOV AH,0xff / SUB AX,AX) and drives two byte-copy
    directions (INC/DEC ESI), decrementing the row counter BX ([ebp-4]) until zero.
    All GP regs + EBP are hand-asm scratch (EBP balanced by the body's own PUSH/LEAVE),

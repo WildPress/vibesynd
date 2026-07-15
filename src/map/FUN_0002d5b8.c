@@ -1,7 +1,7 @@
 /* NEAR-MISS @ 0x2d5b8 -- cont.21 re-attack closed MOST of the old wall: code
  * tail now 259/259 length (was 264), entry + guards + switch + calls + tail all
- * byte-identical after: g_5358 declared as POINTER VARIABLE (mov edx,[g_5358]
- * load, not an immediate — this alone flipped the f/w ESI/EDI roles into
+ * byte-identical after: g_map_cols declared as POINTER VARIABLE (mov edx,[g_map_cols]
+ * load, not an immediate ï¿½ this alone flipped the f/w ESI/EDI roles into
  * place), slot-pointer local + (int)*slot cast (gives the in-place
  * `add eax,[ecx]` deref), ternary-merge for the fa18/fa88 result (single
  * `sub eax,esi`), volatile g_e128 + named re-read temp for the tail compares,
@@ -14,9 +14,9 @@
  * ORIGINAL NOTES: 259 vs 264 code bytes; JUMP TABLE FULLY RECOVERED
  * (this is the payoff of the fixed tools/lefix.py). The 16-entry dispatcher at
  * manifest 0x2d574 (obj1:+0x1fe2c) maps tile type -> {6,7,8,9,0xb,0xf}=blocked.
- * The whole body is byte-identical through the switch EXCEPT the g_5358 column
+ * The whole body is byte-identical through the switch EXCEPT the g_map_cols column
  * lookup, which is the SAME register-role wall that parked 0x28ec8/0x33fb8:
- *   (1) target keeps &g_5358[idx] as a slot address and derefs in place
+ *   (1) target keeps &g_map_cols[idx] as a slot address and derefs in place
  *       (lea ecx,[edx+eax]; ... add eax,[ecx]); ours loads the pointer eagerly
  *       (mov ecx,[edx+eax]; add eax,ecx).
  *   (2) target reads the tile index into a PRE-CLEARED edx (xor edx; mov dl)
@@ -27,7 +27,7 @@
  *
    0x2d5b8 -- path/passability probe at (x,y,w) for object p. Unless p is
  * flagged (+0x1c bit 1 / +0x1d bit 3), looks up the tile type under p
- * (column table g_5358, level (w8-1)/0x80, translated through the g_10ac0
+ * (column table g_map_cols, level (w8-1)/0x80, translated through the g_10ac0
  * pointer table) and switches on it: types {6,7,8,9,0xb,0xf} are blocked
  * (case map recovered via tools/lefix.py from the 16-entry jump table at
  * manifest 0x2d574 -- obj1:+0x1fe2c). Blocked -> 0xfa18(x,y,w), open ->
@@ -35,7 +35,7 @@
  * into g_e128 and returns 1 iff it is within [-0x40, 0x40].
  * Recipe: -4s -oneatx -zp8 -s -zq
  */
-extern char **g_5358;
+extern char **g_map_cols;
 extern unsigned char *g_10ac0;
 extern volatile short g_e128;
 extern int FUN_LE_0000fa18(int a, int b, int c);
@@ -49,7 +49,7 @@ int FUN_0002d5b8(short x, short y, int w, unsigned char *p)
     char **slot;
 
     if (!(p[0x1c] & 2) && !(p[0x1d] & 8)) {
-        slot = g_5358 + ((*(short *)(p + 6) % 0x6000 / 0x100 << 7)
+        slot = g_map_cols + ((*(short *)(p + 6) % 0x6000 / 0x100 << 7)
                         + (*(short *)(p + 4) & 0xff00) / 0x100);
         switch (g_10ac0[*(unsigned char *)((int)*slot
                                            + (*(short *)(p + 8) - 1) / 0x80)]) {

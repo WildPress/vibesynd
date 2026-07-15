@@ -7,7 +7,7 @@
    uncached; our -oneatx build (relaxed alias) uses EDX (3 pushes) and CSE-merges the global
    loads, so the arg stack offsets shift by +4. Not reachable from C under the required recipe.
    Each record is 5 ushorts [val,x,y,arg,next]; emit FUN_0004a63a for nodes with val+g_5314>g_5314. */
-extern unsigned char  *g_5338;
+extern unsigned char  *g_rec8_table;
 extern unsigned short *g_5340;
 extern unsigned int    g_5314;
 extern void FUN_0004a63a(int, int, unsigned int, unsigned int);
@@ -16,7 +16,7 @@ void FUN_0001b858(unsigned short param_1, short param_2, short param_3)
 {
     unsigned short *p;
 
-    p = g_5340 + (unsigned)*(unsigned short *)(g_5338 + (unsigned)param_1 * 8) * 5;
+    p = g_5340 + (unsigned)*(unsigned short *)(g_rec8_table + (unsigned)param_1 * 8) * 5;
     if (g_5340 < p)
     do {
         if (*p + g_5314 > g_5314)

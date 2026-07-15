@@ -13,13 +13,13 @@
    Walk 6 grid columns starting at (param_1 - 0x100), stepping +0x100 per row.
    The row part (param_2 & 0x7f00) >> 1 is loop-invariant and hoisted into a
    local; the col part ((short)step >> 8) & 0x7f varies per row. Walk the object
-   chain rooted at g_10e[idx] (node = g_810e + id, next-link at node+0). Return 1
+   chain rooted at g_grid_heads[idx] (node = g_entity_pool + id, next-link at node+0). Return 1
    for the first node that is type 2 (node[0x18]==2), on the same level as param_3
    (high byte of node[8] == high byte of param_3), has a secondary link
    node[0x1c]!=0, faces 0xc0 (node[0x1a]==0xc0), and whose linked node has a
    nonzero value byte at +0x54. Return 0 after 6 rows with no hit. */
-extern unsigned char g_810e[];
-extern unsigned short g_10e[];
+extern unsigned char g_entity_pool[];
+extern unsigned short g_grid_heads[];
 
 int FUN_00033b88(int param_1, int param_2, short param_3)
 {
@@ -31,14 +31,14 @@ int FUN_00033b88(int param_1, int param_2, short param_3)
     hi = param_2 & 0x7f00;
     for (row = 0; row < 6; row++, step += 0x100) {
         unsigned short head =
-            g_10e[(((short)step >> 8) & 0x7f) | ((short)hi >> 1)];
+            g_grid_heads[(((short)step >> 8) & 0x7f) | ((short)hi >> 1)];
         while (head != 0) {
-            unsigned char *node = g_810e + head;
+            unsigned char *node = g_entity_pool + head;
             if (node[0x18] == 2 &&
                 (0xff00 & *(short *)(node + 8)) == (param_3 & 0xff00) &&
                 *(unsigned short *)(node + 0x1c) != 0 &&
                 node[0x1a] == 0xc0) {
-                unsigned char *n2 = g_810e + *(unsigned short *)(node + 0x1c);
+                unsigned char *n2 = g_entity_pool + *(unsigned short *)(node + 0x1c);
                 if (n2[0x54] > 0)
                     return 1;
             }

@@ -18,7 +18,7 @@
  * ped = g_8110 + slot*0x5c. If ped type is 0x18/0x19, or (ped flag +0xb bit 0
  * set and g_df52[b*0xb] < 2), reset the record table via FUN_0002c468(); if
  * type == 0xa refresh via FUN_0002c4e8(). Then walk the carried-item chain
- * (head id at ped+0x3a, next at item+0x1c, item = g_810e + id), advancing a
+ * (head id at ped+0x3a, next at item+0x1c, item = g_entity_pool + id), advancing a
  * record cursor (0x5256, stride 0x12) per item, and for each item type 1..0x13
  * feed FUN_0002d038(ped, rec, item, sprite):
  *   1..0xc -> 0x4b + (t-1)*4;  0xd/0xe/0xf -> 0x83;  0x10 -> 0x87;
@@ -28,7 +28,7 @@ extern short g_10b16;
 extern unsigned char g_e551[];
 extern unsigned char g_df52[];
 extern unsigned char g_8110[];
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern short g_5256[];
 
 void FUN_0002c468(void);
@@ -55,7 +55,7 @@ void FUN_0002cf28(void)
     rec = g_5256;
     if (id != 0) {
         do {
-            item = g_810e + id;
+            item = g_entity_pool + id;
             type = item[0x19];
             switch (type) {
             case 1:

@@ -3,7 +3,7 @@
  * whether/where a wall/turn was hit.
  *
  * setup: dir = p2[0x1a] (facing); hit = -1 (turn tracker). Phase-1 loop marches
- * the shot cursor (g_10b5e x, g_10b5c y) via the direction tables g_ab60/g_ad60
+ * the shot cursor (g_shot_x x, g_shot_y y) via the direction tables g_dir_dx/g_dir_dy
  * (SHL 8 = *0x100, >>8), re-picking the passable direction each step with
  * FUN_34608. On the first turn (dir != orig) it records hit = i. For i<3 it
  * queries collision FUN_34088; on a hit it damages p (type-2 node -> FUN_34118,
@@ -17,35 +17,35 @@
  * phase-2 continuation head, and the entire tail all match byte-for-byte. Levers
  * that landed: FUN_34608 param declared `short` -> the `xor;mov al;cwde` arg
  * widen; the tail floor compare written `p[0x54] < p[0x55]/2` -> target's
- * `cmp edx,eax; jge` orientation; and `volatile short g_10b5c` to stop the
+ * `cmp edx,eax; jge` orientation; and `volatile short g_shot_y` to stop the
  * phase-1 scheduler interleaving the two marches.
  *
  * WALL (loop-split scheduling tie): the target emitted TWO byte-identical physical
  * copies of the march (phase-1 with collision, phase-2 continuation after the
  * break). In BOTH copies the y-march is the clean per-statement schedule
- * `shl edx,8; movsx eax,g_10b5c; sar edx,8` (the g_10b5c load hoisted into the
+ * `shl edx,8; movsx eax,g_shot_y; sar edx,8` (the g_shot_y load hoisted into the
  * shl/sar latency gap). Our phase-2 reproduces this with a plain non-volatile
  * `+=`; but phase-1's trailing FUN_34088 collision CALL frees EAX/ECX/EDX and lets
- * -oneatx interleave the two marches -- it loads g_ad60 straight into EDX
+ * -oneatx interleave the two marches -- it loads g_dir_dy straight into EDX
  * (`movsx edx,[edx*2+..]`, 8 B) instead of `movsx eax; mov edx,eax` (10 B), 2 B
- * short. `volatile g_10b5c` blocks that interleave (restores exact length + the
- * `mov edx,eax` form) but, being a hard scheduling barrier, pins the g_10b5c load
+ * short. `volatile g_shot_y` blocks that interleave (restores exact length + the
+ * `mov edx,eax` form) but, being a hard scheduling barrier, pins the g_shot_y load
  * to program order AFTER `sar edx,8` in BOTH copies -- one instruction late vs the
- * target's gap-fill. So the g_10b5c load is either hoisted-but-interleaved (plain
+ * target's gap-fill. So the g_shot_y load is either hoisted-but-interleaved (plain
  * +=, phase-2 exact / phase-1 interleaved, 451 B) or barrier-pinned-late (volatile,
  * 453 B both copies 1 instr off). No source form gives BOTH the gap hoist AND no
  * interleave, because the gap-fill needs a reorderable (non-volatile) load and the
  * anti-interleave needs a barrier (volatile) -- mutually exclusive here. Tried:
  * named delta temp (word-arith regression), int/short split temps (spill, 461 B),
  * volatile-alias in phase-1 only (interleave returns -- the barrier needs the SAME
- * symbol volatile in both copies to interact with the call's g_10b5c read), -or
+ * symbol volatile in both copies to interact with the call's g_shot_y read), -or
  * recipe (loop layout diverges at 0x7). Genuine phase-context scheduling wall of
  * the "two loop copies need opposite decisions" class (cf. FUN_34608 cross-jump).
  */
-extern volatile short g_10b5c;
-extern short g_10b5e;
-extern short g_ab60[];
-extern short g_ad60[];
+extern volatile short g_shot_y;
+extern short g_shot_x;
+extern short g_dir_dx[];
+extern short g_dir_dy[];
 extern unsigned short FUN_00034608(short dir);
 extern unsigned char *FUN_00034088(void);
 extern void FUN_00034118(unsigned char *dst, unsigned char *src, unsigned short thr);
@@ -63,8 +63,8 @@ void FUN_00034198(unsigned char *p2, unsigned char *p, unsigned short count)
         dir = (unsigned char)FUN_00034608(dir);
         if (dir != orig && hit == -1)
             hit = i;
-        g_10b5e += g_ab60[dir] * 0x100 >> 8;
-        g_10b5c += g_ad60[dir] * 0x100 >> 8;
+        g_shot_x += g_dir_dx[dir] * 0x100 >> 8;
+        g_shot_y += g_dir_dy[dir] * 0x100 >> 8;
         if (i < 3) {
             node = FUN_00034088();
             if (node != 0) {
@@ -91,8 +91,8 @@ void FUN_00034198(unsigned char *p2, unsigned char *p, unsigned short count)
         dir = (unsigned char)FUN_00034608(dir);
         if (dir != orig && hit == -1)
             hit = i;
-        g_10b5e += g_ab60[dir] * 0x100 >> 8;
-        g_10b5c += g_ad60[dir] * 0x100 >> 8;
+        g_shot_x += g_dir_dx[dir] * 0x100 >> 8;
+        g_shot_y += g_dir_dy[dir] * 0x100 >> 8;
     }
 
     if (hit >= count)

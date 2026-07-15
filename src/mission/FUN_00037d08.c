@@ -1,7 +1,7 @@
 /* FUN_00037d08 @ 0x37d08 (jump-table dispatcher, 19-entry table at 0x2a568).
  * Twin of FUN_00037ad8 with an extra "wanted type" argument: walk the node's
  * carried-item chain (head id at node+0x3a, next link at item+0x1c,
- * item = g_810e + id) and switch on the type byte item[0x19]. Weapon types
+ * item = g_entity_pool + id) and switch on the type byte item[0x19]. Weapon types
  * 2..9 keep the twin's rank/range best-weapon logic, but every case also
  * checks the item against the wanted type: an exact-type item with non-
  * negative +0x14 word is remembered separately and wins outright. Types
@@ -9,7 +9,7 @@
  * the +0x14 word be at least 10% of the per-type word at g_a73a[type].
  * Returns the exact match's id if any, else the best weapon's id, else the
  * equipped item id at node+0x44 (0 if that item's +0x14 word is negative). */
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern unsigned short g_a73a[];
 
 unsigned short FUN_00037d08(unsigned char *node, unsigned short dist, unsigned char type)
@@ -31,7 +31,7 @@ unsigned short FUN_00037d08(unsigned char *node, unsigned short dist, unsigned c
         for (;;) {
             if (id == 0)
                 break;
-            item = g_810e + id;
+            item = g_entity_pool + id;
             switch (item[0x19]) {
             case 2:
                 if (rank <= 4 && *(short *)(item + 0x14) >= 0 && dist <= 0x500) {
@@ -154,12 +154,12 @@ unsigned short FUN_00037d08(unsigned char *node, unsigned short dist, unsigned c
         }
     }
     if (exact != 0)
-        return (unsigned short)(exact - g_810e);
+        return (unsigned short)(exact - g_entity_pool);
     if (found == 0) {
-        q = g_810e + *(unsigned short *)(node + 0x44);
+        q = g_entity_pool + *(unsigned short *)(node + 0x44);
         if (*(short *)(q + 0x14) < 0)
             return 0;
         return *(unsigned short *)(node + 0x44);
     }
-    return (unsigned short)(found - g_810e);
+    return (unsigned short)(found - g_entity_pool);
 }

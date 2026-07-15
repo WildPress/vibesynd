@@ -21,7 +21,7 @@
  * op0b/2b, op11/31, op16/36, op12/32, op13/33, op17/37. WEAKEST (structural,
  * not byte-verified): op10 and op30 -- the RNG projectile-scatter bodies
  * (FUN_00035f28 seed, FUN_0000e568 rand, FUN_00037ff8 tracer, two FUN_00022b38
- * spawns per shot using g_ad60 sin / g_ab60 cos scatter). Their interleaved
+ * spawns per shot using g_dir_dy sin / g_dir_dx cos scatter). Their interleaved
  * e568-call arg overlap and heavy [esp+N] slot reuse are not slot-exact; being
  * mis-sized they drift the tail (op11..op17). NEXT PASS: this is a genuine
  * allocator wall (park), but op10/op30 could be tightened to the target's slot
@@ -43,7 +43,7 @@
 extern unsigned char g_105d4[];
 extern unsigned char g_e49c[];
 extern unsigned char g_8110[];
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern short g_10b0c;
 extern short g_10b16;
 extern short g_10b2e;
@@ -52,9 +52,9 @@ extern unsigned char g_e4ab[];
 extern unsigned char g_10afc;
 extern unsigned char g_10b45;
 extern unsigned char *g_10ae0;
-extern char **g_5358;
-extern short g_ab60[];
-extern short g_ad60[];
+extern char **g_map_cols;
+extern short g_dir_dx[];
+extern short g_dir_dy[];
 
 extern void FUN_000229f8(int a, int b);
 extern void FUN_000223c8(unsigned short row, unsigned short mode);
@@ -229,25 +229,25 @@ void FUN_00023158(unsigned int idx)
 
     case 0x07: {
         unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
-        unsigned char *q = g_810e + *(unsigned short *)rec;
+        unsigned char *q = g_entity_pool + *(unsigned short *)rec;
         node[0x46] = 0;
-        *(unsigned short *)(node + 0x44) = (unsigned short)(q - g_810e);
+        *(unsigned short *)(node + 0x44) = (unsigned short)(q - g_entity_pool);
         break;
     }
 
     case 0x27: {
-        unsigned char *carried = g_810e + *(unsigned short *)rec;
+        unsigned char *carried = g_entity_pool + *(unsigned short *)rec;
         unsigned char *node = g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         unsigned char *p;
         node[0x46] = 0;
-        *(unsigned short *)(node + 0x44) = (unsigned short)(carried - g_810e);
+        *(unsigned short *)(node + 0x44) = (unsigned short)(carried - g_entity_pool);
         for (p = g_8110 + tpl[0xb5] * 0x5c;
              p < g_8110 + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if (p[0x1d] & 4) {
                 if (p != g_8110 + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c) {
-                    unsigned char *nn = g_810e + FUN_00037d08(p, 0, carried[0x19]);
+                    unsigned char *nn = g_entity_pool + FUN_00037d08(p, 0, carried[0x19]);
                     if (nn[0x19] == carried[0x19])
-                        *(unsigned short *)(p + 0x44) = (unsigned short)(nn - g_810e);
+                        *(unsigned short *)(p + 0x44) = (unsigned short)(nn - g_entity_pool);
                     p[0x46] = 0;
                 }
             }
@@ -260,7 +260,7 @@ void FUN_00023158(unsigned int idx)
         unsigned char *p, *end;
         unsigned short link = *(unsigned short *)(node + 0x44);
         if (link != 0) {
-            unsigned char *carried = g_810e + link;
+            unsigned char *carried = g_entity_pool + link;
             if ((unsigned short)FUN_00023038(node) &&
                 *(short *)(carried + 0x14) >= 0)
                 FUN_0002f608(node, *(short *)rec, *(short *)(rec + 2),
@@ -273,7 +273,7 @@ void FUN_00023158(unsigned int idx)
             p = g_8110;
             do {
                 if (*(unsigned short *)(p + 0x20) ==
-                    (unsigned short)(node - g_810e))
+                    (unsigned short)(node - g_entity_pool))
                     FUN_0002f608(p, *(short *)rec, *(short *)(rec + 2),
                                  *(short *)(rec + 4));
                 p += 0x5c;
@@ -286,12 +286,12 @@ void FUN_00023158(unsigned int idx)
         unsigned char *node;
         int cur_id;
         node = g_8110 + tpl[0xb5] * 0x5c;
-        cur_id = node - g_810e;
+        cur_id = node - g_entity_pool;
         for (; node < g_8110 + (tpl[0xb5] + 4) * 0x5c;
              node += 0x5c, cur_id += 0x5c) {
             unsigned short link = *(unsigned short *)(node + 0x44);
             if (link != 0) {
-                unsigned char *carried = g_810e + link;
+                unsigned char *carried = g_entity_pool + link;
                 if ((node[0x1d] & 4) && *(short *)(carried + 0x14) >= 0 &&
                     (unsigned short)FUN_00023038(node))
                     FUN_0002f608(node, *(short *)rec, *(short *)(rec + 2),
@@ -376,7 +376,7 @@ void FUN_00023158(unsigned int idx)
             goto consume;
         col = (((*(short *)(node + 6) % 0x6000) / 0x100) << 7)
               + ((*(short *)(node + 4) & 0xff00) / 0x100);
-        if ((unsigned char)*(g_5358[col] + *(short *)(node + 8) / 0x80) == 2)
+        if ((unsigned char)*(g_map_cols[col] + *(short *)(node + 8) / 0x80) == 2)
             goto consume;
         node[0x19] = 7;
         node[0x58] = 7;
@@ -391,7 +391,7 @@ void FUN_00023158(unsigned int idx)
             if ((p[0x1d] & 4) && *(unsigned short *)(p + 0x24) != 0) {
                 int col = (((*(short *)(p + 6) % 0x6000) / 0x100) << 7)
                           + ((*(short *)(p + 4) & 0xff00) / 0x100);
-                if ((unsigned char)*(g_5358[col] + *(short *)(p + 8) / 0x80) != 2) {
+                if ((unsigned char)*(g_map_cols[col] + *(short *)(p + 8) / 0x80) != 2) {
                     p[0x19] = 7;
                     p[0x58] = 7;
                     p[0xa] &= 0xf7;
@@ -522,7 +522,7 @@ void FUN_00023158(unsigned int idx)
         {
             unsigned short cid = *(unsigned short *)(node + 0x24);
             while (cid != 0) {
-                unsigned char *c = g_810e + cid;
+                unsigned char *c = g_entity_pool + cid;
                 if (c[0x18] == 2) {
                     *(unsigned short *)(c + 0x14) = 0xfff6;
                     break;
@@ -530,7 +530,7 @@ void FUN_00023158(unsigned int idx)
                 cid = *(unsigned short *)(c + 0x1e);
             }
         }
-        nid = node - g_810e;
+        nid = node - g_entity_pool;
         *(unsigned short *)(node + 0x14) = 0xfff6;
         n = k * 2;
         for (i = 0; i < n; i++) {
@@ -541,18 +541,18 @@ void FUN_00023158(unsigned int idx)
                          *(short *)(node + 8) + 0x80, (unsigned char)a, 0,
                          FUN_0000e568(9) + 1, k << 8, 0x2c);
             d = FUN_0000e568(0xff);
-            y1 = *(short *)(node + 6) + ((int)g_ad60[d] * FUN_0000e568(a) >> 8);
+            y1 = *(short *)(node + 6) + ((int)g_dir_dy[d] * FUN_0000e568(a) >> 8);
             d = FUN_0000e568(0xff);
-            x1 = *(short *)(node + 4) + ((int)g_ab60[d] * FUN_0000e568(a) >> 8);
+            x1 = *(short *)(node + 4) + ((int)g_dir_dx[d] * FUN_0000e568(a) >> 8);
             n2 = FUN_00022b38(x1, y1, *(short *)(node + 8));
             if (n2 != 0) {
                 n2[0x19] = 0xa;
                 *(unsigned short *)(n2 + 0x1c) = (unsigned short)nid;
             }
             d = FUN_0000e568(0xff);
-            y1 = *(short *)(node + 6) + ((int)g_ad60[d] * FUN_0000e568(a) >> 8);
+            y1 = *(short *)(node + 6) + ((int)g_dir_dy[d] * FUN_0000e568(a) >> 8);
             d = FUN_0000e568(0xff);
-            x1 = *(short *)(node + 4) + ((int)g_ab60[d] * FUN_0000e568(a) >> 8);
+            x1 = *(short *)(node + 4) + ((int)g_dir_dx[d] * FUN_0000e568(a) >> 8);
             n2 = FUN_00022b38(x1, y1, *(short *)(node + 8));
             if (n2 != 0) {
                 n2[0x19] = 7;
@@ -575,7 +575,7 @@ void FUN_00023158(unsigned int idx)
                 continue;
             if (*(short *)(p + 0x14) < 0)
                 continue;
-            nid = p - g_810e;
+            nid = p - g_entity_pool;
             *(unsigned short *)(p + 0x14) = 0xfff6;
             n = k * 2;
             for (i = 0; i < n; i++) {
@@ -586,18 +586,18 @@ void FUN_00023158(unsigned int idx)
                              *(short *)(p + 8) + 0x80, (unsigned char)a, 0,
                              FUN_0000e568(9) + 1, k << 8, 0x2c);
                 d = FUN_0000e568(0xff);
-                y1 = *(short *)(p + 6) + ((int)g_ad60[d] * FUN_0000e568(a) >> 8);
+                y1 = *(short *)(p + 6) + ((int)g_dir_dy[d] * FUN_0000e568(a) >> 8);
                 d = FUN_0000e568(0xff);
-                x1 = *(short *)(p + 4) + ((int)g_ab60[d] * FUN_0000e568(a) >> 8);
+                x1 = *(short *)(p + 4) + ((int)g_dir_dx[d] * FUN_0000e568(a) >> 8);
                 n2 = FUN_00022b38(x1, y1, *(short *)(p + 8));
                 if (n2 != 0) {
                     n2[0x19] = 0xa;
                     *(unsigned short *)(n2 + 0x1c) = (unsigned short)nid;
                 }
                 d = FUN_0000e568(0xff);
-                y1 = *(short *)(p + 6) + ((int)g_ad60[d] * FUN_0000e568(a) >> 8);
+                y1 = *(short *)(p + 6) + ((int)g_dir_dy[d] * FUN_0000e568(a) >> 8);
                 d = FUN_0000e568(0xff);
-                x1 = *(short *)(p + 4) + ((int)g_ab60[d] * FUN_0000e568(a) >> 8);
+                x1 = *(short *)(p + 4) + ((int)g_dir_dx[d] * FUN_0000e568(a) >> 8);
                 n2 = FUN_00022b38(x1, y1, *(short *)(p + 8));
                 if (n2 != 0) {
                     n2[0x19] = 7;
@@ -646,7 +646,7 @@ void FUN_00023158(unsigned int idx)
         for (p = g_8110 + tpl[0xb5] * 0x5c;
              p < g_8110 + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if (p[0x1d] & 4) {
-                unsigned char *nn = g_810e + *(unsigned short *)(p + 0x44);
+                unsigned char *nn = g_entity_pool + *(unsigned short *)(p + 0x44);
                 if (nn >= (unsigned char *)0x11670 &&
                     *(short *)(nn + 0x14) < 0 && p[0x19] != 0xa)
                     *(unsigned short *)(p + 0x44) = FUN_00037d08(p, 0, nn[0x19]);

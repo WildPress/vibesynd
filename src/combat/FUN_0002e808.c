@@ -2,7 +2,7 @@
    d1 = dist(p2-p1) via FUN_14c58; if d1 >= range, fail. steps = range/0x80
    (must be >= 1). dir1 = angle(p2-p1 in xy) via FUN_4d221, d2 = xy distance,
    dir2 = angle(dz, d2) (vertical). March x/y/z from p1's coords in half-tile
-   increments (g_ab60/g_ad60 direction tables * 0x80 >> 8): each step must be
+   increments (g_dir_dx/g_dir_dy direction tables * 0x80 >> 8): each step must be
    passable (FUN_f898(x,y,z+0x80) == 0); FUN_11d68(p1,x,y,z,0x80,0x80,0x100)
    finds a blocking entity — if it's p2, return p2 (hit), any other -> 0.
    Runs `steps` steps, else returns 0.
@@ -15,8 +15,8 @@
    align modulo the cascading register encodings. int-dist + (short) casts give
    the target's 32-bit div-by-0x80 idiom; the q==p2 branch layout and the
    sub+cwde arg forms are correct. */
-extern short g_ab60[];
-extern short g_ad60[];
+extern short g_dir_dx[];
+extern short g_dir_dy[];
 extern int FUN_00014c58(int a, int b);
 extern unsigned char FUN_0004d221(int dx, int dy);
 extern int FUN_0000f898(int x, int y, int z);
@@ -56,9 +56,9 @@ unsigned char *FUN_0002e808(unsigned char *p1, unsigned char *p2, int dist)
                 return q;
             return 0;
         }
-        x += g_ab60[dir1] * 0x80 >> 8;
-        y += g_ad60[dir1] * 0x80 >> 8;
-        z += g_ab60[dir2] * 0x80 >> 8;
+        x += g_dir_dx[dir1] * 0x80 >> 8;
+        y += g_dir_dy[dir1] * 0x80 >> 8;
+        z += g_dir_dx[dir2] * 0x80 >> 8;
     }
     return 0;
 }

@@ -12,7 +12,7 @@
  * 0x26bc8/0x2fbc8. Semantics fully decoded below.
  *
    0x2ed28 -- kill/hit stat bookkeeping. b = pool record with target link at
- * +0x16 (0 = none) and cause flags at +0x1c. n = g_810e + link. The player's
+ * +0x16 (0 = none) and cause flags at +0x1c. n = g_entity_pool + link. The player's
  * own 4 agents occupy pool-A records [g_8110 + c*0x5c, g_8110 + (c+4)*0x5c)
  * where c = first-agent index byte g_e551[g_10b16 * 0x417]. If n is an own
  * agent, bump a counter by cause: &1 g_10af4, &2 g_10afa (shooter also own
@@ -22,7 +22,7 @@
  */
 extern short g_10b16;
 extern unsigned char g_e551[];
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern unsigned char g_8110[];
 extern unsigned char g_10af4;
 extern unsigned char g_10af5;
@@ -43,7 +43,7 @@ void FUN_0002ed28(unsigned char *b)
         return;
     w = g_10b16;
     c = g_e551[w * 0x417];
-    n = g_810e + *(unsigned short *)(b + 0x16);
+    n = g_entity_pool + *(unsigned short *)(b + 0x16);
     lo = g_8110 + c * 0x5c;
     if (n >= lo) {
         hi = g_8110 + (c + 4) * 0x5c;

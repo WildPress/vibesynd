@@ -35,19 +35,19 @@
    0x11e3c is a RUNTIME address = manifest 0xf584 in the cut-off prefix).
 
    Scans grid cells gx = (x-rx)&0xff00 .. (x+rx)&0xff00, gy likewise with ry,
-   walking each cell's g_10e[((gy&0x7f00)>>1)|((gx>>8)&0x7f)] id chain
-   (g_810e node pool, link word +0, bound 0x400 nodes). Skips self and nodes
+   walking each cell's g_grid_heads[((gy&0x7f00)>>1)|((gx>>8)&0x7f)] id chain
+   (g_entity_pool node pool, link word +0, bound 0x400 nodes). Skips self and nodes
    with flag bit0 (+0xb). Dispatches on type byte +0x18 via a 6-entry jump
    table (obj1:+0x4550 = manifest 0x11c98): types 0,3 -> miss;
    type 1 (ped):    also +0xa bit0; if (self[0x1c]&2) same-squad skip
                     ((p-g_8110)/0x5c/8 equal); if self[0x1c]&0xc and node
                     +0x1c&0xc skip; skip if self is node's leader
-                    (g_810e + word(node+0x20)); box +-(rx/2 +0x20 slack),
+                    (g_entity_pool + word(node+0x20)); box +-(rx/2 +0x20 slack),
                     +-(ry/2 +0x20), z in [node8-rz, node8+0x100].
    type 4:          subtype +0x19 must be 0xc, +0xa bit0 clear, box slack
                     0x40/0x40, z +0x100/rz.
    type 2 (vehicle): box slack 0x80, z +0x100/rz, skip if node's word +0x1c
-                    == self's pool index (self - g_810e).
+                    == self's pool index (self - g_entity_pool).
    type 5 (static): nested 43-entry jump table (obj1:+0x4568 = manifest
                     0x11cb0) on subtype +0x19 (> 0x2a -> miss):
                     1 -> slack 0x40, z+0x100; 0xb -> 0x20, z+0x190;
@@ -57,8 +57,8 @@
                     others -> miss.
    Returns the node pointer on overlap, else 0.
    Caller 0x2e808-family: FUN_11d68(p, x, y, z, 0x80, 0x80, 0x100). */
-extern unsigned short g_10e[];
-extern unsigned char g_810e[];
+extern unsigned short g_grid_heads[];
+extern unsigned char g_entity_pool[];
 extern unsigned char g_8110[];
 
 unsigned char *FUN_00011d68(unsigned char *a1, short xx, short yy, volatile short z,
@@ -94,11 +94,11 @@ unsigned char *FUN_00011d68(unsigned char *a1, short xx, short yy, volatile shor
         gy = dy & 0xff00;
         ix = (gx >> 8) & 0x7f;
         for (; ((yy + ryy) & 0xff00) >= gy; gy += 0x100) {
-            id = g_10e[((gy & 0x7f00) >> 1) | ix];
+            id = g_grid_heads[((gy & 0x7f00) >> 1) | ix];
             i = 0;
             if (id != 0) {
                 do {
-                    node = g_810e + id;
+                    node = g_entity_pool + id;
                     if (node == me)
                         goto skip;
                     if ((unsigned char)(node[0xb] & 1))
@@ -124,7 +124,7 @@ unsigned char *FUN_00011d68(unsigned char *a1, short xx, short yy, volatile shor
                             if (q[0x1c] & 0xc)
                                 goto skip;
                         }
-                        if (a1 == g_810e + *(unsigned short *)(q + 0x20))
+                        if (a1 == g_entity_pool + *(unsigned short *)(q + 0x20))
                             goto skip;
                         hrx = rx / 2;
                         xi = xx;
@@ -177,7 +177,7 @@ unsigned char *FUN_00011d68(unsigned char *a1, short xx, short yy, volatile shor
                             goto skip;
                         if (*(short *)(node + 8) > rz + (short)z)
                             goto skip;
-                        if (*(unsigned short *)(node + 0x1c) == (unsigned short)(a1 - g_810e))
+                        if (*(unsigned short *)(node + 0x1c) == (unsigned short)(a1 - g_entity_pool))
                             goto skip;
                         return node;
                     case 5:

@@ -5,11 +5,11 @@
    (low-byte coord + rng(0xff) - 0x64, wrapped into [0,0x100) by +-0x64), and
    move the node there at floor height via FUN_26c78(node, x, y, FUN_fa18(x,y,pz)).
 
-   PARKED at 286/304 (first diff 0x7): register-role rotation — target homes
+   PARKED at 286/304 (first diff 0x7): register-role rotation ï¿½ target homes
    p->ESI, node->EBX, y->EDI with x slot-homed; ours p->EDI + rotated others.
    `volatile int x` reproduces the target's slot-homed x (every access via
    [esp+4]); decl orders inert; 4000 cpermute variants no match. */
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern int FUN_0000e568(int cap);
 extern int FUN_0000fa18(int x, int y, int z);
 extern void FUN_00026c78(unsigned char *node, int x, int y, int z);
@@ -27,7 +27,7 @@ void FUN_00037918(unsigned char *p)
         p[0x46] = 0;
         *(unsigned short *)(p + 0x44) = 0;
         while (id != 0) {
-            node = g_810e + id;
+            node = g_entity_pool + id;
             *(unsigned short *)(node + 0x1e) = 0;
             id = *(unsigned short *)(node + 0x1c);
             *(unsigned short *)(node + 0x20) = 0;

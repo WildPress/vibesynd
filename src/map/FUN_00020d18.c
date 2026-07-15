@@ -1,7 +1,7 @@
 /* frameless @ 0x20d18: relocate the map column-offset table. The caller passes a
    block base; the column table starts at base+0xc and holds 0x3000 int entries that
    are stored on disk as relative offsets. Walk it, adding the table base to each
-   entry to turn it into an absolute pointer, then publish the base in g_5358.
+   entry to turn it into an absolute pointer, then publish the base in g_map_cols.
 
    PARKED WALL, improved by the cont.21 retry: 43B -> 45B vs the 52B target, and the
    old "loop-align + callee-saved-base" bundle is now mostly RECOVERED. The winning
@@ -18,12 +18,12 @@
        where the target materialises the slot address once in EAX
        (`lea eax,[eax*4+0]; add eax,esi; mov ecx,[eax]; ...; mov [eax],edx`).
        The named-addr, char** slot + (int)*slot (0x2d5b8 idiom), named-base,
-       pointer-variable g_5358 decl, and product-first spellings all still fold;
+       pointer-variable g_map_cols decl, and product-first spellings all still fold;
        `volatile` on the deref REGRESSES to a 38B RMW `add [edx+eax*4],edx`;
        -ot / no-opt recipes drop the pads and still fold. Un-folded-addressing
        codegen our 9.5b does not emit -- same conclusion as the original park,
        but now isolated to the fold + one role swap. */
-extern char **g_5358;
+extern char **g_map_cols;
 void FUN_00020d18(int param_1)
 {
     char *base = (char *)param_1 + 0xc;
@@ -34,5 +34,5 @@ void FUN_00020d18(int param_1)
         *(char **)addr = base + (int)v;
         i++;
     } while (i < 0x3000);
-    g_5358 = (char **)base;
+    g_map_cols = (char **)base;
 }

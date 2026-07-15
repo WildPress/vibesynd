@@ -3,7 +3,7 @@
    Head: if p1 has flag 2 at +0x1c and p1/p2 are in the same pool-A group of 8
    ((ptr-0x8110)/0x5c/8 equal), fail. If p2's type byte (+0x19) == 0x17, fail.
    d1 = dist(p2-p1); if d1 >= range, fail. steps = range/0x80 (>= 1).
-   March x/y/z from p1's coords in half-tile increments (g_ab60/g_ad60 * 0x80
+   March x/y/z from p1's coords in half-tile increments (g_dir_dx/g_dir_dy * 0x80
    >> 8); each step must be passable (FUN_f898 == 0); FUN_11d68 finds a
    blocking entity q: q must be class 1 (+0x18), q == p2 -> return q (hit),
    q == p1 -> ignore (keep marching), any other q -> return q.
@@ -19,8 +19,8 @@
    This is the 0x338d8 spill-slot-order wall — allocator-internal, decl-order
    proven byte-inert here; not source-reachable, cpermute can't touch slots. */
 extern unsigned char g_8110[];
-extern short g_ab60[];
-extern short g_ad60[];
+extern short g_dir_dx[];
+extern short g_dir_dy[];
 extern int FUN_00014c58(int a, int b);
 extern unsigned char FUN_0004d221(int dx, int dy);
 extern int FUN_0000f898(int x, int y, int z);
@@ -75,9 +75,9 @@ unsigned char *FUN_0002e5f8(unsigned char *p1, unsigned char *p2, int dist)
             if (p1 != q)
                 return q;
         }
-        x += g_ab60[dir1] * 0x80 >> 8;
-        y += g_ad60[dir1] * 0x80 >> 8;
-        z += g_ab60[dir2] * 0x80 >> 8;
+        x += g_dir_dx[dir1] * 0x80 >> 8;
+        y += g_dir_dy[dir1] * 0x80 >> 8;
+        z += g_dir_dx[dir2] * 0x80 >> 8;
     }
     return 0;
 }

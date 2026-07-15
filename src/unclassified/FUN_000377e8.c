@@ -16,16 +16,16 @@
  * Function ORDER matters: 0x377e8 (lower addr) must come first so it owns the shared stub.
  * Recipe: -4s -oneatx -zp8 -s -zq
  */
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern unsigned char g_11670;
 extern unsigned char g_a6ea[];
 extern unsigned char g_a686[];
 
-/* @ 0x377e8: field = p->[0x44]; node = g_810e + field; if node < &g_11670 -> 0;
+/* @ 0x377e8: field = p->[0x44]; node = g_entity_pool + field; if node < &g_11670 -> 0;
    else return g_a6ea[node[0x19]]. Owns the shared return-0 stub at 0x3780f. */
 unsigned short FUN_000377e8(unsigned char *p)
 {
-    unsigned char *node = g_810e + *(unsigned short *)(p + 0x44);
+    unsigned char *node = g_entity_pool + *(unsigned short *)(p + 0x44);
     if (node >= &g_11670)
         return g_a6ea[node[0x19]];
     return 0;
@@ -35,8 +35,8 @@ unsigned short FUN_000377e8(unsigned char *p)
    Returns unsigned short so the shared stub is byte-identical (see unit header). */
 unsigned short FUN_00037818(unsigned char *p)
 {
-    unsigned char *node = g_810e + *(unsigned short *)(p + 0x44);
-    if (node >= g_810e + 0x9562)
+    unsigned char *node = g_entity_pool + *(unsigned short *)(p + 0x44);
+    if (node >= g_entity_pool + 0x9562)
         return g_a686[node[0x19]];
     return 0;
 }

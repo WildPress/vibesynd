@@ -24,9 +24,9 @@
    Space (c == 0x20) just advances the pen by the bank-0 glyph width + a7
    (a7 = per-char kerning, -2 at most call sites). Otherwise blits the glyph
    with FUN_4a6c8 at (x, y + 12 - height), temporarily swapping the back-buffer
-   pointer g_5368 to g_5370 around the blit when a10 is set. a8 is unused. */
-extern unsigned char *g_5368;
-extern unsigned char *g_5370;
+   pointer g_screen_buf to g_back_buf around the blit when a10 is set. a8 is unused. */
+extern unsigned char *g_screen_buf;
+extern unsigned char *g_back_buf;
 
 extern void FUN_00018ae8(int x1, int y1, int x2, int y2, int c);
 extern void FUN_0004a6c8(int x, int y, unsigned char *spr);
@@ -66,15 +66,15 @@ top:
         j -= 0x20;
         if (j != 0) {
             if (a10) {
-                saved = g_5368;
-                g_5368 = g_5370;
+                saved = g_screen_buf;
+                g_screen_buf = g_back_buf;
             }
             glyph = font + (j + a5) * 6;
             ypos = (unsigned short)(y + 0xc - glyph[5]);
             FUN_0004a6c8(xpos, ypos, glyph);
             xpos += a7 + glyph[4];
             if (a10)
-                g_5368 = saved;
+                g_screen_buf = saved;
         } else {
             xpos += font[a5 * 6 + 4] + a7;
         }

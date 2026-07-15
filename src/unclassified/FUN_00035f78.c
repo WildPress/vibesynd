@@ -1,5 +1,5 @@
 /* frameless @ 0x35f78: guarded dispatch. If g_10b4a && g_537f, index the
-   0x20-stride record table g_5350 by param_1, then call FUN_00039ae7 passing
+   0x20-stride record table g_objective_slots by param_1, then call FUN_00039ae7 passing
    g_11dec, a far pointer built from *(int*)(rec+0x12) with the DS segment
    (mov dx,ds / and edx,0xffff idiom, cf. sibling 0x35e68), *(int*)(rec+0xe)
    and -1; then FUN_00039b05(g_11dec). Stack-calling (-4s).
@@ -17,7 +17,7 @@
    drops push esi (88B) or reshuffles the guard/param loads -- our Watcom 9.5b
    cannot emit {5356 prologue + ESI role + un-folded base} together, which is
    exactly the target's colouring. Not source-reachable at this recipe. */
-extern unsigned char *g_5350;
+extern unsigned char *g_objective_slots;
 extern int g_11dec;
 extern unsigned char g_10b4a, g_537f;
 extern void FUN_00039ae7(int a, void __far *p, int b, int c);
@@ -28,7 +28,7 @@ void FUN_00035f78(unsigned char param_1)
     unsigned char *p;
 
     if (g_10b4a != 0 && g_537f != 0) {
-        p = g_5350 + param_1 * 0x20;
+        p = g_objective_slots + param_1 * 0x20;
         FUN_00039ae7(g_11dec, (void __far *)(*(int *)(p + 0x12)),
                      *(int *)(p + 0xe), -1);
         FUN_00039b05(g_11dec);

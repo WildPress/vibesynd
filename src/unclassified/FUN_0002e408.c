@@ -5,7 +5,7 @@
  * between the guards and the tail (jne 0x12 into it), killing ours'
  * duplicated full epilogue; length now 240/240 and everything from the call
  * to the end matches except 2 bytes. (2) ADDEND-FIRST operand swap on the y
- * arg (`*(short*)(p+6) + (g_ad60[..]*p[0x54] >> 8)`) flips the y-product
+ * arg (`*(short*)(p+6) + (g_dir_dy[..]*p[0x54] >> 8)`) flips the y-product
  * ESI->ECX / w6 ECX->ESI 2-cycle to the target's allocation -- addend
  * position is value-numbering-significant where the multiply commute is
  * inert. The SAME swap on the x arg does NOT flip its cycle (it instead
@@ -16,7 +16,7 @@
  * 9 diff bytes, one allocator 2-cycle. Guards share one return-0 stub.
  *
    0x2e408 -- homing step. Tries up to 4 headings d = dir+step, d-step, ...
- * probing 0x2d468 with the g_ab60/g_ad60 direction step (the 0x2d6c8 idiom).
+ * probing 0x2d468 with the g_dir_dx/g_dir_dy direction step (the 0x2d6c8 idiom).
  * Then if the fresh target angle 0x14c58(dx,dy) is (unsigned) closer than the
  * stored w1e, requires d to be one of the two allowed turns from the launch
  * quadrant p[0x5a] (p[0x5a]-step or p[0x5a]+0x80) else gives up. Decrements
@@ -25,8 +25,8 @@
  * returns 1 (0 = remove me). d is a memory-homed char local; i is signed
  * short in EDI (jl). Recipe: -4s -oneatx -zp8 -s -zq
  */
-extern short g_ab60[];
-extern short g_ad60[];
+extern short g_dir_dx[];
+extern short g_dir_dy[];
 extern int FUN_0002d468(int x, int y, int z, unsigned char *obj);
 extern short FUN_00014c58(int dx, int dy);
 
@@ -37,8 +37,8 @@ int FUN_0002e408(unsigned char *p, char step)
 
     do {
         if ((short)FUN_0002d468(
-                (short)((g_ab60[(unsigned char)d] * p[0x54] >> 8) + *(short *)(p + 4)),
-                (short)(*(short *)(p + 6) + (g_ad60[(unsigned char)d] * p[0x54] >> 8)),
+                (short)((g_dir_dx[(unsigned char)d] * p[0x54] >> 8) + *(short *)(p + 4)),
+                (short)(*(short *)(p + 6) + (g_dir_dy[(unsigned char)d] * p[0x54] >> 8)),
                 *(short *)(p + 8), p) != 0)
             break;
         d -= step;

@@ -24,7 +24,7 @@
  * +0x6f entry field; entry stride 40, 8 {qty,kind} slot pairs -- identical layout
  * to 0x223c8's 18x40B template block.)
  *
- * Pool-A node (node = g_8110 + (g_e551[rec] + slot - 1)*0x5c, id = node - g_810e):
+ * Pool-A node (node = g_8110 + (g_e551[rec] + slot - 1)*0x5c, id = node - g_entity_pool):
  *   node+0x14 hp word (signed), +0x19 type byte, +0x1c chain link (16-bit id),
  *   +0x3a carried-item chain head (16-bit id), +0x3c kind/flags word.
  * Pool-A world record `pr` in the refund scan (0x8110..0xdd10, 256x0x5c):
@@ -37,7 +37,7 @@
  * g_10b16 (short current-player, reset to 0 on the reset path).
  *
  * FLOW (top): if g_10b45==0, for each of 18 template entries j whose present byte
- * g_e5c0[rec+j*40]!=0: locate the node; id = node-g_810e.
+ * g_e5c0[rec+j*40]!=0: locate the node; id = node-g_entity_pool.
  *   (A) if g_10afc&2: scan ALL 256 pool-A records; for each whose +0x20==id and
  *       !(+0xb&1), credit funds by category (bit1->+0x32, bit8->+0x96, bit4->+0x96,
  *       bit0x10->+0x12c, all clear +0x20 & bump g_10afd), OR bit2 -> re-file the
@@ -88,7 +88,7 @@
  * -46B tail, not a structural divergence.
  */
 
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern unsigned char g_8110[];
 extern unsigned char g_e49c[];
 extern unsigned char g_e551[];
@@ -133,7 +133,7 @@ void FUN_00021e18(unsigned short param)
             slot = g_e5c0[j * 40 + REC];
             if (slot != 0) {
                 node = g_8110 + (g_e551[REC] + slot - 1) * 0x5c;
-                id = (int)(node - g_810e);
+                id = (int)(node - g_entity_pool);
 
                 /* --- (A) refund scan over the whole pool --- */
                 if (g_10afc & 2) {
@@ -215,7 +215,7 @@ void FUN_00021e18(unsigned short param)
                         for (d = 0; chain != 0; ) {
                             if (d >= 8)
                                 break;
-                            it = g_810e + chain;
+                            it = g_entity_pool + chain;
                             *(unsigned short *)(g_e5c1 + j * 40 + d * 4 + REC) =
                                 *(unsigned short *)(it + 0x14);
                             *(unsigned short *)(g_e5c3 + j * 40 + d * 4 + REC) = it[0x19];

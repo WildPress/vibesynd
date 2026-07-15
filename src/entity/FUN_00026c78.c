@@ -1,6 +1,6 @@
 /* frameless @ 0x26c78: move pool-A object `node` to coords (x,y,z).
    Clamp: if tile-x ((short)x>>8) < 1 -> x=0x7e00, >= 0x7f -> x=0x200; tile-y < 1 ->
-   y=0x5e00, >= 0x5f -> y=0x200; z &= ~0xf000. Compute the g_10e spatial-grid cells for
+   y=0x5e00, >= 0x5f -> y=0x200; z &= ~0xf000. Compute the g_grid_heads spatial-grid cells for
    the new and current coords; if the cell changed, unlink from the old cell's doubly-
    linked id list (patch prev->next / cell head, next->prev, clear flag p[0xa]&4) and
    head-insert into the new cell (node->next=head, head->prev=id, cell=id, set flag).
@@ -24,8 +24,8 @@
    two post-store re-reads through `*(volatile unsigned short *)node` and only those
    loads split (fresh `cmp word [eax],0` + `mov r16,[eax]`), leaving all other codegen
    untouched. */
-extern unsigned char g_810e[];
-extern unsigned short g_10e[];
+extern unsigned char g_entity_pool[];
+extern unsigned short g_grid_heads[];
 
 void FUN_00026c78(unsigned char *node, int x, int y, int z)
 {
@@ -45,28 +45,28 @@ void FUN_00026c78(unsigned char *node, int x, int y, int z)
     if (ty >= 0x5f) y = 0x200;
     z &= ~0xf000;
 
-    pnew = g_10e + (((short)(y & 0x7f00) >> 1) | (((short)x >> 8) & 0x7f));
-    pold = g_10e + (((short)(*(unsigned short *)(node + 6) & 0x7f00) >> 1) | (((int)*(short *)(node + 4) >> 8) & 0x7f));
+    pnew = g_grid_heads + (((short)(y & 0x7f00) >> 1) | (((short)x >> 8) & 0x7f));
+    pold = g_grid_heads + (((short)(*(unsigned short *)(node + 6) & 0x7f00) >> 1) | (((int)*(short *)(node + 4) >> 8) & 0x7f));
     if (pnew != pold) {
         if (node[0xa] & 4) {
             q = pold;
             t = *(unsigned short *)(node + 2);
             if (t != 0)
-                q = (unsigned short *)(g_810e + t);
+                q = (unsigned short *)(g_entity_pool + t);
             *q = *(unsigned short *)node;
             if (*(volatile unsigned short *)node != 0) {
-                q = (unsigned short *)(g_810e + *(volatile unsigned short *)node);
+                q = (unsigned short *)(g_entity_pool + *(volatile unsigned short *)node);
                 *(unsigned short *)((unsigned char *)q + 2) = *(unsigned short *)(node + 2);
             }
             node[0xa] &= 0xfb;
         }
         if (!(node[0xa] & 4)) {
-            t = (unsigned short)(node - g_810e);
+            t = (unsigned short)(node - g_entity_pool);
             *(unsigned short *)(node + 2) = 0;
             head = *pnew;
             *(unsigned short *)node = head;
             if (head != 0) {
-                q = (unsigned short *)(g_810e + head);
+                q = (unsigned short *)(g_entity_pool + head);
                 *(unsigned short *)((unsigned char *)q + 2) = t;
             }
             *pnew = t;

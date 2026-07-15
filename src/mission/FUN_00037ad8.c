@@ -1,6 +1,6 @@
 /* FUN_00037ad8 @ 0x37ad8 (jump-table dispatcher, 19-entry table at 0x2a340).
  * Best-weapon-in-range selector: walk node's carried-item chain (head id at
- * node+0x3a, next link at item+0x1c, item = g_810e + id). For each item,
+ * node+0x3a, next link at item+0x1c, item = g_entity_pool + id). For each item,
  * switch on the type byte item[0x19]; weapon types 2..9 each carry a
  * (rank, max-range) pair -- take the item when its rank >= the current best
  * rank, its +0x14 word (ammo/hp) is >= 0, and dist is within range:
@@ -11,7 +11,7 @@
  * All other types (1, 0xa..0x13) just advance. Returns the winning item's id;
  * if none found, falls back to the equipped item id at node+0x44 (0 if that
  * item's +0x14 word is negative). */
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 
 unsigned short FUN_00037ad8(unsigned char *node, unsigned short dist)
 {
@@ -28,7 +28,7 @@ unsigned short FUN_00037ad8(unsigned char *node, unsigned short dist)
         for (;;) {
             if (id == 0)
                 break;
-            item = g_810e + id;
+            item = g_entity_pool + id;
             switch (item[0x19]) {
             case 2:
                 if (rank <= 4 && *(short *)(item + 0x14) >= 0 && dist <= 0x500) {
@@ -110,10 +110,10 @@ unsigned short FUN_00037ad8(unsigned char *node, unsigned short dist)
         }
     }
     if (found == 0) {
-        q = g_810e + *(unsigned short *)(node + 0x44);
+        q = g_entity_pool + *(unsigned short *)(node + 0x44);
         if (*(short *)(q + 0x14) < 0)
             return 0;
         return *(unsigned short *)(node + 0x44);
     }
-    return (unsigned short)(found - g_810e);
+    return (unsigned short)(found - g_entity_pool);
 }

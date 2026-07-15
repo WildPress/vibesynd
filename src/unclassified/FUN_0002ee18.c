@@ -1,7 +1,7 @@
 /* MATCHED @ 0x2ee18 (163/163, reloc-aware) -- recipe -4s -oneatx -zp8 -s -zq.
  * Find a valid target for agent a: scans pool-A records (0x5c bytes at g_8110,
  * end g_10ae0), skipping the 8-record squad that a itself belongs to
- * (group index di = ((a - g_810e)/0x5c) & ~7). A record is eligible when
+ * (group index di = ((a - g_entity_pool)/0x5c) & ~7). A record is eligible when
  * in-use (+0x18==1), has a link (+0x44!=0) or the +0x1c bit-1 flag, isn't
  * flagged 0x109 at +0xa, and has +0x20==0. For each, 0x2e5f8(a, rec, p2)
  * returning rec means hit -> return rec. Returns 0 if none or p3<=0.
@@ -19,7 +19,7 @@
  *     the full reg (`mov edi,eax`, quotient bits 8-15 pass through) -- the
  *     uchar-cast spelling inserts a movzx, the 0xf8/0xfff8 int masks stay wide.
  */
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern unsigned char g_8110[];
 extern unsigned char *g_10ae0;
 extern unsigned char *FUN_0002e5f8(unsigned char *a, unsigned char *rec, short p);
@@ -32,7 +32,7 @@ unsigned char *FUN_0002ee18(unsigned char *a, short p2, short p3)
 
     if (p3 <= 0)
         return 0;
-    di = (unsigned)(unsigned short)(a - g_810e) / 0x5c & ~7;
+    di = (unsigned)(unsigned short)(a - g_entity_pool) / 0x5c & ~7;
     si = 0;
     rec = g_8110;
     if (g_10ae0 <= rec)

@@ -3,7 +3,7 @@
  * table sits directly BEFORE the function, NOT at 0x15920 as old notes said).
  * TRUE SIZE 91 (0x5b): 0x149e8..0x14a42 incl. Manifest size 35 truncates the
  * compare window; ours' 91-byte code tail is byte-identical to the target
- * modulo the 3 masked fixups (table literal, call rel32, g_810e imm).
+ * modulo the 3 masked fixups (table literal, call rel32, g_entity_pool imm).
  *
  * RECIPE: -4s -or -zp8 -s -zq  (NOT -oneatx: -oneatx homes b in EBX with the
  * switch selector in DL; -or keeps b in EDX / selector in BL like the target.
@@ -13,10 +13,10 @@
  *   3      -> clear target ptr a+0x10, a[6]=0xff, a[5]=0
  *   4      -> FUN_00014828(a)
  *   7      -> a[6] = b[9]
- *   8,9,10 -> a+0x10 = pool-A node pointer g_810e + word b[9]
+ *   8,9,10 -> a+0x10 = pool-A node pointer g_entity_pool + word b[9]
  *   1,2,5,6 and out-of-range -> nothing.
  */
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern void FUN_00014828(unsigned char *a);
 
 void FUN_000149e8(unsigned char *a, unsigned char *b)
@@ -38,7 +38,7 @@ void FUN_000149e8(unsigned char *a, unsigned char *b)
     case 10:
     {
         unsigned short id = *(unsigned short *)(b + 9);
-        *(unsigned char **)(a + 0x10) = g_810e + id;
+        *(unsigned char **)(a + 0x10) = g_entity_pool + id;
         break;
     }
     case 1:

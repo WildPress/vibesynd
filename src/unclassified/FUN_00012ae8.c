@@ -2,7 +2,7 @@
    443/443, all fixup sites aligned. Register-role/spill-slot wall, same family
    as sibling 0x128b8.
 
-   Semantics: find an overlapping related ped. Scans the 2x2 g_10e grid cells
+   Semantics: find an overlapping related ped. Scans the 2x2 g_grid_heads grid cells
    whose top-left is the tile of (x - w/2 - 0x80, y - h/2 - 0x80), walking each
    cell's id chain (bounded at 0x400 nodes). A node matches when it is not self,
    type[0x18]==1, flag bits (node[0xb] & 1) and (node[0xa] & 1) clear, its x/y
@@ -29,8 +29,8 @@
    (which also fixed k-init via ECX); `c += w/2` compound form to get the
    in-place add ecx,eax in guard 2; INLINE node[0x18] (not a named t) to home
    the type byte in AH (cmp ah,1, 3B) instead of AL (cmp al,1, 2B). */
-extern unsigned short g_10e[];
-extern unsigned char g_810e[];
+extern unsigned short g_grid_heads[];
+extern unsigned char g_entity_pool[];
 
 unsigned char *FUN_00012ae8(unsigned char *self, short x, short y, short z,
                             short w, short h, short zr)
@@ -47,15 +47,15 @@ unsigned char *FUN_00012ae8(unsigned char *self, short x, short y, short z,
 
     if (y - h / 2 - 0x80 > 0) {
         row = ((y - h / 2 - 0x80) & 0x7f00) >> 1;
-        p = g_10e + ((((x - w / 2 - 0x80) >> 8) & 0x7f) | row);
-        self_id = self - g_810e;
+        p = g_grid_heads + ((((x - w / 2 - 0x80) >> 8) & 0x7f) | row);
+        self_id = self - g_entity_pool;
         for (iy = 0; iy < 2; iy++) {
             for (ix = 0; ix < 2; ix++) {
                 i = 0;
                 id = *p;
                 if (id != 0) {
                     do {
-                        node = g_810e + id;
+                        node = g_entity_pool + id;
                         if (node == self)
                             goto skip;
                         if (node[0x18] != 1)
@@ -84,7 +84,7 @@ unsigned char *FUN_00012ae8(unsigned char *self, short x, short y, short z,
                             goto found;
                         if (*(unsigned short *)(node + 0x20) == (unsigned short)self_id)
                             goto found;
-                        if ((unsigned short)(node - g_810e) != *(unsigned short *)(self + 0x20))
+                        if ((unsigned short)(node - g_entity_pool) != *(unsigned short *)(self + 0x20))
                             goto skip;
                     found:
                         return node;

@@ -1,6 +1,6 @@
-/* frameless @ 0x376f8: walk the chain from p->[0x3a] (base g_810e, link +0x1c)
+/* frameless @ 0x376f8: walk the chain from p->[0x3a] (base g_entity_pool, link +0x1c)
    and sum a 16-bit table value g_a7b4[node[0x19]] over every node. */
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern unsigned short g_a7b4[];
 int FUN_000376f8(unsigned char *p)
 {
@@ -8,7 +8,7 @@ int FUN_000376f8(unsigned char *p)
     unsigned short sum = 0;
     if (id != 0) {
         while (id != 0) {
-            unsigned char *node = g_810e + id;
+            unsigned char *node = g_entity_pool + id;
             sum += g_a7b4[node[0x19]];
             id = *(unsigned short *)(node + 0x1c);
         }

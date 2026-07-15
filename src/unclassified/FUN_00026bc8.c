@@ -1,5 +1,5 @@
-extern short g_ab60[];
-extern short g_ad60[];
+extern short g_dir_dx[];
+extern short g_dir_dy[];
 extern short g_10b28;
 extern short g_10b2a;
 extern int FUN_0004d221(int, int);
@@ -15,8 +15,8 @@ int FUN_00026bc8(unsigned short param_1, int param_2, int param_3)
         <= (unsigned)(s2 * s2 + s3 * s3)) {
         r = FUN_0004d221(s2, s3);
         idx = (unsigned short)r;
-        g_10b28 += (g_ab60[idx] * param_1) >> 8;
-        g_10b2a += (g_ad60[idx] * param_1) >> 8;
+        g_10b28 += (g_dir_dx[idx] * param_1) >> 8;
+        g_10b2a += (g_dir_dy[idx] * param_1) >> 8;
         return r;
     }
     g_10b28 += param_2;

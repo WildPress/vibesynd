@@ -21,7 +21,7 @@
  *   3. Case-2 `(setY|setX)` OR loads setY before setX (target loads setX first) and the
  *      loop-tail does `movsx eax,[ebx+0x12]; add ebx` vs `add ebx; movsx eax,[ebx]` —
  *      both instruction-schedule permutations (fuzzer-reachable).
- * Levers already applied: volatile g_10b22/g_10b24 (target RE-READS them each compare),
+ * Levers already applied: volatile g_cursor_x/g_cursor_y (target RE-READS them each compare),
  * unsigned char setX/setY (avoids the EBP hoist), unsigned short return (duplicated
  * epilogue vs shared), swapped box-test operand orders (acc = right operand).
  *
@@ -44,7 +44,7 @@
  *     advances (571B) -- entry schedule and loop layout CO-VARY, same wall class as
  *     the playbook 2 structured-loop-var entry. Target = do-while shared bottom test.
  */
-extern volatile unsigned short g_10b22, g_10b24;   /* cursor point (x, y) */
+extern volatile unsigned short g_cursor_x, g_cursor_y;   /* cursor point (x, y) */
 extern unsigned short g_e114, g_e116;     /* selection cursor state words */
 extern unsigned char  g_10b3e, g_10b3f;   /* selection cursor flags */
 extern short FUN_00029988(unsigned char *p);
@@ -64,15 +64,15 @@ unsigned short FUN_0002bca8(unsigned char *p, int sel, unsigned char setX, unsig
             if ((setX | setY) == 0) goto A_47;
             {
                 int x = *(signed char *)(p + 8) + (unsigned short)*(unsigned short *)(p + 2);
-                if (g_10b22 < x) goto A_47;
+                if (g_cursor_x < x) goto A_47;
                 x += p[6];
-                if (g_10b22 >= x) goto A_47;
+                if (g_cursor_x >= x) goto A_47;
             }
             {
                 int y = (unsigned short)*(unsigned short *)(p + 4) + *(signed char *)(p + 9);
-                if (g_10b24 < y) goto A_47;
+                if (g_cursor_y < y) goto A_47;
                 y += p[7];
-                if (g_10b24 < y) goto A_58;
+                if (g_cursor_y < y) goto A_58;
             }
         A_47:
             if ((unsigned short)sel != *(signed char *)(p + 0xb)) goto Lnext;
@@ -101,15 +101,15 @@ unsigned short FUN_0002bca8(unsigned char *p, int sel, unsigned char setX, unsig
             if ((setY | setX) == 0) goto C_93;
             {
                 int x = (unsigned short)*(unsigned short *)(p + 2) + *(signed char *)(p + 8);
-                if (g_10b22 < x) goto C_93;
+                if (g_cursor_x < x) goto C_93;
                 x += p[6];
-                if (g_10b22 >= x) goto C_93;
+                if (g_cursor_x >= x) goto C_93;
             }
             {
                 int y = *(signed char *)(p + 9) + (unsigned short)*(unsigned short *)(p + 4);
-                if (g_10b24 < y) goto C_93;
+                if (g_cursor_y < y) goto C_93;
                 y += p[7];
-                if (g_10b24 >= y) goto C_93;
+                if (g_cursor_y >= y) goto C_93;
             }
             g_e116 = 0;
             if (setX) { g_10b3f = 0; g_e116 = 1; }

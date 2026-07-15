@@ -14,7 +14,7 @@
  *
  * FUN_0002d9e8 @ 0x2d9e8 (853B, leaf). Pool-A squad interference / threat
  * test for record pair (a, b): pool A records are 0x5c bytes at g_8110
- * (id = ptr - g_810e), grouped 8-per-squad (0x2e0 bytes). Returns 0 at once
+ * (id = ptr - g_entity_pool), grouped 8-per-squad (0x2e0 bytes). Returns 0 at once
  * if b's link target (+0x20 id) or b itself lies in a's 8-record squad
  * (signed (ptr - g_8110)/0x5c/8 group compare). Otherwise scans the whole
  * pool scoring members whose +0x20 id maps into a squad of interest
@@ -27,7 +27,7 @@
  * bit0/ca>=1, bit4/ca>=2, bit3/ca>=4, bit2/ca>=8 -> 1, else 0. The pool-end
  * pointer g_10ae0 is loaded at entry and re-stored (unchanged) at every
  * exit -- single-exit source, Watcom tail-duplicates the return-1 blocks. */
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern unsigned char g_8110[];
 extern unsigned char *g_10ae0;
 extern unsigned char * volatile g_10ae0v;   /* volatile alias of g_10ae0: pins the
@@ -45,17 +45,17 @@ int FUN_0002d9e8(unsigned char *a, unsigned char *b)
     unsigned int g;
     int r;
 
-    id_a = a - g_810e;
+    id_a = a - g_entity_pool;
     ca = 0;
     cb = 0;
     if (*(unsigned short *)(b + 0x20) != 0 &&
-        (g_810e + *(unsigned short *)(b + 0x20) - g_8110) / 0x5c / 8 ==
+        (g_entity_pool + *(unsigned short *)(b + 0x20) - g_8110) / 0x5c / 8 ==
         (a - g_8110) / 0x5c / 8)
         goto fail;
     if ((b - g_8110) / 0x5c / 8 == (a - g_8110) / 0x5c / 8)
         goto fail;
     if (*(b + 0x1c) & 2) {
-        id_b = b - g_810e;
+        id_b = b - g_entity_pool;
         for (nb = g_8110; nb < end; nb += 0x5c) {
             if ((*(nb + 0xb) & 1) == 0) {
                 g = (*(unsigned short *)(nb + 0x20) - 2) / 0x2e0u;

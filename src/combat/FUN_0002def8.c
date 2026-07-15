@@ -13,8 +13,8 @@
  * After 32 steps, choose the turn whose trajectory got closer sooner (128 units/step
  * tie-break). Recipe: -4s -oneatx -zp8 -s -zq */
 extern short g_5300;
-extern short g_ab60[];
-extern short g_ad60[];
+extern short g_dir_dx[];
+extern short g_dir_dy[];
 extern short g_e128;
 extern short g_10b28;
 extern short g_10b2a;
@@ -100,8 +100,8 @@ void FUN_0002def8(unsigned char *obj, int tgt)
             obj[0x1a] = obj[0x5a] + 0x40;
             goto done;
         }
-        *(short *)(buf2 + 4) = *(short *)(buf2 + 4) + (g_ab60[buf2[0x1a]] * 0x80 >> 8);
-        *(short *)(buf2 + 6) = *(short *)(buf2 + 6) + (g_ad60[buf2[0x1a]] * 0x80 >> 8);
+        *(short *)(buf2 + 4) = *(short *)(buf2 + 4) + (g_dir_dx[buf2[0x1a]] * 0x80 >> 8);
+        *(short *)(buf2 + 6) = *(short *)(buf2 + 6) + (g_dir_dy[buf2[0x1a]] * 0x80 >> 8);
         *(short *)(buf2 + 8) = *(short *)(buf2 + 8) + g_e128;
         rng = FUN_00026aa8(
             (short)(*(short *)(buf2 + 0x2e) - *(short *)(buf2 + 4)),
@@ -119,8 +119,8 @@ void FUN_0002def8(unsigned char *obj, int tgt)
             obj[0x1a] = obj[0x5a] - 0x40;
             return;
         }
-        *(short *)(buf1 + 4) = *(short *)(buf1 + 4) + (g_ab60[buf1[0x1a]] * 0x80 >> 8);
-        *(short *)(buf1 + 6) = *(short *)(buf1 + 6) + (g_ad60[buf1[0x1a]] * 0x80 >> 8);
+        *(short *)(buf1 + 4) = *(short *)(buf1 + 4) + (g_dir_dx[buf1[0x1a]] * 0x80 >> 8);
+        *(short *)(buf1 + 6) = *(short *)(buf1 + 6) + (g_dir_dy[buf1[0x1a]] * 0x80 >> 8);
         *(short *)(buf1 + 8) = *(short *)(buf1 + 8) + g_e128;
         rng = FUN_00026aa8(
             (short)(*(short *)(buf1 + 0x2e) - *(short *)(buf1 + 4)),

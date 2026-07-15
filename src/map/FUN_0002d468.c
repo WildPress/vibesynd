@@ -4,16 +4,16 @@
    Watcom jump-threads the f=1 cases straight to the fa18 arm. Differences from
    the twin: threshold +-0x20 (not 0x40) and a flag escape -- returns 1 when
    |g_e128 diff| <= 0x20, or when below -0x20 but p[0xb] bit1 is set.
-   Uses the cont.21 g_5358 lever set: pointer-variable decl, slot local,
+   Uses the cont.21 g_map_cols lever set: pointer-variable decl, slot local,
    (int)*slot deref cast, ternary call merge, volatile g_e128 + named t.
 
    PARKED at the SAME ~10-byte residue as the twin 0x2d5b8 (jump-table verified
    layout, entry/guards/switch-dispatch/calls byte-correct): slot addr via
    `add ecx,eax` (target `lea ecx,[edx+eax]` + early movsx), tile widen and-form
    in EAX (target xor/mov dl in EDX), plus here the t reload lands AX (target
-   DX). Named-base variant regresses (338B). If the 0x33fb8 g_5358 retry finds
+   DX). Named-base variant regresses (338B). If the 0x33fb8 g_map_cols retry finds
    the missing spelling, transplant it to BOTH twins. */
-extern char **g_5358;
+extern char **g_map_cols;
 extern unsigned char *g_10ac0;
 extern volatile short g_e128;
 extern int FUN_LE_0000fa18(int a, int b, int c);
@@ -26,7 +26,7 @@ int FUN_0002d468(short x, short y, int w, unsigned char *p)
     char **slot;
 
     if (!(p[0x1c] & 2) && !(p[0x1d] & 8)) {
-        slot = g_5358 + ((*(short *)(p + 6) % 0x6000 / 0x100 << 7)
+        slot = g_map_cols + ((*(short *)(p + 6) % 0x6000 / 0x100 << 7)
                         + (*(short *)(p + 4) & 0xff00) / 0x100);
         switch (g_10ac0[*(unsigned char *)((int)*slot
                                            + (*(short *)(p + 8) - 1) / 0x80)]) {

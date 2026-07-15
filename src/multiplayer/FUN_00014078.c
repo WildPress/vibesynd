@@ -5,7 +5,7 @@
  * coords, z+0x80), each via 0x23158(i); on failure clear s[5] if the obj's
  * type byte is 0. Recipe: -4s -oneatx -zp8 -s -zq
  */
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern unsigned short g_a6c2[];
 extern void FUN_00023158(int a);
 extern int FUN_0002e808(unsigned char *a, unsigned char *b, int c);
@@ -15,7 +15,7 @@ void FUN_00014078(unsigned char *s, unsigned char *m, unsigned char idx,
 {
     if (s[5] == 0) {
         m[0xd] = 4;
-        *(short *)m = (short)(*(unsigned char **)(s + 0x10) - g_810e);
+        *(short *)m = (short)(*(unsigned char **)(s + 0x10) - g_entity_pool);
         FUN_00023158((unsigned short)idx);
         s[5] = 1;
         return;

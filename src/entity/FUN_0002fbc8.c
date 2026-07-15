@@ -1,6 +1,6 @@
 /* frameless @ 0x2fbc8: detach a pool entity from its "type" linked list and reset it.
    id = p[0x24] (next-in-list id); p[0x54]=0. If id==0, just stamp p[0x58]=p[0x19] and
-   tail to FUN_0002d998. Else node = g_810e + id; clear p[0xc]. If node is type 2
+   tail to FUN_0002d998. Else node = g_entity_pool + id; clear p[0xc]. If node is type 2
    (node[0x18]==2) relink via node[0x1c], else via node[0x22]; in either case if p has a
    prev (p[0x22]) patch that neighbour's node[0x24]. Then reset the record (p[0x55]=p[0x56],
    clear links p[0x24]/p[0x22], p[0x54]=0, clear flag bit0 of p[0xa]), re-place it via
@@ -15,7 +15,7 @@
    only bytes 0x8 and 0x10 differ (compare register DX<->AX); everything after is identical.
    No source form (recipe sweep -oneatx/-or/-ot/-oi/-oc/-oa/-oe/-os/-od, char* CSE break,
    volatile, temp type/order, aliasing barriers) flips the dead compare temp DX vs AX. */
-extern unsigned char g_810e[];
+extern unsigned char g_entity_pool[];
 extern void FUN_00026c78(unsigned char *p, int x, int y, int z);
 extern void FUN_0002d998(unsigned char *p);
 
@@ -28,19 +28,19 @@ void FUN_0002fbc8(unsigned char *p)
     id = *(unsigned short *)(p + 0x24);
     p[0x54] = 0;
     if (id != 0) {
-        node = g_810e + *(unsigned short *)(p + 0x24);
+        node = g_entity_pool + *(unsigned short *)(p + 0x24);
         *(unsigned short *)(p + 0xc) = 0;
         if (node[0x18] == 2) {
             q = node;
             if (*(unsigned short *)(p + 0x22) != 0) {
-                node = g_810e + *(unsigned short *)(p + 0x22);
+                node = g_entity_pool + *(unsigned short *)(p + 0x22);
                 *(unsigned short *)(node + 0x24) = *(unsigned short *)(p + 0x24);
             }
             *(unsigned short *)(q + 0x1c) = *(unsigned short *)(p + 0x22);
         } else {
             q = node;
             if (*(unsigned short *)(p + 0x22) != 0) {
-                node = g_810e + *(unsigned short *)(p + 0x22);
+                node = g_entity_pool + *(unsigned short *)(p + 0x22);
                 *(unsigned short *)(node + 0x24) = *(unsigned short *)(p + 0x24);
             }
             *(unsigned short *)(q + 0x22) = *(unsigned short *)(p + 0x22);

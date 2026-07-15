@@ -30,7 +30,7 @@
  *     entry becomes jz rel32 (cross-jump, no dup epilogue), AND it perturbs the case-0
  *     x-block registers (schar->EAX flips to EDX). Reverted.
  */
-extern volatile unsigned short g_10b22, g_10b24;   /* cursor point (x, y) */
+extern volatile unsigned short g_cursor_x, g_cursor_y;   /* cursor point (x, y) */
 extern unsigned short g_e114, g_e116;     /* selection cursor state words */
 extern unsigned char  g_10b3e, g_10b3f;   /* selection cursor flags */
 extern unsigned char  g_df75[];           /* record-indexed flag table (tail clears) */
@@ -51,15 +51,15 @@ unsigned short FUN_0002c218(unsigned char *p, int sel, unsigned char setX, unsig
             if ((setX | setY) == 0) goto A_47;
             {
                 int x = *(signed char *)(p + 8) + (unsigned short)*(unsigned short *)(p + 2);
-                if (g_10b22 < x) goto A_47;
+                if (g_cursor_x < x) goto A_47;
                 x += p[6];
-                if (g_10b22 >= x) goto A_47;
+                if (g_cursor_x >= x) goto A_47;
             }
             {
                 int y = *(signed char *)(p + 9) + (unsigned short)*(unsigned short *)(p + 4);
-                if (g_10b24 < y) goto A_47;
+                if (g_cursor_y < y) goto A_47;
                 y += p[7];
-                if (g_10b24 < y) goto A_58;
+                if (g_cursor_y < y) goto A_58;
             }
         A_47:
             if ((unsigned short)sel != *(signed char *)(p + 0xb)) goto Lcheck;
@@ -90,15 +90,15 @@ unsigned short FUN_0002c218(unsigned char *p, int sel, unsigned char setX, unsig
             if ((setY | setX) == 0) goto C_93;
             {
                 int x = (unsigned short)*(unsigned short *)(p + 2) + *(signed char *)(p + 8);
-                if (g_10b22 < x) goto C_93;
+                if (g_cursor_x < x) goto C_93;
                 x += p[6];
-                if (g_10b22 >= x) goto C_93;
+                if (g_cursor_x >= x) goto C_93;
             }
             {
                 int y = (unsigned short)*(unsigned short *)(p + 4) + *(signed char *)(p + 9);
-                if (g_10b24 < y) goto C_93;
+                if (g_cursor_y < y) goto C_93;
                 y += p[7];
-                if (g_10b24 >= y) goto C_93;
+                if (g_cursor_y >= y) goto C_93;
             }
             g_e116 = 0;
             if (setX) { g_10b3f = 0; g_e116 = 1; }

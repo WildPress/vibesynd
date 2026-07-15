@@ -10,7 +10,7 @@
  *   zoom  = pixels-per-tile scale.
  *
  * PARKED (decode-only) -- multiply walled, byte-parity is not reachable:
- *  1. g_5358 column-table lookup sits in the register-triangle wall (base load /
+ *  1. g_map_cols column-table lookup sits in the register-triangle wall (base load /
  *     lea index-scale / tile deref ordering) that parks 0x2d5b8 / 0x28ec8.
  *  2. Heavy signed fixed-point: ~14 IDIV / cwd-shl-sbb-sar div-by-256 and
  *     div-by-zoom chains whose accumulator/remainder register ties are the
@@ -28,19 +28,19 @@
  * 0x3c -- in the prologue fixed-point projection (the div-by-256 / div-by-zoom
  * IDIV chains): ours emits a `lea` (8d) where the target has an accumulator
  * form (24). All three jump tables split/masked cleanly. Structure faithful;
- * residue is the g_5358 triangle + IDIV ties + the ~0x600-byte stack blip array.
+ * residue is the g_map_cols triangle + IDIV ties + the ~0x600-byte stack blip array.
  *
  * ---- Algorithm ----
  * Prologue projects the camera: the view is a (128/zoom + 2) square of tiles
  * around the agent's tile; subX/subY are the sub-tile scroll remainders.
  *
  * Phase 1 (terrain): for every tile (row,col) in view, look up its ground tile
- * through the g_5358 column table, map it through g_10ac0 to a terrain shape
+ * through the g_map_cols column table, map it through g_10ac0 to a terrain shape
  * 0..15, and draw that shape as a filled quad via FUN_0003fb40(x,y,w,h,colour)
  * (colour 0xf / 7 / 0xa / 0 per shape class).
  *
  * Phase 2 (blips): for every tile, walk the spatial-grid entity chain
- * (g_10e[cell] -> id -> node[0] link, capped at 300). Skip hidden nodes and,
+ * (g_grid_heads[cell] -> id -> node[0] link, capped at 300). Skip hidden nodes and,
  * for owned agents, foreign-team ones. Project each node to a blip position and
  * dispatch on node[0x18]: type 2 -> a filled square (colour 0xc); type 4 -> a
  * 2x2 dot (colour 4, only if g_e395); type 1 -> an agent blip appended to the
@@ -54,10 +54,10 @@
  * first active one's animated marker (fixed-coord type 0x10, or node-tracking
  * types 1/2/3/5/0xf) via FUN_00014c58 (length) + FUN_00019318, returning.
  */
-extern char **g_5358;              /* map column-pointer table               */
+extern char **g_map_cols;              /* map column-pointer table               */
 extern unsigned char *g_10ac0;     /* tile -> terrain-shape table            */
-extern unsigned short g_10e[];     /* 128x128 spatial-grid head ids          */
-extern unsigned char g_810e[];     /* pool-A base - 2 (index by id)          */
+extern unsigned short g_grid_heads[];     /* 128x128 spatial-grid head ids          */
+extern unsigned char g_entity_pool[];     /* pool-A base - 2 (index by id)          */
 extern unsigned char g_8110[];     /* pool-A base                            */
 extern unsigned char g_e4ab[];     /* per-player template: team byte         */
 extern unsigned char g_b46a[];     /* team -> blip colour table              */
@@ -111,7 +111,7 @@ void FUN_00019608(unsigned char *agent, short zoom)
 
             index = ((short)((col << 8) & 0xff00) / 0x100)
                   + (((short)((row << 8) % 0x6000) / 0x100) << 7);
-            base = g_5358;
+            base = g_map_cols;
             slot = base + index;
             tile = *(unsigned char *)((int)*slot);   /* ground tile byte */
             shape = g_10ac0[tile];
@@ -149,13 +149,13 @@ void FUN_00019608(unsigned char *agent, short zoom)
             if (col2 >= 0x80) break;
             if (col2 < 0) continue;
 
-            id = g_10e[col2 + (row2 << 7)];
+            id = g_grid_heads[col2 + (row2 << 7)];
             if (id == 0)
                 continue;
 
             cnt = 0;
             do {
-                unsigned char *node = g_810e + id;
+                unsigned char *node = g_entity_pool + id;
                 int radius, blipX, blipY, type;
                 int tsx, tsy;
 
@@ -208,7 +208,7 @@ void FUN_00019608(unsigned char *agent, short zoom)
                             count++;
                         } else {
                             if (tgt != 0)
-                                owner = (int)((g_810e + tgt - g_8110) / 0x5c) / 8;
+                                owner = (int)((g_entity_pool + tgt - g_8110) / 0x5c) / 8;
                             if (owner == g_10b16 || g_10b30 > 0) {
                                 if (tgt == -1)
                                     goto dot45;
@@ -241,7 +241,7 @@ void FUN_00019608(unsigned char *agent, short zoom)
                             count++;
                         } else {
                             if (tgt != 0)
-                                owner = (int)((g_810e + tgt - g_8110) / 0x5c) / 8;
+                                owner = (int)((g_entity_pool + tgt - g_8110) / 0x5c) / 8;
                             if (tgt == -1) {
                                 if (g_e395 == 0)
                                     break;
@@ -336,7 +336,7 @@ void FUN_00019608(unsigned char *agent, short zoom)
                        otype == 5 || otype == 0xf) {
                 /* node-tracking objective: id at rec+6 */
                 unsigned char *onode =
-                    g_810e + *(unsigned short *)(rec + 6);
+                    g_entity_pool + *(unsigned short *)(rec + 6);
                 scale2 = 0x100 / zoom;
                 mx = (*(short *)(onode + 4) - *(short *)(agent + 4)) / scale2 + 0x40;
                 my = (*(short *)(onode + 6) - *(short *)(agent + 6)) / scale2 + 0x40;

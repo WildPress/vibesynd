@@ -41,7 +41,7 @@
  * link-time ALIASES of g_e114/g_e116 (fixup masking ignores names): declare
  * the same word volatile ONLY where the volatile codegen is wanted.
  */
-extern volatile unsigned short g_10b22, g_10b24;   /* cursor point (x, y) */
+extern volatile unsigned short g_cursor_x, g_cursor_y;   /* cursor point (x, y) */
 extern unsigned short g_e114, g_e116;     /* selection cursor state words */
 extern volatile unsigned short g_e114v, g_e116v;  /* same words, volatile view (case 3) */
 extern unsigned short g_e120;
@@ -69,15 +69,15 @@ unsigned short FUN_0002bee8(unsigned char *p, int sel, unsigned char setX, unsig
             if ((setX | setY) == 0) goto A_47;
             {
                 int x = (unsigned short)*(unsigned short *)(p + 2) + *(signed char *)(p + 8);
-                if (g_10b22 < x) goto A_47;
+                if (g_cursor_x < x) goto A_47;
                 x += p[6];
-                if (g_10b22 >= x) goto A_47;
+                if (g_cursor_x >= x) goto A_47;
             }
             {
                 int y = (unsigned short)*(unsigned short *)(p + 4) + *(signed char *)(p + 9);
-                if (g_10b24 < y) goto A_47;
+                if (g_cursor_y < y) goto A_47;
                 y += p[7];
-                if (g_10b24 < y) goto A_58;
+                if (g_cursor_y < y) goto A_58;
             }
         A_47:
             if ((unsigned short)sel != *(signed char *)(p + 0xb)) goto Lcheck;
@@ -112,15 +112,15 @@ unsigned short FUN_0002bee8(unsigned char *p, int sel, unsigned char setX, unsig
             if ((setX | setY) == 0) goto C_93;
             {
                 int x = (unsigned short)*(unsigned short *)(p + 2) + *(signed char *)(p + 8);
-                if (g_10b22 < x) goto C_93;
+                if (g_cursor_x < x) goto C_93;
                 x += p[6];
-                if (g_10b22 >= x) goto C_93;
+                if (g_cursor_x >= x) goto C_93;
             }
             {
                 int y = (unsigned short)*(unsigned short *)(p + 4) + *(signed char *)(p + 9);
-                if (g_10b24 < y) goto C_93;
+                if (g_cursor_y < y) goto C_93;
                 y += p[7];
-                if (g_10b24 >= y) goto C_93;
+                if (g_cursor_y >= y) goto C_93;
             }
             g_e116v = 0;
             if (setX) { g_10b3f = 0; g_e116v = 1; }

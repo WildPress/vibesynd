@@ -16,9 +16,9 @@
        LEA*8;SUB chain materialises idx*0x417, indexing byte tables g_e551 (agent's first
        ped pool-id) and g_e552 (agent's current sub/selection offset). Appears ~12x.
    (b) pool-A ENTITY records (0x5c=92B stride): rec ptr = 0x8110 + pedid*0x5c
-       (0x8110 = pool base g_810e + 2). Fields used: +0x4/+0x6/+0x8 coords, +0xb/+0x1d
+       (0x8110 = pool base g_entity_pool + 2). Fields used: +0x4/+0x6/+0x8 coords, +0xb/+0x1d
        flags, +0x19 type, +0x1a facing, +0x44 link id, +0x46 byte. id<->ptr via +0x810e.
-   Direction tables g_ab60/g_ad60 (s16[256]). Screen/scroll g_5390/g_5392/g_52f8.
+   Direction tables g_dir_dx/g_dir_dy (s16[256]). Screen/scroll g_5390/g_5392/g_52f8.
 
    CALLEES: 0x2c468 (pool field-copy, void), 0x1ba48 (clamp+draw cursor diagonal),
    0x2d7a8/0x2d808 (R/G/B reticle-ramp interpolate -- 0x2d7a8 is itself a PARKED
@@ -27,7 +27,7 @@
    WHY PARKED (wall taxonomy, playbook s3):
    1. The ~12 idx*0x417 agent-record blocks + the pool-A byte loads (`mov al,[eax+0xe551];
       and eax,0xff` and-form vs `movsx`) are register-role / widen-form ties across two
-      walled subsystems (0x417-stride templates AND g_810e pool -- both named walls).
+      walled subsystems (0x417-stride templates AND g_entity_pool pool -- both named walls).
       A directly-called dependency (0x2d7a8) is already parked for the same reason.
    2. UNSCOREABLE under task constraints: match95 splits the object by the manifest `size`.
       With size=1737 (wrong) it truncates mid-body; a correct score needs size=3694, but
@@ -43,12 +43,12 @@ extern unsigned char  g_10b3e, g_10b3f, g_10b39, g_10b40, g_10b45;
 extern unsigned short g_e112, g_e114, g_e116, g_e118, g_e11a, g_e11c;
 extern unsigned short g_e120, g_e122, g_e124;
 extern short          g_10b10, g_10b12, g_10b14, g_10b16, g_10b1a;
-extern unsigned short g_10b1c, g_10b1e, g_10b20, g_10b22;
+extern unsigned short g_10b1c, g_10b1e, g_10b20, g_cursor_x;
 extern unsigned short g_5390, g_5392, g_52f8;
 extern unsigned char  g_e551[], g_e552[];   /* 0x417-stride agent template byte tables */
-extern short          g_ab60[], g_ad60[];   /* direction tables (s16[256]) */
+extern short          g_dir_dx[], g_dir_dy[];   /* direction tables (s16[256]) */
 
-/* pool-A entity record k -> byte ptr (0x8110 + k*0x5c). base = g_810e+2. */
+/* pool-A entity record k -> byte ptr (0x8110 + k*0x5c). base = g_entity_pool+2. */
 extern unsigned char g_8110[];
 
 extern int  FUN_0001ba48(int x, int y);
@@ -149,8 +149,8 @@ after_scan:                                          /* 0x2b01b */
         && *(rec + 0x46) == 0) {
         int f = *(rec + 0x1a);
         *((unsigned char *)p + 0xd) = 0xf;
-        p[0] = (unsigned short)(((g_ab60[f] << 0xa) >> 8) + *(short *)(rec + 0x4));
-        p[1] = (unsigned short)(((g_ad60[f] << 0xa) >> 8) + *(short *)(rec + 0x6));
+        p[0] = (unsigned short)(((g_dir_dx[f] << 0xa) >> 8) + *(short *)(rec + 0x4));
+        p[1] = (unsigned short)(((g_dir_dy[f] << 0xa) >> 8) + *(short *)(rec + 0x6));
         p[2] = g_10b1c;
     }
 
