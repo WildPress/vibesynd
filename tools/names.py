@@ -95,6 +95,9 @@ LABELS = {
     "0001c168": "noop_ret_b",            "00039158": "seq_active_check",
     "00029a68": "draw_localized",        "0003aee6": "stricmp_call",
     "0000fee8": "copy_if_set",           "0000fa18": "z_probe",
+    "00032118": "lookup_base_record",    "000226a8": "init_record_if_alloc",
+    "00018828": "cond_3call",            "0002d6c8": "aim_step",
+    "0001a458": "dispatch_jt45",
 }
 
 

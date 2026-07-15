@@ -8,7 +8,7 @@ extern short g_dir_dx[];
 extern short g_dir_dy[];
 extern int anim_speed_select(unsigned char *obj, short a);
 extern int path_probe_y(int x, int y, int z, unsigned char *obj);
-unsigned short FUN_0002d6c8(unsigned char *obj, unsigned char param_2)
+unsigned short aim_step(unsigned char *obj, unsigned char param_2)
 {
     obj[0x54] = anim_speed_select(obj, obj[0x55]);
     return (short)path_probe_y(

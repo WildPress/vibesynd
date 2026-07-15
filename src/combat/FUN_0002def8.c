@@ -22,7 +22,7 @@ extern short g_aim_level;
 
 extern int FUN_00014c58(int dx, int dy);
 extern int projectile_step(unsigned char *obj, unsigned char dir);
-extern unsigned short FUN_0002d6c8(unsigned char *obj, unsigned char dir);
+extern unsigned short aim_step(unsigned char *obj, unsigned char dir);
 extern int max_abs(short a, short b);
 extern void find_projectile_step(unsigned char *obj, char dir);
 extern unsigned char lcg_rand(int a);
@@ -59,7 +59,7 @@ void FUN_0002def8(unsigned char *obj, int tgt)
         dA += 0x40;
     }
     for (j = 0; j < 4; j++) {
-        if (FUN_0002d6c8(obj, dB) != 0)
+        if (aim_step(obj, dB) != 0)
             break;
         dB += 0x40;
     }
@@ -176,7 +176,7 @@ void FUN_0002def8(unsigned char *obj, int tgt)
 fallback:
     dA += 0x20;
     for (j = 0; j < 4; j++) {
-        if (FUN_0002d6c8(obj, dA) != 0)
+        if (aim_step(obj, dA) != 0)
             break;
         dA += 0x40;
     }

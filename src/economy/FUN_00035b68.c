@@ -11,7 +11,7 @@ extern unsigned char g_player_recs[];
 extern void FUN_0003a4fa(char *buf, char *fmt, char *s, int n);
 extern char g_3cf0[];
 extern char g_b970[];
-extern int FUN_00018828(char *path, int mode);
+extern int cond_3call(char *path, int mode);
 extern void FUN_000188c8(int fd, void *src, int n);
 extern void FUN_00018878(int fd);
 extern char g_syndicate_recs[];
@@ -29,7 +29,7 @@ void FUN_00035b68(char *name, int n)
         *(unsigned int *)(g_player_recs + g_cur_player * 0x417) -=
             *(unsigned int *)(g_player_recs + g_cur_player * 0x417) * 10 / 100;
     FUN_0003a4fa(buf, g_3cf0, g_b970, n);
-    fd = FUN_00018828(buf, 0x222);
+    fd = cond_3call(buf, 0x222);
     if (fd > 0) {
         FUN_000188c8(fd, name, 0x14);
         FUN_000188c8(fd, g_player_recs, 0x20b8);

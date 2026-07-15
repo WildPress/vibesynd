@@ -55,7 +55,7 @@ extern unsigned short g_a5e6[];
 extern unsigned short g_a60e[];
 extern unsigned short g_a636[];
 
-void FUN_0001a458(unsigned char *b)
+void dispatch_jt45(unsigned char *b)
 {
     unsigned short frame;
 

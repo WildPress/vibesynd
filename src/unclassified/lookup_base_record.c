@@ -7,7 +7,7 @@ extern unsigned char g_agent_slots[];
 extern unsigned char g_108110[];
 extern unsigned char *los_trace(void *param_1, unsigned char *rec, int param_3);
 
-unsigned char *FUN_00032118(void *param_1, unsigned short param_2, short param_3)
+unsigned char *lookup_base_record(void *param_1, unsigned short param_2, short param_3)
 {
     unsigned char *rec;
     for (rec = g_108110 + g_agent_slots[param_2 * 0x417] * 0x5c;

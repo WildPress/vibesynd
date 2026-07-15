@@ -5,7 +5,7 @@
  * Recipe: -4s -oneatx -zp8 -s -zq
  */
 extern void FUN_0003a4fa(char *buf, char *fmt, char *s, int n);
-extern int FUN_00018828(char *path, int mode);
+extern int cond_3call(char *path, int mode);
 extern void FUN_000188a8(int fd, void *buf, int n);
 extern void FUN_00018878(int fd);
 extern void FUN_0003a8d7(char *dst, char *src);
@@ -21,7 +21,7 @@ void FUN_00035c88(char *out, int n)
 
     *out = 0;
     FUN_0003a4fa(buf, g_3cf0, g_b970, n);
-    fd = FUN_00018828(buf, 0x202);
+    fd = cond_3call(buf, 0x202);
     if (fd > 0) {
         FUN_000188a8(fd, out, 0x14);
         FUN_00018878(fd);

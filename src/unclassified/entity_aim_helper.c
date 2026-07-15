@@ -3,7 +3,7 @@
  * compute dx = x - self.x(+4), dy = y - self.y(+6); store facing byte at +0x1a
  * from FUN_0004d221(dx,dy); h = FUN_00014c58(dx,dy); dz = z - (self.z(+8)+0x80);
  * store +0x1b from FUN_0004d221(dz,h); set +0x19=0x2b, OR bit3 into flags +0xa,
- * then call pool_accessor_44(p) and FUN_0001a458(p).
+ * then call pool_accessor_44(p) and dispatch_jt45(p).
  *
  * NEAR-MISS (PARKED, register-role tie-break wall, §3). Logic byte-identical:
  * 9-byte prologue prefix + 80-byte suffix (from the +0x1a store through the ret)
@@ -23,7 +23,7 @@ extern unsigned char g_entity_pool[];
 extern unsigned char FUN_0004d221(int a, int b);
 extern short FUN_00014c58(int a, int b);
 extern void pool_accessor_44(unsigned char *p);
-extern void FUN_0001a458(unsigned char *p);
+extern void dispatch_jt45(unsigned char *p);
 
 void entity_aim_helper(unsigned char *p, int x, int y, int z)
 {
@@ -47,5 +47,5 @@ void entity_aim_helper(unsigned char *p, int x, int y, int z)
     p[0x19] = 0x2b;
     p[0xa] |= 8;
     pool_accessor_44(p);
-    FUN_0001a458(p);
+    dispatch_jt45(p);
 }

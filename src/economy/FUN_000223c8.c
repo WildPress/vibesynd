@@ -32,7 +32,7 @@ extern unsigned char g_pool_a[];
 extern unsigned char g_dcbc[];
 extern unsigned char g_agent_slots[];
 extern void FUN_000269b8(unsigned char *p);
-extern int FUN_000226a8(unsigned char *node, unsigned short kind, int cnt);
+extern int init_record_if_alloc(unsigned char *node, unsigned short kind, int cnt);
 extern void FUN_0004d199(unsigned char *p, int val, int n);
 
 void FUN_000223c8(unsigned short row, unsigned short mode)
@@ -92,7 +92,7 @@ void FUN_000223c8(unsigned short row, unsigned short mode)
             for (d = 0; d < 8; d++) {
                 if (*(unsigned short *)(g_agent_slots + row * 1047 + j * 40 + d * 4 + 0x72) > 0) {
                     *(int *)(g_dcbc + j * 0x20 + d * 4) =
-                        FUN_000226a8(node,
+                        init_record_if_alloc(node,
                                      *(unsigned short *)(g_agent_slots + row * 1047 + j * 40 + d * 4 + 0x72),
                                      *(short *)(g_agent_slots + row * 1047 + j * 40 + d * 4 + 0x70));
                 }

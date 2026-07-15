@@ -16,7 +16,7 @@ Semantic names + descriptions over the `FUN_<addr>` anchors (source filename sta
 | `0x18338` | ***(unnamed)*** |  |  |
 | `0x18458` | ***(unnamed)*** |  |  |
 | `0x184b8` | ***(unnamed)*** |  |  |
-| `0x18828` | ***(unnamed)*** | sys | frameless call-seq @ 0x18828: conditional 3-call block, then g4(a,b,0x40) |
+| `0x18828` | ***(unnamed)*** |  |  |
 | `0x18878` | ***(unnamed)*** | unclassified | Decomp target: stack-calling forwarding wrapper. original @ 0x00018878 (14 bytes) * * 8b 54 24 04 mov edx,[esp |
 | `0x188a8` | ***(unnamed)*** | unclassified | forward three args to a callee (g uses ebx as scratch). |
 | `0x18958` | ***(unnamed)*** |  |  |

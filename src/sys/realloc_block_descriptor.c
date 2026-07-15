@@ -18,7 +18,7 @@
 extern void int386(int a, void *in, void *out);
 extern void sub_and_call(int a, int b);
 extern int  global_add_and_call(int a);
-extern int  FUN_00018828(void *a, int b);
+extern int  cond_3call(void *a, int b);
 extern int  open_detect_rnc_header(void *a);
 extern void FUN_00018878(int a);
 extern int  FUN_000188a8(int a, int b, int c);
@@ -77,7 +77,7 @@ ret_m1:
     }
 
     /* fresh block: open the source */
-    h = FUN_00018828(p, 0x200);
+    h = cond_3call(p, 0x200);
     if (h == -1) goto ret0;
 
     if (p[0x28] & 1) {

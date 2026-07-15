@@ -31,10 +31,6 @@
   "addr": "000164c8",
   "flags": "-4s -oneatx -zp8 -s -zq"
  },
- "FUN_00018828": {
-  "addr": "00018828",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
  "FUN_00018878": {
   "addr": "00018878",
   "flags": "-4s -oneatx -zp8 -s -zq"
@@ -49,10 +45,6 @@
  },
  "FUN_000188e8": {
   "addr": "000188e8",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
- "FUN_000226a8": {
-  "addr": "000226a8",
   "flags": "-4s -oneatx -zp8 -s -zq"
  },
  "FUN_00022ed8": {
@@ -103,10 +95,6 @@
   "addr": "0002d3b8",
   "flags": "-4s -oneatx -zp8 -s -zq"
  },
- "FUN_0002d6c8": {
-  "addr": "0002d6c8",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
  "FUN_0002de18": {
   "addr": "0002de18",
   "flags": "-4s -oneatx -zp8 -s -zq"
@@ -117,10 +105,6 @@
  },
  "FUN_00030708": {
   "addr": "00030708",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
- "FUN_00032118": {
-  "addr": "00032118",
   "flags": "-4s -oneatx -zp8 -s -zq"
  },
  "FUN_00034118": {
@@ -1567,5 +1551,21 @@
  "stricmp_call": {
   "addr": "0003aee6",
   "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "lookup_base_record": {
+  "addr": "00032118",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "init_record_if_alloc": {
+  "addr": "000226a8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "cond_3call": {
+  "addr": "00018828",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "aim_step": {
+  "addr": "0002d6c8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
  }
 }

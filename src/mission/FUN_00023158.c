@@ -64,7 +64,7 @@ extern int  FUN_00023038(unsigned char *p);
 extern unsigned short FUN_00037d08(unsigned char *node, unsigned short dist, unsigned char type);
 extern void entity_aim_helper(unsigned char *p, int x, int y, int z);
 extern int  chain_length(unsigned char *p);
-extern void FUN_0001a458(unsigned char *p);
+extern void dispatch_jt45(unsigned char *p);
 extern unsigned short FUN_00037ad8(unsigned char *node, int flag);
 extern void FUN_00037ff8(int a, int b, int c, int d, int e, int f, int g, int h);
 extern void record_max(unsigned char a, unsigned char b);
@@ -319,7 +319,7 @@ void FUN_00023158(unsigned int idx)
             node[0x19] = 5;
         node[0x58] = 6;
         *(unsigned short *)(node + 0x2c) = *(unsigned short *)rec;
-        FUN_0001a458(node);
+        dispatch_jt45(node);
         break;
     }
 
@@ -332,7 +332,7 @@ void FUN_00023158(unsigned int idx)
                     p[0x19] = 5;
                 p[0x58] = 6;
                 *(unsigned short *)(p + 0x2c) = *(unsigned short *)rec;
-                FUN_0001a458(p);
+                dispatch_jt45(p);
             }
         }
         break;
@@ -345,7 +345,7 @@ void FUN_00023158(unsigned int idx)
             node[0x58] = 0xa;
             *(unsigned short *)(node + 0x44) = *(unsigned short *)rec;
             node[0x46] = 0;
-            FUN_0001a458(node);
+            dispatch_jt45(node);
         }
         break;
     }

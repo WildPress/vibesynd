@@ -7,7 +7,7 @@
  * (signed char compare in case 0, unsigned in the others). d is a memory-homed
  * char local. Recipe: -4s -oneatx -zp8 -s -zq
  */
-extern unsigned short FUN_0002d6c8(unsigned char *obj, unsigned char dir);
+extern unsigned short aim_step(unsigned char *obj, unsigned char dir);
 extern short FUN_00014c58(int dx, int dy);
 
 void FUN_0002de18(unsigned char *p, int tgt)
@@ -16,7 +16,7 @@ void FUN_0002de18(unsigned char *p, int tgt)
     unsigned short i = 0;
 
     do {
-        if (FUN_0002d6c8(p, d) != 0)
+        if (aim_step(p, d) != 0)
             break;
         d += 0x40;
         i++;

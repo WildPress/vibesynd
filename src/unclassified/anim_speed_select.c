@@ -1,5 +1,5 @@
 /* frameless @ 0x2d8c8: per-object anim frame-duration / speed selector.
-   Called from FUN_0002d6c8 / projectile_step as obj[0x54] = anim_speed_select(obj, obj[0x55]).
+   Called from aim_step / projectile_step as obj[0x54] = anim_speed_select(obj, obj[0x55]).
 
    If ((u16)obj[0x1c] & 0x1002) is set: pick a duration slot from the 2-bit field
    (obj[0x3c] & 0x18) >> 3, form base = slot*10000 + 1000, and subtract the

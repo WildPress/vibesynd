@@ -258,11 +258,11 @@
   "desc": "",
   "runs_in_intro": true
  },
- "FUN_00018828": {
+ "cond_3call": {
   "addr": "00018828",
-  "label": "",
-  "subsystem": "sys",
-  "desc": "frameless call-seq @ 0x18828: conditional 3-call block, then g4(a,b,0x40)",
+  "label": "cond_3call",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": true
  },
  "FUN_00018878": {
@@ -335,11 +335,11 @@
   "desc": "FUN_00019608 @ 0x19608 -- TRUE SIZE 3474 (0x19608..0x1a399). * * The tactical-map / radar renderer. Draws the full-screen overview map centred * on the currently-followed agent: terrain tiles, then a ",
   "runs_in_intro": false
  },
- "FUN_0001a458": {
+ "dispatch_jt45": {
   "addr": "0001a458",
-  "label": "",
-  "subsystem": "mission",
-  "desc": "NEAR-MISS (parked) @ 0x1a458 -- jump-table dispatcher, 45-entry table at * manifest 0x1a39c = jmp CS:[edx*4+0xcc54]; table precedes the fn, 8B gap. * TRUE SIZE 845 (0x34d): 0x1a458..0x1a7a4 incl (mani",
+  "label": "dispatch_jt45",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "fill_minimap_grid": {
@@ -510,11 +510,11 @@
   "desc": "FUN_000223c8 @ 0x223c8 (724B true size; manifest 686 excludes the 38B of * jump-table case bodies hidden behind the CS:[eax*4+0x14c70] dispatch). * PARKED ~694/724 (-4s -oneatx -zp8 -s -zq; verify wit",
   "runs_in_intro": false
  },
- "FUN_000226a8": {
+ "init_record_if_alloc": {
   "addr": "000226a8",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless init @ 0x226a8: r=g1(p->w4,p->w6,p->w8); if(r){ init fields; g2(r,p);} return r",
+  "label": "init_record_if_alloc",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "zero_bss_region": {
@@ -1056,11 +1056,11 @@
   "desc": "NEAR-MISS @ 0x2d5b8 -- cont.21 re-attack closed MOST of the old wall: code * tail now 259/259 length (was 264), entry + guards + switch + calls + tail all * byte-identical after: g_map_cols declared a",
   "runs_in_intro": false
  },
- "FUN_0002d6c8": {
+ "aim_step": {
   "addr": "0002d6c8",
-  "label": "",
-  "subsystem": "combat",
-  "desc": "frameless @ 0x2d6c8: twin of 0x2d738. Set obj[0x54] = anim_speed_select(obj, obj[0x55]) (speed from a table), then step the projectile along direction param_4 using the signed direction tables g_dir_d",
+  "label": "aim_step",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "projectile_step": {
@@ -1224,11 +1224,11 @@
   "desc": "frameless @ 0x30868: (re)acquire + engage target for pool-A entity `node`. Clears node[0x54], d = FUN_2d808(node,0x64) (kept in DI). Clears node[0x46]; if the target link node[0x44] is set: p2 = its p",
   "runs_in_intro": false
  },
- "FUN_00032118": {
+ "lookup_base_record": {
   "addr": "00032118",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x32118: for block param_2, look up the base record index in the 0x417-stride block table g_agent_slots, then scan records [idx .. idx+4) in the 0x5c-stride record table g_108110. For each",
+  "label": "lookup_base_record",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "commit_funding": {
