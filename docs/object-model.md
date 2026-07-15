@@ -196,3 +196,28 @@ Verified zero-in-image, runtime-filled tables (read-only from code, no literal-a
 Implication for "is OBJECT1 the whole game": the *logic* is complete in code, but the game's
 **balance data** (weapon quantities/stats, direction tables) is loaded into DGROUP at runtime
 by a bulk copy, not baked in as code literals. A table being zero here is expected, not missing.
+
+## OBJECT2 contents map (verified by scanning the raw bytes)
+
+mkdata emits OBJECT2 at data-image base 0x0 (`emit_ledata(0x0, d2, ...)`), so **data address ==
+OBJECT2 file offset** (direct). 20% of OBJECT2 is nonzero; the rest is zero regions that are
+runtime-filled working state. Observed layout:
+
+| addr range | content |
+|-----------|---------|
+| `0x0` .. ~`0x2800` | **equipment/cyberware descriptions**, 3 languages (EN/FR/IT) -- "LEGS V1", night-vision, "NEURAL ENHANCER", "CEREBRAL MULTIPLIER", etc. (indexed string block) |
+| ~`0x2c00` .. `0x7c00` | sparse: scattered small tables + more strings |
+| `0x8100` | static **u16 ramp table** (`0007 0007 0007 ... 0008 0008 ...`) -- a level/count -> value lookup |
+| `0x8400` | static **(value, 0xff) scaling pairs** (`1fff 1cff 19ff ...`) -- attenuation/interp ramp |
+| `0x90b8` | `c:/synd/save` save path, then the **data-file name table**: `data/mspr-0.dat`, `data/mfnt-0.dat`, `data/mlogos.dat`, `data/col01.dat`, `data/mselect.pal`, `data/sound-1.dat`, ... |
+| `0x9800` .. `0xd000` | mostly zero (incl. `g_item_max_qty` 0xa73a, campaign-init buffers 0xb474/0xb498/0xb830) |
+
+**Weapon/equipment data split (traced):** the item *text* roster is static in OBJECT2; the
+*numeric* tables are runtime-filled. `new_campaign_reset` (0x20fc8) builds a campaign's working
+tables by copying the research header from `0xb474` -> `0x5788` (stride 0x1eb, 18 entries) and the
+equipment header from `0xb498` -> `0x7c05` (stride 0x1f5, 20 entries), plus a per-item byte from
+`0xb830`; a cheat flag (g_10b43) instead sets every entry to 0x960 (all-unlocked). Those source
+buffers have exactly ONE reference each (the read here) and no literal-address writer, so they are
+populated by a register-indirect bulk load earlier in startup (inferred: from a `data/*.dat` file
+via the name table above). The fixed per-type capacities `g_item_max_qty` (0xa73a) are likewise
+zero-in-image and read-only from code -> loaded at runtime, not baked in.
