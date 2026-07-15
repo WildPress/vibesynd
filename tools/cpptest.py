@@ -5,7 +5,7 @@ wpp386 (whose register allocator can differ from wcc386's) -- a lever the whole 
 
     docker run --rm --memory=4g -v "$PWD":/work -w /work synd-decomp python3 tools/cpptest.py FUN_00038c28
 """
-import os, sys, glob, subprocess
+import os, sys, glob, subprocess, json
 import regdiff
 from omf import text_bytes_and_fixups
 
