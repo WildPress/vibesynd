@@ -239,11 +239,6 @@
   "type": "u8",
   "desc": "off-screen-objective indicator flag"
  },
- "g_persuade_limit": {
-  "addr": "a73a",
-  "type": "u16[]",
-  "desc": "per-ped-type persuade cap (indexed by ped type; used by persuade_capture 0x2fe68)"
- },
  "g_player_budget": {
   "addr": "e4a0",
   "type": "int[]",
@@ -393,5 +388,10 @@
   "addr": "10b43",
   "type": "u8",
   "desc": "unlimited-funds cheat flag"
+ },
+ "g_item_max_qty": {
+  "addr": "a73a",
+  "type": "u16[]",
+  "desc": "per-item-type max/default quantity (ammo capacity); indexed by item kind / ped subtype [0x19]"
  }
 }

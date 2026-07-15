@@ -173,7 +173,7 @@ The persuade weapon, decoded by resolving the entity **behaviour dispatch table*
 - The agent **seeks** the target ped (approach behaviour), then **`persuade_capture`** (0x2fe68)
   runs on contact (agent x/y == ped x/y, |z diff| < 0x81). If the ped isn't already taken
   (`ped[0x0a] & 1 == 0`):
-  1. clamp the ped's value `[0x14]` by **`g_persuade_limit[ped_type]`** (0xa73a) — the per-type cap;
+  1. clamp the ped's amount `[0x14]` to **`g_item_max_qty[ped_type]`** (0xa73a) — the per-type max-quantity table (also used to stock equipment ammo), not a persuade-specific limit;
   2. append the ped into the agent's **follower chain** (`agent[0x3a]` head, `[0x1c]`/+0x812a links);
   3. `ped[0x0a] |= 1` — set the **persuaded/controlled** flag;
   4. `ped[0x20] = agent` — set the ped's **leader link** to the agent (allegiance flipped).
