@@ -24,6 +24,10 @@ toolchain/*
 # code — keep it local + regenerable (tools/dashboard.py), don't commit it.
 # The viewer (dashboard/index.html) is tracked; it regenerates data.json.
 dashboard/data.json
+# progress.py's self-contained page embeds a manifest+git snapshot — generated/regenerable.
+dashboard/progress.html
+# live permuter status files (tools/cpermute.py --status / tools/permwatch.py) — ephemeral.
+dashboard/permute/
 
 __pycache__/
 *.pyc

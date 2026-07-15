@@ -6,6 +6,15 @@ A matching decompilation of the original 1993/95 DOS *Syndicate*: C source that,
 compiled with the period Watcom toolchain, reproduces the game's machine code byte
 for byte, one function at a time. A project to learn how decompilation works.
 
+## Progress at a glance
+
+![Decompilation progress treemap: functions sized by code bytes, coloured by match status](docs/treemap.svg)
+
+Every function in the code segment, area proportional to its size, grouped by subsystem.
+**Green** = our C compiles to bytes identical to the original; **amber** = decoded but parked on a
+compiler-codegen wall. Regenerate with `python tools/treemap.py`; a live, hover-able version and a
+matched-over-time chart are in `tools/progress.py` (local `dashboard/progress.html`).
+
 ## Start with the wiki
 
 The **[project wiki](https://github.com/WildPress/vibesynd/wiki)** explains
