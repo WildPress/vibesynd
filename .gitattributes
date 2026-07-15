@@ -1,0 +1,6 @@
+# Shell scripts run in the Linux/WSL container (DOSBox/dosemu harness). With core.autocrlf=true they
+# would otherwise be checked out CRLF and break bash (`set: - invalid option`, `$'\r'`). Force LF.
+*.sh text eol=lf
+# The container also runs these directly; keep them LF for reproducibility across host/container.
+Dockerfile text eol=lf
+*.bat text eol=crlf
