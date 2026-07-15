@@ -228,7 +228,39 @@ def report(name, res):
         print("    => real codegen/logic divergence: there IS a source change to find here.")
 
 
+def show(name, flags):
+    """Print the target vs ours disassembly, aligned by structural key, divergences marked with '|'.
+    This is the hand-crafting view: compile src/<name>.c, decode both (masked), align, show side by side
+    so a human can read off exactly which instruction/register differs and reshape the C toward it."""
+    import difflib
+    tb, _ = load_target(name)
+    c = compile_one(name, flags)
+    if not c:
+        print(f"{name}: COMPILE-FAIL"); return
+    ob, fx = c
+    tbm, obm = mask(tb, fx), mask(ob, fx)
+    ti = list(MD.disasm(tbm, 0)); oi = list(MD.disasm(obm, 0))
+    tk = [(i.mnemonic, toks(i)[1]) for i in ti]
+    ok = [(i.mnemonic, toks(i)[1]) for i in oi]
+    sm = difflib.SequenceMatcher(None, tk, ok, autojunk=False)
+    def fmt(i): return f"{i.mnemonic} {i.op_str}" if i else ""
+    print(f"\n{name}  target={len(tb)}B ours={len(ob)}B  ({'MATCH' if tbm==obm and len(tb)==len(ob) else 'diff'})")
+    print(f"  {'TARGET (original)':<34}{'OURS (our C -> 9.5b)':<34}")
+    print("  " + "-" * 70)
+    for tag, i1, i2, j1, j2 in sm.get_opcodes():
+        n = max(i2 - i1, j2 - j1)
+        for k in range(n):
+            t = ti[i1 + k] if i1 + k < i2 else None
+            o = oi[j1 + k] if j1 + k < j2 else None
+            mark = " " if tag == "equal" else "|"
+            print(f"  {fmt(t):<34}{mark} {fmt(o):<34}")
+
+
 def main():
+    if "--show" in sys.argv:
+        i = sys.argv.index("--show")
+        show(sys.argv[i + 1], sys.argv[i + 2] if i + 2 < len(sys.argv) else "-4s -oneatx -zp8 -s -zq")
+        return
     if "--triage" in sys.argv:
         flags = sys.argv[sys.argv.index("--triage") + 1]
         man = json.load(open(MAN))["functions"]
