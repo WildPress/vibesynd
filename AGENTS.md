@@ -235,7 +235,7 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ### Rename with `tools/rename_global.py g_<hex> g_<name> "<type>" "<desc>"` (or edit its CATALOGUE) --
 ### it replaces \bg_hex\b across all src/*.c (code+comments) and updates the registry. Symbol names
 ### DON'T affect compiled bytes (verified: FUN_000377e8 still reloc-matches), so renaming is byte-safe;
-### mkdata defines the renamed symbol at its real offset (verified in build/dataimg.obj). 48 named so far
+### mkdata defines the renamed symbol at its real offset (verified in build/dataimg.obj). 57 named so far
 ### (entity_pool/pool_a/grid_heads/dir_dx|dy/screen|back_buf/record tables/cur_player/tile_flags/rng_seed/
 ### num_players/cheat+HUD flags/...). Catalogue in docs/object-model.md. SKIP addresses with CONFLICTING
 ### per-function interpretations (g_5788=research-recs vs squad-grid; g_7bf4=mod-recs vs conveyor-row).
