@@ -362,7 +362,7 @@
     {"addr": "0003c529", "name": "FUN_0003c529", "size": 82, "calls": 1, "data_refs": 5, "incoming": 5, "status": "matched", "match_pct": 100.0, "src": "src/lib/runtime/FUN_0003c529.c"},
     {"addr": "0003c57b", "name": "FUN_0003c57b", "size": 24, "calls": 0, "data_refs": 3, "incoming": 3, "status": "matched", "match_pct": 100.0, "src": "src/lib/runtime/FUN_0003c57b.c"},
     {"addr": "0003c594", "name": "heap_alloc", "size": 171, "calls": 0, "data_refs": 0, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/lib/runtime/heap_alloc.c"},
-    {"addr": "0003c63f", "name": "FUN_0003c644", "size": 272, "calls": 0, "data_refs": 0, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/lib/runtime/FUN_0003c644.c"},
+    {"addr": "0003c63f", "name": "FUN_0003c644", "size": 272, "calls": 0, "data_refs": 0, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/lib/runtime/FUN_0003c644.c", "match_method": "db-transcription (unbake, verified)"},
     {"addr": "0003c74f", "name": "FUN_0003c74f", "size": 35, "calls": 0, "data_refs": 3, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/lib/runtime/FUN_0003c74f.c"},
     {"addr": "0003c772", "name": "FUN_0003c772", "size": 164, "calls": 0, "data_refs": 8, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/lib/runtime/FUN_0003c772.c"},
     {"addr": "0003c816", "name": "FUN_0003c816", "size": 503, "calls": 4, "data_refs": 25, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/lib/runtime/FUN_0003c816.c"},
@@ -553,6 +553,7 @@
     {"addr": "0003b01e", "name": "FUN_0003b01e", "size": 435, "calls": 0, "data_refs": 0, "incoming": 0, "status": "matched", "match_pct": "", "src": "src/lib/runtime/FUN_0003b01e.c", "match_method": "db-transcription (unbake, verified)"},
     {"addr": "0003cfe6", "name": "FUN_0003cfe6", "size": 80, "calls": 0, "data_refs": 0, "incoming": 0, "status": "matched", "match_pct": "", "src": "src/lib/runtime/FUN_0003cfe6.c", "match_method": "db-transcription (unbake, verified)"},
     {"addr": "0003d036", "name": "FUN_0003d036", "size": 67, "calls": 0, "data_refs": 0, "incoming": 0, "status": "matched", "match_pct": "", "src": "src/lib/runtime/FUN_0003d036.c", "match_method": "db-transcription (unbake, verified)"},
-    {"addr": "0004d434", "name": "FUN_0004d434", "size": 14, "calls": 0, "data_refs": 0, "incoming": 0, "status": "matched", "match_pct": "", "src": "src/lib/runtime/FUN_0004d434.c", "match_method": "db-transcription (unbake, verified)"}
+    {"addr": "0004d434", "name": "FUN_0004d434", "size": 14, "calls": 0, "data_refs": 0, "incoming": 0, "status": "matched", "match_pct": "", "src": "src/lib/runtime/FUN_0004d434.c", "match_method": "db-transcription (unbake, verified)"},
+    {"addr": "0001c2c8", "name": "FUN_0001c2c8", "size": 4044, "calls": 0, "data_refs": 0, "incoming": 0, "status": "matched", "match_pct": "", "src": "src/lib/runtime/FUN_0001c2c8.c", "match_method": "db-transcription (unbake, verified)"}
   ]
 }
