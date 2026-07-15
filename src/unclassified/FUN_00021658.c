@@ -20,9 +20,9 @@
  *   tier 0x1a0 -> g_539a   (not-owned => 1)
  *   tier 0x1ac -> g_10b52
  *   tier 0x1bc -> g_10b48
- *   tier 0x1c8 -> g_10b43, and reset funds rec[0] = 100000000
- *   tier 0x1d4 -> g_539a & g_10b43, funds, + rebuild squad/conveyor tables
- *   tier 0x1e0 -> g_539a & g_10b43, funds, + rebuild tables + equip templates
+ *   tier 0x1c8 -> g_unlimited_funds, and reset funds rec[0] = 100000000
+ *   tier 0x1d4 -> g_539a & g_unlimited_funds, funds, + rebuild squad/conveyor tables
+ *   tier 0x1e0 -> g_539a & g_unlimited_funds, funds, + rebuild tables + equip templates
  * (The last two tiers gate the heavy default-loadout rebuild.)
  *
  * Rebuild step 1 (squad grids): 18 records of 491 bytes based at g_5788:
@@ -30,7 +30,7 @@
  *   (d*491 + row*48 + col*2) is zeroed.
  * Rebuild step 2 (conveyor rows): 20 records of 501 bytes based at g_7bf4:
  *   skip any row whose type byte g_7bf4[e*501] == 0xfe; else g_7c05[e*501]=2400,
- *   zero the 10x24 word grid at g_7c07, copy g_7de8[e*501] = g_b830[e], and
+ *   zero the 10x24 word grid at g_7c07, copy g_7de8[e*501] = g_mod_byte_src[e], and
  *   take the absolute value of the signed dword g_7bf5[e*501].
  * Rebuild step 3 (equip templates): for each of 18 entries (stride 40) inside
  *   rec, roll a byte g_e5b9 = FUN_20c88(), set the HP word g_e5ba = 0x10, the
@@ -62,7 +62,7 @@
 extern short         g_cur_player;
 extern unsigned char g_539a;
 extern unsigned char g_10b52;
-extern unsigned char g_10b43;
+extern unsigned char g_unlimited_funds;
 extern unsigned char g_10b48;
 
 extern unsigned char g_player_recs[];   /* economy/template record region (stride 0x417) */
@@ -73,7 +73,7 @@ extern unsigned char g_7bf5[];   /* conveyor-row signed dword */
 extern unsigned char g_7c05[];   /* conveyor-row capacity word */
 extern unsigned char g_7c07[];   /* conveyor-row 10x24 word body */
 extern unsigned char g_7de8[];   /* conveyor-row source byte */
-extern unsigned char g_b830[];   /* per-row default source table */
+extern unsigned char g_mod_byte_src[];   /* per-row default source table */
 extern unsigned char g_e5b9[];   /* equip-template roll byte (in rec, stride 40) */
 extern unsigned char g_e5ba[];   /* equip-template HP word */
 extern unsigned char g_e5bc[];   /* equip-template flags word */
@@ -92,7 +92,7 @@ void FUN_00021658(void)
 
     g_539a  = 0;
     g_10b52 = 0;
-    g_10b43 = 0;
+    g_unlimited_funds = 0;
     g_10b48 = 0;
 
     /* --- block A: research tier 0x1a0 --- */
@@ -113,7 +113,7 @@ void FUN_00021658(void)
     /* --- block D: research tier 0x1c8 -> also reset funds --- */
     if (FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1c8) == 0 ||
         FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1c8) == 0) {
-        g_10b43 = 1;
+        g_unlimited_funds = 1;
         *(int *)(g_player_recs + 0x417 * g_cur_player) = 100000000;
     }
 
@@ -121,7 +121,7 @@ void FUN_00021658(void)
     if (FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1d4) == 0 ||
         FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1d4) == 0) {
         g_539a  = 1;
-        g_10b43 = 1;
+        g_unlimited_funds = 1;
         *(int *)(g_player_recs + 0x417 * g_cur_player) = 100000000;
 
         for (d = 0; d < 0x12; d++) {
@@ -137,7 +137,7 @@ void FUN_00021658(void)
             for (row = 0; row < 0xa; row++)
                 for (col = 0; col < 0x18; col++)
                     *(short *)(g_7c07 + e1 * 501 + row * 48 + col * 2) = 0;
-            g_7de8[e1 * 501] = g_b830[e1];
+            g_7de8[e1 * 501] = g_mod_byte_src[e1];
             if (*(int *)(g_7bf5 + e1 * 501) < 0)
                 *(int *)(g_7bf5 + e1 * 501) = -*(int *)(g_7bf5 + e1 * 501);
         }
@@ -147,7 +147,7 @@ void FUN_00021658(void)
     if (FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x23, 0x1e0) == 0 ||
         FUN_0003aee6(g_player_recs + 0x417 * g_cur_player + 0x11, 0x1e0) == 0) {
         g_539a  = 1;
-        g_10b43 = 1;
+        g_unlimited_funds = 1;
         *(int *)(g_player_recs + 0x417 * g_cur_player) = 100000000;
 
         for (d = 0; d < 0x12; d++) {
@@ -163,7 +163,7 @@ void FUN_00021658(void)
             for (row = 0; row < 0xa; row++)
                 for (col = 0; col < 0x18; col++)
                     *(short *)(g_7c07 + e2 * 501 + row * 48 + col * 2) = 0;
-            g_7de8[e2 * 501] = g_b830[e2];
+            g_7de8[e2 * 501] = g_mod_byte_src[e2];
             if (*(int *)(g_7bf5 + e2 * 501) < 0)
                 *(int *)(g_7bf5 + e2 * 501) = -*(int *)(g_7bf5 + e2 * 501);
         }

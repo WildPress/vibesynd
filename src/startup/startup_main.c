@@ -6,7 +6,7 @@
  * second time dispatching single-letter options ('-'/'/' prefix, case-insensitive):
  *   ?    restore video, print usage (0x25168), exit(1)
  *   c/C  g_a50d = atol(arg+2); clamp >=3 -> 0
- *   d/D  g_10b4c = 1
+ *   d/D  g_input_echo = 1
  *   h/H  g_105 = 2
  *   i/I  sound card: -iirqN (g_4d94), -idmaN (g_4d96), -iioNNN (g_4d98 via 0x24b08)
  *   l/L  g_105 = 4
@@ -54,9 +54,9 @@ extern char *strcat(char *dst, const char *src);
 extern unsigned char  g_entry_video_mode;
 extern unsigned short g_10b2e, g_1be30, g_506c;
 extern unsigned char  g_105;
-extern unsigned char  g_10b45, g_10b42, g_10b44, g_10b3b, g_10b3a, g_10b4c;
-extern unsigned char  g_10b47, g_10b43, g_sound_enabled, g_music_enabled, g_539a;
-extern unsigned char  g_10b51, g_a50d, g_10b53, g_10b52, g_10b48;
+extern unsigned char  g_radar_detail, g_10b42, g_10b44, g_10b3b, g_10b3a, g_input_echo;
+extern unsigned char  g_10b47, g_unlimited_funds, g_sound_enabled, g_music_enabled, g_539a;
+extern unsigned char  g_keep_synd_colours, g_a50d, g_10b53, g_10b52, g_10b48;
 extern volatile int   g_10ad8;
 extern unsigned short g_4d94, g_4d96, g_4d98;
 extern char           g_name_buf[];
@@ -90,19 +90,19 @@ void startup_main(short argc, char **argv)
     g_10b2e = 1;
     g_1be30 = 1;
     g_105 = 2;
-    g_10b45 = 0;
+    g_radar_detail = 0;
     g_10b42 = 0;
     g_10b44 = 0;
     g_10b3b = 0;
     g_10b3a = 1;
-    g_10b4c = 0;
+    g_input_echo = 0;
     g_10b47 = 1;
-    g_10b43 = 0;
+    g_unlimited_funds = 0;
     g_sound_enabled = 1;
     g_music_enabled = 1;
     g_539a = 0;
     g_10ad8 = 0;
-    g_10b51 = 0;
+    g_keep_synd_colours = 0;
     g_a50d = 0;
     g_10b53 = 0;
     g_10b52 = 0;
@@ -120,7 +120,7 @@ void startup_main(short argc, char **argv)
                 break;
             case 'D':
             case 'd':
-                g_10b4c = 1;
+                g_input_echo = 1;
                 break;
             case 'P':
             case 'p':

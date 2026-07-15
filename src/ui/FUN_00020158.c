@@ -11,7 +11,7 @@
            for id 0x11) at (0x1f6,0x6a), then draws the name row and several
            label/value stat rows from the 0x1f5-stride record at
            g_7bf4[(id-1)*0x1f5]. Two optional stat blocks are gated by
-           g_a69a[id]; a running y (0xdc/0xe8/+0xc) positions the shifting rows.
+           g_frame_enable[id]; a running y (0xdc/0xe8/+0xc) positions the shifting rows.
    !=2  -> equipment/mod detail from the 0x1eb-stride record at
            g_5780[(id-1)*0x1eb]: name + one label/value row, then (when the
            g_4960[byte*3] slot pointer is non-null) a wrapped description block
@@ -23,7 +23,7 @@ extern unsigned char *g_11be4;
 extern unsigned char g_7bf4[];
 extern unsigned char g_5780[];
 extern unsigned char g_a50d;
-extern unsigned char g_a69a[];
+extern unsigned char g_frame_enable[];
 extern char *g_4b10[];
 extern char *g_4a38[];
 extern char *g_47a4[];
@@ -64,7 +64,7 @@ void FUN_00020158(unsigned char param1, unsigned char param2)
         FUN_00036698(buf, 0x22c, 0xd0, 0xe, 0x54, g_11be4, -2, 6, 0, 0);
 
         y = 0xdc;
-        if (g_a69a[param2] != 0) {
+        if (g_frame_enable[param2] != 0) {
             FUN_00036698(*(char **)((char *)g_47b0 + g_a50d * 4), 0x1f8, 0xdc, 0xf, 0x54, g_11be4, -2, 8, 0, 0);
             FUN_0003a4fa(buf, g_184, *(short *)(g_7bf4 + (param2 - 1) * 0x1f5 + 5) + 1);
             FUN_00036698(buf, 0x22c, 0xdc, 0xe, 0x54, g_11be4, -2, 6, 0, 0);
@@ -76,7 +76,7 @@ void FUN_00020158(unsigned char param1, unsigned char param2)
         FUN_00036698(buf, 0x22c, y, 0xe, 0x54, g_11be4, -2, 6, 0, 0);
         y += 0xc;
 
-        if (g_a69a[param2] != 0) {
+        if (g_frame_enable[param2] != 0) {
             FUN_00036698(*(char **)((char *)g_47c8 + g_a50d * 4), 0x1f8, y, 0xf, 0x54, g_11be4, -2, 8, 0, 0);
             FUN_0003a4fa(buf, g_184, *(int *)(g_7bf4 + (param2 - 1) * 0x1f5 + 7));
             FUN_00036698(buf, 0x22c, y, 0xe, 0x54, g_11be4, -2, 6, 0, 0);

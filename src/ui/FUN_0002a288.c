@@ -18,10 +18,10 @@
  *  1/2 -> g_5324 = g_5308 + 6*state; return.   3 -> nothing.
  *  4   -> g_52ff=1; e = g_entity_pool + g_10b1a; if g_e398==0 and n<8: inner
  *         switch on type e[0x19] queues a draw-list node
- *         FUN_0001b858(*(ushort*)(g_5348+OFS), g_5258[n*9], g_5258[n*9+1]),
+ *         FUN_0001b858(*(ushort*)(g_5348+OFS), g_auxbar_panel[n*9], g_auxbar_panel[n*9+1]),
  *         OFS = 0x242+8*(type-1) for 1..0xc, 0x2b2 for 0xd/e/f, 0x2ba for
  *         0x10, 0x2c2 for 0x11/12/13; type 0xc also centers string
- *         tbl_4b10[type-1][g_a50d] into field 0x10584; then if g_a69a[type]
+ *         tbl_4b10[type-1][g_a50d] into field 0x10584; then if g_frame_enable[type]
  *         draw gauge FUN_0003fb40(x+4, y+0x18, 0x17, 4, 0xc). Always:
  *         center tbl_4b10[type-1][g_a50d] into 0x10584; g_5324 = g_5308 +
  *         6*state; return.
@@ -79,8 +79,8 @@ extern unsigned char g_entity_pool[];
 extern short g_a6c2[];
 extern unsigned char g_e398;
 extern unsigned char *g_5348;
-extern short g_5258[];
-extern unsigned char g_a69a[];
+extern short g_auxbar_panel[];
+extern unsigned char g_frame_enable[];
 extern int tbl_4b10[][3];
 extern unsigned char g_a50d;
 extern int g_5308;
@@ -160,76 +160,76 @@ void FUN_0002a288(void)
             switch (e[0x19]) {
             case 1:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_5348 + 0x242), g_5258[m], g_5258[m + 1]);
+                FUN_0001b858(*(unsigned short *)(g_5348 + 0x242), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 2:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_5348 + 0x24a), g_5258[m], g_5258[m + 1]);
+                FUN_0001b858(*(unsigned short *)(g_5348 + 0x24a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 3:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_5348 + 0x252), g_5258[m], g_5258[m + 1]);
+                FUN_0001b858(*(unsigned short *)(g_5348 + 0x252), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 4:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_5348 + 0x25a), g_5258[m], g_5258[m + 1]);
+                FUN_0001b858(*(unsigned short *)(g_5348 + 0x25a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 5:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_5348 + 0x262), g_5258[m], g_5258[m + 1]);
+                FUN_0001b858(*(unsigned short *)(g_5348 + 0x262), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 6:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_5348 + 0x26a), g_5258[m], g_5258[m + 1]);
+                FUN_0001b858(*(unsigned short *)(g_5348 + 0x26a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 7:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_5348 + 0x272), g_5258[m], g_5258[m + 1]);
+                FUN_0001b858(*(unsigned short *)(g_5348 + 0x272), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 8:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_5348 + 0x27a), g_5258[m], g_5258[m + 1]);
+                FUN_0001b858(*(unsigned short *)(g_5348 + 0x27a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 9:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_5348 + 0x282), g_5258[m], g_5258[m + 1]);
+                FUN_0001b858(*(unsigned short *)(g_5348 + 0x282), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 0xa:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_5348 + 0x28a), g_5258[m], g_5258[m + 1]);
+                FUN_0001b858(*(unsigned short *)(g_5348 + 0x28a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 0xb:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_5348 + 0x292), g_5258[m], g_5258[m + 1]);
+                FUN_0001b858(*(unsigned short *)(g_5348 + 0x292), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 0xc:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_5348 + 0x29a), g_5258[m], g_5258[m + 1]);
+                FUN_0001b858(*(unsigned short *)(g_5348 + 0x29a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 FUN_000299c8(0x10584, tbl_4b10[e[0x19] - 1][g_a50d]);
                 break;
             case 0xd:
             case 0xe:
             case 0xf:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_5348 + 0x2b2), g_5258[m], g_5258[m + 1]);
+                FUN_0001b858(*(unsigned short *)(g_5348 + 0x2b2), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 0x10:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_5348 + 0x2ba), g_5258[m], g_5258[m + 1]);
+                FUN_0001b858(*(unsigned short *)(g_5348 + 0x2ba), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 0x11:
             case 0x12:
             case 0x13:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_5348 + 0x2c2), g_5258[m], g_5258[m + 1]);
+                FUN_0001b858(*(unsigned short *)(g_5348 + 0x2c2), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 0:
             default:
                 break;
             }
-            if (g_a69a[e[0x19]] != 0)
-                FUN_0003fb40((unsigned short)g_5258[n * 9] + 4,
-                             (unsigned short)g_5258[n * 9 + 1] + 0x18, 0x17, 4, 0xc);
+            if (g_frame_enable[e[0x19]] != 0)
+                FUN_0003fb40((unsigned short)g_auxbar_panel[n * 9] + 4,
+                             (unsigned short)g_auxbar_panel[n * 9 + 1] + 0x18, 0x17, 4, 0xc);
         }
         FUN_000299c8(0x10584, tbl_4b10[e[0x19] - 1][g_a50d]);
         g_5324 = g_5308 + state * 6;

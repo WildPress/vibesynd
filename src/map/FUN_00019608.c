@@ -60,15 +60,15 @@ extern unsigned short g_grid_heads[];     /* 128x128 spatial-grid head ids      
 extern unsigned char g_entity_pool[];     /* pool-A base - 2 (index by id)          */
 extern unsigned char g_pool_a[];     /* pool-A base                            */
 extern unsigned char g_e4ab[];     /* per-player template: team byte         */
-extern unsigned char g_b46a[];     /* team -> blip colour table              */
-extern unsigned char g_1be3a[];    /* 8 objective slots, stride 14           */
+extern unsigned char g_blip_colours[];     /* team -> blip colour table              */
+extern unsigned char g_objectives[];    /* 8 objective slots, stride 14           */
 extern short g_cur_player;              /* current/owning player                  */
-extern short g_10b30;              /* selected-target countdown (pulse anim) */
-extern short g_a74e;               /* pulse-ring base radius                 */
-extern short g_3ef4;               /* objective-marker animation phase       */
-extern unsigned char g_10b45;      /* radar detail-mode flag                 */
-extern unsigned char g_10afc;      /* "in mission" flag                      */
-extern unsigned char g_10b4b;      /* off-screen-objective indicator flag    */
+extern short g_target_countdown;              /* selected-target countdown (pulse anim) */
+extern short g_pulse_ring_r;               /* pulse-ring base radius                 */
+extern short g_marker_anim;               /* objective-marker animation phase       */
+extern unsigned char g_radar_detail;      /* radar detail-mode flag                 */
+extern unsigned char g_in_mission;      /* "in mission" flag                      */
+extern unsigned char g_offscreen_obj;      /* off-screen-objective indicator flag    */
 extern unsigned char g_e395;       /* show projectile/danger blips           */
 extern unsigned char g_e396;       /* target-marker colour offset            */
 extern unsigned char g_e397;       /* objective-marker colour phase          */
@@ -193,7 +193,7 @@ void FUN_00019608(unsigned char *agent, short zoom)
                     if (node[0x1c] & 2)
                         owner = (int)((node - g_pool_a) / 0x5c) / 8;
 
-                    if (g_10b45 != 0) {
+                    if (g_radar_detail != 0) {
                         if ((node[0x1c] & 8) && tgt == 0) {
                             *(short *)(blip + count * 6) = (short)blipX;
                             *(short *)(blip + count * 6 + 2) = (short)blipY;
@@ -209,13 +209,13 @@ void FUN_00019608(unsigned char *agent, short zoom)
                         } else {
                             if (tgt != 0)
                                 owner = (int)((g_entity_pool + tgt - g_pool_a) / 0x5c) / 8;
-                            if (owner == g_cur_player || g_10b30 > 0) {
+                            if (owner == g_cur_player || g_target_countdown > 0) {
                                 if (tgt == -1)
                                     goto dot45;
                                 *(short *)(blip + count * 6) = (short)blipX;
                                 *(short *)(blip + count * 6 + 2) = (short)blipY;
                                 blip[count * 6 + 4] = 3;
-                                blip[count * 6 + 5] = g_b46a[g_e4ab[owner * 0x417]];
+                                blip[count * 6 + 5] = g_blip_colours[g_e4ab[owner * 0x417]];
                                 count++;
                                 break;
                             }
@@ -299,25 +299,25 @@ void FUN_00019608(unsigned char *agent, short zoom)
         }
     }
 
-    if (sel_r != -1 && g_10b45 != 0) {
-        int ring = (int)g_a74e / 4 + g_a74e;   /* g_a74e * 5/4 */
-        if (g_10b30 > 0) {
-            int r = 90 * (ring - g_10b30) / ring;
+    if (sel_r != -1 && g_radar_detail != 0) {
+        int ring = (int)g_pulse_ring_r / 4 + g_pulse_ring_r;   /* g_pulse_ring_r * 5/4 */
+        if (g_target_countdown > 0) {
+            int r = 90 * (ring - g_target_countdown) / ring;
             FUN_00019318(sel_x, sel_y, r, 0xc);
         }
     }
 
-    g_10b30 = -1;
-    if (g_10b45 != 0)
+    g_target_countdown = -1;
+    if (g_radar_detail != 0)
         return;
-    if (g_10afc != 1)
+    if (g_in_mission != 1)
         return;
 
     /* ---- Phase 3: mission-objective markers ---- */
     {
         int cx;
         for (cx = 0; cx < 8; cx++) {
-            unsigned char *rec = g_1be3a + cx * 0xe;
+            unsigned char *rec = g_objectives + cx * 0xe;
             unsigned short otype;
             int mx, my, scale2, off, len;
 
@@ -347,11 +347,11 @@ void FUN_00019608(unsigned char *agent, short zoom)
 
             /* advance the shared dashed-line animation phase */
             off = FUN_00014c58(0x40 - mx, 0x40 - my);
-            g_3ef4 += zoom;
+            g_marker_anim += zoom;
             len = (off & 0xffff) + zoom * 4;
-            if (g_3ef4 > len) {
-                g_3ef4 = 3;
-                if (g_10b4b != 0 &&
+            if (g_marker_anim > len) {
+                g_marker_anim = 3;
+                if (g_offscreen_obj != 0 &&
                     !(mx >= 0 && mx < 0x80 && my >= 0 && my < 0x80))
                     FUN_00035f28(0x11, 0x7f);     /* off-screen: edge marker */
             }
@@ -360,7 +360,7 @@ void FUN_00019608(unsigned char *agent, short zoom)
                 int colour = (0xe - g_e397 * 8) & 0xff;
                 FUN_00019318(mx, my, zoom * 3, colour);   /* on-screen marker */
             } else {
-                FUN_00019318(mx, my, g_3ef4, 0xc);        /* off-screen ring  */
+                FUN_00019318(mx, my, g_marker_anim, 0xc);        /* off-screen ring  */
             }
             return;
         }

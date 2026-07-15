@@ -1,13 +1,13 @@
 /* @ 0x15f58 -- daily/time economy tick.  Reads 5 volatile input-edge flags
    (g_e2bf..g_e2c3) that toggle bookkeeping bytes / nudge the game-speed global
    g_5304 (busy-wait while the flag==1).  Then, for the normal path
-   (g_10b45==0): busy-waits on g_10b50 vs speed, recomputes a displayed
+   (g_radar_detail==0): busy-waits on g_10b50 vs speed, recomputes a displayed
    money/rate byte (g_3ee8) and commits the funding entry via FUN_33568 when the
    status g_5594 is 0 or 3, and if the record's time-budget dword can cover
    (param_1-1) days, spends them: money-=days, day++ (wrap at 0x16d -> year++),
    then runs the 50-region economic sweep (FUN_16318 owner funding, g_player_recs +=
    FUN_16438 income, g_53a2[i] += 0x1f4-rand) and FUN_164c8 target reassignment.
-   The fast path (g_10b45!=0) just spends the days with no sweep.  Overflow
+   The fast path (g_radar_detail!=0) just spends the days with no sweep.  Overflow
    (not enough budget) advances by param_1/0x60 or 1 depending on g_10b52.
    Record stride 0x417 based at g_player_recs(accum)/g_e4a0(budget,day,year), indexed
    by g_cur_player, exactly as siblings FUN_16318/16438/164c8/16678/33568.
@@ -34,10 +34,10 @@ extern volatile unsigned char g_e2c2;
 extern volatile unsigned char g_e2c3;
 extern unsigned char g_537f;
 extern unsigned char g_10b4d;
-extern unsigned char g_10b4b;
+extern unsigned char g_offscreen_obj;
 extern unsigned int g_5304;
 extern volatile unsigned char g_10b50;
-extern unsigned char g_10b45;
+extern unsigned char g_radar_detail;
 extern unsigned char g_10b52;
 extern int g_10b06;
 extern volatile short g_cur_player;
@@ -77,9 +77,9 @@ char FUN_00015f58(unsigned int param_1)
     }
     if (g_e2c3 != 0) {
         while (g_e2c3 == 1);
-        g_10b4b = (g_10b4b + 1) & 1;
+        g_offscreen_obj = (g_offscreen_obj + 1) & 1;
     }
-    if (g_10b45 == 0) {
+    if (g_radar_detail == 0) {
         if (g_5304 >= 3) {
             while (g_10b50 < g_5304 && g_10b50 != 0);
         }

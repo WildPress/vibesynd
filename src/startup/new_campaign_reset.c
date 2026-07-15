@@ -38,25 +38,25 @@
  *  20 mod/equip records (0x7bf4, stride 0x1f5) + a 10x24 word sub-grid at +0x13
  *  a 0x1e9-byte flat state block (0x5594), memset to 0
  *
- * g_10b43 = "unlimited funds" flag (network / debug): money 100,000,000 vs
- * 30,000, and constant 0x960 vs the g_b474/g_b498 source tables.
- * g_10b51 = "keep syndicate colours" flag. g_cur_player = current player, reset 0.
+ * g_unlimited_funds = "unlimited funds" flag (network / debug): money 100,000,000 vs
+ * 30,000, and constant 0x960 vs the g_research_src/g_mod_src source tables.
+ * g_keep_synd_colours = "keep syndicate colours" flag. g_cur_player = current player, reset 0.
  */
-extern unsigned char g_105d4[];   /* 8 command records, stride 0xe            */
+extern unsigned char g_command_recs[];   /* 8 command records, stride 0xe            */
 extern unsigned char g_player_recs[];    /* 8 player templates, stride 0x417         */
-extern unsigned char g_539c[];    /* 50 syndicate records, stride 0xa         */
+extern unsigned char g_syndicate_recs[];    /* 50 syndicate records, stride 0xa         */
 extern unsigned char g_5788[];    /* 18 research records, stride 0x1eb        */
 extern unsigned char g_7bf4[];    /* 20 mod records, stride 0x1f5             */
 extern unsigned char g_5594[];    /* flat state block                         */
-extern unsigned char g_10aa4[];   /* 4-entry roster index table               */
-extern short g_b474[];            /* research source table (word)             */
-extern short g_b498[];            /* mod source table (word)                  */
-extern unsigned char g_b830[];    /* mod byte source table                    */
-extern short g_108;               /* seed word copied into each command rec   */
+extern unsigned char g_roster_index[];   /* 4-entry roster index table               */
+extern short g_research_src[];            /* research source table (word)             */
+extern short g_mod_src[];            /* mod source table (word)                  */
+extern unsigned char g_mod_byte_src[];    /* mod byte source table                    */
+extern short g_rng_seed;               /* seed word copied into each command rec   */
 extern short g_a73e;              /* default value for slot-0 of each mod list */
 extern short g_cur_player;             /* current player (reset to 0)              */
-extern unsigned char g_10b43;     /* unlimited-funds flag                     */
-extern unsigned char g_10b51;     /* keep-syndicate-colours flag              */
+extern unsigned char g_unlimited_funds;     /* unlimited-funds flag                     */
+extern unsigned char g_keep_synd_colours;     /* keep-syndicate-colours flag              */
 
 extern int FUN_0000e568(int n);            /* random in [0,n)                 */
 extern unsigned char keyboard_state_machine(void);   /* random weapon/type byte         */
@@ -72,13 +72,13 @@ void new_campaign_reset(void)
     for (p = 0; p < 8; p++) {
 
         /* command record (0x105d4, stride 0xe) */
-        g_105d4[p * 0xe + 0xc] = (unsigned char)p;
-        *(short *)(g_105d4 + p * 0xe + 0xa) = 0;
-        *(short *)(g_105d4 + p * 0xe + 0) = 0;
-        *(short *)(g_105d4 + p * 0xe + 2) = 0;
-        *(short *)(g_105d4 + p * 0xe + 4) = 0;
-        g_105d4[p * 0xe + 0xd] = 0;
-        *(short *)(g_105d4 + p * 0xe + 6) = g_108;
+        g_command_recs[p * 0xe + 0xc] = (unsigned char)p;
+        *(short *)(g_command_recs + p * 0xe + 0xa) = 0;
+        *(short *)(g_command_recs + p * 0xe + 0) = 0;
+        *(short *)(g_command_recs + p * 0xe + 2) = 0;
+        *(short *)(g_command_recs + p * 0xe + 4) = 0;
+        g_command_recs[p * 0xe + 0xd] = 0;
+        *(short *)(g_command_recs + p * 0xe + 6) = g_rng_seed;
 
         /* equip/research template (0xe49c, stride 0x417) */
         if (p == 0) {
@@ -99,7 +99,7 @@ void new_campaign_reset(void)
         *(int *)(g_player_recs + p * 0x417 + 4)    = 0;        /* g_e4a0 */
         *(short *)(g_player_recs + p * 0x417 + 8)  = 1;        /* g_e4a4 */
         *(short *)(g_player_recs + p * 0x417 + 0xa) = 0x55;    /* g_e4a6 */
-        if (g_10b43)
+        if (g_unlimited_funds)
             *(int *)(g_player_recs + p * 0x417 + 0) = 0x5f5e100;  /* 100,000,000 */
         else
             *(int *)(g_player_recs + p * 0x417 + 0) = 0x7530;     /* 30,000 */
@@ -123,7 +123,7 @@ void new_campaign_reset(void)
             }
             if (j < 4) {
                 g_player_recs[slot + 7] = (unsigned char)(j + 1);   /* g_e5c0 */
-                g_10aa4[j] = (unsigned char)j;
+                g_roster_index[j] = (unsigned char)j;
             } else {
                 g_player_recs[slot + 7] = 0;
             }
@@ -138,23 +138,23 @@ void new_campaign_reset(void)
 
     /* ---- 50 syndicate records (0x539c, stride 0xa): starting money ---- */
     for (i = 0; i < 0x32; i++) {
-        if (g_10b51 && i != 0)
-            g_539c[i * 0xa + 2] = 0;                         /* g_539e */
+        if (g_keep_synd_colours && i != 0)
+            g_syndicate_recs[i * 0xa + 2] = 0;                         /* g_539e */
         else
-            g_539c[i * 0xa + 2] = (unsigned char)(FUN_0000e568(7) + 1);
-        *(short *)(g_539c + i * 0xa + 0) = 0;                /* g_539c */
-        *(int *)(g_539c + i * 0xa + 6) =
+            g_syndicate_recs[i * 0xa + 2] = (unsigned char)(FUN_0000e568(7) + 1);
+        *(short *)(g_syndicate_recs + i * 0xa + 0) = 0;                /* g_syndicate_recs */
+        *(int *)(g_syndicate_recs + i * 0xa + 6) =
             ((FUN_0000e568(0x14) & 0xffff) + 0x28) * 1000000; /* g_53a2 money */
-        g_539c[i * 0xa + 3] = 0x1e;                          /* g_539f */
-        g_539c[i * 0xa + 4] = 0x1e;                          /* g_53a0 */
+        g_syndicate_recs[i * 0xa + 3] = 0x1e;                          /* g_539f */
+        g_syndicate_recs[i * 0xa + 4] = 0x1e;                          /* g_53a0 */
     }
 
     /* ---- 18 research records (0x5788, stride 0x1eb) ---- */
     for (i = 0; i < 0x12; i++) {
-        if (g_10b43)
+        if (g_unlimited_funds)
             *(short *)(g_5788 + i * 0x1eb + 0) = 0x960;
         else
-            *(short *)(g_5788 + i * 0x1eb + 0) = g_b474[i];
+            *(short *)(g_5788 + i * 0x1eb + 0) = g_research_src[i];
         for (di = 0; di < 0xa; di++)
             for (bx = 0; bx < 0x18; bx++)
                 *(short *)(g_5788 + i * 0x1eb + 2 + di * 0x30 + bx * 2) = 0;
@@ -162,16 +162,16 @@ void new_campaign_reset(void)
 
     /* ---- 20 mod/equip records (0x7bf4, stride 0x1f5) ---- */
     for (di = 0; di < 0x14; di++) {
-        if (g_10b43 && g_7bf4[di * 0x1f5] == 0xfe)
+        if (g_unlimited_funds && g_7bf4[di * 0x1f5] == 0xfe)
             continue;                                  /* already unavailable */
-        if (g_10b43)
+        if (g_unlimited_funds)
             *(short *)(g_7bf4 + di * 0x1f5 + 0x11) = 0x960;   /* g_7c05 */
         else
-            *(short *)(g_7bf4 + di * 0x1f5 + 0x11) = g_b498[di];
+            *(short *)(g_7bf4 + di * 0x1f5 + 0x11) = g_mod_src[di];
         for (k = 0; k < 0xa; k++)
             for (bx = 0; bx < 0x18; bx++)
                 *(short *)(g_7bf4 + di * 0x1f5 + 0x13 + k * 0x30 + bx * 2) = 0;
-        g_7bf4[di * 0x1f5 + 0x1f4] = g_b830[di];             /* g_7de8 */
+        g_7bf4[di * 0x1f5 + 0x1f4] = g_mod_byte_src[di];             /* g_7de8 */
     }
 
     /* ---- flat state block ---- */

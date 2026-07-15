@@ -27,7 +27,7 @@
    Recipe: -4s -oneatx -zp8 -s -zq
 
    FUN_00027fc8 @ 0x27fc8 - submit a named command through the real-mode mailbox block.
-   Copy `name` into the far block at p+0x1a (inline _fstrcpy), pad it with g_377c
+   Copy `name` into the far block at p+0x1a (inline _fstrcpy), pad it with g_name_pad
    (inline _fstrcat) until _fstrlen >= 15, stamp command byte p[0]=0xb0, submit via
    0x27d88 (returns -99 if that fails), busy-wait while the status byte p[0x31] stays
    0xff, log via printf 0x3ad66 (g_3780, status, name); if status not 0/0x16 also log
@@ -37,7 +37,7 @@ extern short FUN_00027d88(unsigned char __far *p);
 extern void FUN_0003ad66(char *fmt, ...);
 extern void FUN_000289a8(char *s, int line, int code);
 
-extern char g_377c[];   /* pad chunk appended until name field is 15 chars */
+extern char g_name_pad[];   /* pad chunk appended until name field is 15 chars */
 extern char g_3780[];   /* "loaded ..." style format */
 extern char g_3798[];
 extern char g_376c[];
@@ -57,7 +57,7 @@ int FUN_00027fc8(unsigned char __far *p, char *name)
 
     _fstrcpy((char __far *)p + 0x1a, name);
     while (_fstrlen((char __far *)p + 0x1a) < 0xf)
-        _fstrcat((char __far *)p + 0x1a, g_377c);
+        _fstrcat((char __far *)p + 0x1a, g_name_pad);
 
     *p = 0xb0;
     r = FUN_00027d88(p);

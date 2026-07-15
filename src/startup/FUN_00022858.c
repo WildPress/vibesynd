@@ -1,6 +1,6 @@
 /* frameless @ 0x22858: mission/map init sequence. Builds the g_map_cols column table
    (FUN_20d18), fixes up two pointer tables (FUN_25378 x2), clears g_10ac8, session
-   init when g_10b45==0 (FUN_12ca8), block/tile setup (FUN_20d98), palette/screen
+   init when g_radar_detail==0 (FUN_12ca8), block/tile setup (FUN_20d98), palette/screen
    calls (0x498ef/0x4997e), sprintf's the map filename (fmt g_1f4 net-game, else
    fmt g_204 with the level byte g_4170[g_10b2e]) and loads it (FUN_188e8 into
    g_5378), clears + presents the screen buffer g_screen_buf (0x4993b/0x4987e), sets
@@ -18,7 +18,7 @@
    same family as 0x264a8's entry batching. */
 extern int g_535c, g_5314, g_5318, g_5330, g_531c, g_5320, g_5334;
 extern int g_10ac8;
-extern unsigned char g_10b45;
+extern unsigned char g_radar_detail;
 extern char g_1f4[];
 extern char g_204[];
 extern unsigned char g_4170[];
@@ -55,12 +55,12 @@ void FUN_00022858(void)
     FUN_00025378(g_5314, g_5318, g_5330);
     FUN_00025378(g_531c, g_5320, g_5334);
     g_10ac8 = 0;
-    if (g_10b45 == 0)
+    if (g_radar_detail == 0)
         FUN_00012ca8();
     FUN_00020d98();
     FUN_000498ef(0x12);
     FUN_0004997e(0);
-    if (g_10b45 != 0)
+    if (g_radar_detail != 0)
         FUN_0003a4fa(buf, g_1f4);
     else
         FUN_0003a4fa(buf, g_204, g_4170[g_10b2e]);

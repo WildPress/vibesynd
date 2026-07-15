@@ -6,8 +6,8 @@
  * 0,4,6,7,8,9,0xc,0xd -> default (continue at 0x29c0d).
  *
  * Centers string arg1 into the 16-char field 0x10554 (FUN_000299c8 =
- * center-into-16-char-field), stores arg2 word to g_537c. If byte g_10b45
- * set: done. If flags g_10afc & 6: bit1 -> FUN_00029a28, bit2 (re-read
+ * center-into-16-char-field), stores arg2 word to g_537c. If byte g_radar_detail
+ * set: done. If flags g_in_mission & 6: bit1 -> FUN_00029a28, bit2 (re-read
  * after the call) -> FUN_00029a68. Else scan the 8 14-byte slots at
  * 0x1be3a: first slot with dword+0 == 0 and known kind (word+4) centers
  * the per-language string tbl_44xx[g_a50d] into field 0x10564 and, if the
@@ -27,19 +27,19 @@
  * - switch on the loaded EXPRESSION (no named w): homes the selector in DX
  *   (mov dx,[..]; cmp dx,0x10; mov ax,dx; and eax,0xffff); a named local
  *   folds it into AX and loses the mov ax,dx widen copy.
- * - no fl local: `(g_10afc & 6)` / `& 2` re-reads CSE into DL across the
+ * - no fl local: `(g_in_mission & 6)` / `& 2` re-reads CSE into DL across the
  *   branch, and the `& 4` after the call re-reads memory (f6 05 test).
  * - store order `g_532c = 0x10; g_532e = bx;` makes Watcom stage 0x10 in
  *   ECX and tail-reorder the stores (532e first, then cx) -- the direct
  *   source order emits a 66c705 imm16 store (-3B).
  * Recipe: -4s -oneatx -zp8 -s -zq. */
-extern unsigned char g_10b45;
-extern unsigned char g_10afc;
+extern unsigned char g_radar_detail;
+extern unsigned char g_in_mission;
 extern unsigned short g_537c;
 extern unsigned short g_532e;
 extern unsigned short g_532c;
 extern unsigned char g_a50d;
-extern unsigned char g_1be3a[];
+extern unsigned char g_objectives[];
 extern int tbl_4408[];
 extern int tbl_4414[];
 extern int tbl_4420[];
@@ -58,12 +58,12 @@ void FUN_00029ad8(int a, int b)
 
     FUN_000299c8(0x10554, a);
     g_537c = (unsigned short)b;
-    if (g_10b45 == 0) {
-        if ((g_10afc & 6) == 0) {
+    if (g_radar_detail == 0) {
+        if ((g_in_mission & 6) == 0) {
             for (bx = 0; bx < 8; bx++) {
-                if (*(long *)&g_1be3a[bx * 14] != 0)
+                if (*(long *)&g_objectives[bx * 14] != 0)
                     continue;
-                switch (*(unsigned short *)&g_1be3a[bx * 14 + 4]) {
+                switch (*(unsigned short *)&g_objectives[bx * 14 + 4]) {
                 case 5:
                     FUN_000299c8(0x10564, tbl_4408[g_a50d]);
                     goto hit;
@@ -110,9 +110,9 @@ hit:
             FUN_000299c8(0x10574, 0x3828);
             return;
         }
-        if (g_10afc & 2)
+        if (g_in_mission & 2)
             FUN_00029a28();
-        if (g_10afc & 4)
+        if (g_in_mission & 4)
             FUN_00029a68();
     }
 }

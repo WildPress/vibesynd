@@ -31,14 +31,14 @@
  *   pr+0xb flag byte, pr+0x14 hp/count word, pr+0x1c category-flags byte,
  *   pr+0x20 owner id word, pr+0x3c kind/flags word.
  *
- * Globals: g_10b45 (byte, main-body gate: body runs iff 0), g_10afc (byte mode:
+ * Globals: g_radar_detail (byte, main-body gate: body runs iff 0), g_in_mission (byte mode:
  * bit2 gates the refund scan, bit8 suppresses the slot copy in block B),
  * g_10afb / g_10afd (byte counters), g_10afe / g_10b02 (dword, final clamp),
  * g_cur_player (short current-player, reset to 0 on the reset path).
  *
- * FLOW (top): if g_10b45==0, for each of 18 template entries j whose present byte
+ * FLOW (top): if g_radar_detail==0, for each of 18 template entries j whose present byte
  * g_e5c0[rec+j*40]!=0: locate the node; id = node-g_entity_pool.
- *   (A) if g_10afc&2: scan ALL 256 pool-A records; for each whose +0x20==id and
+ *   (A) if g_in_mission&2: scan ALL 256 pool-A records; for each whose +0x20==id and
  *       !(+0xb&1), credit funds by category (bit1->+0x32, bit8->+0x96, bit4->+0x96,
  *       bit0x10->+0x12c, all clear +0x20 & bump g_10afd), OR bit2 -> re-file the
  *       item into the first empty template entry (roll byte 0xff) with HP 0x10,
@@ -46,11 +46,11 @@
  *       ends in a compiled-out 2-arg hook (see NOTE).
  *   (B) always: if node HP (node+0x14) < 0, CLEAR template entry j (roll 0xff,
  *       HP -1, flags/slot/spare 0, 8 slots 0); else SET it from the node (HP 0x10,
- *       flags=node[0x3c]) and, unless g_10afc&8, zero its 8 slots then copy the
+ *       flags=node[0x3c]) and, unless g_in_mission&8, zero its 8 slots then copy the
  *       node's carried-item chain (head +0x3a, link +0x1c) into slots 0..7:
  *       qty=item[0x14], kind=item[0x19].
- * FLOW (tail, both the g_10b45!=0 skip and the normal fall-through): if param>0 &&
- * g_10b45!=0, memcpy-reset the record  FUN_4d1db(&g_player_recs[rec], g_player_recs, 0x417)  and
+ * FLOW (tail, both the g_radar_detail!=0 skip and the normal fall-through): if param>0 &&
+ * g_radar_detail!=0, memcpy-reset the record  FUN_4d1db(&g_player_recs[rec], g_player_recs, 0x417)  and
  * g_cur_player = 0. Finally clamp: if g_10afe > g_10b02, g_10afe = g_10b02.
  *
  * NOTE (the "hook"): every one of the 5 refund/re-file branches ends with a
@@ -100,12 +100,12 @@ extern unsigned char g_e5c0[];
 extern unsigned char g_e5c1[];
 extern unsigned char g_e5c3[];
 extern unsigned char g_10afb;
-extern unsigned char g_10afc;
+extern unsigned char g_in_mission;
 extern unsigned char g_10afd;
 extern unsigned int  g_10afe;
 extern unsigned int  g_10b02;
 extern short         g_cur_player;
-extern unsigned char g_10b45;
+extern unsigned char g_radar_detail;
 
 extern int  keyboard_state_machine(void);
 extern void FUN_0004d1db(unsigned char *dst, unsigned char *src, int n);
@@ -128,7 +128,7 @@ void FUN_00021e18(unsigned short param)
     unsigned short chain;
     unsigned char  slot;
 
-    if (g_10b45 == 0) {
+    if (g_radar_detail == 0) {
         for (j = 0; j < 0x12; j++) {
             slot = g_e5c0[j * 40 + REC];
             if (slot != 0) {
@@ -136,7 +136,7 @@ void FUN_00021e18(unsigned short param)
                 id = (int)(node - g_entity_pool);
 
                 /* --- (A) refund scan over the whole pool --- */
-                if (g_10afc & 2) {
+                if (g_in_mission & 2) {
                     pr = g_pool_a;
                     if (pr < g_pool_a + 256 * 0x5c) {
                         do {
@@ -206,7 +206,7 @@ void FUN_00021e18(unsigned short param)
                     *(unsigned short *)(g_e5ba + j * 40 + REC) = 0x10;
                     *(unsigned short *)(g_e5bc + j * 40 + REC) =
                         *(unsigned short *)(node + 0x3c);
-                    if (!(g_10afc & 8)) {
+                    if (!(g_in_mission & 8)) {
                         for (d = 0; d < 8; d++) {
                             *(unsigned short *)(g_e5c3 + j * 40 + d * 4 + REC) = 0;
                             *(unsigned short *)(g_e5c1 + j * 40 + d * 4 + REC) = 0;
@@ -229,7 +229,7 @@ void FUN_00021e18(unsigned short param)
     }
 
     /* --- tail: reset path (mutually exclusive with the main body) + clamp --- */
-    if (param > 0 && g_10b45 != 0) {
+    if (param > 0 && g_radar_detail != 0) {
         FUN_0004d1db(g_player_recs + REC, g_player_recs, 0x417);
         g_cur_player = 0;
     }

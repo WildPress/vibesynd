@@ -23,13 +23,13 @@
    FUN_00028228 @ 0x28228: NetBIOS session-op (opcode 0x91), same family as
    parked 0x27fc8/0x28118 and matched 0x284a8/0x28558. Stamps NCB[0] = 0x91, copies
    `name` into the name field at +0xa via an inlined far strcpy
-   (db-transcribed pragma), pads with g_377c (far strcat) until far strlen
+   (db-transcribed pragma), pads with g_name_pad (far strcat) until far strlen
    >= 15, sets timeout bytes +0x2a/+0x2b from the two byte params, submits
    via FUN_27d88 (-1 -> -0x63). async != 0 -> return 0 (duplicated
    epilogue). Busy-wait status [0x31] != 0xff (unnamed inline reads, AH),
    report nonzero status via 0x289a8(g_376c, 0x217, st), then clear word +4
    and return -status. Pragma modify lists follow 0x28118's proven set. */
-extern char g_377c[];
+extern char g_name_pad[];
 extern char g_376c[];
 extern short FUN_00027d88(unsigned char __far *p);
 extern void FUN_000289a8(char *s, int b, int c);
@@ -51,7 +51,7 @@ int FUN_00028228(unsigned int off, unsigned short sel, char *name,
     (sel :> (unsigned char *)off)[0] = 0x91;
     fstrcpy91(q = sel :> ((unsigned char *)off + 0xa), (unsigned char __far *)name);
     while (fstrlen91(q) < 0xf)
-        fstrcat91(q, (unsigned char __far *)g_377c);
+        fstrcat91(q, (unsigned char __far *)g_name_pad);
     (sel :> (unsigned char *)off)[0x2a] = rto;
     (sel :> (unsigned char *)off)[0x2b] = sto;
     if (FUN_00027d88(sel :> (unsigned char *)off) == -1)

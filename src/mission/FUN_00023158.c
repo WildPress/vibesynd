@@ -33,24 +33,24 @@
  * pairs sharing bodies (0x01=0x21, 0x02=0x22, 0x06=0x26, 0x0a=0x2a, 0x12=0x32,
  * 0x13=0x33, 0x17=0x37, 0x18=0x38).
  *
- * Entry: rec = g_105d4 + id*0xe (14B command record, opcode at rec[0xd]);
+ * Entry: rec = g_command_recs + id*0xe (14B command record, opcode at rec[0xd]);
  * tpl = g_player_recs + id*0x417 (0x417 equip/research template row saved to [ESP+8]).
  * tpl[0xb5] = pool-A base slot (byte), tpl[0xb6] = signed agent selector.
  * Common node address = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c.
  * Squad-loop bodies walk 4 pool-A records: p in [g_pool_a + tpl[0xb5]*0x5c,
  * g_pool_a + (tpl[0xb5]+4)*0x5c). Dominant callee FUN_0002f608 (aim/step).
  */
-extern unsigned char g_105d4[];
+extern unsigned char g_command_recs[];
 extern unsigned char g_player_recs[];
 extern unsigned char g_pool_a[];
 extern unsigned char g_entity_pool[];
-extern short g_10b0c;
+extern short g_num_players;
 extern short g_cur_player;
 extern short g_10b2e;
 extern unsigned short g_e553;
 extern unsigned char g_e4ab[];
-extern unsigned char g_10afc;
-extern unsigned char g_10b45;
+extern unsigned char g_in_mission;
+extern unsigned char g_radar_detail;
 extern unsigned char *g_10ae0;
 extern char **g_map_cols;
 extern short g_dir_dx[];
@@ -73,18 +73,18 @@ extern unsigned char *FUN_00022b38(int a, int b, int c);
 
 void FUN_00023158(unsigned int idx)
 {
-    unsigned char *rec = g_105d4 + (unsigned short)idx * 0xe;
+    unsigned char *rec = g_command_recs + (unsigned short)idx * 0xe;
     unsigned char *tpl = g_player_recs + (unsigned short)idx * 0x417;
 
     switch (rec[0xd]) {
     case 0x01: case 0x21: {
         unsigned short k;
-        if (g_10b0c > 1) {
+        if (g_num_players > 1) {
             if ((unsigned short)idx == g_cur_player) {
                 FUN_000229f8(0x26c, g_e553);
-                for (k = 0; k < g_10b0c; k++)
+                for (k = 0; k < g_num_players; k++)
                     FUN_000223c8((unsigned short)k, 2);
-                for (k = 0; k < g_10b0c; k++)
+                for (k = 0; k < g_num_players; k++)
                     g_e4ab[(unsigned short)k * 0x417] = (unsigned char)k;
             }
         } else {
@@ -98,11 +98,11 @@ void FUN_00023158(unsigned int idx)
 
     case 0x02: case 0x22: {
         if ((unsigned short)idx == g_cur_player) {
-            unsigned char v = g_10afc | 8;
-            g_10afc = v;
-            g_10afc = v & 0xfe;
+            unsigned char v = g_in_mission | 8;
+            g_in_mission = v;
+            g_in_mission = v & 0xfe;
         }
-        if (g_10b45 == 0)
+        if (g_radar_detail == 0)
             goto consume;
         FUN_00027a88((unsigned short)idx);
         {

@@ -18,7 +18,7 @@
    cpermute 4000 variants: no match. */
 extern unsigned char g_539a;
 extern unsigned short g_cur_player;
-extern unsigned char g_539c[];
+extern unsigned char g_syndicate_recs[];
 extern unsigned char g_b069[];
 
 char FUN_000264a8(unsigned char p)
@@ -32,27 +32,27 @@ char FUN_000264a8(unsigned char p)
         ret = 1;
         goto done;
     }
-    if ((unsigned short)g_539c[p * 10 + 2] == save) {
-        if (*(unsigned short *)(g_539c + p * 10) != 0xff) {
+    if ((unsigned short)g_syndicate_recs[p * 10 + 2] == save) {
+        if (*(unsigned short *)(g_syndicate_recs + p * 10) != 0xff) {
             ret = 0;
             goto done;
         }
     }
     if (g_b069[p * 19 + 8] == 1) {
-        if ((unsigned short)g_539c[p * 10 + 2] != save
-            || *(unsigned short *)(g_539c + p * 10) == 0xff) {
+        if ((unsigned short)g_syndicate_recs[p * 10 + 2] != save
+            || *(unsigned short *)(g_syndicate_recs + p * 10) == 0xff) {
             ret = 1;
             goto done;
         }
     }
-    if (*(unsigned short *)(g_539c + p * 10) == 0xff) {
+    if (*(unsigned short *)(g_syndicate_recs + p * 10) == 0xff) {
         ret = 1;
         goto done;
     }
     for (j = 0; j < 0x32; j++) {
-        if ((unsigned short)g_539c[j * 10 + 2] != save)
+        if ((unsigned short)g_syndicate_recs[j * 10 + 2] != save)
             continue;
-        if (*(unsigned short *)(g_539c + j * 10) == 0xff)
+        if (*(unsigned short *)(g_syndicate_recs + j * 10) == 0xff)
             continue;
         for (k = 0; k != 8; k++) {
             v = g_b069[j * 19 + k] - 1;

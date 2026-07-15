@@ -1,5 +1,5 @@
 /* frameless @ 0x15e38: masked blit of a param_5 x param_6 cell into the g_screen_buf buffer.
-   mask = param_1*param_6*param_5 + param_7; fill = g_b46a[param_2]; dest origin =
+   mask = param_1*param_6*param_5 + param_7; fill = g_blip_colours[param_2]; dest origin =
    g_screen_buf + param_3 + param_4*0x140. For each of param_6 rows x param_5 cols: write 0
    where the mask byte is 0, else the fill byte. Rows step 0x140 - param_5.
 
@@ -9,11 +9,11 @@
    the multiply operands first). Statement reorder + multiply regrouping + 5000 cpermute
    variants plateau at 122/162. Not source-reachable. */
 extern unsigned char *g_screen_buf;
-extern unsigned char g_b46a[];
+extern unsigned char g_blip_colours[];
 void FUN_00015e38(unsigned char param_1, unsigned char param_2, unsigned short param_3,
                   unsigned short param_4, unsigned char param_5, unsigned char param_6, int param_7)
 {
-    unsigned char fill = g_b46a[param_2];
+    unsigned char fill = g_blip_colours[param_2];
     unsigned char *mask = (unsigned char *)(param_1 * (param_6 * param_5) + param_7);
     unsigned char *dest = g_screen_buf + param_3 + param_4 * 0x140;
     unsigned char local_10 = 0;

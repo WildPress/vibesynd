@@ -44,12 +44,12 @@
  * returns the connected count.  g_conn[] is the far-ptr connection table at
  * 0x10644 (off @ +0, sel @ +4, stride 6).
  */
-extern short g_10b0c;                 /* number of players */
+extern short g_num_players;                 /* number of players */
 extern short g_cur_player;                 /* our index (-1 until registered) */
-extern unsigned char g_10b4c;         /* input-echo flag */
+extern unsigned char g_input_echo;         /* input-echo flag */
 extern unsigned char g_e285;          /* abort/ESC flag */
 extern unsigned char g_df30[];        /* per-player ready byte */
-extern unsigned char g_105e1[];       /* per-player status (stride 14) */
+extern unsigned char g_player_status[];       /* per-player status (stride 14) */
 extern char g_name_buf[];                 /* base session name */
 extern char g_36b8[], g_36cc[], g_36ec[], g_370c[];
 extern char g_372c[], g_3740[], g_375c[], g_3684[];
@@ -81,25 +81,25 @@ int FUN_00027428(void)
     int connected;
     short nt;
 
-    save = g_10b4c;
+    save = g_input_echo;
     i = 1;
-    g_10b4c = 1;
+    g_input_echo = 1;
     FUN_000498ef(0x12);
 readloop:
     FUN_0003b2b5(g_36b8);
     FUN_0003b326(rbuf);
-    g_10b0c = (short)FUN_0003a526(rbuf);
-    if (g_10b0c == 0) goto readloop;
-    if (g_10b0c > 8) goto readloop;
-    if (g_10b0c == 1) return -3;
-    g_10b4c = save;
+    g_num_players = (short)FUN_0003a526(rbuf);
+    if (g_num_players == 0) goto readloop;
+    if (g_num_players > 8) goto readloop;
+    if (g_num_players == 1) return -3;
+    g_input_echo = save;
     FUN_0003ad66(g_36cc);
-    for (i = 0; i < g_10b0c; i++)
+    for (i = 0; i < g_num_players; i++)
         g_df30[i] = 0;
 esccheck:
     if (g_e285 != 0) return -2;
     g_cur_player = -1;
-    for (i = 0; i < g_10b0c; i++) {
+    for (i = 0; i < g_num_players; i++) {
         int r;
         strcpy(nbuf, g_name_buf);
         nbuf[strlen(nbuf) + 1] = 0;
@@ -114,7 +114,7 @@ esccheck:
 found:
     if (g_cur_player == -1) goto esccheck;
     FUN_0003ad66(g_36ec);
-    for (i = 0; i < g_10b0c; i++) {
+    for (i = 0; i < g_num_players; i++) {
         if (i != g_cur_player) {
             _fstrcpy((char __far *)(g_conn[i] + 0x1a), (char __far *)(g_conn[g_cur_player] + 0x1a));
             g_conn[i][3] = g_conn[g_cur_player][3];
@@ -122,10 +122,10 @@ found:
             FUN_00028228(g_conn[i], nbuf, 1, 0, 0);
         }
         g_df30[i] = 0;
-        g_105e1[i * 14] = 0;
+        g_player_status[i * 14] = 0;
     }
     FUN_0003ad66(g_370c);
-    for (i = 0; i < g_10b0c; i++) {
+    for (i = 0; i < g_num_players; i++) {
         int r;
         g_df30[i] = 0;
         if (i == g_cur_player) continue;
@@ -145,11 +145,11 @@ found:
     }
     FUN_0003ad66(g_375c);
     if (g_e285 != 0) return -2;
-    nt = g_10b0c;
+    nt = g_num_players;
 poll:
     {
         short count = 0;
-        for (i = 0; i < g_10b0c; i++) {
+        for (i = 0; i < g_num_players; i++) {
             if (g_conn[i][2] == 0) goto check_my;
             if (g_conn[i][0x31] != 0xff) goto do_inc;
         check_my:
@@ -162,6 +162,6 @@ poll:
             goto poll;
         }
     }
-    g_105e1[g_cur_player * 14] = 1;
+    g_player_status[g_cur_player * 14] = 1;
     return connected;
 }

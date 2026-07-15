@@ -1,11 +1,11 @@
 /* frameless @ 0x20b78: for the current row g_cur_player, count the leading nonzero word
-   entries (up to 8) in the strided table at 0xe5c3 for column = g_10aa4[param_1].
+   entries (up to 8) in the strided table at 0xe5c3 for column = g_roster_index[param_1].
    Row stride 1047, column stride 40, entry stride 4 (words). Stops at the first zero
    entry and returns the count. Sibling of 0x20be8 (which uses param_1 as the column
    directly).
 
    NEAR-MISS (111/109; logic byte-exact). Three register-alloc/scheduler tie-breaks:
-   (1) the g_10aa4[param_1] byte load lands in AL (the index reg EAX) then `mov dl,al`
+   (1) the g_roster_index[param_1] byte load lands in AL (the index reg EAX) then `mov dl,al`
    (2 bytes); the target keeps edx=si live one step longer, frees+zeroes EDX and loads
    straight into DL. (2) INC pair count(CH)/i(CL) transposed. (3) return-load vs g_cur_player
    write-back transposed. Same scheduling wall as sibling 0x20be8; the `row` temp forces
@@ -14,7 +14,7 @@
    not source-reachable. */
 extern short g_cur_player;
 extern unsigned char g_e5c3[];
-extern unsigned char g_10aa4[];
+extern unsigned char g_roster_index[];
 unsigned char FUN_00020b78(unsigned char param_1)
 {
     short si = g_cur_player;
@@ -22,7 +22,7 @@ unsigned char FUN_00020b78(unsigned char param_1)
     unsigned char i = 0;
     do {
         int row = (int)si * 1047;
-        unsigned char col = g_10aa4[param_1];
+        unsigned char col = g_roster_index[param_1];
         if (*(short *)(g_e5c3 + row + (int)col * 40 + (int)i * 4) == 0)
             break;
         count++;

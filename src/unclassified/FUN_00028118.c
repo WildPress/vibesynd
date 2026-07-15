@@ -44,7 +44,7 @@
  * far-ptr param are automatic.
  * Recipe: -4s -or -zp8 -s -zq
  */
-extern char g_377c[];
+extern char g_name_pad[];
 extern char g_37b8[];
 extern short FUN_00027d88(unsigned char __far *p);
 extern void FUN_0003ad66(char *fmt, char *s);
@@ -64,7 +64,7 @@ int FUN_00028118(unsigned int off, unsigned short sel, char *src)
 
     fstrcpy118(q = sel :> ((unsigned char *)off + 0x1a), (unsigned char __far *)src);
     while (fstrlen118(q) < 0xf)
-        fstrcat118(q, (unsigned char __far *)g_377c);
+        fstrcat118(q, (unsigned char __far *)g_name_pad);
     (sel :> (unsigned char *)off)[0] = 0xb1;
     if (FUN_00027d88(sel :> (unsigned char *)off) == -1)
         return -0x63;

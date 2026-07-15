@@ -24,7 +24,7 @@
  * Recipe: -4s -oneatx -zp8 -s -zq
  */
 extern volatile short g_cur_player;
-extern unsigned char g_539c[];
+extern unsigned char g_syndicate_recs[];
 extern unsigned char g_539e[];
 extern unsigned char g_b069[];
 
@@ -39,17 +39,17 @@ void FUN_00016318(unsigned char g)
             unsigned int idx = g * 19 + i;
             if (g_b069[idx] != 0
                 && g_539e[g_b069[idx] * 10] != save)
-                *(short *)(g_539c + g * 10) += 2;
+                *(short *)(g_syndicate_recs + g * 10) += 2;
         }
     }
-    *(short *)(g_539c + g * 10) += ((signed char)g_539c[g * 10 + 3] - 0x1e) / 2;
-    if (*(short *)(g_539c + g * 10) > 0x1e)
-        *(short *)(g_539c + g * 10) -= 2;
-    else if (*(short *)(g_539c + g * 10) < 0x1e)
-        *(short *)(g_539c + g * 10) += 2;
-    if (*(short *)(g_539c + g * 10) < 0)
-        *(short *)(g_539c + g * 10) = 0;
-    else if (*(short *)(g_539c + g * 10) > 0xff)
-        *(short *)(g_539c + g * 10) = 0xff;
+    *(short *)(g_syndicate_recs + g * 10) += ((signed char)g_syndicate_recs[g * 10 + 3] - 0x1e) / 2;
+    if (*(short *)(g_syndicate_recs + g * 10) > 0x1e)
+        *(short *)(g_syndicate_recs + g * 10) -= 2;
+    else if (*(short *)(g_syndicate_recs + g * 10) < 0x1e)
+        *(short *)(g_syndicate_recs + g * 10) += 2;
+    if (*(short *)(g_syndicate_recs + g * 10) < 0)
+        *(short *)(g_syndicate_recs + g * 10) = 0;
+    else if (*(short *)(g_syndicate_recs + g * 10) > 0xff)
+        *(short *)(g_syndicate_recs + g * 10) = 0xff;
     g_cur_player = save;
 }

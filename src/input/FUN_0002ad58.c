@@ -39,7 +39,7 @@
 
 extern unsigned char  g_e285, g_e286, g_e287, g_e288, g_e289;
 extern unsigned char  g_e296, g_e297, g_e2a3, g_e2a4;
-extern unsigned char  g_10b3e, g_10b3f, g_10b39, g_10b40, g_10b45;
+extern unsigned char  g_10b3e, g_10b3f, g_10b39, g_10b40, g_radar_detail;
 extern unsigned short g_e112, g_e114, g_e116, g_e118, g_e11a, g_e11c;
 extern unsigned short g_e120, g_e122, g_e124;
 extern short          g_10b10, g_10b12, g_10b14, g_cur_player, g_10b1a;
@@ -68,8 +68,8 @@ int FUN_0002ad58(unsigned short *p)
     int idx, first, sel;
     unsigned char *rec, *end, *q;
 
-    if (g_e285 && g_10b45) { *((unsigned char *)p + 0xd) = 0x2;  return 0; }
-    if (g_e2a4 && !g_10b45){ *((unsigned char *)p + 0xd) = 0x10; return 0; }
+    if (g_e285 && g_radar_detail) { *((unsigned char *)p + 0xd) = 0x2;  return 0; }
+    if (g_e2a4 && !g_radar_detail){ *((unsigned char *)p + 0xd) = 0x10; return 0; }
 
     if (g_e286) g_e124 = 1;
     if (g_e287) g_e124 = 2;
