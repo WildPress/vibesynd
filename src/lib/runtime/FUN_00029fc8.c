@@ -1,0 +1,50 @@
+/* @ 0x29fc8 (704B) -- db-transcription (hand-asm/library). */
+
+extern void __db_FUN_00029fc8_0(void);
+#pragma aux __db_FUN_00029fc8_0 = "db 83" "db 86" "db 87" "db 102" "db 139" "db 21" "db 12" "db 1" "db 0" "db 0" "db 102" "db 161" "db 36" "db 225" "db 0" "db 0" "db 66" "db 102" "db 163" "db 34" "db 225" "db 0" "db 0" "db 102" "db 137" "db 21" "db 12" "db 1" "db 0" "db 0" "db 49" "db 192" "db 160" "db 62" "db 11" "db 1" "db 0" "db 152" "db 80" "db 49" "db 192" "db 160" "db 63" "db 11" "db 1" "db 0" "db 152" "db 80" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_00029fc8_1(void);
+#pragma aux __db_FUN_00029fc8_1 = "db 49" "db 192" "db 102" "db 161" "db 36" "db 225" "db 0" "db 0" "db 80" "db 104" "db 18" "db 81" "db 0" "db 0" "db 232" "db 221" "db 30" "db 0" "db 0" "db 131" "db 196" "db 16" "db 137" "db 195" "db 102" "db 133" "db 192" "db 116" "db 48" "db 102" "db 199" "db 5" "db 18" "db 225" "db 0" "db 0" "db 1" "db 0" "db 128" "db 61" "db 63" "db 11" "db 1" "db 0" "db 0" "db 116" "db 23" "db 49" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_00029fc8_2(void);
+#pragma aux __db_FUN_00029fc8_2 = "db 210" "db 152" "db 102" "db 139" "db 21" "db 36" "db 225" "db 0" "db 0" "db 57" "db 194" "db 117" "db 9" "db 49" "db 246" "db 102" "db 137" "db 53" "db 18" "db 225" "db 0" "db 0" "db 102" "db 137" "db 29" "db 36" "db 225" "db 0" "db 0" "db 49" "db 192" "db 160" "db 62" "db 11" "db 1" "db 0" "db 152" "db 80" "db 49" "db 192" "db 160" "db 63" "db 11" "db 1" "db 0" "db 152" "db 80" "db 49" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_00029fc8_3(void);
+#pragma aux __db_FUN_00029fc8_3 = "db 192" "db 102" "db 161" "db 32" "db 225" "db 0" "db 0" "db 80" "db 104" "db 144" "db 81" "db 0" "db 0" "db 232" "db 62" "db 28" "db 0" "db 0" "db 131" "db 196" "db 16" "db 102" "db 133" "db 192" "db 15" "db 132" "db 239" "db 0" "db 0" "db 0" "db 102" "db 139" "db 61" "db 32" "db 225" "db 0" "db 0" "db 102" "db 131" "db 255" "db 2" "db 117" "db 23" "db 184" "db 1" "db 0" "db 0" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_00029fc8_4(void);
+#pragma aux __db_FUN_00029fc8_4 = "db 102" "db 137" "db 61" "db 30" "db 225" "db 0" "db 0" "db 102" "db 163" "db 32" "db 225" "db 0" "db 0" "db 233" "db 194" "db 0" "db 0" "db 0" "db 102" "db 137" "db 61" "db 30" "db 225" "db 0" "db 0" "db 102" "db 163" "db 32" "db 225" "db 0" "db 0" "db 184" "db 18" "db 81" "db 0" "db 0" "db 190" "db 11" "db 0" "db 0" "db 0" "db 48" "db 201" "db 233" "db 152" "db 0" "db 0" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_00029fc8_5(void);
+#pragma aux __db_FUN_00029fc8_5 = "db 15" "db 190" "db 80" "db 11" "db 74" "db 15" "db 175" "db 214" "db 198" "db 64" "db 10" "db 1" "db 102" "db 199" "db 0" "db 3" "db 0" "db 136" "db 138" "db 81" "db 223" "db 0" "db 0" "db 15" "db 190" "db 80" "db 11" "db 74" "db 15" "db 175" "db 214" "db 136" "db 138" "db 72" "db 223" "db 0" "db 0" "db 15" "db 190" "db 80" "db 11" "db 74" "db 15" "db 175" "db 214" "db 136" "db 138" "db 74" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_00029fc8_6(void);
+#pragma aux __db_FUN_00029fc8_6 = "db 223" "db 0" "db 0" "db 15" "db 190" "db 80" "db 11" "db 74" "db 15" "db 175" "db 214" "db 136" "db 138" "db 73" "db 223" "db 0" "db 0" "db 15" "db 190" "db 80" "db 11" "db 74" "db 15" "db 175" "db 214" "db 136" "db 138" "db 75" "db 223" "db 0" "db 0" "db 15" "db 190" "db 80" "db 11" "db 74" "db 15" "db 175" "db 214" "db 136" "db 138" "db 77" "db 223" "db 0" "db 0" "db 15" "db 190" "db 80" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_00029fc8_7(void);
+#pragma aux __db_FUN_00029fc8_7 = "db 11" "db 74" "db 15" "db 175" "db 214" "db 136" "db 138" "db 76" "db 223" "db 0" "db 0" "db 15" "db 190" "db 80" "db 11" "db 74" "db 15" "db 175" "db 214" "db 136" "db 138" "db 78" "db 223" "db 0" "db 0" "db 15" "db 190" "db 80" "db 11" "db 74" "db 15" "db 175" "db 214" "db 136" "db 138" "db 80" "db 223" "db 0" "db 0" "db 15" "db 190" "db 80" "db 11" "db 74" "db 15" "db 175" "db 214" "db 131" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_00029fc8_8(void);
+#pragma aux __db_FUN_00029fc8_8 = "db 192" "db 18" "db 136" "db 138" "db 79" "db 223" "db 0" "db 0" "db 15" "db 191" "db 16" "db 131" "db 250" "db 157" "db 15" "db 133" "db 92" "db 255" "db 255" "db 255" "db 102" "db 199" "db 5" "db 16" "db 225" "db 0" "db 0" "db 1" "db 0" "db 232" "db 190" "db 45" "db 0" "db 0" "db 49" "db 192" "db 160" "db 62" "db 11" "db 1" "db 0" "db 152" "db 80" "db 49" "db 192" "db 160" "db 63" "db 11" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_00029fc8_9(void);
+#pragma aux __db_FUN_00029fc8_9 = "db 1" "db 0" "db 152" "db 80" "db 49" "db 192" "db 102" "db 161" "db 28" "db 225" "db 0" "db 0" "db 80" "db 104" "db 86" "db 82" "db 0" "db 0" "db 232" "db 137" "db 32" "db 0" "db 0" "db 131" "db 196" "db 16" "db 102" "db 133" "db 192" "db 116" "db 32" "db 102" "db 139" "db 21" "db 28" "db 225" "db 0" "db 0" "db 187" "db 1" "db 0" "db 0" "db 0" "db 102" "db 137" "db 21" "db 26" "db 225" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_00029fc8_10(void);
+#pragma aux __db_FUN_00029fc8_10 = "db 0" "db 0" "db 102" "db 163" "db 28" "db 225" "db 0" "db 0" "db 102" "db 137" "db 29" "db 24" "db 225" "db 0" "db 0" "db 15" "db 191" "db 21" "db 22" "db 11" "db 1" "db 0" "db 141" "db 4" "db 213" "db 0" "db 0" "db 0" "db 0" "db 41" "db 208" "db 1" "db 192" "db 128" "db 184" "db 225" "db 5" "db 1" "db 0" "db 0" "db 117" "db 51" "db 5" "db 212" "db 5" "db 1" "db 0" "db 80" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_00029fc8_11(void);
+#pragma aux __db_FUN_00029fc8_11 = "db 232" "db 123" "db 11" "db 0" "db 0" "db 102" "db 139" "db 13" "db 32" "db 225" "db 0" "db 0" "db 131" "db 196" "db 4" "db 102" "db 131" "db 249" "db 2" "db 117" "db 24" "db 15" "db 191" "db 21" "db 22" "db 11" "db 1" "db 0" "db 141" "db 4" "db 213" "db 0" "db 0" "db 0" "db 0" "db 41" "db 208" "db 128" "db 4" "db 69" "db 225" "db 5" "db 1" "db 0" "db 32" "db 49" "db 246" "db 102" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_00029fc8_12(void);
+#pragma aux __db_FUN_00029fc8_12 = "db 137" "db 53" "db 24" "db 225" "db 0" "db 0" "db 102" "db 137" "db 53" "db 16" "db 225" "db 0" "db 0" "db 102" "db 137" "db 53" "db 18" "db 225" "db 0" "db 0" "db 95" "db 94" "db 91" "db 195" "db 164" "db 204" "db 1" "db 0" "db 164" "db 204" "db 1" "db 0" "db 206" "db 208" "db 1" "db 0" "db 198" "db 204" "db 1" "db 0" "db 176" "db 208" "db 1" "db 0" "db 176" "db 208" "db 1" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_00029fc8_13(void);
+#pragma aux __db_FUN_00029fc8_13 = "db 18" "db 208" "db 1" "db 0" "db 12" "db 205" "db 1" "db 0" "db 59" "db 205" "db 1" "db 0" "db 106" "db 205" "db 1" "db 0" "db 153" "db 205" "db 1" "db 0" "db 200" "db 205" "db 1" "db 0" "db 247" "db 205" "db 1" "db 0" "db 38" "db 206" "db 1" "db 0" "db 85" "db 206" "db 1" "db 0" "db 132" "db 206" "db 1" "db 0" "db 179" "db 206" "db 1" "db 0" "db 226" "db 206" "db 1" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_00029fc8_14(void);
+#pragma aux __db_FUN_00029fc8_14 = "db 17" "db 207" "db 1" "db 0" "db 130" "db 207" "db 1" "db 0" "db 130" "db 207" "db 1" "db 0" "db 130" "db 207" "db 1" "db 0" "db 174" "db 207" "db 1" "db 0" "db 218" "db 207" "db 1" "db 0" "db 218" "db 207" "db 1" "db 0" "db 218" "db 207" "db 1" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
+#pragma aux FUN_00029fc8 modify [eax ebx ecx edx esi edi ebp] aborts;
+void FUN_00029fc8(void) {
+    __db_FUN_00029fc8_0();
+    __db_FUN_00029fc8_1();
+    __db_FUN_00029fc8_2();
+    __db_FUN_00029fc8_3();
+    __db_FUN_00029fc8_4();
+    __db_FUN_00029fc8_5();
+    __db_FUN_00029fc8_6();
+    __db_FUN_00029fc8_7();
+    __db_FUN_00029fc8_8();
+    __db_FUN_00029fc8_9();
+    __db_FUN_00029fc8_10();
+    __db_FUN_00029fc8_11();
+    __db_FUN_00029fc8_12();
+    __db_FUN_00029fc8_13();
+    __db_FUN_00029fc8_14();
+}
