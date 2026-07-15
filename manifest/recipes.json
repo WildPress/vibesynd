@@ -1425,15 +1425,15 @@
  },
  "FUN_0003c479": {
   "addr": "0003c479",
-  "flags": "-3s -oneatx -zp8 -s -zq"
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
  },
  "FUN_0003c491": {
   "addr": "0003c491",
-  "flags": "-3s -oneatx -zp8 -s -zq"
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
  },
  "FUN_0003ca0d": {
   "addr": "0003ca0d",
-  "flags": "-3s -oneatx -zp8 -s -zq"
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
  },
  "FUN_00049edf": {
   "addr": "00049edf",
