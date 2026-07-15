@@ -18,7 +18,7 @@
  *  3. compare-temp register rotor: B/C/E/G temps land SI/CX/DX/CX where the
  *     target has DI/SI/CX/AX (I/L/N land right). Register-role tie-break
  *     class; G's copy-vs-reload (6689c8 vs 31c0 668b430e) is downstream.
- *  4. tail g_5348[frame]: target materialises lea ecx,[edx*2+0x0] then
+ *  4. tail g_frame_sprite[frame]: target materialises lea ecx,[edx*2+0x0] then
  *     [ecx+edx]; ours SIB-folds [ecx+edx*2] (scaled-lea wall, cf 0x18ae8).
  * KEY LEVERS FOUND: `if (x != 1) goto Lelse;` keeps the 75 jnz AND gives the
  * fall-through block else-position codegen (accumulate shape); physical arm1
@@ -32,7 +32,7 @@
  * frame number from anim state word b+0xe, facing byte b+0x1a and (for armed
  * types) the equipped item's type (node = g_entity_pool + word b+0x44, guarded
  * against the pool bound g_11670); then if frame != cached word b+0x12,
- * store sprite g_5348[frame] to b+0x10 and cache frame at b+0x12.
+ * store sprite g_frame_sprite[frame] to b+0x10 and cache frame at b+0x12.
  *
  * Case map (type -> body):
  *   0,1,6,7,8,0xb,0xc,0xd,0x10,0x1c,0x22,0x24,0x26,0x28,0x29 -> A (tables a5e6/a546)
@@ -47,7 +47,7 @@
  */
 extern unsigned char g_entity_pool[];
 extern unsigned char g_11670;
-extern unsigned short *g_5348;
+extern unsigned short *g_frame_sprite;
 extern unsigned short g_a546[];
 extern unsigned short g_a56e[];
 extern unsigned short g_a596[];
@@ -196,7 +196,7 @@ void FUN_0001a458(unsigned char *b)
         break;
     }
     if (frame != *(unsigned short *)(b + 0x12)) {
-        *(unsigned short *)(b + 0x10) = g_5348[frame];
+        *(unsigned short *)(b + 0x10) = g_frame_sprite[frame];
         *(unsigned short *)(b + 0x12) = frame;
     }
 }

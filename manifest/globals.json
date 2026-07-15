@@ -84,6 +84,11 @@
   "type": "u8[]",
   "desc": "per-frame enable flags"
  },
+ "g_frame_sprite": {
+  "addr": "5348",
+  "type": "u16[]",
+  "desc": "animation frame index -> sprite id table"
+ },
  "g_grid_heads": {
   "addr": "10e",
   "type": "u16[]",

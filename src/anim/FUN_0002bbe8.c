@@ -6,7 +6,7 @@
  * Animation-frame ticker over an 18-byte-record list at p, ending at a record
  * whose word +0 == -99 (0xff9d). Per active record (delay byte +0xa != 0):
  * decrement delay, add the per-type step to base frame 0xd4+word[+0x10]; if the
- * frame changed, look up sprite g_5348[frame] into word +0xc and store frame to
+ * frame changed, look up sprite g_frame_sprite[frame] into word +0xc and store frame to
  * +0xe; draw via 0x1b798(sprite, x=+2, y=+4).
  *
  * cont.21 RETRY DATA (7 compiles): the back-half rotation is a demanded-bits
@@ -33,7 +33,7 @@
  *   pre-add `0fbf4312 83c312`. volatile on the while deref is inert.
  * Same class as 0x2d5b8 / 0x28ec8. Recipe: -4s -oneatx -zp8 -s -zq
  */
-extern unsigned short *g_5348;
+extern unsigned short *g_frame_sprite;
 extern void FUN_0001b798(unsigned short spr, short x, short y);
 
 void FUN_0002bbe8(unsigned char *p)
@@ -57,7 +57,7 @@ void FUN_0002bbe8(unsigned char *p)
                 base = (unsigned short)(0xd4 + *(unsigned short *)(p + 0x10));
                 a = (unsigned short)(sw + base);
                 if (a != old) {
-                    *(unsigned short *)(p + 0xc) = g_5348[a];
+                    *(unsigned short *)(p + 0xc) = g_frame_sprite[a];
                     *(unsigned short *)(p + 0xe) = a;
                 }
                 FUN_0001b798(*(unsigned short *)(p + 0xc),
