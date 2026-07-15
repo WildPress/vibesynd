@@ -403,3 +403,66 @@ declared in the right order, because the compiler lays locals out in reverse of
 declaration, so swapping their order swapped their stack offsets to match. The
 optimisation picture collapsed from five flag sets to one canonical setting plus two
 lone holdouts still stuck on register placement.
+
+## The register walls, two cracks, and finding the floor
+
+By this point the easy half was done and what remained were the *walls*: functions
+that decode to correct C but whose bytes we cannot reproduce because the difference is
+something the compiler decides internally. Three shapes recur. **Register-role**: the
+same instructions, but a value the game keeps in `ESI` we keep in `EDI`, or a register
+gets pushed on one side and not the other — no C spelling flips which register the
+allocator picks. **Scheduling**: two independent instructions in the other order, like
+a `[esp+4]` load that always lands before `[esp+8]` no matter how we write the source.
+**Encoding tie-breaks**: `cmp a,b` versus `cmp b,a`, an `imm8` versus an `imm32`, a
+byte cleared with `xor dh,dh` versus `xor dh,ah` because the compiler noticed `ah`
+already held the same value. We proved these are not our C by exhausting the levers:
+the source permuter, hundreds of flag combinations, and seven Watcom builds all leave
+them unchanged. A wall that survives every declaration permutation is the allocator's
+choice, not unfound C, and the honest move is to record what the function *does* and
+stop grinding.
+
+But two things that *looked* like walls turned out to have a lever, and finding them
+was the satisfying part.
+
+The first was a twenty-two-byte function that just calls another function behind an
+`if`. The target wrapped the whole body in a `push ebx … pop ebx` around code that
+never touches `ebx`. A dead save. The reason is a contract: this function promises
+*its* caller to preserve `ebx`, and it calls something that clobbers `ebx`, so it must
+save it across the call — across the whole body, since that is all there is. Every
+attempt to make our C use `ebx` added real instructions; the only way to get a *dead*
+save is to declare the callee's clobber, `#pragma aux <callee> modify [ebx]`, which is
+exactly what the original translation unit's header would have said. It matched. It is
+the only C that produces those bytes, and it is honest — that pragma is the callee's
+real ABI.
+
+The second was better. A pool accessor whose "return 0" had no return of its own — it
+jumped *backwards*, into the return stub of the function physically before it. Two
+sibling accessors, near-identical, and the compiler had noticed their return-zero tails
+were the same bytes and written it once, letting the second borrow the first's. That
+cross-function merge only happens when both are in one object, so matching it meant
+abandoning one-function-per-file and compiling the two siblings together in a single
+translation unit, the stub-owner first. It still needed one nudge: the borrower had to
+return `unsigned short`, not `unsigned char`, so its return-zero stub was byte-identical
+to the sibling's and could actually be shared. Then the whole region matched, backward
+jump and all. It is the only match so far that required thinking about two functions at
+once, and it opened a small piece of new machinery — source files that hold a whole
+module, verified as one contiguous region.
+
+We went looking for more of that shape and found it was the only one; a scan for jumps
+that leave a function's own body turned up nothing else. So the whole-module lever
+bought exactly one function here — though on a game built from larger modules it could
+buy many, which is why it is written down.
+
+That left the compiler itself as the last suspect. The bulk matches Watcom 9.5b, which
+is strong proof of the family, yet a handful of walls carry a *newer* tell — the
+`add eax, imm32` accumulator form that only 10.0 emits, where 9.5 always shrinks to
+`imm8`. So the game sits in a seam: 9.5's register allocation with an occasional 10.0
+peephole. We chased the obvious candidate, 9.5c, built it from a patch, and it was
+byte-identical to 9.5b on every wall. 10.0a has the newer encodings but breaks
+functions 9.5 matches. We even pulled Watcom C/386 8.5 to rule out the older direction,
+and confirmed what the tells already said: the walls need something *newer*, not older,
+so 8.5 could only regress the bulk. The exact build appears to be a transitional release
+that was never archived separately. With that, the version hunt is closed: this is the
+floor. Every remaining function is decoded, understood, and byte-exact in the build
+through a transcribed-bytes fallback — the clean C is as close as the compiler we can
+run allows, and the purpose of each function, the half that lasts, is written down.

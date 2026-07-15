@@ -11,6 +11,7 @@
 **Concepts**
 
 - [Matching decompilation](matching-decompilation)
+- [Porting this method to another game](porting-guide)
 - [Stack frames](stack-frames)
 - [Calling conventions](calling-conventions)
 - [Relocations & OMF](relocations-and-omf)

@@ -472,6 +472,22 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`; para
   feeding int386x, the constant whose STORE the target sinks LAST but LOADS first into a
   callee-saved reg (edi=0xc at block top, `mov [in.ax],di` after the far-cast) is the FIRST
   statement of the block in source; written last it degrades to an immediate word store.
+- **Dead callee-save via `#pragma aux <callee> modify [reg]` (cont. 27, 0x36168).** A guarded
+  call whose target wraps the whole body in a DEAD `push ebx … pop ebx` (ebx never used). The fn
+  must preserve ebx for ITS caller (callee-saved contract); if a callee is declared to clobber
+  ebx, Watcom saves/restores ebx around the body to honour that contract — even though nothing
+  local touches it. Declare the callee `#pragma aux <callee> modify [ebx]` (it only adds ebx to
+  the clobber set; does NOT change arg passing) — the original TU's header ABI. This is the ONLY
+  C that yields the phantom save (any real ebx use emits loads/stores). Reloc-verified. Detector
+  `tools/crackreg.py` flags pure dead-callee-save cases; `tools/crackfix.py` batch-applies it.
+- **Whole-module build for cross-function tail-merge (cont. 27, 0x37818).** A fn whose `return 0`
+  has NO local stub — it jumps BACKWARD into a NEIGHBOUR's return stub (Watcom's cross-jump opt is
+  intra-object). Match it by compiling both siblings in ONE translation unit (`src/*.c` with both
+  fns, stub-owner FIRST) and making the tails byte-identical — 0x37818 had to return `unsigned
+  short` (not `char`) so its `xor eax,eax; ret` matched the owner's and could be shared. Verify the
+  whole contiguous region reloc-aware with `tools/match_combo.py` (the cross-fn branch is NOT a
+  reloc, so it's checked byte-exact); tag members with a manifest `"unit"` field. Find candidates
+  with `tools/xfnjumps.py` (scans parked fns for jcc/jmp landing outside their own range).
 
 ## 3. Walls (recognize, then PARK — not source-reachable)
 
