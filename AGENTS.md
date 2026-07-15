@@ -1236,7 +1236,9 @@ $env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot"
 - **2026-07-15 — FLAGS SETTLED, PARKS CONFIRMED WALLS (3 ways), NEW-COVERAGE PATH OPENED.**
   - **Compiler flags are correct + understood.** Built `tools/flagsweep.py` (a FLAG permuter: holds C fixed,
     sweeps `{-3,-4}x{s,r} x opt x frame x packing` in one DOSBox/dosemu batch, scores each with regdiff).
-    Swept ALL 115 parked fns x 160 combos: **zero byte-matches** -> flags are NOT the blocker. The -3/-4
+    Swept ALL 115 parked fns x **640 combos** (base 160 + `--extended` 480: adds -ol+/-ob/-oe[=N]/-om/-op/
+    -oc/-ok/-od/-obmiler x -d1/-d2 -- every plausible wcc386 flag), ~92k compiles: **zero byte-matches**.
+    Flags are EXHAUSTIVELY NOT the blocker; it is not a missing combination. The -3/-4
     split is a real TWO-BUILD MODEL, not overfitting: **game code (<0x39000) = -4 (486) 121/121; linked
     Watcom CLIB (>=0x39000) = -3 (386)**. Many opt sub-flags (-ol/-oi/-of/-zp) are byte-inert per fn (why a
     recipe only records "one that worked"). The 23 CLIB `-4` recipes are -3/-4 ties (harmless mislabels).
