@@ -4,7 +4,12 @@
    stepping 12, colour 0xdd, using string ptr g_4a38[type*3 + g_a50d]. Then runs
    the list-select loop FUN_20018 over the drawn rows; if a row was picked
    (nonzero 1-based result), redraws that row highlighted (colour 0x54) at
-   y = sel*12 + 0x70. */
+   y = sel*12 + 0x70.
+
+   NEAR-MISS (NOT matched). Register-ROLE wall: the target uses FOUR callee-saved
+   registers (pushes ebp as well as ebx/esi/edi) and routes the two loaded arg dwords
+   through ebp/ebx, where our Watcom uses three (edx/ecx). First diff is the entry
+   `push ebp` -- no C form makes the allocator reserve a 4th callee-saved reg here. */
 extern unsigned char g_5780[];
 extern char *g_4a38[];
 extern unsigned char g_a50d;

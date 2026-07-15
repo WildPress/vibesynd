@@ -1,4 +1,11 @@
-/* alloc_init_with_errcode @ 0x18158 - alloc/init sequence; sets g_3eec error code. */
+/* alloc_init_with_errcode @ 0x18158 - alloc/init sequence; sets g_3eec error code.
+ *
+ * NEAR-MISS (NOT matched). Structure/logic byte-correct; the residual is an encoding
+ * tie: on each error path the target MATERIALISES the code in a register first
+ * (mov ebp,3; xor eax,eax; mov [g_3eec],ebp) using a different reg per path (ebp/edi/
+ * esi/ecx), while our Watcom stores the immediate directly (mov [g_3eec],3). Watcom
+ * folds `err=N; g=err;` to a direct store for every C spelling, so the register-routed
+ * store is not source-reachable here. Codegen tie-break wall. */
 extern unsigned int g_3eec;
 extern int file_open_read_close(int size);
 extern int FUN_0001aa74(int h);
