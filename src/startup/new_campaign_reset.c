@@ -144,7 +144,7 @@ void new_campaign_reset(void)
             g_syndicate_recs[i * 0xa + 2] = (unsigned char)(FUN_0000e568(7) + 1);
         *(short *)(g_syndicate_recs + i * 0xa + 0) = 0;                /* g_syndicate_recs */
         *(int *)(g_syndicate_recs + i * 0xa + 6) =
-            ((FUN_0000e568(0x14) & 0xffff) + 0x28) * 1000000; /* g_53a2 money */
+            ((FUN_0000e568(0x14) & 0xffff) + 0x28) * 1000000; /* g_syndicate_money money */
         g_syndicate_recs[i * 0xa + 3] = 0x1e;                          /* g_539f */
         g_syndicate_recs[i * 0xa + 4] = 0x1e;                          /* g_53a0 */
     }

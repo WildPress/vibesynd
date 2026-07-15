@@ -6,7 +6,7 @@
    status g_5594 is 0 or 3, and if the record's time-budget dword can cover
    (param_1-1) days, spends them: money-=days, day++ (wrap at 0x16d -> year++),
    then runs the 50-region economic sweep (FUN_16318 owner funding, g_player_recs +=
-   FUN_16438 income, g_53a2[i] += 0x1f4-rand) and FUN_164c8 target reassignment.
+   FUN_16438 income, g_syndicate_money[i] += 0x1f4-rand) and FUN_164c8 target reassignment.
    The fast path (g_radar_detail!=0) just spends the days with no sweep.  Overflow
    (not enough budget) advances by param_1/0x60 or 1 depending on g_10b52.
    Record stride 0x417 based at g_player_recs(accum)/g_player_budget(budget,day,year), indexed
@@ -45,7 +45,7 @@ extern unsigned char g_player_budget[];
 extern unsigned char g_player_recs[];
 extern unsigned char g_3ee8;
 extern unsigned char g_5594;
-extern unsigned char g_53a2[];
+extern unsigned char g_syndicate_money[];
 extern unsigned char FUN_00033568(void);
 extern void FUN_00016318(unsigned char i);
 extern unsigned int FUN_00016438(unsigned char i);
@@ -108,7 +108,7 @@ char FUN_00015f58(unsigned int param_1)
                 for (i = 0; i < 0x32; i++) {
                     FUN_00016318(i);
                     *(int *)(g_player_recs + g_cur_player * 0x417) += FUN_00016438(i);
-                    *(int *)(g_53a2 + i * 10) += 0x1f4 - (FUN_0000e568(0x3e8) & 0xffff);
+                    *(int *)(g_syndicate_money + i * 10) += 0x1f4 - (FUN_0000e568(0x3e8) & 0xffff);
                 }
                 FUN_000164c8();
             } else {

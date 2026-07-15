@@ -359,6 +359,11 @@
   "type": "u8[]",
   "desc": "squad grid: slot index per row (i+1)"
  },
+ "g_syndicate_money": {
+  "addr": "53a2",
+  "type": "int[]",
+  "desc": "per-syndicate money/income (record +6, stride 0xa; += 0x1f4-rand)"
+ },
  "g_syndicate_recs": {
   "addr": "539c",
   "type": "u8[]",
