@@ -189,7 +189,14 @@ def load_target(name):
     man = json.load(open(MAN))
     base = int(man["image_base"], 16)
     f = next(x for x in man["functions"] if x["name"] == name)
-    off = int(f["addr"], 16) - base
+    addr = int(f["addr"], 16)
+    # prefix / sub-graph fns (addr < image_base 0x10000) are NOT in linear.bin -- read them from the
+    # full image build/obj1_full.bin (byte at manifest A = obj1_full.bin[A - 0xd748]).
+    if addr < base and os.path.exists("build/obj1_full.bin"):
+        img = open("build/obj1_full.bin", "rb").read()
+        off = addr - 0xd748
+        return img[off:off + f["size"]], f
+    off = addr - base
     return open(SEG, "rb").read()[off:off + f["size"]], f
 
 

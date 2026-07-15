@@ -1534,5 +1534,9 @@
  "global_add_and_call": {
   "addr": "00018458",
   "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0000e568": {
+  "addr": "0000e568",
+  "flags": "-4s -oneatx -zp8 -s -zq"
  }
 }

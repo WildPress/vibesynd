@@ -676,8 +676,11 @@ def main():
     # ---- target bytes ----
     man = json.load(open(MAN)); base = int(man["image_base"], 16)
     f = next(x for x in man["functions"] if x["name"] == name)
-    off = int(f["addr"], 16) - base
-    target = open(SEG, "rb").read()[off:off + f["size"]]
+    addr = int(f["addr"], 16)
+    if addr < base and os.path.exists("build/obj1_full.bin"):   # prefix fn: read the full image
+        target = open("build/obj1_full.bin", "rb").read()[addr - 0xd748:addr - 0xd748 + f["size"]]
+    else:
+        target = open(SEG, "rb").read()[addr - base:addr - base + f["size"]]
 
     # ---- seed AST + site counts ----  (src files live in subsystem subdirs)
     import glob as _glob
