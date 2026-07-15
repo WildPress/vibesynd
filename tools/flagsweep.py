@@ -15,7 +15,7 @@ a byte match, and otherwise the best register-normalised score per combo.
 
 Grid (default): {-3,-4}x{s,r} CPU/calling  x  optimisation level  x  {frame}  x  {packing}, + `-s -zq`.
 """
-import json, os, sys, glob, subprocess
+import json, os, sys, glob, subprocess, re
 import multiprocessing as mp
 import regdiff
 from omf import text_bytes_and_fixups
@@ -97,6 +97,16 @@ def main():
         parks = [f for f in man if f.get("status") == "unmatched"
                  and (f["name"] in SRC or ("FUN_" + f["addr"]) in SRC)]
         names = [f["name"] for f in sorted(parks, key=lambda f: f["size"])]
+        if "--resume" in sys.argv:                       # skip functions already recorded in a prior run
+            rf = sys.argv[sys.argv.index("--resume") + 1]
+            done = set()
+            if os.path.exists(rf):
+                for line in open(rf, encoding="utf-8", errors="replace"):
+                    m = re.match(r"\[\d+/\d+\]\s+(\S+)", line)
+                    if m:
+                        done.add(m.group(1))
+            names = [n for n in names if n not in done]
+            print(f"resume: {len(done)} already done, {len(names)} remaining", flush=True)
         if os.path.isdir("/work/toolchain/watcom95") and not os.path.isdir("/tmp/wat"):
             subprocess.run("cp -r /work/toolchain/watcom95 /tmp/wat", shell=True)   # native compiler tree
         print(f"flag-sweep triage: {len(names)} parked fns x {len(grid())} flag combos, "
