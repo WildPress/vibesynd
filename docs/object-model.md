@@ -85,6 +85,24 @@ image is unaffected). Rename more with `tools/rename_global.py`.
 | `g_11bec/g_11bed` | `u8[]` | paired flag/value tables (0x35ed8 clears, 0x35f28 writes) — *unnamed* |
 | `g_a6fe`, `g_a686`, `g_b46a` | `u8[]` | byte translation / palette tables — *unnamed* |
 
+## Record-table strides (fixed-stride arrays; index by `base + i*stride`)
+
+The game stores most collections as flat fixed-stride record arrays. Recognising the
+stride tells you the record boundary (and often the record type). Catalogued from
+matched code + the named globals:
+
+| stride | table(s) | notes |
+|--------|----------|-------|
+| `0x417` (1047) | `g_player_recs` (0xe49c), `g_player_budget` (+4), `g_agent_slots` (0xe551), `g_agent_tmpl` (0xe552) | **per-player** record; the e4xx/e5xx globals are field-views into it (index `i*0x417`) |
+| `0x5c` | `g_pool_a` (0x8110) | entity/agent pool slot (`g_entity_pool` = pool−2 for id-indexing) |
+| `0x1eb` (491) | `g_list_recs` (0x5780), research records | byte+0 = type (0xff terminator), word+8 = state |
+| `0x1f5` (501) | mod records, conveyor rows (`g_7bf4`) | *aliased* — two subsystems read the same base at different offsets |
+| `0xe` (14) | `g_command_recs` (0x105d4, 8 recs); `g_objectives` (0x1be3a, 8 slots); `g_player_status` (0x105e1) | short fixed lists |
+| `0xa` (10) | `g_syndicate_recs` (0x539c, 50 recs) | |
+| `0x12` (18) | `g_hud_panel` (0x5114), `g_auxbar_panel` (0x5258) | UI panel slots: x@+0, y@+2 |
+| `8` | `g_rec8_table` (0x5338) | linked via +6, flag byte +5 |
+| `5` | `g_rec5_table` (0x5340) | linked; `base + id*5` |
+
 ## Coding-style conventions (for writing matchable C)
 
 Patterns that recur across the corpus — follow them and the first compile lands close:
