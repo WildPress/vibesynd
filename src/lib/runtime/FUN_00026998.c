@@ -1,8 +1,13 @@
-/* @ 0x26998 (32B) -- db-transcription (hand-asm/library). */
+/* @ 0x26998 -- subsystem init call sequence. */
+extern void FUN_00026a18(void), FUN_00031858(void), FUN_000380b8(void),
+            FUN_0001c2c8(void), FUN_00029088(void), FUN_00036fd8(void);
 
-extern void __db_FUN_00026998_0(void);
-#pragma aux __db_FUN_00026998_0 = "db 232" "db 123" "db 0" "db 0" "db 0" "db 232" "db 182" "db 174" "db 0" "db 0" "db 232" "db 17" "db 23" "db 1" "db 0" "db 232" "db 28" "db 89" "db 255" "db 255" "db 232" "db 215" "db 38" "db 0" "db 0" "db 233" "db 34" "db 6" "db 1" "db 0" "db 139" "db 192" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_00026998 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_00026998(void) {
-    __db_FUN_00026998_0();
+void FUN_00026998(void)
+{
+    FUN_00026a18();
+    FUN_00031858();
+    FUN_000380b8();
+    FUN_0001c2c8();
+    FUN_00029088();
+    FUN_00036fd8();
 }
