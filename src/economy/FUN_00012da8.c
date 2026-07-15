@@ -30,7 +30,7 @@
    store. Byte-count without the spill would be 1187-1191 vs 1188.
 
    Finds k's first active pool-A slot (bit 1 of +0x1c, base 0x8110, agent
-   stride 0x2e0 = 8 slots x 0x5c) -> row header code k*8+slot in g_e551
+   stride 0x2e0 = 8 slots x 0x5c) -> row header code k*8+slot in g_agent_slots
    (template row stride 0x417, cf. FUN_000223c8's docs); row word +0x356
    (g_e8a7) = 1; clears the 18 template entry slot-no bytes (g_e5c0, entry
    stride 40). Marks g_c358[2k]=1 / g_c359[2k]=0. Then for each i < g_3eb5
@@ -44,7 +44,7 @@
    g_1beb0, k at +7, zeros, +0xc = pool-A slot ptr g_pool_a+(code+i)*0x5c,
    +0x10 = 0. Finally FUN_000223c8(k, 0x1002) applies the row. */
 extern unsigned char g_pool_a[];
-extern unsigned char g_e551[];
+extern unsigned char g_agent_slots[];
 extern unsigned char g_e8a7[];
 extern unsigned char g_e5ba[];
 extern unsigned char g_e5bc[];
@@ -79,7 +79,7 @@ void FUN_00012da8(unsigned char k)
         rec += 0x5c;
         code++;
     }
-    g_e551[k * 0x417] = code;
+    g_agent_slots[k * 0x417] = code;
     v = 1;
     *(unsigned short *)(g_e8a7 + k * 0x417) = v;
     for (c = 0; c < 18; c++)
@@ -166,7 +166,7 @@ void FUN_00012da8(unsigned char k)
                 q[8] = 0;
                 *(unsigned short *)(q + 0xa) = 0;
                 *(unsigned char **)(q + 0xc) =
-                    g_pool_a + (g_e551[k * 0x417] + i) * 0x5c;
+                    g_pool_a + (g_agent_slots[k * 0x417] + i) * 0x5c;
                 *(int *)(q + 0x10) = 0;
             }
         }

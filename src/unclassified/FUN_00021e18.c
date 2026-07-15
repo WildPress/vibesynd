@@ -12,7 +12,7 @@
  * rec = 0x417*param (stride 1047, indexed by the passed player index `param`).
  * The record's field bases (all the same 1047-byte record, different C symbols):
  *   g_player_recs[rec]        -> funds dword (rec+0)             [refund target]
- *   g_e551[rec]        -> base pool-A slot index byte (rec+0xb5)
+ *   g_agent_slots[rec]        -> base pool-A slot index byte (rec+0xb5)
  *   g_e5b9[rec+j*40]   -> template entry j roll byte  (0xff = empty)
  *   g_e5ba[rec+j*40]   -> template entry j HP word
  *   g_e5bc[rec+j*40]   -> template entry j flags word
@@ -20,11 +20,11 @@
  *   g_e5c0[rec+j*40]   -> template entry j present/slot byte (0 = absent)
  *   g_e5c1[rec+j*40+d*4]-> template entry j slot d qty word
  *   g_e5c3[rec+j*40+d*4]-> template entry j slot d kind word
- * (g_e5c0 == g_e551+0x6f, so the outer loop's present-byte read is the sibling's
+ * (g_e5c0 == g_agent_slots+0x6f, so the outer loop's present-byte read is the sibling's
  * +0x6f entry field; entry stride 40, 8 {qty,kind} slot pairs -- identical layout
  * to 0x223c8's 18x40B template block.)
  *
- * Pool-A node (node = g_pool_a + (g_e551[rec] + slot - 1)*0x5c, id = node - g_entity_pool):
+ * Pool-A node (node = g_pool_a + (g_agent_slots[rec] + slot - 1)*0x5c, id = node - g_entity_pool):
  *   node+0x14 hp word (signed), +0x19 type byte, +0x1c chain link (16-bit id),
  *   +0x3a carried-item chain head (16-bit id), +0x3c kind/flags word.
  * Pool-A world record `pr` in the refund scan (0x8110..0xdd10, 256x0x5c):
@@ -91,7 +91,7 @@
 extern unsigned char g_entity_pool[];
 extern unsigned char g_pool_a[];
 extern unsigned char g_player_recs[];
-extern unsigned char g_e551[];
+extern unsigned char g_agent_slots[];
 extern unsigned char g_e5b9[];
 extern unsigned char g_e5ba[];
 extern unsigned char g_e5bc[];
@@ -132,7 +132,7 @@ void FUN_00021e18(unsigned short param)
         for (j = 0; j < 0x12; j++) {
             slot = g_e5c0[j * 40 + REC];
             if (slot != 0) {
-                node = g_pool_a + (g_e551[REC] + slot - 1) * 0x5c;
+                node = g_pool_a + (g_agent_slots[REC] + slot - 1) * 0x5c;
                 id = (int)(node - g_entity_pool);
 
                 /* --- (A) refund scan over the whole pool --- */

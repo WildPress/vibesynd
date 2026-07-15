@@ -30,7 +30,7 @@
 extern unsigned char g_entity_pool[];
 extern unsigned char g_pool_a[];
 extern unsigned char g_dcbc[];
-extern unsigned char g_e551[];
+extern unsigned char g_agent_slots[];
 extern void FUN_000269b8(unsigned char *p);
 extern int FUN_000226a8(unsigned char *node, unsigned short kind, int cnt);
 extern void FUN_0004d199(unsigned char *p, int val, int n);
@@ -53,10 +53,10 @@ void FUN_000223c8(unsigned short row, unsigned short mode)
         for (i = 0; i < 8; i++)
             *(int *)(g_dcbc + s * 0x20 + i * 4) = 0;
     for (j = 0; j < 0x12; j++) {
-        if (*(unsigned char *)(g_e551 + row * 1047 + j * 40 + 0x6f) != 0) {
-            node = g_pool_a + (*(unsigned char *)(g_e551 + row * 1047) +
-                             *(unsigned char *)(g_e551 + row * 1047 + j * 40 + 0x6f) - 1) * 0x5c;
-            used[*(unsigned char *)(g_e551 + row * 1047 + j * 40 + 0x6f) - 1] = 1;
+        if (*(unsigned char *)(g_agent_slots + row * 1047 + j * 40 + 0x6f) != 0) {
+            node = g_pool_a + (*(unsigned char *)(g_agent_slots + row * 1047) +
+                             *(unsigned char *)(g_agent_slots + row * 1047 + j * 40 + 0x6f) - 1) * 0x5c;
+            used[*(unsigned char *)(g_agent_slots + row * 1047 + j * 40 + 0x6f) - 1] = 1;
             id = *(unsigned short *)(node + 0x3a);
             while (id != 0) {
                 p = g_entity_pool + id;
@@ -64,9 +64,9 @@ void FUN_000223c8(unsigned short row, unsigned short mode)
                 FUN_000269b8(p);
             }
             *(unsigned short *)(node + 0x3a) = 0;
-            t = *(unsigned short *)(g_e551 + row * 1047 + j * 40 + 0x6b);
+            t = *(unsigned short *)(g_agent_slots + row * 1047 + j * 40 + 0x6b);
             *(unsigned short *)(node + 0x3c) = t;
-            *(unsigned short *)(node + 0x14) = *(unsigned short *)(g_e551 + row * 1047 + j * 40 + 0x69);
+            *(unsigned short *)(node + 0x14) = *(unsigned short *)(g_agent_slots + row * 1047 + j * 40 + 0x69);
             *(unsigned short *)(node + 0x1c) = mode | 0x400;
             *(short *)(node + 0xa) &= ~0x109;
             node[0x19] = 0;
@@ -90,11 +90,11 @@ void FUN_000223c8(unsigned short row, unsigned short mode)
                 break;
             }
             for (d = 0; d < 8; d++) {
-                if (*(unsigned short *)(g_e551 + row * 1047 + j * 40 + d * 4 + 0x72) > 0) {
+                if (*(unsigned short *)(g_agent_slots + row * 1047 + j * 40 + d * 4 + 0x72) > 0) {
                     *(int *)(g_dcbc + j * 0x20 + d * 4) =
                         FUN_000226a8(node,
-                                     *(unsigned short *)(g_e551 + row * 1047 + j * 40 + d * 4 + 0x72),
-                                     *(short *)(g_e551 + row * 1047 + j * 40 + d * 4 + 0x70));
+                                     *(unsigned short *)(g_agent_slots + row * 1047 + j * 40 + d * 4 + 0x72),
+                                     *(short *)(g_agent_slots + row * 1047 + j * 40 + d * 4 + 0x70));
                 }
             }
         }
@@ -102,7 +102,7 @@ void FUN_000223c8(unsigned short row, unsigned short mode)
     if (mode != 0x1002) {
         for (d = 0; d < 8; d++) {
             if (used[d] == 0) {
-                node = g_pool_a + (d + *(unsigned char *)(g_e551 + row * 1047)) * 0x5c;
+                node = g_pool_a + (d + *(unsigned char *)(g_agent_slots + row * 1047)) * 0x5c;
                 id = *(unsigned short *)(node + 0x3a);
                 while (id != 0) {
                     p = g_entity_pool + id;

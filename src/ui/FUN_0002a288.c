@@ -73,7 +73,7 @@ extern short g_cur_player;
 extern unsigned short g_10b14;
 extern unsigned short g_10b12;
 extern unsigned short g_10b1a;
-extern unsigned char g_e551[];
+extern unsigned char g_agent_slots[];
 extern unsigned char g_pool_a[];
 extern unsigned char g_entity_pool[];
 extern short g_a6c2[];
@@ -111,7 +111,7 @@ void FUN_0002a288(void)
     state = 1;
     if (g_mouse_x >= 0x80) {
         k = g_cur_player * 0x417;
-        p = g_pool_a + ((signed char)g_e551[k + 1] + g_e551[k]) * 0x5c;
+        p = g_pool_a + ((signed char)g_agent_slots[k + 1] + g_agent_slots[k]) * 0x5c;
         id1 = g_10b14;
         e1 = g_entity_pool + id1;
         state = 2;

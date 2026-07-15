@@ -1,12 +1,12 @@
 /* 0x38cf8 -- XMIDI music-system init (AIL-style), sibling of 0x35d08.
    Loads driver file (a2) via FUN_18158, extracts resource kind 5, registers
-   it (FUN_398d7 -> handle g_11e2c), header word +4 must be 3 (XMIDI driver).
+   it (FUN_398d7 -> handle g_seq_ctx), header word +4 must be 3 (XMIDI driver).
    Params a/b/c (irq-ish trio) default from header +0x14/+0x18/+0x10 when 0;
    b is a register local copy bb (EDI at entry, default writes DI).
    FUN_399b3 probes, FUN_399bd commits. Then loads the music image (a1),
    builds "DATA/SAMPLE." + hdr suffix (+8), optional global timbre cache
    (FUN_39b73/39b7d), fopen(buf,"rb") @0x3b8f8, registers 8 sequences
-   (FUN_39b5f -> g_11e0c[i]) with per-seq state allocs, and services timbre
+   (FUN_39b5f -> g_seq_state[i]) with per-seq state allocs, and services timbre
    requests (FUN_39b87 -> bank/patch = w/256, w%256) from the sample file via
    FUN_38c28 + FUN_39b91. fclose @0x3b99e. Returns 1 ok / 0 fail.
 
@@ -39,8 +39,8 @@ extern void FUN_0003b99e(void *f);
 extern void *FUN_00038c28(void *f, int bank, int patch);
 
 extern unsigned short g_11e30;
-extern int g_11e2c;
-extern int g_11e0c[8];
+extern int g_seq_ctx;
+extern int g_seq_state[8];
 
 void *memcpy(void *dst, const void *src, unsigned len);
 #pragma intrinsic(memcpy)
@@ -69,10 +69,10 @@ int xmidi_music_init(int a1, int a2, unsigned short a, unsigned short b, unsigne
     if (res == 0)
         return 0;
     FUN_0003ab59((void *)drv);
-    g_11e2c = FUN_000398d7(res);
-    if (g_11e2c == -1)
+    g_seq_ctx = FUN_000398d7(res);
+    if (g_seq_ctx == -1)
         return 0;
-    hdr = FUN_00039994(g_11e2c);
+    hdr = FUN_00039994(g_seq_ctx);
     if (*(int *)(hdr + 4) != 3)
         return 0;
     if (a == 0)
@@ -81,32 +81,32 @@ int xmidi_music_init(int a1, int a2, unsigned short a, unsigned short b, unsigne
         bb = *(unsigned short *)(hdr + 0x18);
     if (c == 0)
         c = *(unsigned short *)(hdr + 0x10);
-    if (FUN_000399b3(g_11e2c, c, a, bb, *(int *)(hdr + 0x1c)) == 0)
+    if (FUN_000399b3(g_seq_ctx, c, a, bb, *(int *)(hdr + 0x1c)) == 0)
         return 0;
-    FUN_000399bd(g_11e2c, c, a, bb, *(int *)(hdr + 0x1c));
-    size = FUN_00039b55(g_11e2c);
+    FUN_000399bd(g_seq_ctx, c, a, bb, *(int *)(hdr + 0x1c));
+    size = FUN_00039b55(g_seq_ctx);
     mem = alloc_init_with_errcode(a1, 0);
     if (mem == 0)
         return 0;
     memcpy(buf, (char *)0x3d10, 13);
     FUN_0003a900(buf, hdr + 8);
-    w = FUN_00039b73(g_11e2c);
+    w = FUN_00039b73(g_seq_ctx);
     if (w != 0)
-        FUN_00039b7d(g_11e2c, FUN_0003aa74(w), w);
+        FUN_00039b7d(g_seq_ctx, FUN_0003aa74(w), w);
     file = FUN_0003b8f8(buf, (char *)0x3d20);
     for (i = 0; i < 8; i++) {
         slots[i] = FUN_0003aa74(size);
-        if ((g_11e0c[i] = FUN_00039b5f(g_11e2c, mem, i, slots[i], 0)) == -1) {
+        if ((g_seq_state[i] = FUN_00039b5f(g_seq_ctx, mem, i, slots[i], 0)) == -1) {
             FUN_0003ab59(slots[i]);
             break;
         }
-        while ((w = FUN_00039b87(g_11e2c, g_11e0c[i])) != 0xffff) {
+        while ((w = FUN_00039b87(g_seq_ctx, g_seq_state[i])) != 0xffff) {
             wv = w;
             q = wv / 256;
             p = FUN_00038c28(file, (unsigned short)q, (unsigned short)(wv % 256));
             if (p == 0)
                 return 0;
-            FUN_00039b91(g_11e2c, (unsigned short)q, (unsigned short)(wv % 256), p);
+            FUN_00039b91(g_seq_ctx, (unsigned short)q, (unsigned short)(wv % 256), p);
             FUN_0003ab59(p);
         }
     }

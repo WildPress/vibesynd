@@ -1,4 +1,9 @@
 {
+ "g_agent_slots": {
+  "addr": "e551",
+  "type": "u8[]",
+  "desc": "agent-slot lookup byte table (per-player base agent indices)"
+ },
  "g_agent_tmpl": {
   "addr": "e552",
   "type": "u8[]",
@@ -48,6 +53,11 @@
   "addr": "10b16",
   "type": "s16",
   "desc": "current/owning player index (indexes the 0x417-stride player records)"
+ },
+ "g_cur_seq": {
+  "addr": "bbec",
+  "type": "s8",
+  "desc": "current sound-sequence index (-1 = none)"
  },
  "g_cursor_x": {
   "addr": "10b22",
@@ -284,6 +294,16 @@
   "type": "u16",
   "desc": "selection cursor state words"
  },
+ "g_seq_ctx": {
+  "addr": "11e2c",
+  "type": "int",
+  "desc": "sequencer context handle (1st arg to 0x39bb9/bc3/bd7)"
+ },
+ "g_seq_state": {
+  "addr": "11e0c",
+  "type": "int[]",
+  "desc": "per-sequence state/handle table (indexed by sequence)"
+ },
  "g_shot_level": {
   "addr": "10b5a",
   "type": "s16",
@@ -298,6 +318,11 @@
   "addr": "10b5c",
   "type": "s16",
   "desc": "shot cursor: y accumulator (collision walk)"
+ },
+ "g_snd_driver": {
+  "addr": "11dec",
+  "type": "int",
+  "desc": "sound driver handle (1st arg to 0x39af1/ae7/b05/b0f)"
  },
  "g_sound_enabled": {
   "addr": "10b4a",

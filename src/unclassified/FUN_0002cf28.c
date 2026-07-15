@@ -14,7 +14,7 @@
  *
  * @ 0x2cf28 (jump-table dispatcher, 20-entry table at manifest
  * 0x2cecc, jmp literal 0x1f784). HUD inventory-slot state refresh for the
- * selected agent (g_cur_player): slot = g_e551[n*0x417] + (signed char)g_e551[n*0x417+1],
+ * selected agent (g_cur_player): slot = g_agent_slots[n*0x417] + (signed char)g_agent_slots[n*0x417+1],
  * ped = g_pool_a + slot*0x5c. If ped type is 0x18/0x19, or (ped flag +0xb bit 0
  * set and g_df52[b*0xb] < 2), reset the record table via FUN_0002c468(); if
  * type == 0xa refresh via FUN_0002c4e8(). Then walk the carried-item chain
@@ -25,7 +25,7 @@
  *   0x11/0x12/0x13 -> 0x8b;  type 0 and >0x13 -> no call (cursor still advances).
  */
 extern short g_cur_player;
-extern unsigned char g_e551[];
+extern unsigned char g_agent_slots[];
 extern unsigned char g_df52[];
 extern unsigned char g_pool_a[];
 extern unsigned char g_entity_pool[];
@@ -38,8 +38,8 @@ void FUN_0002d038(unsigned char *p, short *rec, int item, short spr);
 void FUN_0002cf28(void)
 {
     int off = g_cur_player * 0x417;
-    int b = (signed char)g_e551[off + 1];
-    int slot = g_e551[off] + b;
+    int b = (signed char)g_agent_slots[off + 1];
+    int slot = g_agent_slots[off] + b;
     unsigned char *ped = g_pool_a + slot * 0x5c;
     unsigned char type = ped[0x19];
     unsigned short id;

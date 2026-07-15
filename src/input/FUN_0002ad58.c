@@ -13,7 +13,7 @@
 
    SUBSYSTEM: combat/targeting cursor. Two walled record families are indexed here:
    (a) 0x417-stride AGENT TEMPLATE records: idx=g_cur_player(short); the SHL5;ADD;LEA*4;SUB;
-       LEA*8;SUB chain materialises idx*0x417, indexing byte tables g_e551 (agent's first
+       LEA*8;SUB chain materialises idx*0x417, indexing byte tables g_agent_slots (agent's first
        ped pool-id) and g_agent_tmpl (agent's current sub/selection offset). Appears ~12x.
    (b) pool-A ENTITY records (0x5c=92B stride): rec ptr = 0x8110 + pedid*0x5c
        (0x8110 = pool base g_entity_pool + 2). Fields used: +0x4/+0x6/+0x8 coords, +0xb/+0x1d
@@ -45,7 +45,7 @@ extern unsigned short g_e120, g_e122, g_e124;
 extern short          g_10b10, g_10b12, g_10b14, g_cur_player, g_10b1a;
 extern unsigned short g_10b1c, g_10b1e, g_10b20, g_cursor_x;
 extern unsigned short g_mouse_x, g_mouse_y, g_52f8;
-extern unsigned char  g_e551[], g_agent_tmpl[];   /* 0x417-stride agent template byte tables */
+extern unsigned char  g_agent_slots[], g_agent_tmpl[];   /* 0x417-stride agent template byte tables */
 extern short          g_dir_dx[], g_dir_dy[];   /* direction tables (s16[256]) */
 
 /* pool-A entity record k -> byte ptr (0x8110 + k*0x5c). base = g_entity_pool+2. */
@@ -59,7 +59,7 @@ extern int  FUN_00036be8(unsigned char *rec, unsigned short *node);
 extern int  FUN_000377e8(unsigned char *rec);
 extern unsigned char *FUN_00037608(unsigned char *rec);
 
-#define AGENT_FIRST(idx)  ((unsigned int)g_e551[(int)(idx) * 0x417])
+#define AGENT_FIRST(idx)  ((unsigned int)g_agent_slots[(int)(idx) * 0x417])
 #define AGENT_SEL(idx)    ((int)(signed char)g_agent_tmpl[(int)(idx) * 0x417])
 #define PREC(k)           (g_pool_a + (unsigned int)(k) * 0x5c)   /* pool-A record k */
 

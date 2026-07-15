@@ -107,7 +107,7 @@ void new_campaign_reset(void)
         g_player_recs[p * 0x417 + 0x11] = 0;                   /* g_e4ad */
         g_player_recs[p * 0x417 + 0x23] = 0;                   /* g_e4bf */
         *(short *)(g_player_recs + p * 0x417 + 0xc) = 0;       /* g_e4a8 */
-        g_player_recs[p * 0x417 + 0xb5] = (unsigned char)(p * 8);  /* g_e551 base slot */
+        g_player_recs[p * 0x417 + 0xb5] = (unsigned char)(p * 8);  /* g_agent_slots base slot */
 
         /* 18 weapon/mod slots per player, 40-byte records at +0x11d */
         for (j = 0; j < 0x12; j++) {
