@@ -163,3 +163,22 @@ intrusive 16-bit-id linked lists, a spatial grid, single-byte packed flags and s
 byte angles with sin/cos-style vector tables, and global fixed-address state. We can't cite an
 internal style guide, but the corpus is internally consistent enough that these conventions are
 safe to assume for functions we haven't seen yet — which is the point of writing them down.
+
+## The Persuadertron (traced end-to-end via the LE-relocation resolver)
+
+The persuade weapon, decoded by resolving the entity **behaviour dispatch table**
+(`entity_behaviour_dispatch` @ 0x31858 routes each entity to one of ~40 per-state handlers).
+
+- **Weapon type 5** (the "guided/tracking" branch of `weapon_fire` @ 0x34858) is the Persuadertron.
+- The agent **seeks** the target ped (approach behaviour), then **`persuade_capture`** (0x2fe68)
+  runs on contact (agent x/y == ped x/y, |z diff| < 0x81). If the ped isn't already taken
+  (`ped[0x0a] & 1 == 0`):
+  1. clamp the ped's value `[0x14]` by **`g_persuade_limit[ped_type]`** (0xa73a) — the per-type cap;
+  2. append the ped into the agent's **follower chain** (`agent[0x3a]` head, `[0x1c]`/+0x812a links);
+  3. `ped[0x0a] |= 1` — set the **persuaded/controlled** flag;
+  4. `ped[0x20] = agent` — set the ped's **leader link** to the agent (allegiance flipped).
+- The converted ped then runs the **follow-leader** behaviours (`follow_leader` 0x30078,
+  `formation_follow` 0x2fca8, `join_new_leader` 0x2fa48), trailing the agent.
+
+Allegiance is otherwise positional (a ped's team = poolIndex & ~7); the persuaded ped is
+recognised as friendly via the `[0x0a]` bit-0 flag + its leader link.

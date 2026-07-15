@@ -27,7 +27,7 @@ extern char **g_map_cols;
 extern void recompute_state_code(unsigned char *p);
 extern void move_entity_xyz(unsigned char *node, int x, int y, int z);
 
-void FUN_0002fca8(unsigned char *p)
+void formation_follow(unsigned char *p)
 {
     unsigned char f;
     unsigned char *node;

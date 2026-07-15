@@ -6,11 +6,11 @@
  * checks the item against the wanted type: an exact-type item with non-
  * negative +0x14 word is remembered separately and wins outright. Types
  * 0xb/0xd/0xe/0xf match on type alone; types 0x11..0x13 additionally demand
- * the +0x14 word be at least 10% of the per-type word at g_a73a[type].
+ * the +0x14 word be at least 10% of the per-type word at g_persuade_limit[type].
  * Returns the exact match's id if any, else the best weapon's id, else the
  * equipped item id at node+0x44 (0 if that item's +0x14 word is negative). */
 extern unsigned char g_entity_pool[];
-extern unsigned short g_a73a[];
+extern unsigned short g_persuade_limit[];
 
 unsigned short FUN_00037d08(unsigned char *node, unsigned short dist, unsigned char type)
 {
@@ -132,7 +132,7 @@ unsigned short FUN_00037d08(unsigned char *node, unsigned short dist, unsigned c
             case 0x12:
             case 0x13:
                 if (type == item[0x19] && *(short *)(item + 0x14) > m1) {
-                    if (*(short *)(item + 0x14) >= g_a73a[item[0x19]] * 10 / 100)
+                    if (*(short *)(item + 0x14) >= g_persuade_limit[item[0x19]] * 10 / 100)
                         exact = item;
                 }
                 break;

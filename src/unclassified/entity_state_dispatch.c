@@ -38,7 +38,7 @@
 extern unsigned char g_entity_pool[];
 extern unsigned char g_1beb2[];
 extern unsigned char g_c358[];
-extern unsigned short g_a73a[];
+extern unsigned short g_persuade_limit[];
 extern unsigned short g_a6c2[];
 extern void FUN_00023158(unsigned int);
 extern unsigned short lcg_rand(int);
@@ -73,7 +73,7 @@ void entity_state_dispatch(unsigned char *param_1, unsigned char param_2, unsign
     }
     rec = g_1beb2 + *param_1 * 0xf;
     cur = g_entity_pool + *(unsigned short *)(hnd + 0x3a);
-    *(short *)(cur + 0x14) = (short)((int)(unsigned short)g_a73a[cur[0x19]] / 4);
+    *(short *)(cur + 0x14) = (short)((int)(unsigned short)g_persuade_limit[cur[0x19]] / 4);
     *param_4 = (unsigned short)param_2;
     *((unsigned char *)param_4 + 0xd) = 6;
     FUN_00023158((unsigned short)param_3);

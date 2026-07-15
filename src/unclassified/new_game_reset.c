@@ -34,7 +34,7 @@
  *   take the absolute value of the signed dword g_7bf5[e*501].
  * Rebuild step 3 (equip templates): for each of 18 entries (stride 40) inside
  *   rec, roll a byte g_squad_id = FUN_20c88(), set the HP word g_e5ba = 0x10, the
- *   flags word g_e5bc = 0x1fff, and eight {qty=g_a73a[kind], kind} item slots
+ *   flags word g_e5bc = 0x1fff, and eight {qty=g_persuade_limit[kind], kind} item slots
  *   at g_equip_qty/g_equip_kind for the fixed kind list {6,6,1,0xc,0x11,0x11,7,7}.
  *
  * STATUS: full readable-C decode, PARKED. Score vs TRUE size 1969:
@@ -79,7 +79,7 @@ extern unsigned char g_e5ba[];   /* equip-template HP word */
 extern unsigned char g_e5bc[];   /* equip-template flags word */
 extern unsigned char g_equip_qty[];   /* equip-template slot qty word */
 extern unsigned char g_equip_kind[];   /* equip-template slot kind word */
-extern short         g_a73a[];   /* item kind -> default quantity table */
+extern short         g_persuade_limit[];   /* item kind -> default quantity table */
 
 extern int  stricmp_call(unsigned char *bitset, int id);
 extern int  keyboard_state_machine(void);
@@ -175,22 +175,22 @@ void new_game_reset(void)
             g_squad_id[0x417 * g_cur_player + d * 40] = (unsigned char)roll;
             *(short *)(g_e5ba + 0x417 * g_cur_player + d * 40) = 0x10;
             *(short *)(g_e5bc + 0x417 * g_cur_player + d * 40) = 0x1fff;
-            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x00) = g_a73a[6];
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x00) = g_persuade_limit[6];
             *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x00) = 6;
             *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x04) = 6;
-            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x04) = g_a73a[6];
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x04) = g_persuade_limit[6];
             *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x08) = 1;
-            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x08) = g_a73a[1];
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x08) = g_persuade_limit[1];
             *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x0c) = 0xc;
-            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x0c) = g_a73a[0xc];
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x0c) = g_persuade_limit[0xc];
             *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x10) = 0x11;
-            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x10) = g_a73a[0x11];
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x10) = g_persuade_limit[0x11];
             *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x14) = 0x11;
-            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x14) = g_a73a[0x11];
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x14) = g_persuade_limit[0x11];
             *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x18) = 7;
-            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x18) = g_a73a[7];
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x18) = g_persuade_limit[7];
             *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x1c) = 7;
-            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x1c) = g_a73a[7];
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x1c) = g_persuade_limit[7];
         }
     }
 }

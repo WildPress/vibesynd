@@ -98,6 +98,9 @@ LABELS = {
     "00032118": "lookup_base_record",    "000226a8": "init_record_if_alloc",
     "00018828": "cond_3call",            "0002d6c8": "aim_step",
     "0001a458": "dispatch_jt45",
+    "0002fe68": "persuade_capture",     "00030078": "follow_leader",
+    "000301e8": "follow_leader_b",       "0002fca8": "formation_follow",
+    "0002fa48": "join_new_leader",       "00031858": "entity_behaviour_dispatch",
 }
 
 

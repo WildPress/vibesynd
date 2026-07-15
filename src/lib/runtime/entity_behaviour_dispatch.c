@@ -52,8 +52,8 @@ extern void __db_FUN_00031858_24(void);
 #pragma aux __db_FUN_00031858_24 = "db 200" "db 152" "db 80" "db 232" "db 184" "db 43" "db 254" "db 255" "db 49" "db 201" "db 15" "db 191" "db 86" "db 8" "db 102" "db 137" "db 193" "db 15" "db 191" "db 67" "db 8" "db 41" "db 208" "db 137" "db 194" "db 193" "db 250" "db 31" "db 193" "db 226" "db 8" "db 27" "db 194" "db 193" "db 248" "db 8" "db 64" "db 15" "db 175" "db 200" "db 131" "db 196" "db 8" "db 57" "db 249" "db 118" "db 5" "db 137" "db 28" "db 36" "db 137" "db 207" "db 131" "db 195" "db 92" "db 49" "db 210" "db 102" "db 139" "db 84" "db 36" "db 20" "db 137" "db 208" "db 193" "db 224" "db 5" "db 1" "db 208" "db 141" "db 4" "db 133" "db 0" "db 0" "db 0" "db 0" "db 41" "db 208" "db 141" "db 4" "db 197" "db 0" "db 0" "db 0" "db 0" "db 41" "db 208" "db 138" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_00031858_25(void);
 #pragma aux __db_FUN_00031858_25 = "db 128" "db 81" "db 229" "db 0" "db 0" "db 37" "db 255" "db 0" "db 0" "db 0" "db 131" "db 192" "db 4" "db 107" "db 192" "db 92" "db 5" "db 16" "db 129" "db 0" "db 0" "db 57" "db 195" "db 15" "db 130" "db 108" "db 255" "db 255" "db 255" "db 139" "db 4" "db 36" "db 131" "db 196" "db 4" "db 95" "db 94" "db 91" "db 195" "db 144" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_00031858 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_00031858(void) {
+#pragma aux entity_behaviour_dispatch modify [eax ebx ecx edx esi edi ebp] aborts;
+void entity_behaviour_dispatch(void) {
     __db_FUN_00031858_0();
     __db_FUN_00031858_1();
     __db_FUN_00031858_2();

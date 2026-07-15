@@ -347,10 +347,6 @@
   "addr": "00023038",
   "flags": "-4s -oneatx -zp8 -s -zq"
  },
- "FUN_0002fca8": {
-  "addr": "0002fca8",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
  "FUN_00028628": {
   "addr": "00028628",
   "flags": "-4s -oneatx -zp8 -s -zq"
@@ -1566,6 +1562,10 @@
  },
  "aim_step": {
   "addr": "0002d6c8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "formation_follow": {
+  "addr": "0002fca8",
   "flags": "-4s -oneatx -zp8 -s -zq"
  }
 }

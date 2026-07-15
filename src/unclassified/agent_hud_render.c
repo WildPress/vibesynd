@@ -28,7 +28,7 @@
  *   4. A second pass walks a chain of up to 8 auxiliary objects hung off the
  *      squad-reference entity's +0x3a link (chained via +0x1c) and draws a small
  *      4px progress bar for each enabled type (g_frame_enable[frame]!=0), value =
- *      clamp((hp+1)*23/(g_a73a[frame]+1), 23), cached in g_df76[i].
+ *      clamp((hp+1)*23/(g_persuade_limit[frame]+1), 23), cached in g_df76[i].
  *
  * DRAW PRIMITIVES (all in the hand-asm graphics region, args below in C order):
  *   FUN_0003feb3(x, y, w, h, color)   -- filled rectangle / bar segment.
@@ -57,7 +57,7 @@ extern unsigned char  g_hud_panel[];     /* agent HUD panel table, stride 0x12: 
 extern unsigned char  g_df48[];     /* per-agent 11-byte HUD value cache */
 extern unsigned char  g_df76[];     /* aux-bar value cache (8 bytes) */
 extern unsigned char  g_auxbar_panel[];     /* aux-bar panel table, stride 0x12: x@+0,y@+2 */
-extern unsigned short g_a73a[];     /* per-frame max/quantity table */
+extern unsigned short g_persuade_limit[];     /* per-frame max/quantity table */
 extern unsigned char  g_frame_enable[];     /* per-frame enable flags */
 
 extern void store_4_globals(int a, int b, int c, int d);
@@ -164,7 +164,7 @@ void agent_hud_render(void)
                 break;
             node = g_entity_pool + id;
             frame = node[0x19];
-            w = g_a73a[frame];
+            w = g_persuade_limit[frame];
             if (g_frame_enable[frame] != 0) {
                 hp = (int)*(short *)(node + 0x14) + 1;
                 val = hp * 0x17 / (w + 1);

@@ -239,6 +239,11 @@
   "type": "u8",
   "desc": "off-screen-objective indicator flag"
  },
+ "g_persuade_limit": {
+  "addr": "a73a",
+  "type": "u16[]",
+  "desc": "per-ped-type persuade cap (indexed by ped type; used by persuade_capture 0x2fe68)"
+ },
  "g_player_budget": {
   "addr": "e4a0",
   "type": "int[]",

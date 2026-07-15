@@ -35,7 +35,7 @@
    (g_e8a7) = 1; clears the 18 template entry slot-no bytes (g_squad_slot, entry
    stride 40). Marks g_c358[2k]=1 / g_c359[2k]=0. Then for each i < g_3eb5
    whose walking slot has flag 2: slot |= 0x10 at +0x1d, entry i gets
-   slot-no i+1, word0 (g_e5ba) = 0x10, pair0 = (kind, count=g_a73a[kind])
+   slot-no i+1, word0 (g_e5ba) = 0x10, pair0 = (kind, count=g_persuade_limit[kind])
    where kind = g_1beb1 if set else the highest-level researched kind
    (g_3ec0/g_3ec1 pair table, bank status word g_7c05[j*0x1f5] == 0x960);
    optional pair1 = (0xc, 0xc7) if g_1beae; optional next pair = (1, 0x32)
@@ -58,7 +58,7 @@ extern unsigned char g_3eb5;
 extern unsigned char g_3eb7;
 extern unsigned char g_3ec0[];
 extern unsigned char g_3ec1[];
-extern unsigned short g_a73a[];
+extern unsigned short g_persuade_limit[];
 extern unsigned char g_1beae;
 extern unsigned char g_1beaf;
 extern unsigned char g_1beb0;
@@ -115,12 +115,12 @@ void build_equip_row(unsigned char k)
                     unsigned short t = g_3ec1[besti * 2];
                     *(unsigned short *)(g_equip_kind + k * 0x417 + i * 40) = t;
                     *(unsigned short *)(g_equip_qty + k * 0x417 + i * 40) =
-                        g_a73a[g_3ec1[besti * 2]];
+                        g_persuade_limit[g_3ec1[besti * 2]];
                 }
             } else {
                 *(unsigned short *)(g_equip_kind + k * 0x417 + i * 40) = g_1beb1;
                 *(unsigned short *)(g_equip_qty + k * 0x417 + i * 40) =
-                    g_a73a[g_1beb1];
+                    g_persuade_limit[g_1beb1];
             }
             {
             unsigned char slot = 1;

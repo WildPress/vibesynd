@@ -1196,11 +1196,11 @@
   "desc": "",
   "runs_in_intro": false
  },
- "FUN_0002fca8": {
+ "formation_follow": {
   "addr": "0002fca8",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "@ 0x2fca8: MATCHED (RELOC-AWARE YES, -4s -oneatx -zp8 -s -zq, 438B). Levers that closed it: named pointer statements for every g_entity_pool + id deref (add+disp8, no symbol fold); named int accumulat",
+  "label": "formation_follow",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00030508": {
@@ -3737,11 +3737,11 @@
   "desc": "-- db-transcription (hand-asm/library).",
   "runs_in_intro": false
  },
- "FUN_00031858": {
+ "entity_behaviour_dispatch": {
   "addr": "00031858",
-  "label": "",
-  "subsystem": "lib",
-  "desc": "-- db-transcription (hand-asm/library).",
+  "label": "entity_behaviour_dispatch",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00034d48": {
