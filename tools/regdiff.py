@@ -98,11 +98,14 @@ def toks(insn):
     regs  = the actual physical registers, in operand order (for the renaming bijection);
     slots = the actual esp/ebp-relative displacements, in order (for the slot bijection)."""
     shape, regs, slots = [], [], []
+    is_branch = insn.group(capstone.CS_GRP_JUMP)      # jcc/jmp: imm is a RELATIVE target
     for op in insn.operands:
         if op.type == X.X86_OP_REG:
             shape.append("R"); regs.append(insn.reg_name(op.reg))
         elif op.type == X.X86_OP_IMM:
-            shape.append(("imm", op.imm))
+            # a branch displacement differs whenever anything DOWNSTREAM changes size -- it's
+            # layout-driven, not logic, so mask it (like a relocation) instead of calling it a diff.
+            shape.append(("imm", "~rel") if is_branch else ("imm", op.imm))
         elif op.type == X.X86_OP_MEM:
             m = op.mem
             base = insn.reg_name(m.base) if m.base else None
@@ -124,37 +127,42 @@ def toks(insn):
 
 
 def analyze(tb, ob, fx):
-    ti = [toks(i) for i in MD.disasm(mask(tb, fx), 0)]
-    oi = [toks(i) for i in MD.disasm(mask(ob, fx), 0)]
-    if mask(tb, fx) == mask(ob, fx) and len(tb) == len(ob):
+    import difflib
+    tbm, obm = mask(tb, fx), mask(ob, fx)
+    ti = [toks(i) for i in MD.disasm(tbm, 0)]
+    oi = [toks(i) for i in MD.disasm(obm, 0)]
+    if tbm == obm and len(tb) == len(ob):
         return {"verdict": "MATCH", "score": 1.0, "n": len(ti)}
-    if len(ti) != len(oi):
-        return {"verdict": "STRUCTURAL", "detail": f"instr count {len(ti)} vs {len(oi)}",
-                "score": _align_score(ti, oi), "n": max(len(ti), len(oi))}
 
+    # Align by STRUCTURAL key (mnemonic + shape, with registers/slots/branch-targets abstracted out).
+    # difflib finds inserted/deleted instructions, so a count mismatch pinpoints the real edit instead
+    # of cascading into every downstream branch displacement.
+    tk = [(t[0], t[1]) for t in ti]
+    ok = [(o[0], o[1]) for o in oi]
+    sm = difflib.SequenceMatcher(None, tk, ok, autojunk=False)
+    ops = sm.get_opcodes()
+    score = sm.ratio()
+
+    if not all(tag == "equal" for tag, *_ in ops):         # a real structural edit exists
+        for tag, i1, i2, j1, j2 in ops:
+            if tag != "equal":
+                return {"verdict": "STRUCTURAL", "at": i1, "tag": tag,
+                        "t": ti[i1] if i1 < len(ti) else None,
+                        "o": oi[j1] if j1 < len(oi) else None,
+                        "score": score, "n": max(len(ti), len(oi))}
+
+    # structurally identical -> the ONLY differences are register / stack-slot assignment.
     regmap, slotmap = {}, {}
     reg_conflict, slot_conflict = [], []
-    struct_at = None
-    good = 0
-    for k, (t, o) in enumerate(zip(ti, oi)):
-        if t[0] != o[0] or t[1] != o[1]:                   # mnemonic or operand shape differ
-            if struct_at is None:
-                struct_at = (k, t, o)
-            continue
-        good += 1
+    for t, o in zip(ti, oi):
         for a, b in zip(t[2], o[2]):                       # register bijection
             if regmap.get(a, b) != b:
-                reg_conflict.append((k, a, regmap[a], b))
+                reg_conflict.append((a, regmap[a], b))
             regmap[a] = b
         for a, b in zip(t[3], o[3]):                       # stack-slot bijection
             if slotmap.get(a, b) != b:
-                slot_conflict.append((k, a, slotmap[a], b))
+                slot_conflict.append((a, slotmap[a], b))
             slotmap[a] = b
-
-    score = good / max(len(ti), 1)
-    if struct_at is not None:
-        return {"verdict": "STRUCTURAL", "at": struct_at[0], "t": struct_at[1], "o": struct_at[2],
-                "score": score, "n": len(ti)}
 
     reg_moved = {a: b for a, b in regmap.items() if a != b}
     slot_moved = {a: b for a, b in slotmap.items() if a != b}
@@ -171,15 +179,6 @@ def analyze(tb, ob, fx):
     return {"verdict": "REGISTER-ROLE", "reg_conflict": reg_conflict[:4],
             "slot_conflict": slot_conflict[:4], "regmap": reg_moved, "slotmap": slot_moved,
             "score": score, "n": len(ti)}
-
-
-def _align_score(ti, oi):
-    """Coarse LCS-style similarity on the mnemonic+shape stream, for the count-mismatch case."""
-    import difflib
-    a = [(t[0], t[1]) for t in ti]
-    b = [(o[0], o[1]) for o in oi]
-    sm = difflib.SequenceMatcher(None, a, b, autojunk=False)
-    return sum(x.size for x in sm.get_matching_blocks()) / max(len(a), 1)
 
 
 def load_target(name):
@@ -204,16 +203,24 @@ def report(name, res):
               "(unless #pragma aux can pin it).")
     elif v == "REGISTER-ROLE":
         print(f"    non-bijective register use (a value the target keeps in one reg, we split):")
-        for k, a, was, now in res.get("reg_conflict", []):
-            print(f"      instr {k}: target {a} -> ours was {was}, now {now}")
+        if res.get("regmap"):
+            print("    reg map:    " + ", ".join(f"{a}->{b}" for a, b in res["regmap"].items()))
+        if res.get("slotmap"):
+            print("    slot map:   " + ", ".join(f"[+{a:#x}]->[+{b:#x}]" for a, b in res["slotmap"].items()))
+        for a, was, now in res.get("reg_conflict", []):
+            print(f"      collision: target {a} mapped to both {was} and {now}")
+        for a, was, now in res.get("slot_conflict", []):
+            print(f"      collision: target [+{a:#x}] mapped to both [+{was:#x}] and [+{now:#x}]")
         print("    => allocation-internal; usually a wall, occasionally movable by forcing a temp/spill.")
     elif v == "STRUCTURAL":
-        if "at" in res:
-            print(f"    first divergence at instr {res['at']}:")
+        tag = res.get("tag", "replace")
+        kind = {"replace": "differs", "insert": "target has an EXTRA instruction",
+                "delete": "ours has an EXTRA instruction"}.get(tag, tag)
+        print(f"    first structural edit at target instr {res['at']} ({kind}):")
+        if res.get("t"):
             print(f"      target: {res['t'][0]} {res['t'][1]}")
+        if res.get("o"):
             print(f"      ours:   {res['o'][0]} {res['o'][1]}")
-        else:
-            print(f"    {res.get('detail','')}")
         print("    => real codegen/logic divergence: there IS a source change to find here.")
 
 
