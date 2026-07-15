@@ -182,3 +182,17 @@ The persuade weapon, decoded by resolving the entity **behaviour dispatch table*
 
 Allegiance is otherwise positional (a ped's team = poolIndex & ~7); the persuaded ped is
 recognised as friendly via the `[0x0a]` bit-0 flag + its leader link.
+
+## Static image vs. runtime-filled data (verified from OBJECT2 bytes)
+
+OBJECT2 (DGROUP `[0, 0xd000)`) is a *mix* of genuinely-initialised data (nonzero bytes,
+e.g. from 0x3e1f) and regions that are **zero in the shipped image and populated at runtime**.
+Do not infer "static content" from the address range alone -- check the bytes.
+
+Verified zero-in-image, runtime-filled tables (read-only from code, no literal-address writes):
+- `g_item_max_qty` (0xa73a) -- per-item-type max quantity; **15 reads, 0 literal writes**, bytes zero.
+- `g_dir_dx`/`g_dir_dy` (0xab60/0xad60) -- direction sin/cos vectors; bytes zero.
+
+Implication for "is OBJECT1 the whole game": the *logic* is complete in code, but the game's
+**balance data** (weapon quantities/stats, direction tables) is loaded into DGROUP at runtime
+by a bulk copy, not baked in as code literals. A table being zero here is expected, not missing.
