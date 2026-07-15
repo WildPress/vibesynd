@@ -242,6 +242,20 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ### register-role / encoding-tie-break / scheduling walls (re-confirmed by byte-level diff, e.g. 0x27ed8
 ### esp+4-before-esp+8 load scheduling is irreducible across all source forms + 8 flag sets; 0x34048 is
 ### dual encoding-tie: cross-xor `30 e6` + asymmetric imm32-add `05 20000000`).
+###
+### DEFINITIVE TRIAGE 2026-07-15b — crackreg.py now masks UNRESOLVED RELOCATIONS via the .obj's OMF
+### fixup offsets (ours: reloc placeholders `[eax]`/`add eax,0` -> `[eax+A]`/`add eax,A`; target: globals
+### & >=0x100 consts -> A). This removed the reloc pollution that had inflated the ranking, giving a
+### TRUSTWORTHY instruction-distance. Every dist<=6 parked fn was then diffed and confirmed a documented
+### wall: keyboard_state_machine(1)=dead ESI load DCE'd by 9.5b; 0x27ed8(2)=load scheduling; 0x34048(2)=
+### dual encoding-tie; 0x34088(2)=cmp modrm order (39 d3 vs 39 da, 8000 permutes tried); 0x25348(3)=
+### post-call scheduling nops; 0x27e78(3)=EAX==-1 value reuse; 0x37818(3)=cross-fn tail-merge (needs
+### multi-module build); 0x16678(4)=push imm8-vs-imm32 micro-version peephole; 0x2fbc8(4)=register-role
+### (ax vs dx); 0x36648(4)=register-role+movsx width; 0x20be8(6)=offset+inc scheduling; 0x34198(6)=load
+### scheduling. CONCLUSION: 438 matched is the floor for (Watcom 9.5b + per-function build). Remaining
+### matches would need a DIFFERENT micro-version (compsweep's 7 builds + the binary's own 9.5 banner say
+### no) or a WHOLE-MODULE build model to reproduce cross-fn tail-merge / block-sharing (the ~10 "fuzzer
+### may close" notes). Triage a fn: `crackreg.py --diff NAME` (in-container); filter no diffs -> wall type.
 
 
 ### 🏷️ SEMANTIC NAMES (2026-07-14): FUN_<addr> is NO LONGER special — the anchor is now the manifest

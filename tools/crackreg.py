@@ -37,15 +37,34 @@ IMG = open(SEG, "rb").read()
 srcmap = {os.path.basename(p)[:-2]: p for p in glob.glob("src/**/*.c", recursive=True)}
 
 
-def norm(code, base):
-    """Instruction sequence with absolute addresses / branch targets masked."""
+import re
+def _addA(m):
+    inner = m.group(1)
+    if inner == "A" or re.search(r"[+\-]\s*(0x[0-9a-f]+|\d+|A)\s*$", inner):
+        return m.group(0)
+    return "[" + inner + " + A]"
+
+
+def norm(code, base, fixups=None):
+    """Instruction sequence with absolute addresses / branch targets masked to 'A'.
+
+    Global addresses and branch targets (>= 0x10000, i.e. 5+ hex digits) are masked on
+    BOTH sides. For OURS, `fixups` (byte offsets of the .obj's OMF relocations) mark
+    instructions whose displacement/immediate is an UNRESOLVED reloc (shows as 0 / omitted
+    `[reg]`); those are masked to match the target's resolved form -- so reloc placeholders
+    stop counting as differences. Small real constants (field offsets 0x18, imm 0x20) stay."""
+    fixset = sorted(fx[0] if isinstance(fx, tuple) else fx for fx in (fixups or []))
     seq = []
     for ins in md.disasm(code, base):
-        ops = ins.op_str
-        # mask absolute memory displacements  [0x....]
-        import re
-        ops = re.sub(r"0x[0-9a-f]+", "A", ops)
-        seq.append(ins.mnemonic + " " + ops)
+        off = ins.address - base
+        s = ins.mnemonic + ((" " + ins.op_str) if ins.op_str else "")
+        s = re.sub(r"0x[0-9a-f]{3,}", "A", s)                 # globals/addrs/large consts (>= 0x100)
+        if any(off <= fx < off + ins.size for fx in fixset):  # OURS: unresolved reloc here
+            s = re.sub(r"0x[0-9a-f]+", "A", s)
+            s = re.sub(r"(?<=[\s,])0(?=$|[\s,])", "A", s)      # bare 0 immediate
+            s = re.sub(r"\[0\]", "[A]", s)                     # [0] absolute
+            s = re.sub(r"\[([^\]]+)\]", _addA, s)              # [reg] -> [reg + A]
+        seq.append(s)
     return seq
 
 
@@ -87,19 +106,19 @@ def strip_saves(seq):
 def compile_fn(name):
     r = subprocess.run(["bash", "tools/wcc_95.sh", name, FLAGS], capture_output=True, text=True)
     if r.returncode != 0:
-        return None
-    ob, _ = text_bytes_and_fixups(f"build/{name}.obj")
-    return ob
+        return None, None
+    ob, fx = text_bytes_and_fixups(f"build/{name}.obj")
+    return ob, fx
 
 
 def show_diff(name):
     import difflib
     f = by_name_all[name]
     addr, size = int(f["addr"], 16), f.get("size", 0)
-    ob = compile_fn(name)
+    ob, fx = compile_fn(name)
     if ob is None:
         print("COMPILE-FAIL"); return
-    ours = norm(ob, addr)
+    ours = norm(ob, addr, fx)
     tgt = norm(target_bytes(addr, size), addr)
     print(f"=== {name} (size {size})  ours={len(ours)} insns  target={len(tgt)} insns ===")
     sm = difflib.SequenceMatcher(a=ours, b=tgt)
@@ -129,10 +148,10 @@ def main():
     rows = []  # (dist, name, size, kind)
     for f in sorted(parked, key=lambda x: x.get("size", 0)):
         name, addr, size = f["name"], int(f["addr"], 16), f.get("size", 0)
-        ob = compile_fn(name)
+        ob, fx = compile_fn(name)
         if ob is None:
             rows.append((9999, name, size, "COMPILE-FAIL")); continue
-        ours = norm(ob, addr)
+        ours = norm(ob, addr, fx)
         tgt = norm(target_bytes(addr, size), addr)
         if ours == tgt:
             rows.append((0, name, size, "CLEAN-MATCH")); continue
