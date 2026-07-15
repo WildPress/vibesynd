@@ -23,8 +23,13 @@ if [ "${WCC_DOSEMU:-0}" = "1" ] && command -v dosemu >/dev/null 2>&1; then
     printf 'lredir h: linux\\fs%s\r\n' "$W"
     printf 'set WATCOM=G:\\\r\n'; printf 'set DOS4G=quiet\r\n'; printf 'set PATH=G:\\BIN;Z:\\bin\r\n'
     printf 'h:\r\n'
-    for f in "$W"/SRC*.C; do b=$(basename "$f" .C); n=${b#SRC}
-      printf 'g:\\BIN\\WCC386.EXE %s -fo=O%s.OBJ %s.C\r\n' "$FLAGS" "$n" "$b"; done
+    if [ -n "${WCC_FLAGSFILE:-}" ]; then i=0            # FLAG-SWEEP: SRC00.C once per flag-combo line
+      while IFS= read -r fl; do [ -z "$fl" ] && continue
+        printf 'g:\\BIN\\WCC386.EXE %s -fo=O%02d.OBJ SRC00.C\r\n' "$fl" "$i"; i=$((i+1)); done < "$WCC_FLAGSFILE"
+    else
+      for f in "$W"/SRC*.C; do b=$(basename "$f" .C); n=${b#SRC}
+        printf 'g:\\BIN\\WCC386.EXE %s -fo=O%s.OBJ %s.C\r\n' "$FLAGS" "$n" "$b"; done
+    fi
     printf 'exitemu\r\n'
   } > "$GO"
   rm -f "$W"/O*.OBJ "$W"/o*.obj
@@ -40,11 +45,17 @@ command -v dosbox >/dev/null 2>&1 || { export DEBIAN_FRONTEND=noninteractive
   (apt-get update -qq && apt-get install -y -qq dosbox) >/dev/null 2>&1; }
 
 # one wcc386 line per SRCnn.C -> Onn.OBJ, CRLF line endings for DOS
+# (or, in FLAG-SWEEP mode, SRC00.C once per flag-combo line in $WCC_FLAGSFILE -> Onn.OBJ)
 : > "$W/GO.BAT"
-for f in "$W"/SRC*.C; do
-  b=$(basename "$f" .C); n=${b#SRC}
-  printf 'wcc386 %s -fo=O%s.OBJ %s.C\r\n' "$FLAGS" "$n" "$b" >> "$W/GO.BAT"
-done
+if [ -n "${WCC_FLAGSFILE:-}" ]; then i=0
+  while IFS= read -r fl; do [ -z "$fl" ] && continue
+    printf 'wcc386 %s -fo=O%02d.OBJ SRC00.C\r\n' "$fl" "$i" >> "$W/GO.BAT"; i=$((i+1)); done < "$WCC_FLAGSFILE"
+else
+  for f in "$W"/SRC*.C; do
+    b=$(basename "$f" .C); n=${b#SRC}
+    printf 'wcc386 %s -fo=O%s.OBJ %s.C\r\n' "$FLAGS" "$n" "$b" >> "$W/GO.BAT"
+  done
+fi
 
 cat > "$W/dbx.conf" <<EOF
 [cpu]
