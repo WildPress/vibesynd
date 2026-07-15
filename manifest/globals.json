@@ -114,10 +114,30 @@
   "type": "int*",
   "desc": "map column-pointer table (built by 0x20d18)"
  },
+ "g_map_cursor_x": {
+  "addr": "0000",
+  "type": "s16",
+  "desc": "map/tactical selection-marker cursor x (moved by 0x1bc28 direction cases)"
+ },
+ "g_map_cursor_y": {
+  "addr": "0002",
+  "type": "s16",
+  "desc": "map/tactical selection-marker cursor y (moved by 0x1bc28 direction cases)"
+ },
  "g_marker_anim": {
   "addr": "3ef4",
   "type": "u8",
   "desc": "objective-marker animation phase"
+ },
+ "g_marker_phase_a": {
+  "addr": "10ab4",
+  "type": "u8",
+  "desc": "selection-marker cyclic animation phase A (wraps at 0x18)"
+ },
+ "g_marker_phase_b": {
+  "addr": "10ab8",
+  "type": "u8",
+  "desc": "selection-marker cyclic animation phase B (wraps at 0xf)"
  },
  "g_minimap": {
   "addr": "db2c",
