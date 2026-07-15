@@ -243,6 +243,16 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ### jump). So this vein = 1 fn, now closed. NOTE: unit members are verified by match_combo.py, NOT the
 ### per-fn match95.sh/wcc_95.sh (which find src/<name>.c and will 'no such source' on a merged member).
 ###
+### BLOCK-LAYOUT CLUSTER INVESTIGATED 2026-07-15c (the "fuzzer may close" notes: 0x27e78, 0x2d038,
+### 0x28118, 0x28228, 0x28368, 0x27fc8, ...) -- NOT block-order, they are REGISTER-ROLE walls. Clean
+### crackreg --diff shows the diffs are register substitutions that propagate through the fn (0x2d038
+### edi-vs-cx; the far-ptr string siblings 0x28118/228/368 all want the far ptr in ECX where ours uses
+### EAX, and the 0xb1/0x91-stamp lgs allocator tie-break cascades down every arm -- 0x28118's own note
+### records 6+ compiles of levers tried). A block-layout fuzzer cannot move register allocation, so this
+### avenue yields nothing. 0x27e78 is a value-tracking block-DUPLICATION (Watcom proves EAX==-1 and
+### shares; target re-materialises) -- also not source-reachable. CONCLUSION STANDS: 439 matched is the
+### floor for Watcom 9.5b + (now) whole-module builds. Two cracks this campaign: 0x36168, 0x37818.
+###
 ### ✅ CRACK 2026-07-15 — dead callee-save wall (0x36168, 114->113 parked). A guarded call
 ### `if(g) FUN_000395b6(0)` whose target wraps the body in a DEAD `push ebx`/`pop ebx` (ebx never
 ### used). Mechanism: the fn must preserve ebx for ITS caller (callee-saved contract); declaring the
