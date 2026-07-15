@@ -141,6 +141,27 @@ def strip_comments(s):
     s = re.sub(r"/\*.*?\*/", "", s, flags=re.S)
     return re.sub(r"//[^\n]*", "", s)
 
+
+# Watcom keyword <-> stock-C-qualifier round-trip. pycparser is strict C99 and chokes on Watcom
+# extensions (__far/__near/__huge), so functions using them were never permuted at all (they crashed).
+# These are POINTER QUALIFIERS, semantically leaves on the type; we map each to a standard qualifier
+# pycparser understands FOR PARSING/MUTATION, then map it back FOR COMPILATION so the emitted bytes still
+# carry the real extension. Safe because our sources never use volatile/restrict/const in these slots.
+WATCOM_QUALS = [("__far", "volatile"), ("__near", "restrict")]
+
+def watcom_in(s):
+    for kw, ph in WATCOM_QUALS:
+        s = re.sub(r"\b%s\b" % re.escape(kw), ph, s)
+    return s
+
+def watcom_out(s):
+    for kw, ph in WATCOM_QUALS:
+        s = re.sub(r"\b%s\b" % re.escape(ph), kw, s)
+    # CGenerator emits the qualifier BEFORE the type ("__far void *"); Watcom's grammar wants it
+    # BETWEEN the type and the star ("void __far *"). Move it (type may be multi-word, e.g. "unsigned char").
+    s = re.sub(r"\b(__far|__near)\s+([A-Za-z_][\w ]*?)\s*\*", r"\2 \1 *", s)
+    return s
+
 def body_of(ast):
     """The Compound (statement list) of the single function definition in the file."""
     fn = next(x for x in ast.ext if isinstance(x, c_ast.FuncDef))
@@ -499,7 +520,9 @@ def init_worker(flags, target):
     """Per-worker setup: a unique native-/tmp scratch dir (drvfs is too slow/laggy) plus
     the compile flags and target bytes stashed in a module global for try_batch()."""
     wid = (mp.current_process()._identity or [0])[0]
-    work = f"/tmp/dosw_{wid}"; os.makedirs(work, exist_ok=True)
+    # include the PID so CONCURRENT cpermute processes (parallel functions) get distinct scratch dirs --
+    # otherwise both pools use /tmp/dosw_1.. and clobber each other's SRC*.C/O*.OBJ mid-compile.
+    work = f"/tmp/dosw_{os.getpid()}_{wid}"; os.makedirs(work, exist_ok=True)
     G.update(flags=flags, target=target, work=work)
 
 def table_ok(codestart, table_len):
@@ -542,6 +565,42 @@ def try_batch(batch):
     return out
 
 
+def rand_spec(rng, nloop, ncomm, nrw, nhoist, ntype, ninline, ndecl, ID):
+    """One random variant spec: a FEW simultaneous mutations (most sites off)."""
+    return (tuple(rng.randint(0, 1) for _ in range(nloop)),
+            tuple(rng.randint(0, 1) for _ in range(ncomm)),
+            tuple(rng.randint(0, 1) for _ in range(nrw)),
+            tuple(rng.choice(TYPES) if rng.random() < 0.2 else None for _ in range(nhoist)),
+            tuple(rng.choice(TYPES) if rng.random() < 0.25 else None for _ in range(ntype)),
+            rng.randint(0, 10**9) if rng.random() < 0.5 else None,
+            tuple(rng.randint(0, 1) for _ in range(ninline)),
+            tuple(rng.sample(range(ndecl), ndecl)) if (ndecl >= 2 and rng.random() < 0.5) else ID)
+
+
+def perturb(spec, rng):
+    """A NEIGHBOUR of `spec`: tweak exactly ONE mutation dimension. This is the move operator for the
+    simulated-annealing hill-climb -- small steps from the best-known variant converge on near-misses
+    that blind random sampling stalls on (register/scheduling ties an inch away from matching)."""
+    lf, cf, rw, hf, lt, od, inf = (list(spec[0]), list(spec[1]), list(spec[2]), list(spec[3]),
+                                   list(spec[4]), spec[5], list(spec[6]))
+    dp = list(spec[7]) if spec[7] is not None else None
+    dims = ["od"]
+    for nm, seq in (("lf", lf), ("cf", cf), ("rw", rw), ("hf", hf), ("lt", lt), ("inf", inf)):
+        if seq: dims.append(nm)
+    if dp and len(dp) >= 2: dims.append("dp")
+    d = rng.choice(dims)
+    if d == "lf": i = rng.randrange(len(lf)); lf[i] ^= 1
+    elif d == "cf": i = rng.randrange(len(cf)); cf[i] ^= 1
+    elif d == "rw": i = rng.randrange(len(rw)); rw[i] ^= 1
+    elif d == "inf": i = rng.randrange(len(inf)); inf[i] ^= 1
+    elif d == "hf": i = rng.randrange(len(hf)); hf[i] = None if rng.random() < 0.4 else rng.choice(TYPES)
+    elif d == "lt": i = rng.randrange(len(lt)); lt[i] = None if rng.random() < 0.4 else rng.choice(TYPES)
+    elif d == "od": od = None if rng.random() < 0.3 else rng.randint(0, 10**9)
+    elif d == "dp": i, j = rng.sample(range(len(dp)), 2); dp[i], dp[j] = dp[j], dp[i]
+    return (tuple(lf), tuple(cf), tuple(rw), tuple(hf), tuple(lt), od, tuple(inf),
+            tuple(dp) if dp is not None else None)
+
+
 def main():
     # ---- args ----
     name, flags = sys.argv[1], sys.argv[2]
@@ -560,8 +619,14 @@ def main():
     import glob as _glob
     _sp = _glob.glob(f"src/**/{name}.c", recursive=True)
     srcfile = _sp[0] if _sp else f"src/{name}.c"
-    src0 = strip_comments(open(srcfile).read())
-    ast0 = PARSER.parse(src0)
+    src0 = watcom_in(strip_comments(open(srcfile).read()))   # __far/__near -> stock quals for parsing
+    try:
+        ast0 = PARSER.parse(src0)
+    except Exception as e:
+        # Un-parseable even after the Watcom-qualifier swap (unusual construct). Don't crash the whole
+        # run: report and exit cleanly so the harness records it as an un-permutable wall.
+        print(f"{name}: UNPARSEABLE ({type(e).__name__}: {str(e)[:80]}) -- skipping (no variants)", flush=True)
+        return
     nloop = len(loop_sites(ast0)); ncomm = len(comm_sites(ast0)); nrw = len(rewrite_sites(ast0))
     nhoist = len(hoist_sites(body_of(ast0))); ntype = len(type_sites(body_of(ast0)))
     ninline = len(inline_sites(body_of(ast0)))
@@ -570,82 +635,96 @@ def main():
           f"{ntype} type, {ninline} inline, {ndecl} decl sites; sampling {N} variants, "
           f"target={len(target)}B", flush=True)
 
-    # ---- sample N distinct specs (spec = per-family choice tuples) ----
-    # Probabilities keep most sites OFF in any given variant, so we explore combinations of
-    # a FEW simultaneous mutations rather than always-everything (which rarely matches).
-    ID = tuple(range(ndecl))                                                    # identity decl order
+    # ---- PHASE 1: broad seed sample (identity + decl-block perms + random combos) ----
+    # Reserve most of the budget for annealing; the seed just needs to find a good starting point.
+    import math
+    ID = tuple(range(ndecl))
     rng = random.Random(seed)
+    SEED = min(N, max(400, N // 3))
     seen, specs = set(), []
-    specs.append((tuple([0]*nloop), tuple([0]*ncomm), tuple([0]*nrw),           # identity first:
-                  tuple([None]*nhoist), tuple([None]*ntype), None,              # catches an
-                  tuple([0]*ninline), ID))                                       # already-matching seed
-    seen.add(specs[0])
-    # PURE declaration-block permutations with EVERYTHING ELSE identity -- the highest-yield slice
-    # for the length-exact spill-slot / register-role parks, and the only variants guaranteed to
-    # compile (reordering uninitialised locals can't break semantics). Give this its own budget so
-    # the noisy combined search below (hoists/rewrites, which often fail to compile) can't starve
-    # it. Exhaust k! when k<=7 (<=5040); otherwise sample up to half the budget of distinct perms.
-    base = (tuple([0]*nloop), tuple([0]*ncomm), tuple([0]*nrw),
-            tuple([None]*nhoist), tuple([None]*ntype), None, tuple([0]*ninline))
+    ident = (tuple([0]*nloop), tuple([0]*ncomm), tuple([0]*nrw),
+             tuple([None]*nhoist), tuple([None]*ntype), None, tuple([0]*ninline), ID)
+    specs.append(ident); seen.add(ident)
+    base = ident[:7]                                   # decl-block perms with everything else identity
     if 2 <= ndecl <= 7:
         for perm in itertools.permutations(range(ndecl)):
-            if len(specs) >= N: break
+            if len(specs) >= SEED: break
             key = base + (perm,)
-            if key in seen: continue
-            seen.add(key); specs.append(key)
+            if key not in seen: seen.add(key); specs.append(key)
     elif ndecl >= 8:
-        cap = min(N // 2, 8000)
-        tries = 0
+        cap = min(SEED, 8000); tries = 0
         while len(specs) < cap and tries < cap * 20:
             tries += 1
             key = base + (tuple(rng.sample(range(ndecl), ndecl)),)
-            if key in seen: continue
-            seen.add(key); specs.append(key)
-    while len(specs) < N:
-        lf = tuple(rng.randint(0, 1) for _ in range(nloop))                            # loop swaps
-        cf = tuple(rng.randint(0, 1) for _ in range(ncomm))                            # comm swaps
-        rw = tuple(rng.randint(0, 1) for _ in range(nrw))                              # rewrites
-        hf = tuple(rng.choice(TYPES) if rng.random() < 0.2 else None for _ in range(nhoist))  # hoists
-        lt = tuple(rng.choice(TYPES) if rng.random() < 0.25 else None for _ in range(ntype))  # retypes
-        od = rng.randint(0, 10**9) if rng.random() < 0.5 else None                     # reorder seed
-        inf = tuple(rng.randint(0, 1) for _ in range(ninline))                         # inlines
-        dp = tuple(rng.sample(range(ndecl), ndecl)) if (ndecl >= 2 and rng.random() < 0.5) else ID
-        key = (lf, cf, rw, hf, lt, od, inf, dp)                                         # + decl perm
-        if key in seen: continue
-        seen.add(key); specs.append(key)
+            if key not in seen: seen.add(key); specs.append(key)
+    while len(specs) < SEED:
+        key = rand_spec(rng, nloop, ncomm, nrw, nhoist, ntype, ninline, ndecl, ID)
+        if key not in seen: seen.add(key); specs.append(key)
 
-    # ---- render every spec to C text (done single-threaded; cheap vs compiling) ----
     def render(spec):
-        a = copy.deepcopy(ast0)                       # never mutate the shared seed
+        a = copy.deepcopy(ast0)                        # never mutate the shared seed
         try:
             apply_mutations(a, spec[0], spec[1], spec[2], spec[3], spec[4], spec[5], spec[6],
                             spec[7] if len(spec) > 7 else None)
-            return GEN.visit(a)
+            return watcom_out(GEN.visit(a))            # restore __far/__near for compilation
         except Exception:
-            return "void __broken(void){}"            # unrenderable -> will fail to match
-    sources = [(i, render(s)) for i, s in enumerate(specs)]
+            return "void __broken(void){}"             # unrenderable -> will fail to match
 
-    # ---- stage the compiler on native /tmp once, then fan batches across workers ----
     if not os.path.isdir("/tmp/wat"):
         subprocess.run("cp -r /work/toolchain/watcom95 /tmp/wat", shell=True)
     os.environ["WAT_ROOT"] = "/tmp/wat"
-    batches = [sources[i:i+B] for i in range(0, len(sources), B)]
-    best, done = (-1, 0), 0                            # (score, variant_index)
     pool = mp.Pool(workers, initializer=init_worker, initargs=(flags, target))
-    for results in pool.imap_unordered(try_batch, batches):
-        for idx, sc, matched in results:
-            done += 1
-            if sc > best[0]: best = (sc, idx)
-            if matched:
-                open(f"{srcfile}.match", "w").write(sources[idx][1])
-                print(f"\n*** MATCH (variant {idx}) -> {srcfile}.match ***", flush=True)
-                pool.terminate(); return
-        print(f"  [{done}/{len(specs)}] best={best[0]}/{len(target)} bytes match", flush=True)
+
+    reg = {}                                           # variant idx -> (spec, source)
+    ctr = [0]
+    best = [(-1, None, None)]                          # (score, spec, source)
+    class _Hit(Exception):
+        pass
+
+    def run(spec_list):
+        """Render + compile a list of specs; update the global best; write .match & raise on an exact hit.
+        Returns [(idx, score), ...] so the annealer can drive its acceptance decisions."""
+        items = []
+        for sp in spec_list:
+            i = ctr[0]; ctr[0] += 1
+            src = render(sp); reg[i] = (sp, src); items.append((i, src))
+        out = []
+        batches = [items[k:k+B] for k in range(0, len(items), B)]
+        for results in pool.imap_unordered(try_batch, batches):
+            for idx, sc, matched in results:
+                if matched:
+                    open(f"{srcfile}.match", "w").write(reg[idx][1])
+                    print(f"\n*** MATCH (variant {idx}) -> {srcfile}.match ***", flush=True)
+                    pool.terminate(); raise _Hit()
+                if sc > best[0][0]:
+                    best[0] = (sc, reg[idx][0], reg[idx][1])
+                out.append((idx, sc))
+        return out
+
+    try:
+        # PHASE 1 -- seed
+        run(specs)
+        print(f"  [seed {ctr[0]}] best={best[0][0]}/{len(target)}", flush=True)
+        # PHASE 2 -- simulated-annealing hill-climb from the best seed. Small single-dimension moves
+        # from the current point converge on register/scheduling near-misses that random sampling can't
+        # reach; occasional downhill moves (Boltzmann-accepted) escape local optima.
+        cur_spec, cur_s = best[0][1], best[0][0]
+        T = max(2.0, len(target) * 0.06)
+        budget = N - ctr[0]
+        while budget > 0 and cur_spec is not None:
+            m = min(B * 4, budget); budget -= m
+            neigh = [perturb(cur_spec, rng) for _ in range(m)]
+            for idx, sc in run(neigh):
+                if sc >= cur_s or (T > 0 and rng.random() < math.exp((sc - cur_s) / T)):
+                    cur_spec, cur_s = reg[idx][0], sc   # accept the move (uphill, or downhill by temp)
+            T *= 0.95
+            print(f"  [anneal {ctr[0]}] best={best[0][0]}/{len(target)} cur={cur_s} T={T:.1f}", flush=True)
+    except _Hit:
+        return
     pool.close(); pool.join()
-    # No exact match: print the best near-miss and its source so a human can read off the
-    # remaining divergence (usually a register/scheduling choice worth recording as a wall).
-    print(f"\nno exact match. best {best[0]}/{len(target)} bytes. winning C:\n"
-          f"{'-'*40}\n{sources[best[1]][1]}\n{'-'*40}", flush=True)
+    # No exact match: print the best near-miss + source so a human can read off the remaining divergence.
+    print(f"\nno exact match. best {best[0][0]}/{len(target)} bytes. winning C:\n"
+          f"{'-'*40}\n{best[0][2]}\n{'-'*40}", flush=True)
 
 if __name__ == "__main__":
     main()
