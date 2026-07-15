@@ -229,6 +229,19 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 
 ## Current Status  (update every session)
 
+### 🏷️ GLOBAL NAMING (2026-07-15d) — g_XXXX globals can now be renamed semantically. mkdata.py
+### resolves a global's data-image address REGISTRY-FIRST from manifest/globals.json (name ->
+### {addr,type,desc}); the ADDRESS is the anchor, not the name (mirrors names.json for functions).
+### Rename with `tools/rename_global.py g_<hex> g_<name> "<type>" "<desc>"` (or edit its CATALOGUE) --
+### it replaces \bg_hex\b across all src/*.c (code+comments) and updates the registry. Symbol names
+### DON'T affect compiled bytes (verified: FUN_000377e8 still reloc-matches), so renaming is byte-safe;
+### mkdata defines the renamed symbol at its real offset (verified in build/dataimg.obj). 48 named so far
+### (entity_pool/pool_a/grid_heads/dir_dx|dy/screen|back_buf/record tables/cur_player/tile_flags/rng_seed/
+### num_players/cheat+HUD flags/...). Catalogue in docs/object-model.md. SKIP addresses with CONFLICTING
+### per-function interpretations (g_5788=research-recs vs squad-grid; g_7bf4=mod-recs vs conveyor-row).
+### ~420 still generic g_<hex> (undocumented -> need per-global analysis; only name when usage is clear).
+
+
 ### ✅ CRACK 2026-07-15c — WHOLE-MODULE build cracks cross-fn tail-merge (0x37818 -> 439 matched).
 ### 0x37818's return-0 has NO local stub: it jumps BACKWARD (jb 0x3780f) into sibling 0x377e8's
 ### `xor eax,eax; ret`. Watcom's cross-jump opt is intra-OBJECT, so the two must be in ONE translation
