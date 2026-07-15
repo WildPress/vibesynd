@@ -3,9 +3,9 @@
    set = {0,6,7,8,9,0xb,0xf} (the twin's set PLUS type 0), open = the rest.
    Watcom jump-threads the f=1 cases straight to the fa18 arm. Differences from
    the twin: threshold +-0x20 (not 0x40) and a flag escape -- returns 1 when
-   |g_e128 diff| <= 0x20, or when below -0x20 but p[0xb] bit1 is set.
+   |g_level_step diff| <= 0x20, or when below -0x20 but p[0xb] bit1 is set.
    Uses the cont.21 g_map_cols lever set: pointer-variable decl, slot local,
-   (int)*slot deref cast, ternary call merge, volatile g_e128 + named t.
+   (int)*slot deref cast, ternary call merge, volatile g_level_step + named t.
 
    PARKED at the SAME ~10-byte residue as the twin 0x2d5b8 (jump-table verified
    layout, entry/guards/switch-dispatch/calls byte-correct): slot addr via
@@ -15,7 +15,7 @@
    the missing spelling, transplant it to BOTH twins. */
 extern char **g_map_cols;
 extern unsigned char *g_tile_flags;
-extern volatile short g_e128;
+extern volatile short g_level_step;
 extern int FUN_LE_0000fa18(int a, int b, int c);
 extern int FUN_LE_0000fa88(int a, int b, int c);
 
@@ -52,8 +52,8 @@ int FUN_0002d468(short x, short y, int w, unsigned char *p)
         }
     } else
         f = 1;
-    g_e128 = (f != 0 ? FUN_LE_0000fa18(x, y, (short)w) : FUN_LE_0000fa88(x, y, (short)w)) - w;
-    t = g_e128;
+    g_level_step = (f != 0 ? FUN_LE_0000fa18(x, y, (short)w) : FUN_LE_0000fa88(x, y, (short)w)) - w;
+    t = g_level_step;
     if (t <= 0x20 && (t >= -0x20 || (p[0xb] & 2)))
         return 1;
     return 0;

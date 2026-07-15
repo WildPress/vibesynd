@@ -42,7 +42,7 @@
  */
 extern short g_aim_x;
 extern short g_aim_y;
-extern short g_10b2c;
+extern short g_aim_level;
 extern short g_shot_x;
 extern short g_shot_y;
 extern short g_shot_level;
@@ -109,7 +109,7 @@ void FUN_00034858(unsigned char *p1, unsigned char *p2)
     } else {
         g_shot_x = g_aim_x;
         g_shot_y = g_aim_y;
-        g_shot_level = g_10b2c;
+        g_shot_level = g_aim_level;
         g_10b54 = *(short *)(p1 + 0x2e);
         g_10b56 = *(short *)(p1 + 0x30);
         g_10b58 = *(short *)(p1 + 0x32);
@@ -134,7 +134,7 @@ void FUN_00034858(unsigned char *p1, unsigned char *p2)
             || g_aim_y >> 8 != *(short *)(p1 + 0x36) >> 8) {
             g_shot_x = g_aim_x;
             g_shot_y = g_aim_y;
-            g_shot_level = g_10b2c;
+            g_shot_level = g_aim_level;
             p2[0x1a] = (unsigned char)FUN_00034608(p2[0x1a]);
             *(short *)(p1 + 0x34) = g_aim_x;
             *(short *)(p1 + 0x36) = g_aim_y;
@@ -152,13 +152,13 @@ void FUN_00034858(unsigned char *p1, unsigned char *p2)
             char **base = g_map_cols;
             int index = col + row * 128;
             base += index;
-            if (g_tile_flags[*(unsigned char *)((g_10b2c - 1) / 128 + (int)*base)] != 0)
+            if (g_tile_flags[*(unsigned char *)((g_aim_level - 1) / 128 + (int)*base)] != 0)
                 FUN_0002d998(p1);
         }
 
         if (p1[0x54] > 0)
             FUN_00026ad8((unsigned short)p1[0x54], (unsigned short)p2[0x1a]);
-        z = g_10b2c;
+        z = g_aim_level;
     }
 
     FUN_00026c78(p2, g_aim_x, g_aim_y, z);

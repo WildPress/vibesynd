@@ -13,7 +13,7 @@
            g_7bf4[(id-1)*0x1f5]. Two optional stat blocks are gated by
            g_frame_enable[id]; a running y (0xdc/0xe8/+0xc) positions the shifting rows.
    !=2  -> equipment/mod detail from the 0x1eb-stride record at
-           g_5780[(id-1)*0x1eb]: name + one label/value row, then (when the
+           g_list_recs[(id-1)*0x1eb]: name + one label/value row, then (when the
            g_4960[byte*3] slot pointer is non-null) a wrapped description block
            via FUN_363d8.
    Labels come from the per-language string tables g_47a4/b0/bc/c8 indexed by
@@ -21,7 +21,7 @@
    the FUN_36698 text drawer at colour 0x54 over the g_text_pal font. */
 extern unsigned char *g_text_pal;
 extern unsigned char g_7bf4[];
-extern unsigned char g_5780[];
+extern unsigned char g_list_recs[];
 extern unsigned char g_language;
 extern unsigned char g_frame_enable[];
 extern char *g_4b10[];
@@ -83,16 +83,16 @@ void FUN_00020158(unsigned char param1, unsigned char param2)
         }
     } else {
         FUN_00036698(*(char **)((char *)g_4a38 + g_language * 4
-                                 + g_5780[(param2 - 1) * 0x1eb] * 12),
+                                 + g_list_recs[(param2 - 1) * 0x1eb] * 12),
                      0x1f8, 0x6e, 0xe, 0x54, g_text_pal, -2, 6, 0, 0);
 
         FUN_00036698(*(char **)((char *)g_47a4 + g_language * 4), 0x1f8, 0x7e, 0xf, 0x54, g_text_pal, -2, 8, 0, 0);
-        FUN_0003a4fa(buf, g_184, *(int *)(g_5780 + (param2 - 1) * 0x1eb + 1));
+        FUN_0003a4fa(buf, g_184, *(int *)(g_list_recs + (param2 - 1) * 0x1eb + 1));
         FUN_00036698(buf, 0x22c, 0x7e, 0xe, 0x54, g_text_pal, -2, 6, 0, 0);
 
-        if ((char *)g_4960 + g_5780[(param2 - 1) * 0x1eb + 5] * 12 != 0) {
+        if ((char *)g_4960 + g_list_recs[(param2 - 1) * 0x1eb + 5] * 12 != 0) {
             FUN_000363d8(*(char **)((char *)g_4960
-                                    + g_5780[(param2 - 1) * 0x1eb + 5] * 12
+                                    + g_list_recs[(param2 - 1) * 0x1eb + 5] * 12
                                     + g_language * 4),
                          0x1f8, 0x8e, 0x78, 0xea, g_text_pal, 0x54, 0xc, -2, 6, 0);
         }

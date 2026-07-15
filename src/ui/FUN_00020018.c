@@ -21,11 +21,11 @@
    @ 0x20018: menu list-select hit test. Mouse (x,y) vs a doubled-coordinate
    box (x0*2, y0*2)..(x1*2, y1*2); row = (y - ytop*2)/12 stored to *out
    (zero-extended byte). Then walks the record pool for the list (count 0x14 ->
-   pool g_7bf4, stride 0x1f5, state word +0x11; count 0x12 -> pool g_5780,
+   pool g_7bf4, stride 0x1f5, state word +0x11; count 0x12 -> pool g_list_recs,
    stride 0x1eb, state word +8), counting records; a record is "visible" when
    flag==0 ? state == 0x960 : 0 <= (short)state < 100. Decrements row per
    visible record; returns the 1-based record index where row ran out, or 0. */
-extern unsigned char g_5780[];
+extern unsigned char g_list_recs[];
 extern unsigned char g_7bf4[];
 
 int FUN_00020018(int a1, unsigned short x, unsigned short y, unsigned short *out,
@@ -70,7 +70,7 @@ int FUN_00020018(int a1, unsigned short x, unsigned short y, unsigned short *out
             p += 0x1f5;
         }
     case 0x12:
-        p = g_5780;
+        p = g_list_recs;
         for (;;) {
             if ((signed char)row <= -1) goto chk;
             ++k;

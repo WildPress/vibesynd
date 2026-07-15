@@ -15,10 +15,10 @@
 extern short g_5300;
 extern short g_dir_dx[];
 extern short g_dir_dy[];
-extern short g_e128;
+extern short g_level_step;
 extern short g_aim_x;
 extern short g_aim_y;
-extern short g_10b2c;
+extern short g_aim_level;
 
 extern int FUN_00014c58(int dx, int dy);
 extern int FUN_0002d738(unsigned char *obj, unsigned char dir);
@@ -102,7 +102,7 @@ void FUN_0002def8(unsigned char *obj, int tgt)
         }
         *(short *)(buf2 + 4) = *(short *)(buf2 + 4) + (g_dir_dx[buf2[0x1a]] * 0x80 >> 8);
         *(short *)(buf2 + 6) = *(short *)(buf2 + 6) + (g_dir_dy[buf2[0x1a]] * 0x80 >> 8);
-        *(short *)(buf2 + 8) = *(short *)(buf2 + 8) + g_e128;
+        *(short *)(buf2 + 8) = *(short *)(buf2 + 8) + g_level_step;
         rng = FUN_00026aa8(
             (short)(*(short *)(buf2 + 0x2e) - *(short *)(buf2 + 4)),
             (short)(*(short *)(buf2 + 0x30) - *(short *)(buf2 + 6)));
@@ -121,7 +121,7 @@ void FUN_0002def8(unsigned char *obj, int tgt)
         }
         *(short *)(buf1 + 4) = *(short *)(buf1 + 4) + (g_dir_dx[buf1[0x1a]] * 0x80 >> 8);
         *(short *)(buf1 + 6) = *(short *)(buf1 + 6) + (g_dir_dy[buf1[0x1a]] * 0x80 >> 8);
-        *(short *)(buf1 + 8) = *(short *)(buf1 + 8) + g_e128;
+        *(short *)(buf1 + 8) = *(short *)(buf1 + 8) + g_level_step;
         rng = FUN_00026aa8(
             (short)(*(short *)(buf1 + 0x2e) - *(short *)(buf1 + 4)),
             (short)(*(short *)(buf1 + 0x30) - *(short *)(buf1 + 6)));
@@ -183,7 +183,7 @@ fallback:
     dA = dA + ((FUN_0000e568(2) * 2 - 1) << 5);
     g_aim_x = *(short *)(obj + 4);
     g_aim_y = *(short *)(obj + 6);
-    g_10b2c = *(short *)(obj + 8);
+    g_aim_level = *(short *)(obj + 8);
     obj[0x1a] = dA;
     FUN_00026ad8(obj[0x54], dA);
     FUN_0002d3b8((int)obj);

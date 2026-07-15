@@ -4,7 +4,7 @@
  * load, not an immediate � this alone flipped the f/w ESI/EDI roles into
  * place), slot-pointer local + (int)*slot cast (gives the in-place
  * `add eax,[ecx]` deref), ternary-merge for the fa18/fa88 result (single
- * `sub eax,esi`), volatile g_e128 + named re-read temp for the tail compares,
+ * `sub eax,esi`), volatile g_level_step + named re-read temp for the tail compares,
  * int-typed w with (short) casts at pushes. REMAINING (~10 bytes): the slot
  * address forms via `add ecx,eax` with base ECX (target `lea ecx,[edx+eax]`,
  * base EDX) with a movsx scheduled early, and the tile byte widens and-form
@@ -32,12 +32,12 @@
  * (case map recovered via tools/lefix.py from the 16-entry jump table at
  * manifest 0x2d574 -- obj1:+0x1fe2c). Blocked -> 0xfa18(x,y,w), open ->
  * 0xfa88(x,y,w) (both in the cut-off obj1 prefix); stores the result - w
- * into g_e128 and returns 1 iff it is within [-0x40, 0x40].
+ * into g_level_step and returns 1 iff it is within [-0x40, 0x40].
  * Recipe: -4s -oneatx -zp8 -s -zq
  */
 extern char **g_map_cols;
 extern unsigned char *g_tile_flags;
-extern volatile short g_e128;
+extern volatile short g_level_step;
 extern int FUN_LE_0000fa18(int a, int b, int c);
 extern int FUN_LE_0000fa88(int a, int b, int c);
 
@@ -75,8 +75,8 @@ int FUN_0002d5b8(short x, short y, int w, unsigned char *p)
         }
     } else
         f = 1;
-    g_e128 = (f != 0 ? FUN_LE_0000fa18(x, y, (short)w) : FUN_LE_0000fa88(x, y, (short)w)) - w;
-    t = g_e128;
+    g_level_step = (f != 0 ? FUN_LE_0000fa18(x, y, (short)w) : FUN_LE_0000fa88(x, y, (short)w)) - w;
+    t = g_level_step;
     if (t <= 0x40 && t >= -0x40)
         return 1;
     return 0;
