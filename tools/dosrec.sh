@@ -79,6 +79,8 @@ if [ -n "$KEYS" ] && [ -f "$KEYS" ]; then
       type)  xdotool type "$arg" 2>/dev/null ;;
       move)  xdotool mousemove $arg 2>/dev/null ;;
       click) xdotool click "${arg:-1}" 2>/dev/null ;;
+      down)  xdotool mousedown "${arg:-1}" 2>/dev/null ;;
+      up)    xdotool mouseup "${arg:-1}" 2>/dev/null ;;
     esac
   done < "$KEYS"
 fi

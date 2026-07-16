@@ -229,6 +229,26 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 
 ## Current Status  (update every session)
 
+### ▶ RUN PIPELINE 2026-07-16 — GAMEO drivable to the WORLD MAP; mission-launch blocked by MISSING UI
+### STRINGS (data gap, not input). Reproduced + extended the render milestone under tools/dosrec.sh
+### (now supports DOSREC_CD=working-dir, DOSREC_CYCLES, and mouse: `move X Y`/`click`/`down`/`up`).
+### GAMEO must run from \SYNDICAT (campaign dir w/ DATA + DOS4GW) at cycles>=25000; bare or from the
+### GOG root it just exits. Drivable: title -> (Return) -> main menu (F1..F5 keys AND mouse work) ->
+### (F2 BEGIN MISSION) -> WORLD MAP, pixel-faithful. The map is INTERACTIVE: clicking a territory moves
+### the beacon and ticks funding. BLOCKER: cannot enter a mission. DIAGNOSED via side-by-side vs the
+### ORIGINAL MAIN.EXE (run from c:\SYNDICAT, same nav): the original's map draws a full bottom panel --
+### region name "WESTERN EUROPE", POP/TAX/OWN labels, a date "03:1:85AC", and "BRIEF"+"MENU" buttons.
+### GAMEO draws the population NUMBER (48000000) but NONE of the TEXT strings. So digit drawing works,
+### string/glyph drawing does not -> the region-name + UI-label string tables are misplaced in GAMEO's
+### DGROUP (same class as the g_3568 const-string fix, MORE strings still wrong). The mission is launched
+### by the "BRIEF" button, which GAMEO never draws; clicking its hotspot (~frame 80,358) does not advance
+### (briefing likely depends on the same missing strings). NEXT: trace-diff GAMEO vs MAIN.EXE on the map
+### text-draw path (same harness that found g_3568) to locate the misplaced string table, fix in
+### origbuild/mkdata data layout, then re-drive title -> map -> BRIEF -> equip -> into a mission (the big
+### remaining render milestone). Reference frames: build/rec/orig_10.png (original, full panel) vs
+### build/rec/held_12.png (GAMEO, no text).
+
+
 ### ▶ CARVE-TAIL MATCHING 2026-07-16 — +1 (439->440), tail confirmed wall-dominated. Attacked the
 ### never-attempted freshly-carved sub-graph fns (the 44 unmatched WITH NO src file; the other 68
 ### unmatched are decoded-parked walls). MATCHED 0x36d18 (pool-entity per-frame updater): lever = the
