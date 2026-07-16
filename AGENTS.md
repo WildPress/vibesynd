@@ -249,11 +249,27 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ###     input or bit-state is wrong in GAMEO's DGROUP. Also: dosbox.log shows the game opens DATA\MFNT-0.DAT
 ###     (map/mission FONT) in write mode and fails on the read-only /gog mount -- shared by both, likely a
 ###     benign fallback but worth ruling out.
-### NEXT: re-patch the tracer's one-shot dump (currently ga 0x17508) to fire at ga 0x2cbba (the diverging
-### jcxz), dumping cx + esi (decomp source ptr) + the source bytes + the bit-state globals, for BOTH runs.
-### If GAMEO's esi/source addr differs -> DGROUP data-LAYOUT bug (fix origbuild/mkdata placement); if the
-### source BYTES differ at the same addr -> an upstream load put wrong data there. That distinguishes the
-### fix. Traces are huge (120MB full-stream); regenerate via the SAME.EXE + DOSREC_DBG/CORE recipe above.
+### DIVDUMP DONE (2026-07-16): patched the tracer one-shot dump to fire at ga 0x2cbba gated cnt>=1544165
+### (fputc(10) for newlines -- DON'T put \n in the fprintf format via a here-doc python patch, it lands as
+### a real newline and breaks the string; also the FIRST sloppy regex ate the LOG-start line, restore it).
+### Ran GAMEO + MAIN both as SAME.EXE headless (boot reaches the divergence at ~1.5M instrs, no nav needed,
+### but core=normal is SLOW so give timeout>=40s). RESULT (both cnt=1544170, perfectly aligned):
+###   ECX=0x1c in BOTH (copy count same); src bytes at ESI IDENTICAL in both -> the COMPRESSED SOURCE DATA
+###   IS CORRECT in GAMEO. ESI/EDI differ by a constant 0xE10 (just a different buffer base, benign).
+###   THE DIFF IS THE DECOMPRESSOR STATE: g_be30 (Huffman table) = ALL ZEROS in GAMEO vs populated in MAIN
+###   (02 53 06 00 00 00 a1 ...); g_bfbc (bit buffer) = 0x49474542 ("BEGI") in GAMEO vs 0x0000012c in MAIN;
+###   g_bfc1 (bit count) = 0x20 vs 0x01. The instr right after the divergence, `mov cl,[0xbfc1]`, loads
+###   0x20 vs 0x01 -> the huffman decode splits. So NOT a bad source load: GAMEO's decompressor STATE region
+###   (~DGROUP 0xbe30..0xbfc1) is wrong. g_be30 all-zeros = the huffman table was never built (or built into
+###   the wrong DGROUP location). Because the instruction trace MATCHED for 1.5M instrs (same code path),
+###   the state diverged SILENTLY earlier (same code, different data) until this branch exposed it.
+### NEXT: two ways to pin the table-build divergence: (a) inspect GAMEO's reconstructed DGROUP image at
+### 0xbe30 and 0xbfbc -- is it a BSS region (should be zero, built at runtime) or does GAMEO's image have
+### wrong/colliding data there (the g_3568-class layout bug, string bleeding into the decomp tables)? (b)
+### move the DIVDUMP earlier, to the rnc_read_huffman table-build (0x3a383 / the loop that writes g_be30),
+### and dump g_be30 as it is built in each run to catch the first wrong table entry. Then fix the DGROUP
+### placement/init in origbuild.py/mkdata.py. Regenerate via the SAME.EXE + DOSREC_DBG/CORE recipe above;
+### the DIVDUMP patch lives in build/dbxsrc/.../core_normal.cpp (gitignored; rebuild w/ build-essential+SDL).
 ###
 ### ▶ RUN PIPELINE 2026-07-16 — GAMEO drivable to the WORLD MAP; mission-launch blocked by MISSING UI
 ### STRINGS (data gap, not input). Reproduced + extended the render milestone under tools/dosrec.sh
