@@ -4,7 +4,7 @@ This is a side experiment, not part of the game. We trained a small image model 
 
 Nothing here touches the decompilation or ships in the game. It's a proof that the extracted art is good enough to teach a model, and a note on how it was done so we can pick it up later.
 
-The trained weights aren't in the repo yet. They're a 469 MB file, so if we commit them they'll go in Git LFS. For now this page keeps the method and the results.
+The trained weights live in the repo at `tools/lora/syndtile-krea2-r32.safetensors`, a 469 MB file kept in Git LFS. This page keeps the method and the results.
 
 ## What it does
 
@@ -82,7 +82,7 @@ Two things to know. Background keying is unreliable on very dark tiles, because 
 
 ## Reproducing it
 
-Everything except the trained weights and the copyrighted source art is in the repo:
+Everything except the copyrighted source art is in the repo:
 
 - `tools/synd_tile_dataset.py`: export tiles as training images.
 - `tools/gen_tile_captions.py`: write the captions.
@@ -90,5 +90,6 @@ Everything except the trained weights and the copyrighted source art is in the r
 - `tools/lora/train-syndtile-krea2.sh`: the training run.
 - `tools/lora/gen_tiles_comfy.py`: generate through ComfyUI.
 - `tools/pixelate_tile.py`: downscale and palette-snap.
+- `tools/lora/syndtile-krea2-r32.safetensors`: the trained weights, in Git LFS.
 
-The tile art itself is Bullfrog's and never goes in the repo. Extract it from your own copy of the game with the tools above. The trained `.safetensors` will go in Git LFS if and when we decide to commit it.
+The tile art itself is Bullfrog's and never goes in the repo. Extract it from your own copy of the game with the tools above.
