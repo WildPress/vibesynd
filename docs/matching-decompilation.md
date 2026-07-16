@@ -1,5 +1,11 @@
 # What a matching decompilation is
 
+This page explains what a matching decompilation is and why we're doing one for
+Syndicate. The short version is that we rewrite the game in C that compiles back to
+the exact bytes of the 1995 binary, one function at a time, so the result is provably
+the original and not a lookalike. The rest covers why that strictness is worth it,
+how we check a match, and the clean-room rule we work under.
+
 ## The short version
 
 We have the original *Syndicate* game as a compiled program from 1995. That's a

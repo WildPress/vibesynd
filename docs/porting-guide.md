@@ -1,5 +1,11 @@
 # Porting this method to another game: a matching-decompilation field guide
 
+This page takes the method we used to byte-match *Syndicate* and strips out everything specific to
+that one game, so you can point it at a different old binary. It walks through the pipeline you build
+first, how to pin down the exact compiler, where an automated search helps, and how to tell a
+difference you can fix from one you cannot. Read it before starting a matching decompilation of any
+period DOS or console binary.
+
 This is the **game-agnostic** distillation of everything we learned byte-matching *Syndicate*
 (1993/95 DOS, Watcom C/C++ 9.5). If you want to start a matching decompilation of a *different*
 period binary, read this first. It is the method, the toolchain shape, the permuter design, the
@@ -7,6 +13,24 @@ lever catalogue, and most importantly the **wall taxonomy** that tells you when 
 
 The Syndicate-specific reference is [`matching-playbook.md`](matching-playbook). This page is the
 part that transfers.
+
+The whole method, from empty repo to the point where you stop, runs like this:
+
+```mermaid
+flowchart TD
+    A["Build the pipeline<br/>image, manifest, oracle"] --> B["Pin the exact compiler"]
+    B --> C["Pick a function, write C"]
+    C --> D["Compile and diff, reloc-aware"]
+    D --> E{"Matched?"}
+    E -->|yes| F["Next function"]
+    E -->|no| G["Permute and try levers"]
+    G --> H{"Still a residue?"}
+    H -->|no| F
+    H -->|yes| I["Classify the wall"]
+    I --> J{"Crackable?"}
+    J -->|yes| C
+    J -->|no| K["Park with a bytes fallback"]
+```
 
 ---
 

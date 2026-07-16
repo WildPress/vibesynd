@@ -7,6 +7,19 @@ exact same machine code, one function at a time.
 I'm new to this and I'm not a reverse engineer. These pages are my own notes, written so
 I can understand each idea from scratch and come back to them later when I've forgotten.
 
+The work is a tight loop, run once per function until the bytes line up:
+
+```mermaid
+flowchart TD
+    F["Pick a function<br/>from the original"] --> C["Write C for it"]
+    C --> B["Compile with Watcom"]
+    B --> D["Compare to the original bytes"]
+    D --> M{"Identical?"}
+    M -->|yes| Y["Matched, done"]
+    M -->|no| I["Read the diff, adjust the C"]
+    I --> C
+```
+
 ## What the project actually is
 
 The game is a compiled program from 1995, a big block of machine code. I don't have the

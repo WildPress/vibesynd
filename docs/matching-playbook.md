@@ -1,10 +1,32 @@
 # The matching playbook (living doc)
 
+Byte-matching means writing C that compiles to the exact bytes of the original function, and
+this page is the toolbox for doing it. It covers the compile recipes to try, the source-level
+tricks that nudge Watcom towards the right code, and the walls that aren't worth grinding
+against. Skim the method and recipes first, then reach for a specific lever or wall as a
+near-miss demands.
+
 Consolidated, deduplicated knowledge for byte-matching Syndicate functions with Watcom C/C++
 9.5b. This is the single reference the orchestrator and every agent should read first. It is
 **updated as new data arrives**. When an agent discovers a lever or a wall, it goes here.
 
 Companion: `docs/object-model.md` (the pool/entity field map + global-table catalogue).
+
+The whole loop, from reading a function to either banking it or parking it:
+
+```mermaid
+flowchart TD
+    A["Read the disassembly<br/>(authoritative, not the decompile)"] --> B{"Matched sibling<br/>twin exists?"}
+    B -->|yes| C["Mirror its src/*.c"]
+    B -->|no| D["Pick a recipe by<br/>calling convention"]
+    C --> E["Compile + diff<br/>tools/match95.sh"]
+    D --> E
+    E --> F{"Reloc-aware<br/>masked match?"}
+    F -->|yes| G["Done: record it"]
+    F -->|"near-miss"| H["Apply a lever<br/>(section 2)"]
+    H --> E
+    F -->|"wall (section 3)"| I["Park with a note"]
+```
 
 ## 0. Method
 

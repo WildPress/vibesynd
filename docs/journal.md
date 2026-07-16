@@ -5,6 +5,11 @@ got there. It's the narrative version of the terse session log in `AGENTS.md`,
 written so the thinking is easy to follow later. It reads in order, oldest first,
 and each entry tries to show the *process*, not just the result.
 
+The arc runs from the first tiny functions that matched straight away, through the
+discovery that the compiler was Watcom 9.5, into the register-allocation walls that
+clean C can't cross, and out the other side into reading the code for what the game
+actually does. Each entry below is one step of that.
+
 If a term is unfamiliar, the [foundations pages](README.md) explain the building
 blocks.
 
