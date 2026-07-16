@@ -1,5 +1,10 @@
 # Calling conventions
 
+When one function calls another, they need a shared rule for where the arguments go
+and where the answer comes back. This game uses two such rules, and this page shows
+how to tell them apart from the disassembly. One passes arguments on the stack, the
+other passes them in registers for speed.
+
 A **calling convention** is the agreed rule for how a function receives its
 arguments and hands back its result. Both sides, the caller and the function,
 have to agree on it, or they'd be reading and writing different places.
@@ -33,6 +38,18 @@ In **register calling**, the caller puts the first few arguments directly into
 [registers](cpu-basics.md) instead of the stack, which is faster because registers
 are quicker to reach than memory. Watcom's order is EAX, then EDX, then EBX, then
 ECX. So a function's first argument arrives in EAX, its second in EDX, and so on.
+
+The registers fill in that fixed order, and anything past the fourth argument spills
+onto the stack:
+
+```mermaid
+flowchart TD
+    A["Arguments fill registers in order"] --> R1["1st argument to EAX"]
+    R1 --> R2["2nd argument to EDX"]
+    R2 --> R3["3rd argument to EBX"]
+    R3 --> R4["4th argument to ECX"]
+    R4 --> S["5th onward pushed on the stack"]
+```
 
 ```
 ; no reading from the stack; the argument is already in EAX

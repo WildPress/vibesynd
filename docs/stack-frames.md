@@ -1,5 +1,11 @@
 # Stack frames: framed vs frameless
 
+A stack frame is the bookkeeping a function uses to find its arguments and locals on
+the stack. This page covers what a frame is, why some functions have one and some
+don't, and how that split held up our matching for a while. The short version is that
+a framed function pins a register as a fixed reference point, and a frameless one goes
+without and does the sums itself.
+
 This one comes up constantly, so it's worth getting comfortable with.
 
 ## The stack
@@ -38,6 +44,17 @@ Now EBP doesn't move for the whole function, even as ESP shifts around. So the
 function can reach everything relative to EBP: argument two is always "EBP plus 8",
 a local is "EBP minus 4", and so on. Stable and easy.
 
+The frame is a slice of the stack, laid out from the caller's arguments at the top
+down to the working area at the bottom, with EBP pinned in the middle:
+
+```mermaid
+flowchart TD
+    A["caller's arguments<br/>[ebp+8], [ebp+12] ..."] --> B["return address<br/>[ebp+4]"]
+    B --> C["saved ebp<br/>[ebp], EBP points here"]
+    C --> D["local variables<br/>[ebp-4], [ebp-8] ..."]
+    D --> E["top of stack<br/>[esp]"]
+```
+
 That opening pair, `push ebp; mov ebp, esp`, is the **prologue**, and the closing
 `pop ebp; ret` is the **epilogue**. In raw bytes the prologue is always `55 89 e5`,
 which is why you'll see that number treated as a fingerprint.
@@ -53,6 +70,16 @@ moving ESP directly and just does the extra arithmetic itself. It saves two
 instructions and frees up the EBP register, at the cost of slightly more
 bookkeeping inside. Measuring from wherever you happen to be standing, rather than
 from a stake, and doing the sums in your head.
+
+So the two styles are a fork on one decision, whether to pin EBP as a fixed anchor
+or work from the moving ESP:
+
+```mermaid
+flowchart TD
+    S["Function needs to find its args and locals"] --> Q{"Pin EBP as a fixed anchor?"}
+    Q -->|"framed"| F["push ebp, mov ebp, esp<br/>address from the stable EBP<br/>prologue bytes 55 89 e5"]
+    Q -->|"frameless"| N["no anchor<br/>address from the moving ESP<br/>saves two instructions"]
+```
 
 The game's compiler was aggressive about this, so *most* of the game's functions
 are frameless. Only a minority have a frame.

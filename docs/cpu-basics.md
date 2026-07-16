@@ -1,5 +1,10 @@
 # The CPU, registers, and instructions
 
+This page collects the handful of processor facts the rest of the notes lean on. A
+CPU runs a long list of tiny instructions, using a few fast storage slots called
+registers and a scratch area of memory called the stack. Read it first if a term
+elsewhere is unfamiliar, then follow the links back.
+
 Everything else in these notes sits on top of a few basics about how the processor
 works. This is the page to look them up, and the other pages link back here for the
 terms.
@@ -9,6 +14,17 @@ terms.
 A CPU runs a long list of tiny **instructions**, one after another. Each does
 something small: move a number, add two numbers, compare them, jump somewhere else.
 A program, including this whole game, is nothing more than a very long list of them.
+
+The chip repeats the same short cycle for every one of them. It fetches the next
+instruction, works out what it means, carries it out, and moves on:
+
+```mermaid
+flowchart TD
+    F["Fetch the next instruction"] --> D["Decode what it means"]
+    D --> E["Execute it<br/>move, add, compare, jump"]
+    E --> W["Update registers or memory"]
+    W --> F["Fetch the next instruction"]
+```
 
 The chip this game runs on is an **x86** processor, in its 32-bit form (also called
 i386 or IA-32). x86 is the family of chips in most PCs of that era and since.
