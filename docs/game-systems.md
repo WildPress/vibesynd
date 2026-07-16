@@ -59,8 +59,8 @@ A short, honest list. It'll grow.
   object. Which one, we'll know when we match its callers.
 - **Object pools, and a free-slot scan** (`0x22768`). This one revealed a big piece of the
   game's memory layout. The pools are contiguous fixed-size-record arrays back to back:
-  pool A at `0x8110`, 256 records of 92 bytes; pool B at `0xdd10`, 64 records of 42 bytes;
-  pool C at `0xe790`, 400 records of 30 bytes (the full five-pool picture is below). In
+  pool A at `0x8110` (256 records of 92 bytes), pool B at `0xdd10` (64 records of 42 bytes),
+  pool C at `0xe790` (400 records of 30 bytes). The full five-pool picture is below. In
   every record the byte at offset `0x18` is an "in use" flag. This function scans each pool
   from the top down and caches a pointer to the free boundary in a global, so later
   allocations are fast. It's called during map setup, which makes sense, since loading a map
@@ -124,9 +124,9 @@ the whole rather than as an isolated puzzle.
 
 **TRUE SIZE 5280 (0x14A0)**, 0x23158–0x245f7 (manifest was 107, fixed). Per-record command
 interpreter: executes one queued command for record `idx` (u32 param), then clears the slot.
-Entry: `ESI = 0x105d4 + idx*0xe` (14-byte command record, opcode at `record[+0xd]`);
+Entry: `ESI = 0x105d4 + idx*0xe` (14-byte command record, opcode at `record[+0xd]`).
 `EDX = 0xe49c + idx*0x417` (the 0x417-stride equip/research template row consumed by matched
-siblings `FUN_000223c8`/`FUN_00012da8`; `[EDX+0xb5]` = `g_e551[idx*0x417]` = pool-A base-slot
+siblings `FUN_000223c8`/`FUN_00012da8`, and `[EDX+0xb5]` = `g_e551[idx*0x417]` = pool-A base-slot
 header). Every case ends `MOV byte [ESI+0xd],0` (consume), `ADD ESP,0x34`, pops, `RET`.
 
 Jump table: literal `CS:[EAX*4+0x15920]`, manifest **0x23068** (0x15920+0xd748),
@@ -172,7 +172,7 @@ spill order). Three co-located jump tables (lefix rule L+0xd748):
 - Table 3 @ 0x195bc, 17 entries, index word [rec+0x1be3e]. HUD/objective markers
   (0x1a13f/0x1a28c, several break to 0x1a38f, default-continue 0x1a384).
 Phases: (1) nested 0x60×0x80 tile grid, column lookup + fixed-point corner projection + 0x3fb40
-draw; (2) grid-cell entity chains (g_810e+id, 0x12c cap), type-dispatched blips; (3) two
+draw. (2) grid-cell entity chains (g_810e+id, 0x12c cap), type-dispatched blips. (3) two
 0x18d18 blip loops + conditional 0x19318 + 8× stride-14 objective-marker records at 0x1be3a.
 Callees: 0x3fb40/0x3f4b4/0x3f636/0x18d18(×2)/0x19318 (matched: 0x18d18, 0x19318).
 
@@ -181,8 +181,8 @@ Callees: 0x3fb40/0x3f4b4/0x3f636/0x18d18(×2)/0x19318 (matched: 0x18d18, 0x19318
 **TRUE SIZE 3694 (0x2ad58–0x2bbc5, manifest was 1737, fixed). Calls 8 not 4.** Resolves what
 the mission cursor points at and writes an action order into `ushort *p` (p[0]=x/id, p[2]=y,
 p[4]=z, p[0xd]=action-code, returns int via [esp] slot). Co-located 20-byte jump table at
-0x2ad44 (literal 0x1d5fc + 0xd748): `switch(g_e120)` 5 entries, 3 targets (case0→return 0;
-1,2→0x2b44c; 3,4,default→0x2b91e). Sequence: input-mode gates (g_e285/e2a4/e296/e297/e2a3 +
+0x2ad44 (literal 0x1d5fc + 0xd748): `switch(g_e120)` 5 entries, 3 targets (case0→return 0,
+1,2→0x2b44c, 3,4,default→0x2b91e). Sequence: input-mode gates (g_e285/e2a4/e296/e297/e2a3 +
 g_10b45, actions 2/0x10/0x17), selection from g_e286-9 into g_e124, already-selected fast
 path, 4-ped-block shootable-target scan, move/attack order build (0x2c468 field-copy + 0x1ba48
 cursor-line-draw), fresh-target pick via the R/G/B reticle-ramp interpolators
