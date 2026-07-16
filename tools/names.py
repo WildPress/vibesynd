@@ -120,6 +120,9 @@ def header_desc(path):
     b = re.sub(r"\s+", " ", m.group(1)).strip()
     b = re.sub(r"^FUN_[0-9a-fA-F]+ @ 0x[0-9a-fA-F]+ \([0-9]+B\)\s*-{0,2}\s*", "", b)
     b = re.sub(r"^@ ?0x[0-9a-fA-F]+ ?\([0-9]+B\):?\s*", "", b)
+    # keep the generated map in James's style: no em dashes or semicolons in prose
+    b = b.replace(" -- ", ", ").replace(" — ", ", ").replace("—", ", ")
+    b = b.replace("; ", ", ").replace(";", ",")
     return b[:200]
 
 
@@ -160,8 +163,8 @@ def main():
     intro = sorted(a for a in execset)
     with open("docs/function-map.md", "w", encoding="utf-8") as o:
         o.write("# Function map\n\n")
-        o.write("Semantic names + descriptions over the `FUN_<addr>` anchors "
-                "(source filename stays `FUN_<addr>`; this is the readable layer). "
+        o.write("Semantic names and descriptions over the `FUN_<addr>` anchors "
+                "(the source filename stays `FUN_<addr>`, this is the readable layer). "
                 "Full machine-readable map in `manifest/names.json`.\n\n")
         o.write("## Intro path (boot -> Bullfrog logo -> main menu), %d functions that execute\n\n" % len(intro))
         o.write("| addr | name | subsystem | what it does |\n|---|---|---|---|\n")
