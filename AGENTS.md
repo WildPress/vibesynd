@@ -263,13 +263,28 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ###   (~DGROUP 0xbe30..0xbfc1) is wrong. g_be30 all-zeros = the huffman table was never built (or built into
 ###   the wrong DGROUP location). Because the instruction trace MATCHED for 1.5M instrs (same code path),
 ###   the state diverged SILENTLY earlier (same code, different data) until this branch exposed it.
-### NEXT: two ways to pin the table-build divergence: (a) inspect GAMEO's reconstructed DGROUP image at
-### 0xbe30 and 0xbfbc -- is it a BSS region (should be zero, built at runtime) or does GAMEO's image have
-### wrong/colliding data there (the g_3568-class layout bug, string bleeding into the decomp tables)? (b)
-### move the DIVDUMP earlier, to the rnc_read_huffman table-build (0x3a383 / the loop that writes g_be30),
-### and dump g_be30 as it is built in each run to catch the first wrong table entry. Then fix the DGROUP
-### placement/init in origbuild.py/mkdata.py. Regenerate via the SAME.EXE + DOSREC_DBG/CORE recipe above;
-### the DIVDUMP patch lives in build/dbxsrc/.../core_normal.cpp (gitignored; rebuild w/ build-essential+SDL).
+### IMAGE + BUILD DUMPS DONE (2026-07-16), narrowed to a BIT-POSITION divergence in the RNC decode:
+### (a) IMAGE: GAMEO maps DGROUP D -> OBJECT2.linear.bin[D-0x28b8]; at 0xbe30/0xbfbc the image is all
+###     ZEROS (correct BSS working memory), and "BEGIN" lives at DGROUP 0x3438, NOT here. So NOT a
+###     layout/string-collision at the decompressor state. g_be30 is zero-init, built at runtime.
+### (b) BUILDER: 0x3a449(edx=table) is the Huffman table builder (called 3x at rnc_decompress+0xba with
+###     edx=0xbe30 then two more tables). Dumped right after the first 0x3a449 for the diverging block
+###     (both runs cnt=1541769, aligned): source bytes at ESI are BYTE-IDENTICAL (12 00 10 2b 00 00 00 00
+###     20 0a 00 4e 00 8c 2f 2b 17 0f 0f 12 11 3f 29 18) -> compressed input correct in GAMEO. BUT the bit
+###     state DIFFERS: GAMEO bfbc=0x49474542("BEGI") bfc1=0x20 (32 bits buffered) vs MAIN bfbc=0x0000012c
+###     bfc1=0x01 (1 bit). So GAMEO+MAIN are at DIFFERENT BIT POSITIONS in the same stream; GAMEO's builder
+###     reads lengths at the wrong phase -> ZERO g_be30 table. rnc_decompress is ONE long call decompressing
+###     many blocks (its entry ga 0x2c6a4 is far earlier, never in the [1.4M,1.544M] window), so the
+###     bit-phase drift began in an EARLIER block / the file-decompress setup.
+### CONCLUSION: same code + same current source bytes but divergent bit consumption => either GAMEO decoded
+### DIFFERENT earlier (already-consumed) stream bytes [i.e. a different/corrupt compressed RESOURCE was
+### loaded -- fits the coverage diff where GAMEO SKIPS container_load/file-I/O for some resources], or the
+### bit-reader (0x3a383) consults a DGROUP global that is wrong in GAMEO. NEXT: dump the source over a wide
+### window incl. bytes BEFORE esi (the consumed part) and/or from the resource START; if the full compressed
+### content matches MAIN's, hunt the DGROUP global the bit-reader/refill reads; if it differs, trace back to
+### WHICH file/container GAMEO loaded (compare the load path -- container_load 0x17b48 + FUN_00038c28 record
+### loader) since GAMEO likely loaded the wrong/short resource. DIVDUMP patch (now a BUILDDUMP/entry probe)
+### lives in build/dbxsrc/.../core_normal.cpp (gitignored); rebuild needs build-essential + SDL1.2 dev libs.
 ###
 ### ▶ RUN PIPELINE 2026-07-16 — GAMEO drivable to the WORLD MAP; mission-launch blocked by MISSING UI
 ### STRINGS (data gap, not input). Reproduced + extended the render milestone under tools/dosrec.sh
