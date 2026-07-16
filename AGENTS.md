@@ -229,6 +229,24 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 
 ## Current Status  (update every session)
 
+### ▶ CARVE-TAIL MATCHING 2026-07-16 — +1 (439->440), tail confirmed wall-dominated. Attacked the
+### never-attempted freshly-carved sub-graph fns (the 44 unmatched WITH NO src file; the other 68
+### unmatched are decoded-parked walls). MATCHED 0x36d18 (pool-entity per-frame updater): lever = the
+### mode-bit switch must re-read p[0xc] INLINE in each else-if, not via a named temp -- Watcom CSEs the
+### four reads into one `mov dl` (dl); a named `unsigned char f` lands the byte in al (short `test al`)
+### and misses by 4B. PARKED 5 clean decodes, all genuine register-role/scheduling near-misses at the
+### 9.5b floor (cpermute + flag sweeps exhausted): 0x1b858 (sprite display-list walker; original spends
+### a 4th callee-saved ebp on g_5314, esi/edi roles swapped); 0x35f78 (sound-fx wrapper; ds-read SOLVED
+### via `#pragma aux getDS="db 0x8c""db 0xda" value[edx]`, 89/90, 2 reg tie-breaks left); 0x33db8 (grid
+### query predicate; `unsigned short row` fixes the 16-bit counter/loop, top-of-fn scheduling + index
+### reg remain); 0x38c28 (file record loader; 202/206, a SINGLE 4B esi<->edi transpose on p2/p3, not
+### movable); 0x2ed28 (agent classifier; p1-in-ebx-vs-edx + flag CSE). TOOL: `tools/tdis.py <name>` dumps
+### a target fn's disasm from linear.bin in manifest coords (for when Ghidra GUI is closed). TAKEAWAY:
+### the carves are the HARD tail (easy shapes were all in the first 439); ~1-in-5 yields a clean match,
+### the rest are the same reg-role/scheduling walls as the parked set. Pick struct-field updaters w/ a
+### CSE/inline lever (like 0x36d18) for best odds; avoid free-allocation multi-value fns.
+
+
 ### 🏷️ GLOBAL NAMING (2026-07-15d) — g_XXXX globals can now be renamed semantically. mkdata.py
 ### resolves a global's data-image address REGISTRY-FIRST from manifest/globals.json (name ->
 ### {addr,type,desc}); the ADDRESS is the anchor, not the name (mirrors names.json for functions).
