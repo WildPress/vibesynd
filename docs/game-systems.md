@@ -1,5 +1,22 @@
 # How the game works, as we map it
 
+Syndicate keeps its whole world in a handful of fixed object pools: people, cars, weapons,
+and effects. Every frame each object runs a small behaviour chosen by its current state, and
+the maps and game data load from compressed files on disk. This page maps those systems as
+we decode them, starting with the shape of it and going down to the byte-level notes.
+
+```mermaid
+flowchart TD
+    L["Per-frame game loop"] --> T["entity_pool_tick 0x31858<br/>walk pool A"]
+    T --> D["entity_behaviour_dispatch 0x2ea88<br/>pick behaviour by state byte 0x19"]
+    D --> M["move / pathfind"]
+    D --> P["persuade_capture"]
+    D --> C["combat: acquire and engage"]
+    D --> V["vehicle: board / ride / drive / exit"]
+    F["Map and data files, RNC-packed"] --> R["resource loader"]
+    R --> G["runtime tables and object pools"]
+```
+
 The [concept pages](README.md) are about how we rebuild the game. This page is about what
 the game's code actually does: the systems that make Syndicate work, described as we come
 to understand each piece.
@@ -106,6 +123,15 @@ system at once, and the map loader is the first one we mapped. A static scan of 
 call instructions (`tools/callgraph.py`) shows that the column-table builder `0x20d18` is
 called by one function, `0x22858`, a 415-byte routine that is the map initialiser. Its call
 tree is the shape of "load and set up a map":
+
+```mermaid
+flowchart TD
+    M["mission_map_init 0x22858"] --> C1["0x20d18<br/>build column table g_5358"]
+    M --> C2["vehicle_hp_stamp 0x20d98<br/>stamp car HP by model"]
+    M --> C3["0x22768<br/>reset and index the object pools"]
+    M --> C4["0x35ed8<br/>clear a 32-entry table"]
+    M --> C5["0x49xxx<br/>decompress the packed map files"]
+```
 
 - `0x20d18`. Build the column table `g_5358` (offsets become pointers).
 - `0x20d98`. A big sibling right after it, the vehicle HP stamp (above).
@@ -232,6 +258,18 @@ car. `vehicle_board` (0x2fa48) links an agent in and inherits the car's speed (h
 rider for trains and boats). `vehicle_ride` (0x2fca8) slaves each passenger's position to the
 car every frame. `vehicle_exit` (0x2fbc8) unlinks and drops the agent beside it.
 
+```mermaid
+stateDiagram-v2
+    [*] --> OnFoot
+    OnFoot --> Boarding: ordered to a car
+    Boarding --> Riding: linked into the occupant list
+    Riding --> Driving: driver runs vehicle_drive_step
+    Driving --> Riding
+    Riding --> Exiting: dismount
+    Driving --> Exiting: dismount
+    Exiting --> OnFoot: unlinked, placed beside the car
+```
+
 Driving is `vehicle_drive_step` (0x34858): a real speed model that accelerates, brakes into
 corners, and steers by following directional road tiles. A road tile's value (6/7/8/9)
 encodes which way traffic flows through it.
@@ -257,6 +295,20 @@ loader:
   big-endian sizes, Huffman tables plus an LZ back-reference copy. It's the standard packer
   of the era, and recognising it carries straight over to other Bullfrog and DOS-game
   decomps (noted in the [porting guide](porting-guide)).
+
+```mermaid
+flowchart LR
+    L["Block descriptor list"] --> V["validate_records_or_abort<br/>0x18338"]
+    V --> R["realloc_block_descriptor<br/>0x184b8"]
+    R -->|"* descriptor"| Z["allocate a zeroed block"]
+    R -->|filename| O["open and read the file"]
+    O --> Q{"packed?"}
+    Q -->|yes| X["rnc_decompress 0x3a1ec<br/>RNC method 1"]
+    Q -->|no| K["use as-is"]
+    Z --> T["fill the runtime tables"]
+    X --> T
+    K --> T
+```
 
 So the answer to "is OBJECT1 the whole game" is that the logic is all here and the data (art,
 sound, and the balance numbers) is external and RNC-packed. That's why a stat table can read
