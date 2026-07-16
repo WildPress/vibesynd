@@ -54,18 +54,18 @@ is central to [stack frames](stack-frames.md) and
 
 A typical function uses only a small vocabulary of instructions:
 
-- `mov dst, src` — copy a value from `src` to `dst`.
-- `push x` and `pop x` — put `x` on the stack, or take the top of the stack into `x`.
-- `call f` — jump into function `f`, remembering where to come back to.
-- `ret` — return to wherever we were called from.
-- `cmp a, b` — compare `a` and `b`, setting flags that the next jump can test.
+- `mov dst, src`. Copy a value from `src` to `dst`.
+- `push x` and `pop x`. Put `x` on the stack, or take the top of the stack into `x`.
+- `call f`. Jump into function `f`, remembering where to come back to.
+- `ret`. Return to wherever we were called from.
+- `cmp a, b`. Compare `a` and `b`, setting flags that the next jump can test.
 - `jmp`, and the conditional jumps `jz` (jump if zero), `jnz` (if not zero), `jl`,
-  `jge`, and friends — go somewhere else, sometimes only if the last compare came
+  `jge`, and friends. Go somewhere else, sometimes only if the last compare came
   out a certain way.
-- `add`, `sub`, `and`, `or`, `xor`, `shl`, `shr` — arithmetic and bit twiddling.
-- `lea dst, [expr]` — work out an address and put it in `dst`, without reading
+- `add`, `sub`, `and`, `or`, `xor`, `shl`, `shr`. Arithmetic and bit twiddling.
+- `lea dst, [expr]`. Work out an address and put it in `dst`, without reading
   memory. Often used for quick multiplication too.
-- `movsx` and `movzx` — copy a smaller value into a bigger register, either
+- `movsx` and `movzx`. Copy a smaller value into a bigger register, either
   sign-extended (`movsx`) or zero-extended (`movzx`).
 
 That covers most of what you need to read a normal function.

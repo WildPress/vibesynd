@@ -31,13 +31,13 @@ copy of 9.5 instead. There's more on this in [compiler flags](compiler-flags.md)
 
 "Watcom" is really a set of tools that work together. The ones we use:
 
-- **wcc386** — the C compiler itself. Turns a `.c` file into an object file.
-- **wdis** — the disassembler. Shows the machine code inside an object file as
+- **wcc386**. The C compiler itself. Turns a `.c` file into an object file.
+- **wdis**. The disassembler. Shows the machine code inside an object file as
   readable instructions, which is how we see what our C actually produced.
-- **wlink** — the linker, which combines object files into a finished program.
-- **wlib** — the librarian, for pulling apart the runtime library. Handy for the
+- **wlink**. The linker, which combines object files into a finished program.
+- **wlib**. The librarian, for pulling apart the runtime library. Handy for the
   [game vs library](game-vs-library.md) work.
-- **DOS/4GW** — the extender it bundles, covered on the
+- **DOS/4GW**. The extender it bundles, covered on the
   [DOS page](dos-and-dos4gw.md).
 
 ## How we run a 30-year-old compiler
