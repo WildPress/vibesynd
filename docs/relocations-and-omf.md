@@ -21,7 +21,7 @@ leaving ADDRESS blank because you haven't booked the venue yet. You mark the bla
 so you remember to fill it in before you post the letter.
 
 ```mermaid
-flowchart LR
+flowchart TD
     A[Compiler writes the instruction<br/>with a BLANK where the address goes] --> B[and attaches a note:<br/>fill this with the address of X]
     B --> C[Later, the linker or loader<br/>fills the blank with the real address]
     C --> D[Now the instruction is complete]

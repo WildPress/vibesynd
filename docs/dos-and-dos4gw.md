@@ -31,7 +31,7 @@ saw its banner flash up on startup. Syndicate is a 32-bit protected-mode program
 it carries DOS/4GW to launch itself.
 
 ```mermaid
-flowchart LR
+flowchart TD
     A[DOS starts the game<br/>16-bit real mode, ~1 MB] --> B[DOS/4GW extender]
     B --> C[CPU switched to 32-bit<br/>protected mode, lots of memory]
     C --> D[The game runs here]
