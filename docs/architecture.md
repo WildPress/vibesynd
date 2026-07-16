@@ -1,5 +1,12 @@
 # Syndicate (1993/95 DOS): reverse-engineered architecture map
 
+This is the map of how Syndicate's DOS executable fits together, drawn from the functions
+we've decoded so far. It works from the ground up: the object pools and spatial grid that
+hold the world, then startup, memory and file loading, the map, combat, UI, input,
+multiplayer, sound, and the compiler's own runtime library. Each subsystem lists its
+functions with a mark for whether we've reproduced the original bytes exactly or only
+recovered what the code means.
+
 Synthesised from 297 function-level decodes (175 byte-matched ✓, 122 parked-but-decoded ~) as of
 cont. 25.
 
@@ -11,6 +18,14 @@ byte-parity walled). Addresses are manifest (linear.bin) addresses.
 
 This is the game's runtime structure, recovered bottom-up. Watcom C/C++ 9.5b, DOS/4GW, flat 32-bit
 protected mode. The binary is `main` + a linked-in Watcom C runtime (`0x3a000+`).
+
+```mermaid
+flowchart TD
+    BIN["main binary, LE format<br/>Watcom C/C++ 9.5b, DOS/4GW, flat 32-bit"] --> CODE["code image<br/>game logic + Watcom C runtime 0x3a000+"]
+    BIN --> DATA["DGROUP data, OBJECT2<br/>base 0x0, initialised [0, 0xd000)"]
+    DATA --> POOLS["fixed-address globals + object pools<br/>pool A 0x810e, grid 0x10e, templates 0xe49c"]
+    CODE --> VGA["VGA screen at 0xa0000<br/>via back buffers g_5368 / g_5370"]
+```
 
 ---
 
@@ -144,6 +159,18 @@ ties. The DOS-asm primitives (int 21h, in/out, Sreg) are hand-asm. Don't grind t
 ---
 
 ## Matchability map (why 175 matched and the rest are walled)
+
+Each function runs the same route, and the last step decides whether it counts as matched or
+parked:
+
+```mermaid
+flowchart TD
+    DEC["decode a function<br/>recover what it does"] --> C["write matchable C in src/"]
+    C --> CMP["compile with Watcom 9.5b, then relocate"]
+    CMP --> Q{"bytes identical to linear.bin?"}
+    Q -->|yes| MATCH["matched, lives in src/"]
+    Q -->|"backend-walled"| PARK["parked: decode kept,<br/>byte-parity blocked"]
+```
 
 Matches concentrate in **clean subsystems**: startup, memory/DPMI/file-I/O, entity chain walks,
 UI list/detail drawers, dispatchers (via the JT-aware method), and the C runtime. Parks concentrate

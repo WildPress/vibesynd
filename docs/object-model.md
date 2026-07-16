@@ -1,5 +1,12 @@
 # The object model & Bullfrog coding style (derived from matched bytes)
 
+This page describes how Syndicate keeps its game objects in memory, worked out from the
+functions whose bytes we've reproduced exactly. The gist is that everything lives in a few
+fixed-size pools at fixed addresses, objects point at each other by small 16-bit ids rather
+than pointers, and almost every behaviour is a table lookup on a byte field. Further down it
+gets specific: the field-by-field record maps, the catalogue of fixed global addresses, and
+two worked examples, the Persuadertron and the vehicle system.
+
 Everything here is inferred from the ~85 functions we've matched byte-for-byte. Because a
 relocation-exact match forces our C to mirror the original source's structure, the recurring
 shapes below are effectively Bullfrog's own conventions, not our guesses about them.
@@ -26,6 +33,16 @@ next node's `id`, and `id == 0` terminates. `pid = (unsigned short)(p - g_810e)`
 id from a pointer. This id-instead-of-pointer scheme (half the size, position-independent,
 survives a save/load) is the hallmark early-90s / Amiga-derived Bullfrog style, and it's the
 single most useful thing to recognise. Declare the pool as `extern unsigned char g_810e[];`.
+
+```mermaid
+flowchart TD
+    ID["id: 16-bit byte offset into the pool"] --> R["node = g_810e + id"]
+    R --> NX["node[0x00] holds the next id"]
+    NX --> R2["next node = g_810e + next id"]
+    R2 --> Z{"next id == 0?"}
+    Z -->|no| R
+    Z -->|yes| END["chain ends"]
+```
 
 ## Pool A record: the central "entity" (person / agent / projectile)
 
@@ -66,6 +83,30 @@ high-frequency fields are certain, the rare ones are educated guesses.
 The three consecutive `(min,max)` byte pairs at `0x48/0x4c/0x50`, each fed through the same
 `x*delta/(hi-lo)` interpolation (fns 0x2d7a8/0x2d808/0x2d868), look like **three lighting or
 colour channels** (R/G/B ramps), a strong guess for the next function in that cluster.
+
+The record's shape, with the six id-link fields grouped first:
+
+```mermaid
+classDiagram
+    class PoolA_entity {
+        u16 next_id_0x00
+        u16 prev_id_0x02
+        u16 grid_next_0x1c
+        u16 list_head_0x24
+        u16 chain_id_0x3a
+        u16 subobject_id_0x44
+        s16 x_0x04
+        s16 y_0x06
+        s16 z_and_level_0x08
+        u8 flagsA_0x0a
+        u16 hit_points_0x14
+        u8 type_or_inuse_0x18
+        u8 subtype_frame_0x19
+        u8 facing_0x1a
+        u8 health_0x54
+        u8 state_code_0x58
+    }
+```
 
 ## Global data catalogue (what the fixed addresses hold)
 
@@ -188,6 +229,15 @@ each entity. (Correction: 0x31858 is the loop, not the switch. The switch is 0x2
   leader link. The squad follower chain (`leader[0x3a]` head, `[0x1c]` next, `[0x1e]` prev, `[0x20]`
   leader) is a **different structure** from the vehicle occupant list, see Vehicle system.
 
+The squad follower chain, hung off the leader:
+
+```mermaid
+flowchart TD
+    AG["agent (leader)<br/>follower head at [0x3a]"] --> P1["ped: leader link [0x20] to agent"]
+    P1 -->|"next [0x1c]"| P2["next follower"]
+    P2 -->|"next [0x1c]"| P3["further followers<br/>prev links via [0x1e]"]
+```
+
 Allegiance is otherwise positional (a ped's team = poolIndex & ~7). The persuaded ped is
 recognised as friendly via the `[0x0a]` bit-0 flag + its leader link.
 
@@ -205,6 +255,17 @@ grid (`g_10e`) is walked:
 | C | 0xe790 | 400 | 0x1e | statics | (unobserved) |
 | D | 0x11670 | 512 | 0x24 | weapons / pickups | 4 |
 | E | 0x15e70 | 256 | 0x1e | sfx / bullets | 3 |
+
+The five pools sit back to back, told apart by the kind byte:
+
+```mermaid
+flowchart TD
+    K["kind byte [0x18]<br/>discriminates the pools"] --> A["Pool A 0x8110<br/>256 x 0x5c, people (kind 1, 2)"]
+    A --> B["Pool B 0xdd10<br/>64 x 0x2a, cars (kind 5)"]
+    B --> C["Pool C 0xe790<br/>400 x 0x1e, statics"]
+    C --> D["Pool D 0x11670<br/>512 x 0x24, weapons / pickups (kind 4)"]
+    D --> E["Pool E 0x15e70<br/>256 x 0x1e, sfx / bullets (kind 3)"]
+```
 
 Pool bounds come from `FUN_00022768`. Kind immediates are stored by the spawners
 (`spawn_pool_11670`=4, `spawn_pool_15e70`=3). Kinds 1/2 (pool A) are loaded from the mission
@@ -242,6 +303,15 @@ is separate from the squad follower chain:
 
 Occupant-list fields: vehicle `[0x1c]` = list head, occupant `[0x22]` = forward link, `[0x24]` = back
 link (head's back → the vehicle). Distinct from the squad chain (`[0x3a]/[0x1e]/[0x20]`).
+
+The occupant list uses different offsets from the follower chain above:
+
+```mermaid
+flowchart TD
+    V["vehicle (tag-2 pool-A)<br/>occupant head at [0x1c]"] --> O1["occupant 1<br/>back link [0x24] to vehicle"]
+    O1 -->|"forward [0x22]"| O2["occupant 2"]
+    O2 -->|"forward [0x22]"| O3["further occupants<br/>doubly linked via [0x24]"]
+```
 
 ### Road following
 Roads are **directional flow tiles**: 6=W, 7=E, 8=N, 9=S. `compass_tile_probe` (0x34368) returns 1
