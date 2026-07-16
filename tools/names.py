@@ -101,6 +101,10 @@ LABELS = {
     "0002fe68": "persuade_capture",     "00030078": "follow_leader",
     "000301e8": "follow_leader_b",       "0002fca8": "formation_follow",
     "0002fa48": "join_new_leader",       "00031858": "entity_behaviour_dispatch",
+    # RNC (Rob Northen Compression) resource codec + block loader (data-file loading)
+    "0003a1ec": "rnc_decompress",        "0003a37a": "rnc_read_be_len",
+    "0003a3c6": "rnc_input_bits",        "0003a449": "rnc_make_huffman",
+    "0003a383": "rnc_read_huffman",      "000188a8": "file_read_n",
 }
 
 

@@ -18,7 +18,7 @@ Semantic names + descriptions over the `FUN_<addr>` anchors (source filename sta
 | `0x184b8` | ***(unnamed)*** |  |  |
 | `0x18828` | ***(unnamed)*** |  |  |
 | `0x18878` | ***(unnamed)*** | unclassified | Decomp target: stack-calling forwarding wrapper. original @ 0x00018878 (14 bytes) * * 8b 54 24 04 mov edx,[esp |
-| `0x188a8` | ***(unnamed)*** | unclassified | forward three args to a callee (g uses ebx as scratch). |
+| `0x188a8` | ***(unnamed)*** |  |  |
 | `0x18958` | ***(unnamed)*** |  |  |
 | `0x20c88` | ***(unnamed)*** |  |  |
 | `0x20fc8` | ***(unnamed)*** |  |  |
@@ -58,11 +58,11 @@ Semantic names + descriptions over the `FUN_<addr>` anchors (source filename sta
 | `0x39b7d` | ***(unnamed)*** | lib | dispatch stub @ 00039b7d (10B): mov eax,0x9a; jmp sound_dispatch_trampoline (tail call) |
 | `0x39b87` | ***(unnamed)*** | lib | dispatch stub @ 00039b87 (10B): mov eax,0x9b; jmp sound_dispatch_trampoline (tail call) |
 | `0x39b91` | ***(unnamed)*** | lib | dispatch stub @ 00039b91 (10B): mov eax,0x9c; jmp sound_dispatch_trampoline (tail call) |
-| `0x3a1ec` | ***(unnamed)*** | lib | GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Top-level graphics decompression driver @ 0x3a1ec. TRUE SIZE 3 |
-| `0x3a37a` | ***(unnamed)*** | lib | GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Big-endian dword reader @ 0x3a37a. Frameless 9-byte leaf: LODS |
-| `0x3a383` | ***(unnamed)*** | lib | GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Huffman symbol lookup @ 0x3a383. Non-leaf (calls the bit-reade |
-| `0x3a3c6` | ***(unnamed)*** | lib | GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Bitstream bit-extractor @ 0x3a3c6. Leaf. Reads CL (=AL param)  |
-| `0x3a449` | ***(unnamed)*** | lib | GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Huffman decode-table builder @ 0x3a449. Non-leaf (calls the bi |
+| `0x3a1ec` | ***(unnamed)*** |  |  |
+| `0x3a37a` | ***(unnamed)*** |  |  |
+| `0x3a383` | ***(unnamed)*** |  |  |
+| `0x3a3c6` | ***(unnamed)*** |  |  |
+| `0x3a449` | ***(unnamed)*** |  |  |
 | `0x3a526` | ***(unnamed)*** | lib | -- db-transcription (hand-asm/library). |
 | `0x3a579` | ***(unnamed)*** | lib | C runtime: open @ 0x3a579 (CLIB3S). Variadic wrapper: va_arg the mode, then call the real open (path, oflag, 0 |
 | `0x3a598` | ***(unnamed)*** | lib | C runtime: open/sopen core @ 0x3a598 (CLIB3S). Skips leading spaces in the name, masks the share/access flags  |

@@ -8,8 +8,8 @@
    Previously parked as a frameless stub; matches as a value-returning frameless wrapper. */
 extern unsigned __rd32be(void);
 #pragma aux __rd32be = "db 173" "db 134" "db 224" "db 193" "db 192" "db 16" "db 134" "db 224" value [eax] modify exact [eax esi];
-#pragma aux FUN_0003a37a modify [eax esi];
-unsigned FUN_0003a37a(void)
+#pragma aux rnc_read_be_len modify [eax esi];
+unsigned rnc_read_be_len(void)
 {
     return __rd32be();
 }

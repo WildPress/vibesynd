@@ -2,7 +2,7 @@
  * Returns big-endian uncompressed size (bytes 4..7) if "RNC\1", else file size,
  * or -1 if open failed. */
 extern int  cond_3call(void *, int);
-extern void FUN_000188a8(int, void *, int);
+extern void file_read_n(int, void *, int);
 extern int  FUN_0003aea6(void *, void *, int);
 extern int  FUN_0003ab1a(int);
 extern void FUN_00018878(int);
@@ -23,7 +23,7 @@ int open_detect_rnc_header(void *fn)
 
     h = cond_3call(fn, 0x200);
     if (h > 0) {
-        FUN_000188a8(h, buf, 0x14);
+        file_read_n(h, buf, 0x14);
         if (FUN_0003aea6(buf, magic, 4) == 0) {
             r = buf[4];
             r = (r << 8) + buf[5];

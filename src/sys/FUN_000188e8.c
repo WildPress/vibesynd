@@ -5,8 +5,8 @@
  */
 extern int cond_3call(char *path, int mode);
 extern int open_detect_rnc_header(char *path);
-extern void FUN_000188a8(int fd, void *buf, int n);
-extern int FUN_0003a1ec(void *dst, void *src);
+extern void file_read_n(int fd, void *buf, int n);
+extern int rnc_decompress(void *dst, void *src);
 extern void FUN_0003ad66(int code, char *path);
 extern void FUN_00018878(int fd);
 
@@ -15,8 +15,8 @@ int FUN_000188e8(char *path, void *buf)
     int fd = cond_3call(path, 0x200);
 
     if (fd != -1) {
-        FUN_000188a8(fd, buf, open_detect_rnc_header(path));
-        if (FUN_0003a1ec(buf, buf) < 0)
+        file_read_n(fd, buf, open_detect_rnc_header(path));
+        if (rnc_decompress(buf, buf) < 0)
             FUN_0003ad66(0x14c, path);
         FUN_00018878(fd);
     }

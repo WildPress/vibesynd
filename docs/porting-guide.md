@@ -249,3 +249,15 @@ The Syndicate tools, named so you can build equivalents:
 
 The order to build them: oracle first (`omf` + `match_reloc`), then the manifest, then the permuter,
 then the sweeps, then the reloc-aware differ, then the fallback. Everything else is game-specific.
+
+## Recognising RNC-compressed data files (Rob Northen Compression)
+
+Many early-90s DOS/Amiga games (Bullfrog included) ship data as **RNC**. Fingerprint in code:
+a decompressor that checks a 4-byte magic `52 4E 43 01` ("RNC", method 1) or `...02`
+(method 2), reads two **big-endian** 32-bit sizes (unpacked, then packed) from the header,
+builds small Huffman tables, and ends with an LZ copy loop (`dst = cur - (distance+1)`, copy
+`length+2`). In Syndicate this is `rnc_decompress` (0x3a1ec). If a game's assets look like
+noise but start with `RNC`, run them through any RNC unpacker (e.g. `rnc_propack`) to inspect
+the real data. The loader that calls it is usually a generic descriptor-driven block reader
+(open -> size -> alloc -> read -> decompress-if-short), worth naming early since every asset
+flows through it.

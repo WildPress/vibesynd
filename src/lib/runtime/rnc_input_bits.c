@@ -15,10 +15,10 @@ extern void __getbits_a(unsigned char n);
 extern void __getbits_b(void);
 #pragma aux __getbits_a = "db 102" "db 81" "db 138" "db 200" "db 102" "db 161" "db 190" "db 191" "db 0" "db 0" "db 102" "db 139" "db 29" "db 188" "db 191" "db 0" "db 0" "db 138" "db 45" "db 193" "db 191" "db 0" "db 0" "db 102" "db 186" "db 1" "db 0" "db 102" "db 211" "db 226" "db 102" "db 74" "db 102" "db 35" "db 211" "db 102" "db 82" "db 42" "db 233" "db 115" "db 42" "db 2" "db 233" "db 134" "db 205" "db 102" "db 186" "db 1" "db 0" "db 102" "db 211" "db 226" "db 102" "db 74" "db 102" "db 35" "db 208" "db 102" "db 211" "db 202" "db 102" "db 211" "db 232" "db 102" "db 211" "db 235" "db 102" "db 11" "db 218" "db 131" "db 198" "db 2" "db 102" "db 139" "db 6" "db 134" "db 205" "db 42" "db 205" "db 181" "db 16" "db 42" "db 233" "db 102" "db 186" "db 1" "db 0" parm [al] modify exact [eax ebx ecx edx esi];
 #pragma aux __getbits_b = "db 102" "db 211" "db 226" "db 102" "db 74" "db 102" "db 35" "db 208" "db 102" "db 211" "db 202" "db 102" "db 211" "db 232" "db 102" "db 211" "db 235" "db 102" "db 11" "db 218" "db 102" "db 163" "db 190" "db 191" "db 0" "db 0" "db 102" "db 137" "db 29" "db 188" "db 191" "db 0" "db 0" "db 136" "db 45" "db 193" "db 191" "db 0" "db 0" "db 102" "db 88" "db 102" "db 89" parm [] modify exact [eax ebx ecx edx esi];
-/* Declare that FUN_0003a3c6 itself clobbers ebx/esi (hand-asm convention, no save) so
+/* Declare that rnc_input_bits itself clobbers ebx/esi (hand-asm convention, no save) so
    the wrapper does not add a spurious push/pop of the callee-saved regs. */
-#pragma aux FUN_0003a3c6 modify [eax ebx ecx edx esi];
-void FUN_0003a3c6(unsigned char n)
+#pragma aux rnc_input_bits modify [eax ebx ecx edx esi];
+void rnc_input_bits(unsigned char n)
 {
     __getbits_a(n);
     __getbits_b();

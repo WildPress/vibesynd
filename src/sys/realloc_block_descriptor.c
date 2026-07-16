@@ -21,8 +21,8 @@ extern int  global_add_and_call(int a);
 extern int  cond_3call(void *a, int b);
 extern int  open_detect_rnc_header(void *a);
 extern void FUN_00018878(int a);
-extern int  FUN_000188a8(int a, int b, int c);
-extern void FUN_0003a1ec(int a, int b);
+extern int  file_read_n(int a, int b, int c);
+extern void rnc_decompress(int a, int b);
 
 int realloc_block_descriptor(unsigned char *p)
 {
@@ -121,9 +121,9 @@ ret_m1:
         }
     }
 
-    if (FUN_000188a8(h, addr, *(int *)(p + 0x24)) != *(int *)(p + 0x24)) {
+    if (file_read_n(h, addr, *(int *)(p + 0x24)) != *(int *)(p + 0x24)) {
         FUN_00018878(h);
-        FUN_0003a1ec(**(int **)(p + 0x1c), **(int **)(p + 0x1c));
+        rnc_decompress(**(int **)(p + 0x1c), **(int **)(p + 0x1c));
         return 1;
     }
     FUN_00018878(h);

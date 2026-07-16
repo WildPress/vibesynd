@@ -221,3 +221,27 @@ buffers have exactly ONE reference each (the read here) and no literal-address w
 populated by a register-indirect bulk load earlier in startup (inferred: from a `data/*.dat` file
 via the name table above). The fixed per-type capacities `g_item_max_qty` (0xa73a) are likewise
 zero-in-image and read-only from code -> loaded at runtime, not baked in.
+
+## Resource loading architecture (traced end-to-end)
+
+How external data reaches the runtime tables. The loader is descriptor-driven:
+
+1. `validate_records_or_abort` (0x18338) walks a linked list of **block descriptors**
+   (stride 0x2c: filename/`'*'` @+0, block-ptr-ptr @+0x1c, end-ptr-ptr @+0x20, size @+0x24,
+   flags @+0x28 bit0 = DPMI-alloc vs heap, DPMI selector @+0x2a, next @+0x48). It calls the
+   loader per entry and aborts with an error string if any fail.
+2. `realloc_block_descriptor` (0x184b8) loads one block:
+   - first byte `'*'` -> just allocate a zero-filled block (no file);
+   - otherwise the descriptor names a **file**: open (`cond_3call` 0x18828, mode 0x200),
+     get the RNC-aware unpacked size (`open_detect_rnc_header` 0x18958), allocate, read
+     (`file_read_n` 0x188a8); if the file was compressed, decompress in place.
+3. `rnc_decompress` (0x3a1ec) is **Rob Northen Compression method 1** -- magic check
+   `*p==0x4e52 && p[1]==0x143` ("RNC"), big-endian sizes via `rnc_read_be_len` (0x3a37a),
+   Huffman tables built by `rnc_make_huffman` (0x3a449) at 0xbe30/0xbeb0/0xbf30, symbols read
+   by `rnc_read_huffman` (0x3a383) over the bit stream from `rnc_input_bits` (0x3a3c6), then the
+   LZ back-reference copy (distance+1, length+2).
+
+So the game's data files (`data/*.dat`, name table at OBJECT2:0x90b8) are RNC-compressed; the
+weapon/equipment stat tables (`g_item_max_qty` 0xa73a, campaign-init headers 0xb474/0xb498) get
+their values from these decompressed blocks, copied into the fixed working tables during
+campaign/mission init (`new_campaign_reset` 0x20fc8, etc.).

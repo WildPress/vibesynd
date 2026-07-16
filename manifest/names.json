@@ -272,18 +272,18 @@
   "desc": "Decomp target: stack-calling forwarding wrapper. original @ 0x00018878 (14 bytes) * * 8b 54 24 04 mov edx,[esp+4] ; arg * 52 push edx * e8 <rel32> call 0x0003a89d ; <-- relocation (masked when diffing",
   "runs_in_intro": true
  },
- "FUN_000188a8": {
+ "file_read_n": {
   "addr": "000188a8",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "forward three args to a callee (g uses ebx as scratch).",
+  "label": "file_read_n",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": true
  },
  "FUN_000188c8": {
   "addr": "000188c8",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "forward three args to a callee (same shape as FUN_000188a8).",
+  "desc": "forward three args to a callee (same shape as file_read_n).",
   "runs_in_intro": false
  },
  "FUN_000188e8": {
@@ -1959,39 +1959,39 @@
   "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Frame-rate throttle @ 0x3a19a. Leaf, frameless. If g_bdf8 (min interval, centiseconds) != 0, busy-waits on the DOS clock (INT 21h AH=2Ch: DH=sec, DL=1/1",
   "runs_in_intro": false
  },
- "FUN_0003a1ec": {
+ "rnc_decompress": {
   "addr": "0003a1ec",
-  "label": "",
-  "subsystem": "lib",
-  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Top-level graphics decompression driver @ 0x3a1ec. TRUE SIZE 398 bytes (manifest under-counts at 386: the body extends to the RET at 0x3a379; the tail c",
+  "label": "rnc_decompress",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": true
  },
- "FUN_0003a37a": {
+ "rnc_read_be_len": {
   "addr": "0003a37a",
-  "label": "",
-  "subsystem": "lib",
-  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Big-endian dword reader @ 0x3a37a. Frameless 9-byte leaf: LODSD pulls the next dword from the ESI stream (side-channel input, advanced by 4), then XCHG ",
+  "label": "rnc_read_be_len",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": true
  },
- "FUN_0003a383": {
+ "rnc_read_huffman": {
   "addr": "0003a383",
-  "label": "",
-  "subsystem": "lib",
-  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Huffman symbol lookup @ 0x3a383. Non-leaf (calls the bit-reader 0x3a3c6 twice). Input: table pointer in EDX. XCHG ESI,EDX puts the table in ESI, then sc",
+  "label": "rnc_read_huffman",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": true
  },
- "FUN_0003a3c6": {
+ "rnc_input_bits": {
   "addr": "0003a3c6",
-  "label": "",
-  "subsystem": "lib",
-  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Bitstream bit-extractor @ 0x3a3c6. Leaf. Reads CL (=AL param) bits out of the little-endian bit buffer held in globals g_bfbe (word, high half AX), g_bf",
+  "label": "rnc_input_bits",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": true
  },
- "FUN_0003a449": {
+ "rnc_make_huffman": {
   "addr": "0003a449",
-  "label": "",
-  "subsystem": "lib",
-  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Huffman decode-table builder @ 0x3a449. Non-leaf (calls the bit-reader 0x3a3c6). Destination pointer arrives in EDX (saved via PUSH EDX at entry, later ",
+  "label": "rnc_make_huffman",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": true
  },
  "FUN_0003a4fa": {
