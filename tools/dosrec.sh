@@ -36,7 +36,7 @@ autolock=false
 machine=svga_s3
 memsize=16
 [cpu]
-core=auto
+core=${DOSREC_CORE:-auto}
 cputype=auto
 cycles=${DOSREC_CYCLES:-8000}
 [dos]
@@ -59,7 +59,10 @@ ffmpeg -y -f x11grab -video_size 1024x768 -framerate 15 -i :99 -t "$SECS" \
        -pix_fmt yuv420p "${OUT}.mp4" >/dev/null 2>&1 &
 FF=$!
 
-dosbox -conf "$CONF" >"$(dirname "$OUT")/dosbox.log" 2>&1 &
+# DOSREC_DBG overrides the emulator binary (e.g. build/dosbox-dbg for tracing); the
+# trace env (TRACEOUT/TRACEUNIQ) is inherited and the tracer's stderr markers land in
+# the dosbox.log next to the output.
+"${DOSREC_DBG:-dosbox}" -conf "$CONF" >"$(dirname "$OUT")/dosbox.log" 2>&1 &
 DB=$!
 sleep 3   # let it boot into graphics
 

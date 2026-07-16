@@ -229,6 +229,32 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 
 ## Current Status  (update every session)
 
+### ▶ TRACE-DIFF 2026-07-16 — map-text/sound gap ROOT-DIVERGES in rnc_decompress at boot (data, not
+### input). Wired the tracer into the driven harness: dosrec.sh gains DOSREC_DBG (emulator binary
+### override, e.g. build/dosbox-dbg) + DOSREC_CORE (MUST be `normal` -- the tracer patch is only in
+### core_normal.cpp; core=auto uses the dynamic core and NEVER traces, which cost an hour). Method:
+### run GAMEO and the original MAIN both as d:\SAME.EXE from \SYNDICAT (identical invocation -> any
+### divergence is DATA, since GAMEO's code == MAIN's object1 byte-for-byte).
+### (1) COVERAGE-SET diff (TRACEUNIQ=1, driven boot->menu->map): GAMEO executes 6019 unique obj1 offsets,
+###     MAIN 7906; the ~2000 MAIN-only offsets are dominated by container_load (0x17b48), the sound/music
+###     init cluster (xmidi_music_init 0x38cf8, sound_driver_init 0x35d08, init_voice_tables,
+###     install_timer_isr, clear_voice_tables, walk_sound_record_table, many 0x39xxx), and FILE I/O
+###     (FUN_00038c28 record loader, 0x3b420 fread, 0x3b594 fseek). So GAMEO SKIPS loading some
+###     container/font/sound resource that MAIN loads (a wrong DGROUP value gates the branch away).
+### (2) FULL-STREAM diff (no TRACEUNIQ, boot only, deterministic): both identical for 1,544,172 instrs,
+###     then DIVERGE inside `rnc_decompress` (RNC decompressor Bullfrog uses for DATA files) at +0x116:
+###     `jcxz 0x3a343; rep movsb` -- the literal-run COUNT (cx, from the Huffman-decoded bitstream, state
+###     at DGROUP g_bfbc/g_bfc1/g_be30) DIFFERS, so GAMEO decompresses a specific resource with different
+###     content. The decompressor works for intro/menu/map GRAPHICS, so it's one specific resource whose
+###     input or bit-state is wrong in GAMEO's DGROUP. Also: dosbox.log shows the game opens DATA\MFNT-0.DAT
+###     (map/mission FONT) in write mode and fails on the read-only /gog mount -- shared by both, likely a
+###     benign fallback but worth ruling out.
+### NEXT: re-patch the tracer's one-shot dump (currently ga 0x17508) to fire at ga 0x2cbba (the diverging
+### jcxz), dumping cx + esi (decomp source ptr) + the source bytes + the bit-state globals, for BOTH runs.
+### If GAMEO's esi/source addr differs -> DGROUP data-LAYOUT bug (fix origbuild/mkdata placement); if the
+### source BYTES differ at the same addr -> an upstream load put wrong data there. That distinguishes the
+### fix. Traces are huge (120MB full-stream); regenerate via the SAME.EXE + DOSREC_DBG/CORE recipe above.
+###
 ### ▶ RUN PIPELINE 2026-07-16 — GAMEO drivable to the WORLD MAP; mission-launch blocked by MISSING UI
 ### STRINGS (data gap, not input). Reproduced + extended the render milestone under tools/dosrec.sh
 ### (now supports DOSREC_CD=working-dir, DOSREC_CYCLES, and mouse: `move X Y`/`click`/`down`/`up`).
