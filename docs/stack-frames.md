@@ -67,6 +67,5 @@ flag. We were asking the compiler for frames in a slightly too-forceful way
 gently (`-of`) produced the exact frame. A one-character difference in a flag
 unblocked dozens of functions.
 
-The lesson: when a function won't match, the difference is real and specific, and
-finding it is the whole game. See [compiler flags](compiler-flags.md) for more on
-that.
+When a function won't match, the difference is real and specific, and finding it is
+the whole job. See [compiler flags](compiler-flags.md) for more on that.

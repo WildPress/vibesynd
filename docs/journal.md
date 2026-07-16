@@ -62,7 +62,7 @@ below track the work function by function.
 
 ---
 
-## FUN_00039f49 — a "clean" function that taught us about CPU levels
+## FUN_00039f49, a "clean" function that taught us about CPU levels
 
 I picked this one because it looked easy: a linear call, nothing held across
 anything, exactly the [forced-allocation](register-allocation.md) shape that usually
@@ -116,7 +116,7 @@ match on `-4` and the diff shows direct memory pushes and `movzx`, that's not a
 reconstruction bug to chase in the C, it's the code telling us its CPU level. Read
 it, switch to `-3`, move on. **52 of 500.**
 
-## FUN_00039f69 — the same region has lighter optimisation too
+## FUN_00039f69, the same region has lighter optimisation too
 
 Right next door, this one looked like a near-copy of the last: read the same 16-bit
 global, subtract six, push it with two other globals, call the same function. The
@@ -144,7 +144,7 @@ CPU level and calling convention, is a per-unit property. The regression test st
 protects us: it just means a function in a different unit gets its own recipe, and
 the byte diff is what tells us which unit we're in. **53 of 500.**
 
-## FUN_0002d998 — the one that told us the compiler was 9.5
+## FUN_0002d998, the one that told us the compiler was 9.5
 
 This is the big one, so it's worth telling properly.
 
@@ -188,7 +188,7 @@ So from here the harness switches to 9.5. It unlocks flag tests and bit-field ch
 which are everywhere in game logic, while keeping every match we already have.
 **56 of 500**, and the road ahead just got wider.
 
-## FUN_00033fb8 — a map passability check, one register short
+## FUN_00033fb8, a map passability check, one register short
 
 This one didn't fully match, but it's worth recording because it shows both how far
 reading the diff gets you and exactly where the hard wall is, and because we worked
@@ -207,7 +207,7 @@ of storing it in a local fixed another. Those two changes took it from a complet
 different function down to a single byte.
 
 That last byte is register allocation, the wall we keep meeting. The original holds a
-pointer in one register and combines it with a `lea`; ours puts it in a different
+pointer in one register and combines it with a `lea`. Ours puts it in a different
 register and uses an `add`, which happens to be one byte shorter. Same result,
 different register, and there's no clean lever in the C to change which register
 Watcom picks. So this sits at ninety-nine percent, parked with the other
@@ -217,7 +217,7 @@ Still a win of a kind: we understood a real game system function, even though it
 bytes aren't matched yet. That understanding goes in
 [how the game works](game-systems.md).
 
-## FUN_000377b8 — a chain counter that cracked the loop wall
+## FUN_000377b8, a chain counter that cracked the loop wall
 
 After the register-allocation wall we needed a win, so I went looking for a clean
 function with no calls, and found this one. It walks a linked chain and counts how
@@ -265,7 +265,7 @@ levers we can actually pull, the optimisation level and the way the loop is writ
 in C. This unit, like the `0x39xxx` block, wants lighter optimisation than the main
 game, and the byte diff is what tells us so. **57 of 500.**
 
-## FUN_000377e8 and FUN_00014998 — inlining as a register lever
+## FUN_000377e8 and FUN_00014998, inlining as a register lever
 
 These two came next door to the chain counter, and both taught the same small trick.
 
@@ -304,7 +304,7 @@ widens it, ours keeps it in the accumulator, and no rearrangement of the C or th
 flags moved it. That's the register-allocation wall again, so it's parked. **59 of
 500.**
 
-## FUN_00014cc8 and FUN_00016638 — types and layout tell you more than you'd think
+## FUN_00014cc8 and FUN_00016638, types and layout tell you more than you'd think
 
 Two small loops that both hinged on details the disassembly quietly announces.
 
@@ -340,7 +340,7 @@ hoist, matched exactly. So this unit, like the others we've found, was built wit
 lighter optimisation than the main game, and the specific instruction that gave it
 away was a constant that should have been inline. **61 of 500.**
 
-## FUN_00013a98 — when the explicit local is the answer
+## FUN_00013a98, when the explicit local is the answer
 
 Earlier the lesson was that naming a value can hurt, that inlining lets it flow into
 the right register. This one is the mirror image, and it's worth pairing them so the
@@ -410,7 +410,7 @@ By this point the easy half was done and what remained were the *walls*: functio
 that decode to correct C but whose bytes we cannot reproduce because the difference is
 something the compiler decides internally. Three shapes recur. **Register-role**: the
 same instructions, but a value the game keeps in `ESI` we keep in `EDI`, or a register
-gets pushed on one side and not the other — no C spelling flips which register the
+gets pushed on one side and not the other. No C spelling flips which register the
 allocator picks. **Scheduling**: two independent instructions in the other order, like
 a `[esp+4]` load that always lands before `[esp+8]` no matter how we write the source.
 **Encoding tie-breaks**: `cmp a,b` versus `cmp b,a`, an `imm8` versus an `imm32`, a
@@ -428,14 +428,14 @@ The first was a twenty-two-byte function that just calls another function behind
 `if`. The target wrapped the whole body in a `push ebx … pop ebx` around code that
 never touches `ebx`. A dead save. The reason is a contract: this function promises
 *its* caller to preserve `ebx`, and it calls something that clobbers `ebx`, so it must
-save it across the call — across the whole body, since that is all there is. Every
-attempt to make our C use `ebx` added real instructions; the only way to get a *dead*
+save it across the call, across the whole body, since that is all there is. Every
+attempt to make our C use `ebx` added real instructions. The only way to get a *dead*
 save is to declare the callee's clobber, `#pragma aux <callee> modify [ebx]`, which is
 exactly what the original translation unit's header would have said. It matched. It is
-the only C that produces those bytes, and it is honest — that pragma is the callee's
+the only C that produces those bytes, and it is honest. That pragma is the callee's
 real ABI.
 
-The second was better. A pool accessor whose "return 0" had no return of its own — it
+The second was better. A pool accessor whose "return 0" had no return of its own. It
 jumped *backwards*, into the return stub of the function physically before it. Two
 sibling accessors, near-identical, and the compiler had noticed their return-zero tails
 were the same bytes and written it once, letting the second borrow the first's. That
@@ -445,16 +445,16 @@ translation unit, the stub-owner first. It still needed one nudge: the borrower 
 return `unsigned short`, not `unsigned char`, so its return-zero stub was byte-identical
 to the sibling's and could actually be shared. Then the whole region matched, backward
 jump and all. It is the only match so far that required thinking about two functions at
-once, and it opened a small piece of new machinery — source files that hold a whole
+once, and it opened a small piece of new machinery, source files that hold a whole
 module, verified as one contiguous region.
 
-We went looking for more of that shape and found it was the only one; a scan for jumps
+We went looking for more of that shape and found it was the only one. A scan for jumps
 that leave a function's own body turned up nothing else. So the whole-module lever
-bought exactly one function here — though on a game built from larger modules it could
+bought exactly one function here, though on a game built from larger modules it could
 buy many, which is why it is written down.
 
 That left the compiler itself as the last suspect. The bulk matches Watcom 9.5b, which
-is strong proof of the family, yet a handful of walls carry a *newer* tell — the
+is strong proof of the family, yet a handful of walls carry a *newer* tell, the
 `add eax, imm32` accumulator form that only 10.0 emits, where 9.5 always shrinks to
 `imm8`. So the game sits in a seam: 9.5's register allocation with an occasional 10.0
 peephole. We chased the obvious candidate, 9.5c, built it from a patch, and it was
@@ -464,20 +464,20 @@ and confirmed what the tells already said: the walls need something *newer*, not
 so 8.5 could only regress the bulk. The exact build appears to be a transitional release
 that was never archived separately. With that, the version hunt is closed: this is the
 floor. Every remaining function is decoded, understood, and byte-exact in the build
-through a transcribed-bytes fallback — the clean C is as close as the compiler we can
+through a transcribed-bytes fallback. The clean C is as close as the compiler we can
 run allows, and the purpose of each function, the half that lasts, is written down.
 
 
 ---
 
-## The systems behind the walls — is this really the whole game?
+## The systems behind the walls, is this really the whole game?
 
 With the matching floor reached and the compiler question closed, the work changed
 character. The question stopped being *can we reproduce the bytes* and became *is this
 genuinely the whole game?* The doubt was concrete and fair: someone remembers the cars
 you steal and drive, the Persuadertron that turns a crowd into your private army, the
 flamethrowers and rail guns. If OBJECT1 is 261 KB of code, where in it are those things?
-Answering that meant reading the code for *meaning*, not just for bytes — and it turned
+Answering that meant reading the code for *meaning*, not just for bytes, and it turned
 up both the systems we were looking for and a run of our own earlier guesses that were
 wrong.
 
@@ -488,30 +488,30 @@ convert step: when the agent reaches its target ped, it sets the ped's *leader l
 the agent, chains the ped into the agent's follower group, raises a "controlled" flag,
 and clamps a counter through a per-type table. The persuaded ped then runs the
 follow-leader behaviour and trails you. That was the moment the whole entity model paid
-off — allegiance is a single field flip, and the iconic weapon is just a per-state
+off. Allegiance is a single field flip, and the iconic weapon is just a per-state
 behaviour reaching into the same pool-and-handle machinery as everything else.
 
 **The first humility.** That per-type table, `g_a73a`, carried a tentative name from an
 earlier pass: "persuade limit." The persuade code *does* use it as a cap, so the name
 looked confirmed. But decoding the equipment screen showed the same table stocking ammo
 quantities, and the new-game loadout drawing starting weapon counts straight out of it.
-It was never a persuade table — it is the per-item-type *maximum quantity*, and persuade
+It was never a persuade table, it is the per-item-type *maximum quantity*, and persuade
 merely clamps a shared amount field through it. Renamed `g_item_max_qty`. The address was
-always the anchor; the name was a guess, and the guess was wrong. It would not be the
+always the anchor. The name was a guess, and the guess was wrong. It would not be the
 last.
 
 **Where the weapon numbers live.** The correction opened a bigger question: where are the
-stats — damage, range, ammo? Read the bytes at the tables that hold them and they are
-zero. Not missing — *zero in the shipped image, filled at runtime*. Following who fills
+stats (damage, range, ammo)? Read the bytes at the tables that hold them and they are
+zero. Not missing, just *zero in the shipped image, filled at runtime*. Following who fills
 them led to the resource loader: `validate_records_or_abort` (0x18338) walks a list of
 block descriptors, `realloc_block_descriptor` (0x184b8) opens each named file and reads
-it, and when the read comes back short — because the file was compressed — a decompressor
+it, and when the read comes back short, because the file was compressed, a decompressor
 expands it in place. That decompressor checks a four-byte magic, `RNC\x01`, and runs a
 Huffman-plus-back-reference bitstream: Rob Northen Compression, method 1, the standard
 packer of its era. So the balance data was never in the code. It lives in RNC-packed
 `data/*.dat` files (their names sit in a table in OBJECT2, alongside the multilingual
 equipment descriptions), and OBJECT1 holds only the logic that loads and reads them. That
-is the honest answer to the original doubt: the *code* is complete; the *numbers* were
+is the honest answer to the original doubt: the *code* is complete. The *numbers* were
 always external, which is exactly why a table can read as all-zeros and nothing be missing.
 
 **The vehicles.** The engine keeps five object pools back to back, one per class, each
@@ -519,27 +519,27 @@ record tagged by a kind byte, and the record counts lock onto the level arrays e
 256 people, 64 cars, 400 statics, 512 weapons, 256 effects. Cars are their own pool
 (B, at 0xdd10, kind 5): each body carries per-model hit points, is redrawn every frame by
 a dedicated tick, and can anchor itself to a pool-A driver so the body follows the person.
-Boarding is a doubly-linked occupant list hung off the car; driving is a real speed model
-— accelerate, brake into corners, cap at a max — that steers by following directional
+Boarding is a doubly-linked occupant list hung off the car. Driving is a real speed model
+(accelerate, brake into corners, cap at a max) that steers by following directional
 road tiles (a tile's value encodes which way traffic flows through it). Trains and boats
 are the same machinery with the rider hidden. It is all there, and it is all built from
 the same entity primitives as the peds.
 
 **The reckoning.** Finding the vehicles cost four earlier names. What a previous pass had
-labelled `weapon_fire` was the vehicle *drive step*; `formation_follow`, `join_new_leader`
+labelled `weapon_fire` was the vehicle *drive step*. `formation_follow`, `join_new_leader`
 and `detach_entity_type` were the *ride*, *board* and *exit* handlers. The byte matches
-were never in doubt — those functions still reproduce the original exactly — but the
+were never in doubt, those functions still reproduce the original exactly, but the
 labels were speculation from a naming sweep that ran ahead of the analysis, and
 speculation, read back months later, reads as fact. This is the lesson worth keeping: a
 name is a claim, and a claim you have not traced is a liability, because the next person
 (or the next you) trusts it. The byte-level matching is the durable, verifiable half of
-this project; the semantic naming is the fragile half, and it earns its keep only when
+this project. The semantic naming is the fragile half, and it's worth having only when
 each label has actually been followed to its callers. We corrected the four, wrote down
 what is confirmed versus inferred, and left the entity model more honest than we found it.
 
 A smaller lesson came from the build itself. For several commits the whole-program size
-was quoted as unchanged — measured, it turned out, against an *incremental* object cache
-that had quietly accumulated correctly-built objects over the project's history. A build
-from a clean slate is smaller and is the real, reproducible number; the identifier
-renames are byte-neutral either way, but the moral holds — verify against the clean build,
+was quoted as unchanged. That was measured, it turned out, against an *incremental* object
+cache that had quietly accumulated correctly-built objects over the project's history. A
+build from a clean slate is smaller and is the real, reproducible number. The identifier
+renames are byte-neutral either way, but the moral holds: verify against the clean build,
 not the one your tools happen to have lying around.

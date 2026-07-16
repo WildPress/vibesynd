@@ -18,9 +18,9 @@ loop counter, and a running total all live at the same time, and only so many
 registers to put them in. Choosing the assignment is called **register
 allocation**, and it's one of the cleverer jobs a compiler does.
 
-The important thing for us: there's often more than one *correct* answer. Putting
-the counter in EBX and the total in ESI works exactly as well as the other way
-round. The program behaves identically. But the *bytes* are different, because the
+What matters for us is that there's often more than one *correct* answer. Putting
+the counter in EBX and the total in ESI works just as well as the other way round.
+The program behaves the same. But the *bytes* are different, because the
 instructions name different registers.
 
 ## Why it's our main wall
@@ -68,8 +68,8 @@ shorter than `lea ebx,[edx+eax]`, and that's the whole size difference. The orig
 kept the base in a separate scratch register (EDX) and combined into a third. Ours
 reused EBX as both source and destination. One byte, one register.
 
-The honest part: we couldn't move it. We tried seven structurally different ways of
-writing the same C, swapping the order of the two operands being added, swapping the
+We couldn't move it. We tried seven structurally different ways of writing the same
+C, swapping the order of the two operands being added, swapping the
 order inside the index expression, introducing an explicit pointer local, hoisting
 the divide into its own variable, retyping the table as a pointer-to-pointer, and
 pinning the base in a named local. Every single one still put the base in EBX. A few

@@ -4,7 +4,7 @@ A **calling convention** is the agreed rule for how a function receives its
 arguments and hands back its result. Both sides, the caller and the function,
 have to agree on it, or they'd be reading and writing different places.
 
-There are two conventions in this game, and which one a given function uses is
+There are two conventions in this game. Which one a given function uses is
 something we read straight from its disassembly.
 
 ```mermaid
@@ -51,15 +51,14 @@ This is the practical skill. Look at how the function first touches its argument
 
 ## Why one game has both
 
-You might reasonably expect the whole game to use one convention. It doesn't, and
-that surprised us at first. The answer is that Watcom lets a single program mix
+You might expect the whole game to use one convention. It doesn't, and that
+surprised us at first. The answer is that Watcom lets a single program mix
 conventions through markers in the source called `#pragma aux`. The original
-author tagged some functions one way and some the other, probably for speed on the
-hot paths.
+author tagged some functions one way and some the other, most likely for speed on
+the hot paths.
 
 So the mix isn't two different builds. It's one build where individual functions
-were deliberately marked. That's why we pick `-4s` or `-4r` per function, matching
-the marker the original author used, rather than choosing a single setting for
-everything. It's the one flag that genuinely varies function to function. The rest
-of the flags are the same across the whole game, covered in
-[compiler flags](compiler-flags.md).
+were marked by hand. That's why we pick `-4s` or `-4r` per function, matching the
+marker the original author used, rather than choosing a single setting for
+everything. It's the one flag that varies function to function. The rest are the
+same across the whole game, covered in [compiler flags](compiler-flags.md).
