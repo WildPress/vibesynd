@@ -87,26 +87,30 @@ def main():
     ents, data = load_sprites(tab, dat)
     end = min(start + count, len(ents) - 1)
     items = [(i, decode(ents, data, i)) for i in range(start, end)]
-    cell_w = max((w for _, (w, h, p) in items), default=8) + 4
-    cell_h = max((h for _, (w, h, p) in items), default=8) + 6
-    rows = (len(items) + cols - 1) // cols
-    W, H = cols * cell_w, rows * cell_h
-    # checkerboard background so transparency reads
-    bg = [(40, 40, 48) if ((x // 8 + y // 8) & 1) else (28, 28, 34) for y in range(H) for x in range(W)]
-    for n, (idx, (w, h, px)) in enumerate(items):
-        cx = (n % cols) * cell_w + 2
-        cy = (n // cols) * cell_h + 2
-        for y in range(len(px)):
-            row = px[y]
-            for x in range(len(row)):
-                v = row[x]
+    # tight flow layout: each sprite takes only its own size, wrapping to new rows
+    pad = 3
+    W = max(cols * 40, 400)
+    x, y, row_h = pad, pad, 0
+    pos = []
+    for _, (w, h, px) in items:
+        w, h = max(w, 1), max(h, 1)
+        if x + w + pad > W and x > pad:
+            x, y, row_h = pad, y + row_h + pad, 0
+        pos.append((x, y))
+        x += w + pad
+        row_h = max(row_h, h)
+    H = y + row_h + pad
+    bg = [(40, 40, 48) if ((px // 8 + py // 8) & 1) else (28, 28, 34) for py in range(H) for px in range(W)]
+    for (idx, (w, h, spx)), (cx, cy) in zip(items, pos):
+        for yy in range(len(spx)):
+            row = spx[yy]
+            for xx in range(len(row)):
+                v = row[xx]
                 if v == TRANSPARENT:
                     continue
-                col = palette[v]
-                py = cy + y
-                px_ = cx + x
-                if 0 <= px_ < W and 0 <= py < H:
-                    bg[py * W + px_] = col
+                px_, py_ = cx + xx, cy + yy
+                if 0 <= px_ < W and 0 <= py_ < H:
+                    bg[py_ * W + px_] = palette[v]
     if scale > 1:
         SW, SH = W * scale, H * scale
         big = [bg[(y // scale) * W + (x // scale)] for y in range(SH) for x in range(SW)]
