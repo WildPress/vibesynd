@@ -466,3 +466,80 @@ that was never archived separately. With that, the version hunt is closed: this 
 floor. Every remaining function is decoded, understood, and byte-exact in the build
 through a transcribed-bytes fallback — the clean C is as close as the compiler we can
 run allows, and the purpose of each function, the half that lasts, is written down.
+
+
+---
+
+## The systems behind the walls — is this really the whole game?
+
+With the matching floor reached and the compiler question closed, the work changed
+character. The question stopped being *can we reproduce the bytes* and became *is this
+genuinely the whole game?* The doubt was concrete and fair: someone remembers the cars
+you steal and drive, the Persuadertron that turns a crowd into your private army, the
+flamethrowers and rail guns. If OBJECT1 is 261 KB of code, where in it are those things?
+Answering that meant reading the code for *meaning*, not just for bytes — and it turned
+up both the systems we were looking for and a run of our own earlier guesses that were
+wrong.
+
+**The Persuadertron.** Every live entity runs a behaviour chosen by a state byte through
+a jump table (`entity_behaviour_dispatch`, 0x2ea88), called once per entity by the
+per-frame loop (0x31858). One of those behaviours, `persuade_capture` (0x2fe68), is the
+convert step: when the agent reaches its target ped, it sets the ped's *leader link* to
+the agent, chains the ped into the agent's follower group, raises a "controlled" flag,
+and clamps a counter through a per-type table. The persuaded ped then runs the
+follow-leader behaviour and trails you. That was the moment the whole entity model paid
+off — allegiance is a single field flip, and the iconic weapon is just a per-state
+behaviour reaching into the same pool-and-handle machinery as everything else.
+
+**The first humility.** That per-type table, `g_a73a`, carried a tentative name from an
+earlier pass: "persuade limit." The persuade code *does* use it as a cap, so the name
+looked confirmed. But decoding the equipment screen showed the same table stocking ammo
+quantities, and the new-game loadout drawing starting weapon counts straight out of it.
+It was never a persuade table — it is the per-item-type *maximum quantity*, and persuade
+merely clamps a shared amount field through it. Renamed `g_item_max_qty`. The address was
+always the anchor; the name was a guess, and the guess was wrong. It would not be the
+last.
+
+**Where the weapon numbers live.** The correction opened a bigger question: where are the
+stats — damage, range, ammo? Read the bytes at the tables that hold them and they are
+zero. Not missing — *zero in the shipped image, filled at runtime*. Following who fills
+them led to the resource loader: `validate_records_or_abort` (0x18338) walks a list of
+block descriptors, `realloc_block_descriptor` (0x184b8) opens each named file and reads
+it, and when the read comes back short — because the file was compressed — a decompressor
+expands it in place. That decompressor checks a four-byte magic, `RNC\x01`, and runs a
+Huffman-plus-back-reference bitstream: Rob Northen Compression, method 1, the standard
+packer of its era. So the balance data was never in the code. It lives in RNC-packed
+`data/*.dat` files (their names sit in a table in OBJECT2, alongside the multilingual
+equipment descriptions), and OBJECT1 holds only the logic that loads and reads them. That
+is the honest answer to the original doubt: the *code* is complete; the *numbers* were
+always external, which is exactly why a table can read as all-zeros and nothing be missing.
+
+**The vehicles.** The engine keeps five object pools back to back, one per class, each
+record tagged by a kind byte, and the record counts lock onto the level arrays exactly:
+256 people, 64 cars, 400 statics, 512 weapons, 256 effects. Cars are their own pool
+(B, at 0xdd10, kind 5): each body carries per-model hit points, is redrawn every frame by
+a dedicated tick, and can anchor itself to a pool-A driver so the body follows the person.
+Boarding is a doubly-linked occupant list hung off the car; driving is a real speed model
+— accelerate, brake into corners, cap at a max — that steers by following directional
+road tiles (a tile's value encodes which way traffic flows through it). Trains and boats
+are the same machinery with the rider hidden. It is all there, and it is all built from
+the same entity primitives as the peds.
+
+**The reckoning.** Finding the vehicles cost four earlier names. What a previous pass had
+labelled `weapon_fire` was the vehicle *drive step*; `formation_follow`, `join_new_leader`
+and `detach_entity_type` were the *ride*, *board* and *exit* handlers. The byte matches
+were never in doubt — those functions still reproduce the original exactly — but the
+labels were speculation from a naming sweep that ran ahead of the analysis, and
+speculation, read back months later, reads as fact. This is the lesson worth keeping: a
+name is a claim, and a claim you have not traced is a liability, because the next person
+(or the next you) trusts it. The byte-level matching is the durable, verifiable half of
+this project; the semantic naming is the fragile half, and it earns its keep only when
+each label has actually been followed to its callers. We corrected the four, wrote down
+what is confirmed versus inferred, and left the entity model more honest than we found it.
+
+A smaller lesson came from the build itself. For several commits the whole-program size
+was quoted as unchanged — measured, it turned out, against an *incremental* object cache
+that had quietly accumulated correctly-built objects over the project's history. A build
+from a clean slate is smaller and is the real, reproducible number; the identifier
+renames are byte-neutral either way, but the moral holds — verify against the clean build,
+not the one your tools happen to have lying around.

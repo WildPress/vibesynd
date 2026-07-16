@@ -197,3 +197,70 @@ scroll bounds (g_5390/5392/52f8) into reticle window g_10b1c/1e/20, final g_e120
 WALLED: indexes the 0x417-stride agent template records (g_e551/e552 via idx=g_10b16) AND the
 g_810e pool (0x5c stride) ~12× each with mixed and-form/movsx byte loads; directly calls the parked
 register-wall FUN_0002d7a8. Park (decode-only).
+
+
+## The entity model & the Persuadertron (cont. — systems decode)
+
+Every mobile object — agent, ped, projectile, car — lives in one of **five fixed-size
+object pools**, laid out back to back, one pool per class. A single *kind byte* at record
+offset `+0x18` tells them apart wherever the shared spatial grid is walked, and the pool
+record-counts line up exactly with the game's level-data arrays:
+
+| pool | base | count | class | kind `[0x18]` |
+|------|------|------:|-------|------|
+| A | 0x8110 | 256 | people (agents / peds / projectiles) | 1, 2 |
+| B | 0xdd10 | 64 | **cars / vehicles** | 5 |
+| C | 0xe790 | 400 | statics | — |
+| D | 0x11670 | 512 | weapons / pickups | 4 |
+| E | 0x15e70 | 256 | sfx / bullets | 3 |
+
+Each pool-A entity runs a **behaviour** selected by its state byte through a jump table
+(`entity_behaviour_dispatch`, 0x2ea88), driven once per frame by the pool tick (0x31858).
+The **Persuadertron** is one of those behaviours: `persuade_capture` (0x2fe68). On contact
+with the target ped it sets the ped's *leader link* to the agent, chains the ped into the
+agent's follower group, raises a "controlled" flag, and clamps the ped's amount by the
+per-type maximum-quantity table `g_item_max_qty` (0xa73a). The converted ped then follows
+the agent. Allegiance is otherwise positional (team = pool index & ~7); a persuaded ped is
+recognised as friendly by that flag plus its leader link. Full field-level detail is in
+[the object model](object-model).
+
+## Vehicles / cars — pool B
+
+Cars are pool B (kind 5). `vehicle_hp_stamp` (0x20d98) stamps each car's hit points from
+its model byte when a map loads — this confirms the long-standing guess that pool B held
+"typed HP objects": they are the vehicles. `vehicle_pool_tick` (0x36fd8) redraws every car
+each frame and, if the car is anchored to a pool-A entity, places its body at that
+entity's position plus an offset (so a driven car's body follows the driver).
+
+Getting in and out is a small state machine operating on a **doubly-linked occupant list**
+hung off the car: `vehicle_board` (0x2fa48) links an agent in and inherits the car's speed
+(hiding the rider for trains and boats); `vehicle_ride` (0x2fca8) slaves each passenger's
+position to the car every frame; `vehicle_exit` (0x2fbc8) unlinks and drops the agent
+beside it. Driving itself is `vehicle_drive_step` (0x34858): a real speed model that
+accelerates, brakes into corners, and **steers by following directional road tiles** —
+a road tile's value (6/7/8/9) encodes which way traffic flows through it. *(These four
+handlers were previously mis-labelled `weapon_fire` / `formation_follow` /
+`join_new_leader` / `detach_entity_type`; the byte matches were fine, the names were
+wrong, and they are corrected.)*
+
+## Where the game's data actually lives — RNC resource loading
+
+A recurring surprise: many of the tables the game reads (weapon quantities, direction
+vectors, the equipment database) are **zero in the shipped executable** and filled at
+runtime. The stats were never compiled in. They live in external `data/*.dat` files —
+whose names sit in a table in OBJECT2, next to the multilingual equipment descriptions —
+loaded by a descriptor-driven resource loader:
+
+- `validate_records_or_abort` (0x18338) walks a list of block descriptors and aborts with
+  an error if any load fails.
+- `realloc_block_descriptor` (0x184b8) loads one block: `'*'` descriptors just allocate a
+  zeroed block; otherwise it opens the named file, sizes it (RNC-aware), reads it, and
+  decompresses in place if the file was packed.
+- `rnc_decompress` (0x3a1ec) is **Rob Northen Compression, method 1** — magic `RNC\x01`,
+  big-endian sizes, Huffman tables plus an LZ back-reference copy. The classic packer of
+  the era; recognising it is a reusable win for other Bullfrog / DOS-game decomps (noted
+  in the [porting guide](porting-guide)).
+
+This is the clean answer to "is OBJECT1 the whole game": the *logic* is all here; the
+*data* (art, sound, and the balance numbers) is external and RNC-packed, which is exactly
+why a stat table can read as all-zeros with nothing actually missing.
