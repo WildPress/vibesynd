@@ -276,6 +276,26 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ###     reads lengths at the wrong phase -> ZERO g_be30 table. rnc_decompress is ONE long call decompressing
 ###     many blocks (its entry ga 0x2c6a4 is far earlier, never in the [1.4M,1.544M] window), so the
 ###     bit-phase drift began in an EARLIER block / the file-decompress setup.
+### RESOURCE RULED IN/OUT (2026-07-16 cont): dumped every rnc_decompress call header (ga 0x2caa4 =
+### rnc_decompress entry; arg1=[ebp+8]=compressed src). E1..E8 have IDENTICAL RNC headers (magic 52 4e 43
+### 01, same unpacked/packed sizes) in the SAME order in both runs -> NOT a wrong-resource load (candidate
+### #1 dead). The first divergence (cnt 1544172) is INSIDE E1 (entered 1540738, E2 at 1546669): a tiny
+### resource, unpacked 0x300 / packed 0x48. E1's FULL packed body (0x50 bytes) is BYTE-IDENTICAL in both.
+### rnc_decompress is IN-PLACE: arg1(src)==arg2(dst) in both (GAMEO buf 0x150e64, MAIN 0x151c74, delta
+### 0xE10). The entry conditionally memmoves the packed data to the buffer's high end, then sets the bit
+### buffer from [esi]; at that point esi-buf=0x2ba in BOTH and the bytes at esi are IDENTICAL (98 19 10 91
+### 12 00 ...). So EVERY identified input matches. YET the RNC bit-state diverges from the very first
+### rnc_input_bits: GAMEO bfbc=0x4542 bfbe=0x4947 bfc1=0x20  vs  MAIN bfbc=0x012c bfbe=0x0000 bfc1=0x01.
+### ROOT: rnc_input_bits (0x3a3c6) READS the bit-buffer HIGH word g_bfbe (0xbfbe), but the entry inits only
+### g_bfbc (0xbfbc, low) + g_bfc1 (0xbfc1, count) -- g_bfbe is an UNINITIALIZED/LEFTOVER scratch read, and
+### GAMEO's leftover there differs from MAIN's. (bfc1=0x20 also looks stuck-full -> a zero g_be30 huffman
+### table consumes 0 bits, the degenerate loop that surfaces as the divergence.) The rnc bit-state scratch
+### is g_be30/g_bfb0/g_bfb4/g_bfbc/g_bfbe/g_bfc0/g_bfc1 (all DGROUP ~0xbe30 & 0xbfb0..0xbfc1). NEXT: find
+### what leaves g_bfbe different pre-E1 -- either an EARLIER rnc_decompress (pre-logging, before ga 0x174a0)
+### that itself diverged, or another global overlapping 0xbfbe in GAMEO's DGROUP, or a scratch region
+### GAMEO's mkdata/origbuild lays out/inits differently. Dump g_bfbe over the whole run to find the first
+### write that diverges. This is a g_3568-class DGROUP data bug in the rnc scratch region, NOT input/code.
+### (SUPERSEDED next-step note below:)
 ### CONCLUSION: same code + same current source bytes but divergent bit consumption => either GAMEO decoded
 ### DIFFERENT earlier (already-consumed) stream bytes [i.e. a different/corrupt compressed RESOURCE was
 ### loaded -- fits the coverage diff where GAMEO SKIPS container_load/file-I/O for some resources], or the
