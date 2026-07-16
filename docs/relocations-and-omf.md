@@ -1,5 +1,11 @@
 # Relocations and the OMF differ
 
+This page is about relocations, the blanks a compiler leaves where an address will later
+go, and why they force us to compare bytes carefully. The original game is already
+linked so its blanks are filled, ours aren't, so we mask those spots on both sides and
+check everything else. To find the spots exactly we read the object file's OMF FIXUPP
+records.
+
 This is the trickiest concept so far, but it's central to how we compare bytes, so
 it's worth taking slowly.
 

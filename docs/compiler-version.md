@@ -1,5 +1,22 @@
 # Compiler-version investigation (the wall on reaching 500/500)
 
+This page tracks a long hunt for the exact Watcom build the game was compiled with.
+Most functions match our base 9.5, but a stubborn set of near-misses (the walls) carry
+codegen tricks that only turn up in later Watcoms. The investigation bracketed the
+game's compiler between 9.5b and 10.0a and pointed at a 1994 release, 9.5c, that was
+never preserved. The final, verified conclusion reverses that: no available Watcom
+matches both the walls and the functions we already match, so the wall bytes are most
+likely driven by a specific C construct rather than a lost compiler.
+
+The versions in play, and where the game's build was thought to sit:
+
+```mermaid
+flowchart TD
+    A["9.5 base, 1993<br/>matches most fns, not the walls"] --> B["9.5b patch<br/>same bytes on the walls"]
+    B --> C["9.5c, 1994, Pentium tuning<br/>the bracket's missing piece, lost media"]
+    C --> D["10.0a<br/>has the imm32 form but breaks 9.5 fns"]
+```
+
 ## FINAL RESULT (cont. 16), CORRECTION: 9.5c found + built, but it is NOT the wall-breaker
 
 **9.5c WAS obtainable** (the earlier "lost media" claim was wrong): archive.org `Watcom_C_9.5`'s

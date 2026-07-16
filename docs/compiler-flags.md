@@ -1,5 +1,11 @@
 # Compiler flags
 
+This page covers the exact compiler options the original game was built with, and why
+ours have to match them precisely. The same C compiled with different flags gives
+different bytes, so we pinned the flags down by recompiling every function we already
+match and keeping only the settings that never break one. Below is what each flag
+does and how sure we are of each.
+
 A **compiler flag** is an option you pass to the [compiler](watcom.md) to change how
 it turns your C into machine code. The same C, compiled with different flags,
 produces different bytes. Since we need the *exact* original bytes, we have to use
@@ -39,6 +45,14 @@ match. If a candidate set of flags is correct, it has to still reproduce *all* o
 those. So for any flag we want to test, we recompile every existing match with it
 and count how many still pass. Anything that breaks an existing match is wrong,
 because we know those functions are genuinely correct.
+
+```mermaid
+flowchart TD
+    C["candidate flag set"] --> R["recompile every existing match"]
+    R --> Q{"do they all<br/>still pass?"}
+    Q -->|yes| K["flag survives,<br/>keep testing"]
+    Q -->|"no, breaks a match"| X["flag is wrong,<br/>reject it"]
+```
 
 Running that check settled things:
 

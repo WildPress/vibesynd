@@ -1,5 +1,12 @@
 # Register allocation
 
+This page is about the biggest obstacle to matching the game byte for byte: which
+CPU register the compiler chooses to hold each value. The same C can compile to two
+versions that behave identically but name different registers, and that alone
+changes the bytes. Below is a real function that misses by a single byte because of
+one register, and a rule for spotting which functions will match easily and which
+will fight.
+
 This is the single hardest thing to match in the game's own code, so it's worth
 understanding why.
 
@@ -86,6 +93,13 @@ worth it.
 
 Here's the useful rule we found. It comes down to how much *freedom* the compiler
 has.
+
+```mermaid
+flowchart TD
+    F["how much freedom<br/>does the compiler have?"] --> A{"more than one<br/>register per value?"}
+    A -->|"no, forced"| M["one sensible choice<br/>matches first try"]
+    A -->|"yes, free"| W["compiler may diverge<br/>this is where we wall"]
+```
 
 - **Forced allocation**: when there's really only one sensible place for each
   value, the compiler has no choice, so it makes the same choice the original did.

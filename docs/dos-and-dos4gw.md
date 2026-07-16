@@ -1,5 +1,11 @@
 # DOS, protected mode, and DOS/4GW
 
+This page explains the DOS world the game runs in and how it reaches memory beyond the
+old 1 MB limit. Syndicate is a 32-bit protected-mode program, so it ships with a DOS
+extender called DOS/4GW that flips the CPU into 32-bit mode and passes DOS services back
+and forth. The last section covers the two things that matter to the decompilation: the
+LE executable format and the fixed load address.
+
 ## DOS, the operating system
 
 The game is from 1995, and it runs on **DOS** (specifically MS-DOS), the operating

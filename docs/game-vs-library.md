@@ -1,7 +1,10 @@
 # Game code vs the library
 
 A useful thing to realise early: the program we're decompiling isn't all "the
-game". A good chunk of it is code the game's authors didn't write.
+game". A good chunk of it is code the game's authors didn't write. The finished
+binary is the authors' own code plus Watcom's runtime library, and the two sit in
+different regions. This page shows how to tell them apart and why we only reconstruct
+the game's half.
 
 ## Where a program actually comes from
 
@@ -27,6 +30,14 @@ flowchart TD
 We found that these two parts sit in different regions of the game's code. The
 game's own functions are spread through the lower part, and the linked-in library
 sits clustered near the top, from about address `0x3a000` onwards.
+
+```mermaid
+flowchart TD
+    E["The finished executable"] --> G["Game's own code<br/>lower region, the authors' logic"]
+    E --> R["Library region<br/>from about 0x3a000 up"]
+    G --> D["We reconstruct this"]
+    R --> S["We skip this<br/>link the real library instead"]
+```
 
 We didn't just guess this. We took the actual Watcom library files, the ones the
 linker would have pulled from, and searched them for the exact bytes of each

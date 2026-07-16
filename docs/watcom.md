@@ -1,5 +1,11 @@
 # The Watcom compiler and toolchain
 
+Watcom is the C compiler Syndicate was built with, and this page explains what it is
+and why we have to use the exact same one. A matching decompilation only works if our
+compiler turns C into the same bytes as the original, so the version matters right down
+to 9.5. The rest covers the wider set of Watcom tools we rely on and how we run a
+DOS-era compiler on a modern machine.
+
 ## What Watcom is
 
 **Watcom C/C++** is the compiler the game was built with. It was a commercial
@@ -39,6 +45,17 @@ copy of 9.5 instead. There's more on this in [compiler flags](compiler-flags.md)
   [game vs library](game-vs-library.md) work.
 - **DOS/4GW**. The extender it bundles, covered on the
   [DOS page](dos-and-dos4gw.md).
+
+The compiler and the linker are the two links in the chain that turns our C back into a
+finished program:
+
+```mermaid
+flowchart TD
+    S["C source (.c)"] --> C["wcc386<br/>the compiler"]
+    C --> O["object file (.obj)<br/>machine code + bookkeeping"]
+    O --> L["wlink<br/>the linker"]
+    L --> E["executable<br/>runnable program"]
+```
 
 ## How we run a 30-year-old compiler
 
