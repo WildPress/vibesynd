@@ -38,7 +38,7 @@ memsize=16
 [cpu]
 core=auto
 cputype=auto
-cycles=8000
+cycles=${DOSREC_CYCLES:-8000}
 [dos]
 xms=true
 ems=true
@@ -50,6 +50,7 @@ mount c /gog
 mount d /work/run
 set PATH=D:\\;C:\\
 c:
+${DOSREC_CD:+cd $DOSREC_CD}
 $EXE > d:\\LOG.TXT
 EOF
 
@@ -62,13 +63,22 @@ dosbox -conf "$CONF" >"$(dirname "$OUT")/dosbox.log" 2>&1 &
 DB=$!
 sleep 3   # let it boot into graphics
 
-# optional scripted keystrokes: lines of "delay <ms>" or "key <xdotool-keyname>"
+# optional scripted input. One command per line:
+#   delay <ms>          wait
+#   key   <xdotool-key> send a keystroke (e.g. Return, space, Escape)
+#   type  <text>        type a string
+#   move  <X> <Y>       move the mouse to absolute display coords
+#   click [button]      click (button defaults to 1 = left)
+# The game renders 320x200 scaled 2x into a window at the top-left of the 1024x768
+# display, so display coord ~= game-pixel * 2. Calibrate against the captured frames.
 if [ -n "$KEYS" ] && [ -f "$KEYS" ]; then
   while read -r cmd arg; do
     case "$cmd" in
       delay) sleep "$(awk "BEGIN{print $arg/1000}")" ;;
       key)   xdotool search --name DOSBox key --window %1 "$arg" 2>/dev/null || xdotool key "$arg" 2>/dev/null ;;
       type)  xdotool type "$arg" 2>/dev/null ;;
+      move)  xdotool mousemove $arg 2>/dev/null ;;
+      click) xdotool click "${arg:-1}" 2>/dev/null ;;
     esac
   done < "$KEYS"
 fi
