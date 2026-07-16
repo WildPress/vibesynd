@@ -15,6 +15,7 @@ Reads the game's own files, writes only into the output dir. Nothing here is com
 import os, sys, struct, glob
 import rnc
 import synd_sprites as sp
+import synd_tiles as st
 
 RATE = 11025  # sound sample rate guess (adjust if pitch is off)
 
@@ -50,7 +51,20 @@ def main():
     for sub in ("sprites", "screens", "sound", "music", "raw"):
         os.makedirs(os.path.join(out, sub), exist_ok=True)
     palette = sp.load_palette(os.path.join(src, "HPALETTE.DAT"))
+    screen_pal = sp.load_palette(os.path.join(src, "MSELECT.PAL"))  # full 256-colour palette
+    os.makedirs(os.path.join(out, "tiles"), exist_ok=True)
     index = []
+
+    # tiles (HBLK map-block files)
+    for f in sorted(glob.glob(os.path.join(src, "HBLK*.DAT"))):
+        name = os.path.basename(f)[:-4].lower()
+        png = os.path.join(out, "tiles", name + ".png")
+        try:
+            sys.argv = ["", f, os.path.join(src, "HPALETTE.DAT"), png]
+            st.main()
+            index.append(("tiles/%s.png" % name, "256 isometric map tiles"))
+        except Exception as e:
+            index.append(("tiles/%s" % name, "FAILED %s" % e))
 
     files = sorted(glob.glob(os.path.join(src, "*")))
     # sprite banks: match *SPR*.DAT with a sibling .TAB
@@ -92,7 +106,7 @@ def main():
         if n == 64000:
             png = os.path.join(out, "screens", b[:-4] + ".png")
             try:
-                write_png_indexed(png, 320, 200, data, palette)
+                write_png_indexed(png, 320, 200, data, screen_pal)
                 index.append(("screens/%s.png" % b[:-4], "320x200 screen"))
                 continue
             except Exception as e:
