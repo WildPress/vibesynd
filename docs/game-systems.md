@@ -7,14 +7,12 @@ we decode them, starting with the shape of it and going down to the byte-level n
 
 ```mermaid
 flowchart TD
-    L["Per-frame game loop"] --> T["entity_pool_tick 0x31858<br/>walk pool A"]
-    T --> D["entity_behaviour_dispatch 0x2ea88<br/>pick behaviour by state byte 0x19"]
-    D --> M["move / pathfind"]
-    D --> P["persuade_capture"]
-    D --> C["combat: acquire and engage"]
-    D --> V["vehicle: board / ride / drive / exit"]
     F["Map and data files, RNC-packed"] --> R["resource loader"]
     R --> G["runtime tables and object pools"]
+    G --> L["per-frame game loop"]
+    L --> T["entity_pool_tick 0x31858"]
+    T --> D["entity_behaviour_dispatch 0x2ea88<br/>picks a behaviour by state byte 0x19"]
+    D --> B["move, persuade, combat, vehicle"]
 ```
 
 The [concept pages](README.md) are about how we rebuild the game. This page is about what
@@ -126,11 +124,11 @@ tree is the shape of "load and set up a map":
 
 ```mermaid
 flowchart TD
-    M["mission_map_init 0x22858"] --> C1["0x20d18<br/>build column table g_5358"]
-    M --> C2["vehicle_hp_stamp 0x20d98<br/>stamp car HP by model"]
-    M --> C3["0x22768<br/>reset and index the object pools"]
-    M --> C4["0x35ed8<br/>clear a 32-entry table"]
-    M --> C5["0x49xxx<br/>decompress the packed map files"]
+    M["mission_map_init 0x22858<br/>calls these in order"] --> C1["0x20d18<br/>build column table g_5358"]
+    C1 --> C2["vehicle_hp_stamp 0x20d98<br/>stamp car HP by model"]
+    C2 --> C3["0x22768<br/>reset and index the object pools"]
+    C3 --> C4["0x35ed8<br/>clear a 32-entry table"]
+    C4 --> C5["0x49xxx<br/>decompress the packed map files"]
 ```
 
 - `0x20d18`. Build the column table `g_5358` (offsets become pointers).
@@ -297,11 +295,12 @@ loader:
   decomps (noted in the [porting guide](porting-guide)).
 
 ```mermaid
-flowchart LR
-    L["Block descriptor list"] --> V["validate_records_or_abort<br/>0x18338"]
-    V --> R["realloc_block_descriptor<br/>0x184b8"]
-    R -->|"* descriptor"| Z["allocate a zeroed block"]
-    R -->|filename| O["open and read the file"]
+flowchart TD
+    L["Block descriptor list"] --> V["validate_records_or_abort 0x18338"]
+    V --> R["realloc_block_descriptor 0x184b8"]
+    R --> D{"descriptor type?"}
+    D -->|"* entry"| Z["allocate a zeroed block"]
+    D -->|filename| O["open and read the file"]
     O --> Q{"packed?"}
     Q -->|yes| X["rnc_decompress 0x3a1ec<br/>RNC method 1"]
     Q -->|no| K["use as-is"]
