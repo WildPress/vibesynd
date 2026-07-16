@@ -32,23 +32,32 @@ def load_sprites(tab_path, dat_path):
     return ents, dat
 
 
+TRANSPARENT = 255
+
+
 def decode(ents, dat, i):
+    """HSPR/MSPR format (per freesynd unpackBlocks1): 5 bytes encode 8 pixels.
+    byte0 = transparency mask (bit set -> transparent), bytes1-4 = 4 colour planes
+    giving a 4-bit palette index (0..15). MSB is the leftmost pixel."""
     off, w, h = ents[i]
     nb = (ents[i + 1][0] if i + 1 < len(ents) else len(dat)) - off
     if w == 0 or h == 0 or nb <= 0:
         return w, h, []
     bpr = nb // h
-    groups = w // 8
+    groups = bpr // 5
     px = []
     for r in range(h):
         base = off + r * bpr
         row = []
         for g in range(groups):
-            pb = [dat[base + g * 5 + p] if base + g * 5 + p < len(dat) else 0 for p in range(5)]
+            d0, d1, d2, d3, d4 = (dat[base + g * 5 + k] if base + g * 5 + k < len(dat) else 0 for k in range(5))
             for bit in range(8):
                 b = 7 - bit
-                row.append(sum(((pb[p] >> b) & 1) << p for p in range(5)))
-        px.append(row)
+                if (d0 >> b) & 1:
+                    row.append(TRANSPARENT)
+                else:
+                    row.append(((d1 >> b) & 1) | (((d2 >> b) & 1) << 1) | (((d3 >> b) & 1) << 2) | (((d4 >> b) & 1) << 3))
+        px.append(row[:w] if w else row)
     return w, h, px
 
 
@@ -91,7 +100,7 @@ def main():
             row = px[y]
             for x in range(len(row)):
                 v = row[x]
-                if v == 0:
+                if v == TRANSPARENT:
                     continue
                 col = palette[v]
                 py = cy + y
