@@ -51,6 +51,11 @@ jobs:
             sed -E 's/\(([A-Za-z0-9_-]+)\.md\)/(\1)/g; s/\(README\)/(Home)/g' "$f" > "wiki/$dest"
           done
 
+          # turn function references (0x2fe68, persuade_capture, FUN_...) into links to
+          # the source file, using the manifest. Source docs stay clean; only the wiki
+          # mirror gets the links. Functions without a source file are left as plain text.
+          python3 tools/wiki_autolink.py wiki/*.md
+
           cd wiki
           git add -A
           if git diff --cached --quiet; then
