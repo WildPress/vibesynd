@@ -61,9 +61,12 @@ def main():
             if os.path.exists(tab):
                 name = b[:-4].lower()
                 png = os.path.join(out, "sprites", name + ".png")
+                # 8-bit menu sprites (MSPR) use the full menu palette; 4-bit game
+                # sprites (HSPR) use the 16-colour sprite palette.
+                pal_file = "MSELECT.PAL" if "MSPR" in b else "HPALETTE.DAT"
                 try:
                     ents, data = sp.load_sprites(tab, dat)
-                    sys.argv = ["", tab, dat, os.path.join(src, "HPALETTE.DAT"), png, "0", str(len(ents)), "24", "1"]
+                    sys.argv = ["", tab, dat, os.path.join(src, pal_file), png, "0", str(len(ents)), "24", "1"]
                     sp.main()
                     index.append(("sprites/%s.png" % name, "%d sprites" % (len(ents) - 1)))
                 except Exception as e:
