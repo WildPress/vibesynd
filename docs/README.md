@@ -74,6 +74,12 @@ And the running log of the actual work:
 - **[Reverse-engineering journal](journal.md)**. What we tackled function by function, the
   thinking, the false starts, and how each one got matched.
 
+A side experiment with the extracted art:
+
+- **[A LoRA that draws new tiles](tile-lora.md)**. Training an image model on the game's
+  own tiles so it can draw new ones in the same style. Not part of the game, a proof the
+  extracted art is good enough to teach a model.
+
 ## Quick glossary
 
 - **Machine code**. The raw bytes the CPU runs. The game is a big block of it, and our job

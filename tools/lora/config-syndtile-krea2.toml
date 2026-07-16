@@ -1,0 +1,19 @@
+# musubi-tuner dataset config for the Syndicate tile LoRA (trigger: syndtile).
+#
+# The images are the game's 251 non-empty tiles, exported one per file and
+# nearest-neighbour upscaled to 1024x768 so the hard pixel edges survive the
+# VAE. Build them with tools/synd_tile_dataset.py, then write the captions with
+# tools/gen_tile_captions.py. Paths below are for the training workstation, edit
+# to suit.
+
+[general]
+resolution = 1024
+caption_extension = ".txt"
+batch_size = 1
+enable_bucket = true
+bucket_no_upscale = false
+
+[[datasets]]
+image_directory = "/home/james/AI/datasets/syndicate-tiles"
+cache_directory = "/mnt/d/musubi-tuner/cache/syndtile-krea2"
+num_repeats = 1
