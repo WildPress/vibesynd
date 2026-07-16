@@ -19,7 +19,7 @@ extern unsigned char g_entity_pool[];
 extern void move_entity_xyz(unsigned char *p, int x, int y, int z);
 extern void recompute_state_code(unsigned char *p);
 
-void detach_entity_type(unsigned char *p)
+void vehicle_exit(unsigned char *p)
 {
     unsigned char *node;
     unsigned char *q;

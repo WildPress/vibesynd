@@ -475,11 +475,11 @@
   "desc": "",
   "runs_in_intro": false
  },
- "FUN_00020d98": {
+ "vehicle_hp_stamp": {
   "addr": "00020d98",
-  "label": "",
-  "subsystem": "unclassified",
-  "desc": "frameless @ 0x20d98: PARKED near-miss (switch-tree balance). Logic, register (EDX cursor), loop bounds and all eight cases are correct; the only diff is how Watcom balances the switch's binary-search ",
+  "label": "vehicle_hp_stamp",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "new_campaign_reset": {
@@ -1189,16 +1189,16 @@
   "desc": "",
   "runs_in_intro": false
  },
- "detach_entity_type": {
+ "vehicle_exit": {
   "addr": "0002fbc8",
-  "label": "detach_entity_type",
+  "label": "vehicle_exit",
   "subsystem": "",
   "desc": "",
   "runs_in_intro": false
  },
- "formation_follow": {
+ "vehicle_ride": {
   "addr": "0002fca8",
-  "label": "formation_follow",
+  "label": "vehicle_ride",
   "subsystem": "",
   "desc": "",
   "runs_in_intro": false
@@ -1336,9 +1336,9 @@
   "desc": "0x34608 -- pick a passable direction for the current projectile/scan point. * If dir is vertical (0 / 0x80) and the point's x tile differs from the target * x tile (g_10b54), first try the direction F",
   "runs_in_intro": false
  },
- "weapon_fire": {
+ "vehicle_drive_step": {
   "addr": "00034858",
-  "label": "weapon_fire",
+  "label": "vehicle_drive_step",
   "subsystem": "",
   "desc": "",
   "runs_in_intro": false
@@ -3718,7 +3718,7 @@
  },
  "FUN_0002ea88": {
   "addr": "0002ea88",
-  "label": "",
+  "label": "entity_behaviour_dispatch",
   "subsystem": "lib",
   "desc": "-- db-transcription (hand-asm/library).",
   "runs_in_intro": false
@@ -3737,9 +3737,9 @@
   "desc": "-- db-transcription (hand-asm/library).",
   "runs_in_intro": false
  },
- "entity_behaviour_dispatch": {
+ "entity_pool_tick": {
   "addr": "00031858",
-  "label": "entity_behaviour_dispatch",
+  "label": "entity_pool_tick",
   "subsystem": "",
   "desc": "",
   "runs_in_intro": false
@@ -3772,11 +3772,11 @@
   "desc": "if (g_sound_enabled) FUN_00039b0f(g_snd_driver); * Dead callee-save wall (3rd sibling of 0x36168/0x39188): dead push ebx/pop ebx because * 0x39b0f is declared to clobber ebx and this fn must preserve ",
   "runs_in_intro": false
  },
- "FUN_00036fd8": {
+ "vehicle_pool_tick": {
   "addr": "00036fd8",
-  "label": "",
-  "subsystem": "lib",
-  "desc": "-- db-transcription (hand-asm/library).",
+  "label": "vehicle_pool_tick",
+  "subsystem": "",
+  "desc": "",
   "runs_in_intro": false
  },
  "FUN_00037848": {

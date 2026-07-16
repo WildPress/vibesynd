@@ -37,7 +37,7 @@ extern short g_1be34;
 extern void relocate_map_columns(int);
 extern void add_c_stride6(int, int, int);
 extern void FUN_00012ca8(void);
-extern void FUN_00020d98(void);
+extern void vehicle_hp_stamp(void);
 extern void FUN_000498ef(int);
 extern void FUN_0004997e(int);
 extern void FUN_0003a4fa(char *buf, char *fmt, ...);
@@ -57,7 +57,7 @@ void mission_map_init(void)
     g_10ac8 = 0;
     if (g_radar_detail == 0)
         FUN_00012ca8();
-    FUN_00020d98();
+    vehicle_hp_stamp();
     FUN_000498ef(0x12);
     FUN_0004997e(0);
     if (g_radar_detail != 0)

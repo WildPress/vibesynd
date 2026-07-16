@@ -61,7 +61,7 @@ extern void FUN_00034198(unsigned char *p2, unsigned char *p, unsigned short cou
 extern unsigned short FUN_00034608(int dir);
 extern void move_entity_xyz(unsigned char *node, int x, int y, int z);
 
-void weapon_fire(unsigned char *p1, unsigned char *p2)
+void vehicle_drive_step(unsigned char *p1, unsigned char *p2)
 {
     int z;
 

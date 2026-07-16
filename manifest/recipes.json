@@ -1540,10 +1540,6 @@
   "addr": "0002d6c8",
   "flags": "-4s -oneatx -zp8 -s -zq"
  },
- "formation_follow": {
-  "addr": "0002fca8",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
  "rnc_decompress": {
   "addr": "0003a1ec",
   "flags": "-3s -oneatx -zp8 -s -zq"
@@ -1566,6 +1562,10 @@
  },
  "file_read_n": {
   "addr": "000188a8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "vehicle_ride": {
+  "addr": "0002fca8",
   "flags": "-4s -oneatx -zp8 -s -zq"
  }
 }

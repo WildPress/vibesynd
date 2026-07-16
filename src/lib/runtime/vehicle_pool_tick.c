@@ -38,8 +38,8 @@ extern void __db_FUN_00036fd8_17(void);
 #pragma aux __db_FUN_00036fd8_17 = "db 138" "db 83" "db 26" "db 131" "db 194" "db 32" "db 137" "db 208" "db 193" "db 250" "db 31" "db 193" "db 226" "db 6" "db 27" "db 194" "db 193" "db 248" "db 6" "db 131" "db 224" "db 3" "db 5" "db 250" "db 1" "db 0" "db 0" "db 131" "db 196" "db 4" "db 137" "db 198" "db 102" "db 59" "db 115" "db 18" "db 116" "db 28" "db 102" "db 133" "db 246" "db 116" "db 23" "db 49" "db 192" "db 139" "db 21" "db 72" "db 83" "db 0" "db 0" "db 102" "db 137" "db 240" "db 102" "db 139" "db 4" "db 66" "db 102" "db 137" "db 67" "db 16" "db 102" "db 137" "db 115" "db 18" "db 139" "db 13" "db 220" "db 10" "db 1" "db 0" "db 131" "db 195" "db 42" "db 57" "db 203" "db 15" "db 130" "db 233" "db 249" "db 255" "db 255" "db 95" "db 94" "db 91" "db 195" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_00036fd8_18(void);
 #pragma aux __db_FUN_00036fd8_18 = "db 83" "db 86" "db 139" "db 116" "db 36" "db 16" "db 139" "db 84" "db 36" "db 12" "db 49" "db 192" "db 102" "db 139" "db 66" "db 58" "db 185" "db 1" "db 0" "db 0" "db 0" "db 5" "db 14" "db 129" "db 0" "db 0" "db 49" "db 219" "db 15" "db 191" "db 209" "db 102" "db 137" "db 243" "db 57" "db 218" "db 125" "db 25" "db 102" "db 139" "db 80" "db 28" "db 102" "db 133" "db 210" "db 116" "db 13" "db 102" "db 137" "db 208" "db 37" "db 255" "db 255" "db 0" "db 0" "db 5" "db 14" "db 129" "db 0" "db 0" "db 65" "db 235" "db 219" "db 94" "db 91" "db 195" "db 141" "db 128" "db 0" "db 0" "db 0" "db 0" "db 141" "db 146" "db 0" "db 0" "db 0" "db 0" "db 139" "db 192" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_00036fd8 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_00036fd8(void) {
+#pragma aux vehicle_pool_tick modify [eax ebx ecx edx esi edi ebp] aborts;
+void vehicle_pool_tick(void) {
     __db_FUN_00036fd8_0();
     __db_FUN_00036fd8_1();
     __db_FUN_00036fd8_2();

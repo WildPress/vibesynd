@@ -13,7 +13,7 @@
    everything else is left untouched. */
 extern unsigned char pool_b[];   /* 0xdd10 */
 extern unsigned char pool_c[];   /* 0xe790 (end of pool B) */
-void FUN_00020d98(void)
+void vehicle_hp_stamp(void)
 {
     unsigned char *p;
     for (p = pool_b; p < pool_c; p += 0x2a) {

@@ -166,22 +166,96 @@ safe to assume for functions we haven't seen yet — which is the point of writi
 
 ## The Persuadertron (traced end-to-end via the LE-relocation resolver)
 
-The persuade weapon, decoded by resolving the entity **behaviour dispatch table**
-(`entity_behaviour_dispatch` @ 0x31858 routes each entity to one of ~40 per-state handlers).
+The persuade weapon is a per-state entity **behaviour**. Every live pool-A entity runs a behaviour
+selected by its state byte `[0x19]` through the dispatcher **`entity_behaviour_dispatch` (0x2ea88)**
+— a jump table over ~45 states; the per-frame loop **`entity_pool_tick` (0x31858)** calls it for
+each entity. (Correction: 0x31858 is the loop, not the switch; the switch is 0x2ea88.)
 
-- **Weapon type 5** (the "guided/tracking" branch of `weapon_fire` @ 0x34858) is the Persuadertron.
-- The agent **seeks** the target ped (approach behaviour), then **`persuade_capture`** (0x2fe68)
-  runs on contact (agent x/y == ped x/y, |z diff| < 0x81). If the ped isn't already taken
-  (`ped[0x0a] & 1 == 0`):
-  1. clamp the ped's amount `[0x14]` to **`g_item_max_qty[ped_type]`** (0xa73a) — the per-type max-quantity table (also used to stock equipment ammo), not a persuade-specific limit;
+- **`persuade_capture` (0x2fe68)** is the convert step. The agent seeks the target ped; on contact
+  (agent x/y == ped x/y, |z diff| < 0x81), if the ped isn't already taken (`ped[0x0a] & 1 == 0`):
+  1. clamp the ped's amount `[0x14]` to **`g_item_max_qty[ped_type]`** (0xa73a) — the per-type
+     max-quantity table (also used to stock equipment ammo), not a persuade-specific limit;
   2. append the ped into the agent's **follower chain** (`agent[0x3a]` head, `[0x1c]`/+0x812a links);
   3. `ped[0x0a] |= 1` — set the **persuaded/controlled** flag;
   4. `ped[0x20] = agent` — set the ped's **leader link** to the agent (allegiance flipped).
-- The converted ped then runs the **follow-leader** behaviours (`follow_leader` 0x30078,
-  `formation_follow` 0x2fca8, `join_new_leader` 0x2fa48), trailing the agent.
+- If not yet in contact, `persuade_capture` sets the ped's state `[0x19]=5` (seek/approach). This is
+  a behaviour-state index, **not a "weapon type."** (An earlier version of this note mis-attributed
+  it to a `weapon_fire` function at 0x34858 with a "guided type 5" mode. That was wrong: 0x34858 is
+  the **vehicle-drive step** — see the Vehicle system section. The persuade_capture mechanism above
+  is unaffected and verified.)
+- The converted ped then runs the squad **`follow_leader`** behaviour (0x30078), reading its `[0x20]`
+  leader link. The squad follower chain (`leader[0x3a]` head, `[0x1c]` next, `[0x1e]` prev, `[0x20]`
+  leader) is a **different structure** from the vehicle occupant list — see Vehicle system.
 
 Allegiance is otherwise positional (a ped's team = poolIndex & ~7); the persuaded ped is
 recognised as friendly via the `[0x0a]` bit-0 flag + its leader link.
+
+## The vehicle / car system (traced via a 3-agent sweep, cross-verified)
+
+### Five object pools, one per class — discriminated by the kind byte `[0x18]`
+The engine has five back-to-back fixed-record pools; their record counts lock onto Syndicate's
+level-data arrays, and a single kind byte at `+0x18` tells them apart wherever the shared spatial
+grid (`g_10e`) is walked:
+
+| pool | base | count | stride | class | `[0x18]` kind |
+|------|------|------:|-------|-------|-----|
+| A | 0x8110 | 256 | 0x5c | people (agents / peds / projectiles) | 1, 2 |
+| B | 0xdd10 | 64 | 0x2a | **cars / vehicle bodies** | 5 |
+| C | 0xe790 | 400 | 0x1e | statics | (unobserved) |
+| D | 0x11670 | 512 | 0x24 | weapons / pickups | 4 |
+| E | 0x15e70 | 256 | 0x1e | sfx / bullets | 3 |
+
+Pool bounds come from `FUN_00022768`; kind immediates are stored by the spawners
+(`spawn_pool_11670`=4, `spawn_pool_15e70`=3). Kinds 1/2 (pool A) are loaded from the mission
+descriptor, never stored as immediates.
+
+### Car bodies — pool B (0xdd10, kind 5)
+- `vehicle_hp_stamp` (0x20d98, from `mission_map_init`) stamps each car's HP `[0x14]` by model byte
+  `[0x19]`: models 1/2→600, 5/6→100, 9/10→80, 13/14→30, 17/18→40, 28/29→10, 36/37→120, 40/41→115.
+- `vehicle_pool_tick` (0x36fd8) runs each frame over pool B: a car with anchor `[0x20]==0` sits at
+  its own X/Y/Z; with `[0x20]!=0`, `[0x20]` is a pool-A entity id and the body is placed at that
+  entity's position + offset `[0x22]/[0x24]/[0x26]` (re-linked into the grid via `move_entity_xyz`),
+  then drawn by model `[0x19]` (sprite jump table at data 0xd390).
+
+Body fields: `[0x14]` HP, `[0x18]`=5, `[0x19]` model, `[0x20]` anchor pool-A id, `[0x22]/[0x24]/[0x26]` offset.
+
+### Occupancy + driving — pool-A ride handlers (behaviour states, no static xrefs)
+A ped boards/drives through pool-A behaviour states operating on a **tag-2 pool-A entity** (the
+ridden vehicle for movement purposes; the pool-B body follows it via the anchor). The occupant list
+is separate from the squad follower chain:
+
+- **`vehicle_board` (0x2fa48)** — on reaching the target vehicle `[0x2c]`, link self into the
+  occupant list: empty → `vehicle[0x1c]=self`; else walk `[0x22]` forward-links to the tail and
+  append. Set taken flag `[0x0a]|=1`; subtype `[0x19]` 9/0xa (train/boat) also hides (`|=8`); copy
+  vehicle max-speed `[0x28]`→self `[0x55]`; snap to the vehicle.
+- **`vehicle_drive_step` (0x34858)** — called only from the driver states `vehicle_drive_state`
+  (0x2f878) / `vehicle_move_drive` (0x2f908). Accel/brake `[0x54]`→`[0x55]` by turn sharpness
+  (stop / hard-brake / half / +4-cap), steer by directional road tiles, stop off-road, and commit
+  both vehicle and rider via `move_entity_xyz`. **(This is the function previously mis-named
+  `weapon_fire`.)**
+- **`vehicle_ride` (0x2fca8)** — passenger carry: walk `[0x24]` back-links to the type-2 vehicle,
+  copy its X/Y/Z into the passenger each frame. (Previously mis-named `formation_follow`.)
+- **`vehicle_exit` (0x2fbc8)** — doubly-linked removal from the occupant list, restore speed, clear
+  taken flag, place one tile beside the vehicle; reached from dismount triggers 0x36c28/0x36c78.
+  (Previously mis-named `detach_entity_type`.)
+
+Occupant-list fields: vehicle `[0x1c]` = list head; occupant `[0x22]` = forward link, `[0x24]` = back
+link (head's back → the vehicle). Distinct from the squad chain (`[0x3a]/[0x1e]/[0x20]`).
+
+### Road following
+Roads are **directional flow tiles**: 6=W, 7=E, 8=N, 9=S. `compass_tile_probe` (0x34368) returns 1
+only if the tile in a given direction carries the matching flow code; the drive step steers to stay
+on valid road tiles and looks several tiles ahead (`FUN_00034198`) for corners and traffic (via the
+cell probe `shot_collision_query` 0x34088, which returns a vehicle/ped directly ahead).
+
+### Confirmed vs inferred
+**Confirmed** (first-hand or strong evidence): the five-pool model + counts; cars = pool B kind 5;
+the HP-stamp and pool-B tick; the board/ride/drive/exit handler mechanics and occupant fields (the
+train/boat-hide, road-tile steering, and vehicle-speed inheritance are unambiguous vehicle markers).
+**Inferred / not fully pinned:** whether the tag-2 pool-A entity the ride handlers touch is the car
+itself, a driver/mount actor, or shares representation with a squad leader — settling that needs the
+pool-A loader that assigns kind 1 vs 2. Road-tile codes are from drive-helper analysis, not yet
+byte-verified against a running map.
 
 ## Static image vs. runtime-filled data (verified from OBJECT2 bytes)
 
