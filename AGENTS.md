@@ -229,6 +229,29 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 
 ## Current Status  (update every session)
 
+### ✅ ROOT CAUSE FOUND 2026-07-17 — map/sound gap = UNINITIALIZED g_bfbe read seeded by a startup DOS
+### EXEC that clobbers low DGROUP memory. Chain, fully traced with the dosbox-dbg probe (SAME.EXE, both
+### runs, deterministic): (1) SegBase(ds)=0 (FLAT) in both, so DGROUP global g_bfbc lives at LINEAR 0xbfbc
+### (low memory). (2) A g_bfbc WRITE-WATCH (read linear 0xbfbc each game instr, ga<0x40000) shows the FIRST
+### write at cnt=2819, ga=0x30af5 = FUN_0003e1af+0x8e. FUN_0003e1af is a spawnve/DOS-EXEC wrapper: it does
+### `int 21h AH=4Bh` (DOS EXEC) at 0x3e239; the watch catches 0xbfbc change on the first game instr AFTER
+### the int (0x3e23d). So the DOS EXEC clobbers linear 0xbfbc. (3) SAME instr/cnt in BOTH runs writes a
+### DIFFERENT dword: GAMEO 0x49474542 ("BEGI", hi word 0x4947), MAIN 0x0000012c (hi word 0x0000). (4) The
+### rnc decompressor entry (rnc_decompress) initializes only g_bfbc (low word, from [esi]) and g_bfc1
+### (count=0); it NEVER initializes g_bfbe (the bit-buffer HIGH word at 0xbfbe). rnc_input_bits (0x3a3c6)
+### READS g_bfbe. So the first decode consumes the leftover hi word: GAMEO 0x4947 vs MAIN 0x0000 -> the
+### Huffman decode diverges -> zero g_be30 table -> EVERY rnc-compressed resource (map/UI text, fonts,
+### sound) decodes to garbage. MAIN "works" only because its leftover g_bfbe happens to be 0.
+### => It's a LATENT uninitialized-read in the original code (byte-identical in GAMEO), EXPOSED because
+### GAMEO's reconstructed low-memory/DGROUP state going into the DOS EXEC leaves a non-zero word at 0xbfbe
+### where the original leaves 0. NOT a code bug we can "fix" in C (it's the original bytes); the fix is to
+### make GAMEO's memory at linear 0xbfbe match the original (0) at that point. NEXT: (a) find WHAT the
+### startup EXEC spawns (dump [ebp+0xc] path at FUN_0003e1af) and whether GAMEO should even run it; (b) or
+### dump linear 0xbfb0..0xbfc4 right before vs after the EXEC in both to see exactly which bytes the EXEC
+### leaves different, then trace why GAMEO's pre-EXEC memory there differs (origbuild/mkdata DGROUP/heap
+### layout, or the DOS4GW/DPMI low-memory mapping). Probe recipe + write-watch in build/dbxsrc/.../
+### core_normal.cpp (gitignored). This supersedes the "candidate #1/#2" framing in the older blocks below.
+###
 ### ▶ TRACE-DIFF 2026-07-16 — map-text/sound gap ROOT-DIVERGES in rnc_decompress at boot (data, not
 ### input). Wired the tracer into the driven harness: dosrec.sh gains DOSREC_DBG (emulator binary
 ### override, e.g. build/dosbox-dbg) + DOSREC_CORE (MUST be `normal` -- the tracer patch is only in
