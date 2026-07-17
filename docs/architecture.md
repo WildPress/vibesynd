@@ -147,6 +147,20 @@ rate-driven byte drift.
 - **~ 0x35d08** sound-driver load+init. **~ 0x38cf8** XMIDI music-system init. **✓ 0x38fe8** sound
   channel select. **✓ 0x39xxx** a bank of `mov eax,imm; jmp 0x392ac` dispatch stubs (AIL-style
   driver entry points).
+- **Driver dispatch (traced end to end).** The game loads sound drivers as separate resources, a
+  digital driver and a music driver, each into its own heap block. A driver is a "Copy"-format
+  resource: its header carries the marker `"Copy"` at offset 4 and a pointer to a dispatch table at
+  offset 0. The table is a list of eight-byte entries, an opcode dword followed by a handler pointer,
+  terminated by an opcode of `-1`. The pointers inside are relocated to the driver's load address as
+  it loads.
+- The bank of `mov eax,imm; jmp 0x392ac` stubs are the named entry points, one per operation. Each
+  loads its opcode into `eax` and jumps into the dispatcher `0x39280`, which reads the current
+  driver's table pointer from the per-driver slot array at DGROUP `0xbcfa`, walks it for the opcode,
+  and returns the matching handler. `0x398d7` registers a loaded driver, checking the `"Copy"` marker
+  and storing its table pointer into that slot array. `0x39625` installs a handler into one of the
+  sixteen timer-callback slots at DGROUP `0xbbf4`, which a periodic dispatch loop at `0x39345` then
+  calls. This is the machinery a mistimed or mislocated driver trips over (see the journal entry on
+  the sound crash).
 
 ## 14. C runtime (`0x3a000+`, Watcom CLIB3S, NOT game code)
 
@@ -158,7 +172,7 @@ ties. The DOS-asm primitives (int 21h, in/out, Sreg) are hand-asm. Don't grind t
 
 ---
 
-## Matchability map (why 175 matched and the rest are walled)
+## Matchability map (why most match and the rest are walled)
 
 Each function runs the same route, and the last step decides whether it counts as matched or
 parked:

@@ -121,3 +121,37 @@ see if it shifts. We learned not to. The flags are pinned (see
 [compiler flags](compiler-flags.md)), so bending them to force a register into
 place would just be papering over a wrong reconstruction. The honest signal is that
 our C differs from the original's, and the fix, when there is one, is in the C.
+
+## The floor, measured
+
+We wanted a number rather than a feeling, so we ran a register-normalised diff over
+every function still short of a match. The tool decodes both our output and the
+original to instructions and compares them modulo a consistent register renaming and
+a consistent stack-slot renaming. That splits the near-misses into honest buckets: a
+pure renaming that a mechanical tool could rewrite, a structural difference where the
+instructions themselves differ, or a register-role split where the original keeps a
+value in one register and we spread it across two.
+
+Across all 111 non-matched functions the tally was blunt. Not one was a pure renaming.
+Ninety were structural, six were register-role splits, and fifteen were dropped by a
+flaky compiler harness rather than a real failure. Zero were the clean case a renamer
+could fix.
+
+We then pushed on the very closest ones, because if the floor gives anywhere it gives
+there. The nearest function is byte-identical to the original except for nine bytes,
+where the original keeps a multiply's result in one register and we keep it in another.
+The author of that reconstruction had already tried every spelling of the multiply. The
+next nearest differs by a single choice: the original writes `y + 1` as a copy followed
+by an increment, and Watcom writes it as one `lea`. We tried the copy-then-increment
+form, the compound-assignment form, a named temporary. Every one folds straight back to
+`lea`. The compiler canonicalises it and no source reaches the other shape.
+
+The conclusion is worth stating plainly, because it is easy to keep grinding past it. A
+matching decompilation against a period compiler has a floor. The compiler makes
+register-allocation and instruction-selection choices that our source cannot steer, so a
+fraction of functions will not match from compiling C, however the C is written. For us
+that fraction is real and measured, not a gap in effort. It is also worth keeping in
+perspective: those functions are already decoded to correct, readable C, and the
+reconstructed binary is byte-exact because it is built from the original bytes. The floor
+is a limit on one specific claim, that our C recompiles to the exact bytes, and not on
+the decompilation being complete or the build being faithful.
