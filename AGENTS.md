@@ -308,6 +308,20 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ### write-watch what 0x330d3a reads. This is a distinct sub-investigation from everything above; the
 ### DGROUP-prefix/sound fix stands and is what got GAMEO this far (boot->full intro w/ text->here).
 ###
+### ✅ MILESTONE 2026-07-17i: `d:\GAMEO.EXE /s` (the game's own NO-SOUND flag; found via the "/s no
+### sound." help string in DGROUP) BYPASSES the sound-driver-callback crash entirely -> GAMEO now boots
+### -> full intro (with subtitle text) -> the MAIN MENU, PIXEL-IDENTICAL to MAIN ("F1 CONFIGURE COMPANY
+### / F2 BEGIN MISSION / F3 LOAD AND SAVE GAME / F4 RESTART GAME / F5 QUIT TO DOS", all text crisp).
+### build/rec/nosnd_*, f2_*. This VALIDATES the DGROUP-prefix text fix end-to-end (menu uses the same
+### bitmap-font/string system as the map dashboard) AND proves the crash is 100% isolated to the sound
+### path (`/s` = no crash). REMAINING to SEE the in-game world map: menu->map navigation is blocked on
+### DOSBox input calibration -- F2/F-keys do not advance the menu (keys reach the DOS prompt fine per the
+### `type dir` test, but the game menu does not act on them), and the mouse is miscalibrated (OS pointer
+### parked at display 320,200 shows the game cursor at ~325,108, so clicks miss the items; the game likely
+### uses relative/accelerated mouse). This is a HARNESS/UX issue, not a decomp/render bug. Options: user
+### records the menu->mission navigation (they offered), or add relative-mouse (mousemove_relative) +
+### calibration to tools/dosrec.sh. The map DASHBOARD text will render (same font path, already proven).
+###
 ### ⛔ BIGGER CORRECTION 2026-07-17d — rnc_decompress is a RED HERRING. Dumped the DECOMPRESSED OUTPUT
 ### buffer at the success return (ga 0x2cc10 = 0x3a358, mov eax,[0xbfb0]) for the E1-region decodes in
 ### both runs: the unpacked bytes are BYTE-IDENTICAL (00 00 00 2b 17 0f 0f 12 11 ... in both). Also dumped
