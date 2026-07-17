@@ -237,19 +237,21 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ### if(out==0) return 0. MALLOC_SIZE dump: GAMEO uv=0x00000000 vs MAIN uv=0x0000171f -> GAMEO malloc(0)=0
 ### -> container_load returns 0 -> sound aborts. container_total_size returns 0 at its validation
 ### `if(FUN_0003a9c8(...)) return 0`. FUN_0003a9c8 is STRCMP (dword compare w/ 0xfefefeff/0x80808080
-### zero-byte trick). Dumped the actual strcmp args in the sound path: s1 (buffer magic) = "LX" in MAIN
-### but EMPTY ("", all zeros) in GAMEO; s2 identical. So the compare fails in GAMEO. BUT the buffer AT tbl
-### (=0x90) holds "4c 58"="LX" byte-identical in BOTH (verified: SNDBUF + TBL dumps), and tbl matches. So
-### buffered_read (0x17998, the memory-resident reader) COPIED "LX" out in MAIN but zeros in GAMEO from an
-### identical source buffer -> the divergence is one level deeper, in buffered_read or a global it uses.
-### DEAD ENDS (ruled out, do not rechase): container header/buffer content identical; g_a240/g_a244 differ
-### (garbage vs "C:\SYNDICAT") but forcing them to MAIN's values did NOT fix uv -> correlated symptom of
-### the low-memory EXEC clobber, not the root (same 0xa240/0xbfbc region the system("intro") EXEC clobbers).
-### The strcmp p2 arg read as 0 (likely a different strcmp OR the parked-decode arg is imperfect) -- verify
-### the exact container_total_size strcmp call site (container_total_size 0x179f8, the call after 0x17a8f).
-### NEXT: gate a dump INSIDE buffered_read (0x17998) for the sound-path version read (fd=buffer, off=tbl=0x90,
-### len=2): dump the source addr it copies FROM and the dst, both runs -- find why GAMEO copies zeros. This
-### is a VERIFIED real divergence (unlike the rnc red herring); likely a buffered_read global or the fd/base.
+### zero-byte trick). REFINED with the EXACT validation call (0x17a90, args+result dumped both runs): the
+### gate is `if(strcmp(&version, EXP)) return 0` and `test eax; je pass` PASSES only when strcmp==0 (equal).
+### arg1 = &version (read from the container buffer) = "LX" in BOTH runs (CORRECT -- buffered_read is fine,
+### it is NOT the fault). arg2 = EXP, a HEAP buffer (~0x1c40e0) = "LX\\0\\0not " in MAIN but ALL ZEROS
+### (empty) in GAMEO. So MAIN strcmp("LX","LX")=0 PASS; GAMEO strcmp("LX","")=1 FAIL -> container_total_size
+### returns 0 -> uv=0 -> malloc(0) -> container_load 0 -> sound aborts. So the missing thing is the
+### EXPECTED-MAGIC STRING (arg2) -- a heap buffer populated with "LX..." in MAIN, EMPTY in GAMEO.
+### DEAD ENDS (ruled out, do not rechase): container buffer/version reads FINE ("LX" both); buffered_read is
+### innocent; the earlier "s1 empty" was the WRONG strcmp call; g_a240/g_a244 differ (garbage vs
+### "C:\SYNDICAT") but forcing them did NOT fix uv (correlated symptom of the low-memory EXEC clobber). The
+### parked container_total_size decode shows arg2 as literal 0xb0 -- WRONG; runtime arg2 is a heap pointer.
+### NEXT: find where that EXPECTED-MAGIC heap buffer (arg2, ~0x1c40e0 in MAIN) is filled -- disassemble
+### container_total_size's setup of the 2nd strcmp arg (what it pushes / where the "LX...not..." string
+### comes from), then trace who populates it and why GAMEO's is empty (likely another resource GAMEO does
+### not load/init). VERIFIED real divergence (unlike the rnc red herring).
 ###
 ### ⛔ BIGGER CORRECTION 2026-07-17d — rnc_decompress is a RED HERRING. Dumped the DECOMPRESSED OUTPUT
 ### buffer at the success return (ga 0x2cc10 = 0x3a358, mov eax,[0xbfb0]) for the E1-region decodes in
