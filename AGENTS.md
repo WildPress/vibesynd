@@ -1033,6 +1033,18 @@ is fine.) All-black frames + empty LOG.TXT suggest an early/load-ish fault. DIAG
   spill-slot + type-retype search) — that single tool would unlock the ~20 length-exact
   register-tie parks in bulk, far more than any hand-decode; (2) otherwise the megafns are the only
   untapped coverage, best split across fresh-credit agents one subsystem at a time.)
+  **UPDATE 2026-07-17 (regdiff --triage on all 27 parked fns WITH src): scoping the permuter shows a
+  RENAMING/object-level applier is the WRONG tool — verdict distribution is 0 PURE-ALLOC, 26 STRUCTURAL,
+  1 REGISTER-ROLE. i.e. NONE of the parks is a clean register/slot bijection an applier could rewrite;
+  every one diverges in instruction SHAPE (movsx vs mov, `lea [idx*2]` vs `lea [base+idx]`, spill/reload,
+  an extra push/inc). The root is Watcom's register-allocation SEED (which physical regs cache which
+  values at function entry) cascading into those shape diffs — e.g. FUN_00026778 (84%, closest-2): target
+  caches x2->ECX/y2->EDX, ours x2->EDX/y2->EAX, and the author already tried decl-order/named-copy/type
+  levers without flipping it. So the only permuter that could help is a C-level statement/decl REORDER
+  search aggressive enough to flip that entry seed (cpermute's reorder doesn't reach it) — SPECULATIVE,
+  and it produces a real C match only if the seed is reorder-reachable at all (may be a genuine compiler
+  choice). Closest structural parks to target with such a search: FUN_000363d8 (89.3%), FUN_00026778
+  (84.0%), FUN_00026778/commit_funding (76.9%). The object-renaming applier idea is dead (no PURE-ALLOC).
   (cont. 23 — +3: 0x28b88 (mouse-driver INT 33h init — FP_SEG empty-pragma transcription, i86.h
   `parm caller [eax dx] value [dx]`), 0x2d9e8 (853B squad-interference test — volatile-alias
   extern also pins ENTRY-LOAD SCHEDULING, not just re-reads; compound `*=` in-place imul; named
