@@ -229,6 +229,30 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 
 ## Current Status  (update every session)
 
+### ⛔ BIGGER CORRECTION 2026-07-17d — rnc_decompress is a RED HERRING. Dumped the DECOMPRESSED OUTPUT
+### buffer at the success return (ga 0x2cc10 = 0x3a358, mov eax,[0xbfb0]) for the E1-region decodes in
+### both runs: the unpacked bytes are BYTE-IDENTICAL (00 00 00 2b 17 0f 0f 12 11 ... in both). Also dumped
+### the 5-bit huffman code-COUNTS that rnc_make_huffman reads (ga 0x2cd0f): IDENTICAL in both (0006 0005
+### 000b 0005 000d 000a 0005 000f), and the source bytes at esi identical. The ONLY thing that differs is
+### the bit-buffer REPRESENTATION (GAMEO bfc1=0x20/32 bits buffered, bfbc/bfbe hold more read-ahead; MAIN
+### bfc1=0x01/1 bit) -- i.e. GAMEO's decoder reads FURTHER AHEAD into the same stream, so a refill fires
+### at a slightly different instruction. THAT is the "divergence" the full-stream offset-diff flagged at
+### cnt 1544172 (one extra rep-movsb): a BENIGN read-ahead/timing difference, NOT wrong output. So the
+### whole g_bfbe / uninitialized-scratch / INTRO-EXEC story below was chasing a benign difference. The RNC
+### decode is FINE; the decompressed resources (incl. anything text/font/sound needs) come out identical.
+### METHOD LESSON: the FIRST instruction-offset divergence is not necessarily THE bug -- a data difference
+### that only changes read-ahead buffering perturbs timing without changing results. Must diff the OUTPUT/
+### semantics, or find a divergence that does NOT re-converge, not the first offset split.
+### REAL LEADS (unchased, from the earlier COVERAGE-SET diff): GAMEO executes ~2000 fewer unique offsets
+### than MAIN, dominated by container_load (0x17b48), the sound/music-init cluster (xmidi_music_init
+### 0x38cf8, sound_driver_init 0x35d08, init_voice_tables, install_timer_isr, clear_voice_tables), and
+### FILE I/O (fread 0x3b420, fseek 0x3b594, record-loader 0x38c28). THOSE are where GAMEO actually skips
+### work. NEXT: (a) re-run the full-stream trace-diff but find the LAST re-convergence then the divergence
+### that STAYS diverged (not the benign cnt-1544172 one); or (b) go straight at the coverage-only funcs --
+### pick container_load (0x17b48) or the MFNT font path, gate a dump at their entry, and compare inputs/
+### control-flow GAMEO vs MAIN. Ignore rnc_decompress. Everything in the g_bfbe/EXEC blocks below is a
+### documented dead end (kept for the method lesson only). Tracer restored to LOG-start only.
+###
 ### ⚠ CORRECTION 2026-07-17c — the g_bfbe root cause is DISPROVEN by a fix-proof test. Patched the
 ### emulator (build/dosbox-dbg) to FORCE g_bfbe=0 at every rnc_decompress entry (mem_writew at ga 0x2cb52
 ### = 0x3a29a) and re-ran GAMEO to the map: STILL NO TEXT (build/rec/fix_17.png == the broken map). Then

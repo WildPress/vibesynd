@@ -601,3 +601,14 @@ hadn't run the one experiment that could disprove it. The trace-diff machinery i
 half of this, it will find the real input next time. The story we told ourselves about that
 one word was the fragile half, and the honest entry is the one that says we found the
 neighbourhood, not the culprit.
+
+A day later even the neighbourhood turned out innocent. We finally dumped the decompressor's
+*output*, the bytes it actually produces, in both builds, and they were identical, byte for
+byte. The decompressor was never wrong. What the instruction trace had flagged was our copy
+reading a little further ahead into the very same compressed stream, so it topped up its bit
+buffer one instruction sooner. Same data in, same data out, different rhythm. The first place
+two runs of the same code part company is not automatically the bug, because a difference that
+only changes how far ahead you read perturbs the timing without touching the result. The real
+gap is somewhere the runs part and stay parted, and the honest measure was never the
+instruction stream, it was the output. Lesson relearned, at some expense: diff what the code
+*produces*, not just what it *does*.
