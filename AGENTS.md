@@ -289,6 +289,25 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ### CTG2 call-target logger at ga 0x2bbfd. Build note: the container needs `apt-get update` BEFORE
 ### `apt-get install build-essential libsdl1.2-dev ...` or make is missing (silent build-skip).
 ###
+### DEEPER 2026-07-17h (DRVREG/LKUP/INST/CBWRITE watches, GAMEO vs MAIN): the driver LOAD is INNOCENT.
+### Both drivers register IDENTICALLY in MAIN and GAMEO -- same res addrs (0x1563e0, 0x32dcc8), same
+### "Copy" magic, same dispatch tables (opcode->fnptr): drv0 has 0x64/65/66/68, drv1 has 0x64/65/66/67.
+### The slot-0 callback install is also CORRECT in GAMEO: FUN_00039280(op=0x67,drv1) -> 0x330d3a (valid,
+### in drv1 image), installed by the 0x39a04 path (INST caller=manifest 0x39a09) into slot 0. CBWRITE
+### watch on slot-0 addr (DGROUP+0xbbf4 = 0x1d08a4; so DGROUP_base=0x1c4cb0 this run) shows only ONE
+### write = the install 0x330d3a; slot 0 is NOT corrupted afterward. So the CALL [ESI+0xbbf4] reads a
+### VALID 0x330d3a and the crash is DOWNSTREAM -- executing the driver function 0x330d3a itself walks
+### wild (regs at wildjump: EDI=0x330d3a, ECX=0x40, EDX=0x70). BUT run-to-run NONDETERMINISM: an earlier
+### run's CTG2 showed slot-0 target = 0x73252064 (="d %s") directly. So sometimes the callback ptr is
+### garbage, sometimes valid-but-crashes-when-run. => strongly implies UNINITIALISED MEMORY or a heap/
+### timing read that varies. 0x330d3a is in the LOADED DRIVER image (above object1), NOT in the Ghidra
+### object1 program, so it cannot be disassembled statically. NEXT (harder, needs a new angle): (a)
+### disassemble the loaded driver -- dump the driver image bytes from a run and load as a Ghidra block,
+### or dump+step the code at 0x330d3a in the tracer to see which pointer IT derefs to reach 0x73252xxx;
+### (b) the nondeterminism suggests the driver fn reads a DGROUP/heap global that GAMEO leaves uninit --
+### write-watch what 0x330d3a reads. This is a distinct sub-investigation from everything above; the
+### DGROUP-prefix/sound fix stands and is what got GAMEO this far (boot->full intro w/ text->here).
+###
 ### ⛔ BIGGER CORRECTION 2026-07-17d — rnc_decompress is a RED HERRING. Dumped the DECOMPRESSED OUTPUT
 ### buffer at the success return (ga 0x2cc10 = 0x3a358, mov eax,[0xbfb0]) for the E1-region decodes in
 ### both runs: the unpacked bytes are BYTE-IDENTICAL (00 00 00 2b 17 0f 0f 12 11 ... in both). Also dumped
