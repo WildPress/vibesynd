@@ -335,6 +335,35 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ### /s bypasses the (still-open) sound-driver-callback crash; with sound ON that crash remains the blocker
 ### for an audible/full run. Net: the DGROUP-prefix/sound-magic fix is validated end-to-end.
 ###
+### ▶▶ SOUND CRASH deeply traced 2026-07-17k (DRVREG/DTBL/LKUP/INST/FIDX/CBWRITE/ring, GAMEO vs MAIN).
+### CONCLUSION: the callback SETUP is 100% correct in GAMEO -- the crash is in EXECUTING the loaded music
+### driver, which is load-address-sensitive. Details:
+###  - Callback dispatch at manifest 0x39345 `CALL [ESI+0xbbf4]` (16-slot timer table). Slot 0 crashes.
+###  - Slot 0 is installed by F@0x399bd (driver-index arg [EBP+8]) -> FUN_00039280(op=0x67,drvidx) ->
+###    FUN_00039625. F is called twice: idx=0 (drv0, from 0x35e50 via [0x11dec]) and idx=1 (drv1, from
+###    0x38e17 via [0x11e2c]). drv0 has NO 0x67 (both MAIN+GAMEO), so idx=0 installs nothing; idx=1
+###    (drv1) installs drv1's 0x67 handler.
+###  - FULL driver tables (DTBL) are structurally IDENTICAL MAIN vs GAMEO, just relocated: drv1 0x67
+###    handler = res+0x3072 in BOTH (MAIN res=0x244048 -> 0x2470ba; GAMEO res=0x32dcc8 -> 0x330d3a). So
+###    GAMEO installs the CORRECT handler (same function, different load base). NOT a wrong-callback bug.
+###  - The DRIVERS LOAD AT DIFFERENT HEAP ADDRESSES (drv1: GAMEO 0x32dcc8 vs MAIN 0x244048, ~0xe9c80
+###    apart; drv0: GAMEO 0x1563e0 vs MAIN 0x1571f0). (Earlier "identical addresses" was a bad compare.)
+###  - Executing res+0x3072 (drv1's 0x67 timer handler) crashes in GAMEO but runs fine in MAIN. Same
+###    driver code, different load base. NONDETERMINISTIC: sometimes the slot-0 ptr itself is later
+###    corrupted to 0x73252064 ("d %s") via a NON-CPU write (CBWRITE/SaveM* never sees it -> DMA or
+###    hardware), sometimes it stays valid 0x330d3a and crashes when run. Both -> wild jump -> 0xc0000000.
+### HYPOTHESIS (unproven): the music driver computes a buffer/DMA address from its load base; at GAMEO's
+### different (higher) base it lands wrong, corrupting memory (the callback slot) via a DMA/hardware write
+### -- consistent with the non-CPU corruption and the load-address sensitivity. The driver code (res+
+### 0x3072 = 0x330d3a) is in the LOADED image, NOT in the Ghidra object1 program.
+### NEXT to fix: (a) dump the loaded drv1 image from a run (mem 0x32dcc8..+size) and load as a Ghidra
+### block to disassemble res+0x3072 and see which address it derefs/DMAs; (b) or trace res+0x3072 forward
+### (the always-on 1024 ring is in dosbox-dbg -- but it captured mode-1 sled; re-run until a mode-2 crash
+### where slot0 stays 0x330d3a, then read the ring's driver->wild transition); (c) investigate why GAMEO's
+### heap layout puts drv1 ~0xe9c80 higher than MAIN (a pre-driver allocation differs) -- if the load base
+### were aligned like MAIN's, the driver might not trip. dosbox-dbg markers now: WILDJUMP+regs, 1024-insn
+### ring (FWD), CTG2, DRVREG+DTBL, LKUP, INST, FIDX, CBWRITE, NULLWR.
+###
 ### ⛔ BIGGER CORRECTION 2026-07-17d — rnc_decompress is a RED HERRING. Dumped the DECOMPRESSED OUTPUT
 ### buffer at the success return (ga 0x2cc10 = 0x3a358, mov eax,[0xbfb0]) for the E1-region decodes in
 ### both runs: the unpacked bytes are BYTE-IDENTICAL (00 00 00 2b 17 0f 0f 12 11 ... in both). Also dumped
