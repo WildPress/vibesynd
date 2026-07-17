@@ -229,6 +229,24 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 
 ## Current Status  (update every session)
 
+### ✅✅ ROOT CAUSE COMPLETE 2026-07-17b — the "startup DOS EXEC" is the game spawning INTRO. Dumped the
+### int-21h-AH-4Bh args in FUN_0003e1af: file=Z:\COMMAND.COM, cmdtail="/c intro >nul: /c0 /iirq7 /idma1
+### /iio220" -- i.e. system("intro ...") launches the INTRO player as a CHILD process. (Env block arg14 is
+### at 0x150e64 GAMEO / 0x151c74 MAIN == the SAME address E1's decompress buffer reuses later, confirming
+### that heap slot.) The INTRO child clobbers the parent's low DGROUP scratch at linear 0xbfb0: AFTER the
+### EXEC, GAMEO has GAME STRINGS ("PUMISSIONE\0\0BEGIN MISSION", so g_bfbc="BEGI"/g_bfbe=0x4947) while MAIN
+### has a numeric table (e4 f4 104 12c 15c 188..., so g_bfbc=0x12c/g_bfbe=0x0000). The leftover differs
+### because GAMEO's MEMORY ARENA differs from the original (remaining data-reconstruction imperfections
+### shift heap/child memory), and rnc_decompress's UNINITIALIZED g_bfbe read amplifies that one-word
+### difference into a total decode failure for every rnc resource.
+### => FIX is NOT one byte: it's (a) closing the remaining DGROUP/heap fidelity gaps so GAMEO's arena
+### matches the original (the g_3568-class ongoing work -- then the child leaves identical leftover and
+### g_bfbe matches), or (b) a targeted workaround in the reconstructed build: zero the rnc scratch
+### (0xbfb0..0xbfc4) or force g_bfbe=0 before decodes (makes GAMEO render but is a behavioral patch, not
+### byte-parity). Meta-conclusion: the map/sound gap is a SYMPTOM of arena drift, not an independent bug;
+### the run-pipeline "render a mission" milestone is gated on data-reconstruction fidelity, not on the
+### matching decomp. Full probe recipe (dosbox-dbg write-watch + EXEC-arg dump) in build/dbxsrc.
+###
 ### ✅ ROOT CAUSE FOUND 2026-07-17 — map/sound gap = UNINITIALIZED g_bfbe read seeded by a startup DOS
 ### EXEC that clobbers low DGROUP memory. Chain, fully traced with the dosbox-dbg probe (SAME.EXE, both
 ### runs, deterministic): (1) SegBase(ds)=0 (FLAT) in both, so DGROUP global g_bfbc lives at LINEAR 0xbfbc
