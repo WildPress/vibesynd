@@ -229,37 +229,27 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 
 ## Current Status  (update every session)
 
-### ▶ CONTAINER/SOUND THREAD 2026-07-17e — REAL divergence found (verified by value): GAMEO's sound
-### init fails because container_total_size returns 0. Chain (all dumped, both runs SAME.EXE, cnt-aligned):
-### markers show BOTH runs ENTER sound_driver_init, alloc_init_with_errcode, container_load, xmidi at
-### ~same cnt -- so GAMEO does NOT skip container_load (the coverage "skip" was GAMEO EXITING EARLY: 272
-### fewer offsets inside). Inside container_load: uv = container_total_size(name,5); out = malloc(uv);
-### if(out==0) return 0. MALLOC_SIZE dump: GAMEO uv=0x00000000 vs MAIN uv=0x0000171f -> GAMEO malloc(0)=0
-### -> container_load returns 0 -> sound aborts. container_total_size returns 0 at its validation
-### `if(FUN_0003a9c8(...)) return 0`. FUN_0003a9c8 is STRCMP (dword compare w/ 0xfefefeff/0x80808080
-### zero-byte trick). REFINED with the EXACT validation call (0x17a90, args+result dumped both runs): the
-### gate is `if(strcmp(&version, EXP)) return 0` and `test eax; je pass` PASSES only when strcmp==0 (equal).
-### arg1 = &version (read from the container buffer) = "LX" in BOTH runs (CORRECT -- buffered_read is fine,
-### it is NOT the fault). arg2 = EXP, a HEAP buffer (~0x1c40e0) = "LX\\0\\0not " in MAIN but ALL ZEROS
-### (empty) in GAMEO. So MAIN strcmp("LX","LX")=0 PASS; GAMEO strcmp("LX","")=1 FAIL -> container_total_size
-### returns 0 -> uv=0 -> malloc(0) -> container_load 0 -> sound aborts. So the missing thing is the
-### EXPECTED-MAGIC STRING (arg2) -- a heap buffer populated with "LX..." in MAIN, EMPTY in GAMEO.
-### DEAD ENDS (ruled out, do not rechase): container buffer/version reads FINE ("LX" both); buffered_read is
-### innocent; the earlier "s1 empty" was the WRONG strcmp call; g_a240/g_a244 differ (garbage vs
-### "C:\SYNDICAT") but forcing them did NOT fix uv (correlated symptom of the low-memory EXEC clobber). The
-### parked container_total_size decode shows arg2 as literal 0xb0 -- WRONG; runtime arg2 is a heap pointer.
-### RAW-STACK dump at the call (0x17a90) confirms: arg1=[esp]=&version (stack, "LX" both), arg2=[esp+4]=
-### a HEAP ptr (GAMEO 0x1c4d60 / MAIN 0x1c40e0), NOT 0xb0. So the parked-decode / static disasm of
-### container_total_size (which shows `push 0xb0` right before the call) does NOT match the runtime arg2
-### -- UNRESOLVED PUZZLE: the runtime pushes a heap pointer as arg2 where the linear.bin disasm shows
-### push 0xb0. (Both linear.bin[0x17a90] and obj1_full should match since 0x17a90 > 0x128b8; the ga->manifest
-### map is otherwise correct -- other dumps at 0x17b48/0x17bb9 fired right. So this needs a careful re-look:
-### re-disassemble container_total_size from a KNOWN-good anchor, or single-step-dump esp across 0x17a83..
-### 0x17a90 to see what actually lands at [esp+4].) NEXT (fresh context recommended -- this thread is very
-### deep): (a) resolve the arg2-source puzzle; (b) dump the FULL MAIN arg2 string ("LX\\0\\0not ...") to ID
-### what it is and search the DATA files for it; (c) trace who allocates+fills that heap buffer and why
-### GAMEO leaves it empty. VERIFIED real divergence: GAMEO's expected-magic buffer is empty -> strcmp fails
-### -> sound aborts. (This is the SOUND half; the MAP-TEXT half is still un-investigated and likely separate.)
+### ✅ CONTAINER/SOUND + MAP-TEXT THREAD 2026-07-17f — ROOT CAUSE FOUND AND FIXED (build bug, not game
+### logic). The whole divergence is: GAMEO's DGROUP first 0x28b8 bytes were ALL ZERO. That region holds
+### real initialised data (the "data/*.dat" name table, the container magic "LX" @0xb0, RTL error strings,
+### and font/string data), so anything reading it got zeros -> sound-init strcmp failed AND text did not
+### render. FIX in tools/origbuild.py (make_data_bytes + new le_object_data): reconstruct OBJECT2/OBJECT4
+### from the LE DATA PAGES of SYNDICAT_MAIN.EXE (same method linearize.py uses for object1) and place
+### OBJECT2 at DGROUP 0 / OBJECT4 at 0x14a60 -- the FULL images from offset 0. The old code used the
+### *.linear.bin extracts, which are each cut 0x28b8 (e_lfanew) into the object, and placed them at
+### buf[0x28b8], leaving [0,0x28b8) zero. VERIFIED: full_obj2[0x28b8:] == old linear.bin at 0 mismatches
+### (nothing above 0x28b8 changes); buf[0xb0] is now "LX\\0\\0not enough memory..." (was zeros); buf[0x3568]
+### still ' ' (no regression). Rebuilt GAMEO (same size 1429840). RUNTIME CONFIRMED: intro subtitle text
+### now RENDERS ("DATELINE :1/85 NC (NEW CALENDER)", "TIME : 18:20 HRS", "VR" billboard) where it was blank
+### before (build/rec/dgfix2_*, dgmap_*). RESOLVED the earlier "arg2 puzzle": the strcmp's `push 0xb0` IS a
+### fixup (lefix: src 0x17a84 stype7 -> obj2:+0xb0), so static image shows 0xb0 and the LE loader relocates
+### it to DGROUP_base+0xb0 at runtime -- both the static 0xb0 and the prior runtime "heap ptr 0x1c40e0"
+### readings were correct and consistent, no contradiction. FUN_0003a9c8 confirmed strcmp (derefs BOTH args,
+### 0x3a9c8: mov ecx,[edx]). NOT YET DIRECTLY CONFIRMED (mechanism proven, observation pending): audible
+### sound (harness uses SDL dummy audio) and the world-map PANEL LABELS (couldn't drive input past the intro
+### under Xvfb; the intro auto-advances but xdotool keys/clicks don't reach the SDL window to skip to menu).
+### NEXT (optional polish): get input working in dosrec (window activate/focus) to capture the menu+map and
+### confirm panel labels; a run with real audio to confirm sound. But the data-layer fix is proven by value.
 ###
 ### ⛔ BIGGER CORRECTION 2026-07-17d — rnc_decompress is a RED HERRING. Dumped the DECOMPRESSED OUTPUT
 ### buffer at the success return (ga 0x2cc10 = 0x3a358, mov eax,[0xbfb0]) for the E1-region decodes in

@@ -612,3 +612,19 @@ only changes how far ahead you read perturbs the timing without touching the res
 gap is somewhere the runs part and stay parted, and the honest measure was never the
 instruction stream, it was the output. Lesson relearned, at some expense: diff what the code
 *produces*, not just what it *does*.
+
+## The blank map explained, a hole in the data we were building
+
+The root cause was never in the game code. It was in how we rebuild the data.
+
+Here is the shape of it. The reconstruction assembles DGROUP, the game's initialised data, from two dumps we call OBJECT2 and OBJECT4. Both dumps are cut 0x28b8 bytes into the real object, the same stub-sized cut that afflicts the code dump. We knew that, and we placed each dump 0x28b8 bytes in to line the rest up. What we did not carry was the missing prefix. So the first 0x28b8 bytes of DGROUP, everything below that offset, sat as zeros in our build. Real data lives down there: the table of "data/xxx.dat" filenames, the run-time library's error strings, and a two-byte magic the sound loader checks. All of it read back as zero.
+
+That one hole explains both symptoms at once. The sound loader reads a container's version, compares it against the expected magic held at DGROUP offset 0xb0, and bails if they differ. In the original that magic is "LX". In our build offset 0xb0 was zero, so the compare failed and sound init gave up. The same blank region starved whatever the text drawing leans on, and the map came up wordless.
+
+We nearly missed it because of a puzzle that looked like a contradiction. The compare passes a pointer the disassembly prints as a bare 0xb0, yet a run-time stack dump from the previous session had read it as a heap address near 0x1c40e0. For a while those two readings seemed to fight each other. They do not. That push is relocated. The static image stores the DGROUP offset, 0xb0, and the loader fixes it up to the real address, base plus 0xb0, when the program loads. Both numbers were right all along, one before relocation and one after. The fixup table confirmed it, a thirty-two bit source at exactly that spot targeting object two, offset 0xb0.
+
+The fix is to stop using the cut dumps for data and read the objects straight from the executable's data pages, the same route we already use to rebuild the code. That hands back the full object from offset zero, prefix and all. We checked it does no harm above the cut, the recovered bytes match the old dump at every position we were already getting right, and it fills the part we were getting wrong. Offset 0xb0 now reads "LX", followed by the start of "not enough memory to allocate", which is just the next string sitting behind it.
+
+Rebuilt, the intro speaks. The subtitles render, "DATELINE :1/85 NC", "TIME : 18:20 HRS", where before there was blank space. That is the honest extent of what we have watched with our own eyes. Two things are argued but not yet seen: the sound, because the capture rig runs a dummy audio device, and the world map's own labels, because we could not drive a keypress past the intro under the headless display to reach the menu. The mechanism is proven by the data. The last two confirmations are a matter of getting the harness to cooperate.
+
+There is a lesson here that rhymes with the last one. The previous entries kept mistaking a symptom near the fault for the fault. This time the trap was the opposite, a real contradiction that dissolved once we understood relocation. The blank data was measurable all along. We found it not by staring harder at the instruction trace but by asking what a specific pointer actually pointed at, and then checking whether the byte it named was there. It was not. Everything else followed.

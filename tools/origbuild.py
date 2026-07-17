@@ -24,8 +24,7 @@ import struct, os, shutil, subprocess, sys
 import importlib.util
 
 SEG1 = os.environ.get("ORIGBUILD_SEG1", "build/obj1_full.bin")
-OBJ2 = "inputs/SYNDICAT_MAIN_OBJECT2.linear.bin"
-OBJ4 = "inputs/SYNDICAT_MAIN_OBJECT4.linear.bin"
+EXE  = "inputs/SYNDICAT_MAIN.EXE"     # the genuine LE -- source of the FULL DGROUP data pages
 CODE_BASE = 0x10000
 ENTRY = 0x3d85c
 SHIFT = 0x28b8
@@ -33,12 +32,16 @@ SHIFT = 0x28b8
 # fixup toff IS the code's DGROUP offset (VERIFIED: g_3568 fixup toff=0x3568 = its DGROUP offset).
 OBJ3_DG = 0x13e60
 OBJ4_DG = 0x14a60
-# DATA PLACEMENT: OBJECT2/4.linear.bin are each shifted 0x28b8 (missing their first 0x28b8 bytes, like
-# object1). So place OBJECT2 at buf[0x28b8] and OBJECT4 at buf[0x28b8+0x14a60] -> then buf[dgroup_off]
-# = OBJECTn[dgroup_off - place] = the correct byte (e.g. buf[0x3568]=OBJECT2[0xcb0]=" "). VERIFIED:
-# g_3568=" ","Invalid option","data/gamefm.dll" (was zeros -> game bailed before rendering).
-PLACE_OBJ2 = SHIFT                   # 0x28b8
-PLACE_OBJ4 = SHIFT + OBJ4_DG        # 0x28b8 + 0x14a60
+# DATA PLACEMENT: buf is indexed in 0-based DGROUP coords, so buf[dgroup_off] = DGROUP[dgroup_off].
+# We reconstruct OBJECT2/OBJECT4 from the LE DATA PAGES of SYNDICAT_MAIN.EXE (le_object_data, same
+# method as linearize.py for object1) -- this yields their FULL images from offset 0. OBJECT2 goes at
+# buf[0], OBJECT4 at buf[OBJ4_DG]; OBJECT3 [0x13e60,0x14a60) is BSS (zero).
+# The old build used the *.linear.bin extracts, which are each missing their first 0x28b8 bytes (the
+# e_lfanew stub cut), and placed them at buf[0x28b8] -- so DGROUP [0,0x28b8) was left ZERO. That region
+# holds real initialised data (e.g. the container magic "LX" at 0xb0, the "data/*.dat" name table, the
+# RTL error strings): with it zeroed, container_total_size's magic strcmp failed -> sound/resource init
+# aborted. Using the full LE pages recovers it. (VERIFIED: full_obj2[0x28b8:] == the old linear.bin at
+# 0 mismatches, so nothing above 0x28b8 changes; full_obj2[0xb0] = "LX\0\0not enough memory...".)
 W = "/work/toolchain/watcom10a/WATCOM"
 WORK = "/tmp/gameo"
 
@@ -129,6 +132,21 @@ def emit_obj(name, seg_bytes, fixups, own_seg, own_name, extern_name, entry_off=
     return len(data)
 
 
+def le_object_data(idx0):
+    """Full initialised-data image of LE object idx0 (0-based) from SYNDICAT_MAIN.EXE's DATA PAGES.
+    Same mechanism linearize.py uses for object1: pages are stored SEQUENTIALLY from the header's
+    Data-Pages-Offset (H+0x80). Returns (bytes, vsize). Unlike the *.linear.bin extracts, this
+    includes the object from offset 0 (no 0x28b8 stub cut)."""
+    d = open(EXE, "rb").read()
+    H = struct.unpack_from("<I", d, 0x3c)[0]
+    assert d[H:H+2] in (b"LE", b"LX"), "no LE/LX header"
+    u32 = lambda o: struct.unpack_from("<I", d, H+o)[0]
+    page_size = u32(0x28); objtab = u32(0x40) + H; data_pages_off = u32(0x80)
+    vsize, base, flags, pidx, pcnt = struct.unpack_from("<IIIII", d, objtab + idx0*24)
+    start = data_pages_off + (pidx - 1) * page_size
+    return bytearray(d[start:start + pcnt * page_size]), vsize
+
+
 def make_data_bytes():
     # DGROUP must cover EVERY global, incl. far BSS outliers (~0x108110, e.g. the C heap control
     # block), or refs past the initialised data read garbage -> malloc fails -> game aborts early.
@@ -138,12 +156,14 @@ def make_data_bytes():
     for p in _g.glob("src/**/*.c", recursive=True):
         for m in re.findall(r"\bg_([0-9a-fA-F]+)\b", open(p, encoding="utf-8", errors="replace").read()):
             maxa = max(maxa, int(m, 16))
-    d2 = open(OBJ2, "rb").read(); d4 = open(OBJ4, "rb").read()
-    seglen = max(PLACE_OBJ4 + len(d4) + 0x2000, maxa + 0x1000)
+    d2, _ = le_object_data(1)          # OBJECT2 -> DGROUP offset 0    (FULL, incl. [0,0x28b8) prefix)
+    d4, _ = le_object_data(3)          # OBJECT4 -> DGROUP offset OBJ4_DG
+    seglen = max(OBJ4_DG + len(d4) + 0x2000, maxa + 0x1000)
     buf = bytearray(seglen)
-    buf[PLACE_OBJ2:PLACE_OBJ2+len(d2)] = d2    # OBJECT2 shifted +0x28b8 (it's missing its first 0x28b8)
-    buf[PLACE_OBJ4:PLACE_OBJ4+len(d4)] = d4
-    print("data seglen=0x%x (max global 0x%x); place OBJ2@0x%x OBJ4@0x%x" % (seglen, maxa, PLACE_OBJ2, PLACE_OBJ4))
+    buf[0:len(d2)] = d2                        # OBJECT2 at true DGROUP 0
+    buf[OBJ4_DG:OBJ4_DG+len(d4)] = d4          # OBJECT4 at true DGROUP 0x14a60 (OBJECT3 BSS between -> zero)
+    print("data seglen=0x%x (max global 0x%x); OBJ2@0x0 (%d B) OBJ4@0x%x (%d B); DGROUP prefix recovered"
+          % (seglen, maxa, len(d2), OBJ4_DG, len(d4)))
     return bytes(buf)
 
 
