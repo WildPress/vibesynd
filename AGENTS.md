@@ -245,11 +245,26 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ### fixup (lefix: src 0x17a84 stype7 -> obj2:+0xb0), so static image shows 0xb0 and the LE loader relocates
 ### it to DGROUP_base+0xb0 at runtime -- both the static 0xb0 and the prior runtime "heap ptr 0x1c40e0"
 ### readings were correct and consistent, no contradiction. FUN_0003a9c8 confirmed strcmp (derefs BOTH args,
-### 0x3a9c8: mov ecx,[edx]). NOT YET DIRECTLY CONFIRMED (mechanism proven, observation pending): audible
-### sound (harness uses SDL dummy audio) and the world-map PANEL LABELS (couldn't drive input past the intro
-### under Xvfb; the intro auto-advances but xdotool keys/clicks don't reach the SDL window to skip to menu).
-### NEXT (optional polish): get input working in dosrec (window activate/focus) to capture the menu+map and
-### confirm panel labels; a run with real audio to confirm sound. But the data-layer fix is proven by value.
+### 0x3a9c8: mov ecx,[edx]). Text-render fix is thoroughly confirmed: the intro plays many subtitle
+### scenes and ALL render ("CITY NAME : NEW HESSEN EUROPE", "DATELINE :1/85 NC", "TIME : 18:20 HRS").
+### HARNESS INPUT NOW FIXED (tools/dosrec.sh): SDL 1.2 only takes REAL (XTEST) input to the FOCUSED
+### window, and Xvfb had no WM to grant focus. Added twm (focus-follows-mouse) + pin the DOSBox window
+### to 0,0 + run the input loop concurrently with frame capture. Proven: `type dir` at the DOS prompt
+### now echoes and lists the dir (was dead before).
+###
+### ▶ NEW BLOCKER (separate bug, uncovered by the above) 2026-07-17f: GAMEO does NOT reach the menu.
+### It plays the full intro then HANGS on the last intro scene ("TIME : 18:20 HRS") passively; if you
+### press Escape it EXITS to DOS with `run-time error R6001 - null pointer assignment` (Watcom CRT null-
+### zone check at clean exit -> something wrote through a NULL/near-null pointer during the run). Prior
+### harness runs never saw R6001 because they were KILLED mid-run, never exited cleanly. So there is a
+### null-pointer write in GAMEO's execution, and the intro->menu transition is where it stalls. This is
+### almost certainly NOT the DGROUP data (that content is byte-identical to the original, which runs
+### fine) -- more likely a fixup / still-wrong pointer, cf. the old "low-memory EXEC clobber" and
+### g_a240/g_a244 notes. Because the game never reaches the world map, its PANEL LABELS remain
+### unconfirmed (blocked on this, not on input). Audible sound also still unconfirmed (dummy audio).
+### NEXT: chase the R6001 null write -- trace where linear [0] gets written during the intro->menu
+### transition (gate a write-watch on ga<0x40 / linear 0 in dosbox-dbg), and/or find the intro-end code
+### that should load the menu and see which pointer it derefs null. The DGROUP-prefix fix stands.
 ###
 ### ⛔ BIGGER CORRECTION 2026-07-17d — rnc_decompress is a RED HERRING. Dumped the DECOMPRESSED OUTPUT
 ### buffer at the success return (ga 0x2cc10 = 0x3a358, mov eax,[0xbfb0]) for the E1-region decodes in
