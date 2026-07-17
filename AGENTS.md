@@ -229,6 +229,28 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 
 ## Current Status  (update every session)
 
+### ▶ CONTAINER/SOUND THREAD 2026-07-17e — REAL divergence found (verified by value): GAMEO's sound
+### init fails because container_total_size returns 0. Chain (all dumped, both runs SAME.EXE, cnt-aligned):
+### markers show BOTH runs ENTER sound_driver_init, alloc_init_with_errcode, container_load, xmidi at
+### ~same cnt -- so GAMEO does NOT skip container_load (the coverage "skip" was GAMEO EXITING EARLY: 272
+### fewer offsets inside). Inside container_load: uv = container_total_size(name,5); out = malloc(uv);
+### if(out==0) return 0. MALLOC_SIZE dump: GAMEO uv=0x00000000 vs MAIN uv=0x0000171f -> GAMEO malloc(0)=0
+### -> container_load returns 0 -> sound aborts. container_total_size returns 0 at its validation
+### `if(FUN_0003a9c8(...)) return 0`. FUN_0003a9c8 is STRCMP (dword compare w/ 0xfefefeff/0x80808080
+### zero-byte trick). Dumped the actual strcmp args in the sound path: s1 (buffer magic) = "LX" in MAIN
+### but EMPTY ("", all zeros) in GAMEO; s2 identical. So the compare fails in GAMEO. BUT the buffer AT tbl
+### (=0x90) holds "4c 58"="LX" byte-identical in BOTH (verified: SNDBUF + TBL dumps), and tbl matches. So
+### buffered_read (0x17998, the memory-resident reader) COPIED "LX" out in MAIN but zeros in GAMEO from an
+### identical source buffer -> the divergence is one level deeper, in buffered_read or a global it uses.
+### DEAD ENDS (ruled out, do not rechase): container header/buffer content identical; g_a240/g_a244 differ
+### (garbage vs "C:\SYNDICAT") but forcing them to MAIN's values did NOT fix uv -> correlated symptom of
+### the low-memory EXEC clobber, not the root (same 0xa240/0xbfbc region the system("intro") EXEC clobbers).
+### The strcmp p2 arg read as 0 (likely a different strcmp OR the parked-decode arg is imperfect) -- verify
+### the exact container_total_size strcmp call site (container_total_size 0x179f8, the call after 0x17a8f).
+### NEXT: gate a dump INSIDE buffered_read (0x17998) for the sound-path version read (fd=buffer, off=tbl=0x90,
+### len=2): dump the source addr it copies FROM and the dst, both runs -- find why GAMEO copies zeros. This
+### is a VERIFIED real divergence (unlike the rnc red herring); likely a buffered_read global or the fd/base.
+###
 ### ⛔ BIGGER CORRECTION 2026-07-17d — rnc_decompress is a RED HERRING. Dumped the DECOMPRESSED OUTPUT
 ### buffer at the success return (ga 0x2cc10 = 0x3a358, mov eax,[0xbfb0]) for the E1-region decodes in
 ### both runs: the unpacked bytes are BYTE-IDENTICAL (00 00 00 2b 17 0f 0f 12 11 ... in both). Also dumped
