@@ -106,14 +106,21 @@ drive_input() {
   WID=$(xdotool search --name "DOSBox" 2>/dev/null | tail -1)
   echo "input: DOSBox window id=${WID:-<none found>}" >&2
   [ -n "$WID" ] && xdotool windowraise "$WID" 2>/dev/null
-  xdotool mousemove 320 200 2>/dev/null
+  xdotool mousemove 320 200 2>/dev/null   # initial park: gives the DOSBox window focus (twm follows mouse)
+  # NOTE: we do NOT re-park every iteration. DOS games often use RELATIVE mouse (deltas), so re-warping
+  # the OS pointer to a fixed spot before each command injects spurious motion and makes the in-game
+  # cursor undriveable. Instead: keep the pointer inside the 640x400 render (so focus persists), and use
+  #   home            -> pin the in-game cursor to the top-left corner (repeated big relative up-left moves)
+  #   rmove <dx> <dy> -> relative pointer motion (the reliable way to place a relative/accelerated cursor)
+  #   move  <X> <Y>   -> absolute pointer motion (works only if the game reads absolute mouse)
   while read -r cmd arg; do
-    xdotool mousemove 320 200 2>/dev/null              # keep pointer over the window (focus-follows-mouse)
     case "$cmd" in
       delay) sleep "$(awk "BEGIN{print $arg/1000}")" ;;
       key)   xdotool key --clearmodifiers "$arg" 2>/dev/null ;;
       type)  xdotool type --clearmodifiers "$arg" 2>/dev/null ;;
       move)  xdotool mousemove $arg 2>/dev/null ;;
+      rmove) xdotool mousemove_relative --sync -- $arg 2>/dev/null ;;
+      home)  for _h in 1 2 3 4 5 6 7 8; do xdotool mousemove_relative --sync -- -400 -400 2>/dev/null; done ;;
       click) xdotool click "${arg:-1}" 2>/dev/null ;;
       down)  xdotool mousedown "${arg:-1}" 2>/dev/null ;;
       up)    xdotool mouseup "${arg:-1}" 2>/dev/null ;;

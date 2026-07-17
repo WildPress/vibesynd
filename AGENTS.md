@@ -322,6 +322,19 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ### records the menu->mission navigation (they offered), or add relative-mouse (mousemove_relative) +
 ### calibration to tools/dosrec.sh. The map DASHBOARD text will render (same font path, already proven).
 ###
+### ✅✅ FULLY CONFIRMED 2026-07-17j: navigated GAMEO /s menu -> BEGIN MISSION -> the WORLD MAP, which
+### renders WITH FULL DASHBOARD TEXT: region "WESTERN EUROPE", panel labels "POP/TAX/OWN", values
+### "48000000"/"UNKNOWN", buttons "BRIEF"/"MENU", date "02:1:85NC" (build/rec/bm5_40.png). This is the
+### EXACT screen that previously showed the map with blank panels (old tm2_map.png) -- the "no text on
+### the dashboard" symptom. The DGROUP-prefix fix RESOLVES IT COMPLETELY. Also reached the LOAD-SAVE GAME
+### screen (full list text: EPIPHRON, EMPTY x10, LOAD/SAVE/MENU) (build/rec/bm3_38.png). End-to-end text
+### is proven: intro subtitles -> main menu -> load/save -> world map, all crisp. tools/dosrec.sh now
+### drives the menu: the game reads ABSOLUTE mouse with its own scale/offset (this run, object1 base
+### 0x184cb0: cursor_x ~= 0.94*OS_x + 24; cursor_y is STEEP, ~2.6-3.9*OS_y - offset, so menu rows are only
+### ~13-18 OS px apart -- recalibrate per session). Clicking during the intro SKIPS it to the menu fast.
+### /s bypasses the (still-open) sound-driver-callback crash; with sound ON that crash remains the blocker
+### for an audible/full run. Net: the DGROUP-prefix/sound-magic fix is validated end-to-end.
+###
 ### ⛔ BIGGER CORRECTION 2026-07-17d — rnc_decompress is a RED HERRING. Dumped the DECOMPRESSED OUTPUT
 ### buffer at the success return (ga 0x2cc10 = 0x3a358, mov eax,[0xbfb0]) for the E1-region decodes in
 ### both runs: the unpacked bytes are BYTE-IDENTICAL (00 00 00 2b 17 0f 0f 12 11 ... in both). Also dumped
