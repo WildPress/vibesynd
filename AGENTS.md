@@ -1045,6 +1045,12 @@ is fine.) All-black frames + empty LOG.TXT suggest an early/load-ish fault. DIAG
   and it produces a real C match only if the seed is reorder-reachable at all (may be a genuine compiler
   choice). Closest structural parks to target with such a search: FUN_000363d8 (89.3%), FUN_00026778
   (84.0%), FUN_00026778/commit_funding (76.9%). The object-renaming applier idea is dead (no PURE-ALLOC).
+  TESTED THE SEED-FLIP HYPOTHESIS: ran cpermute (which HAS a simulated-annealer, not just random) at
+  --n 20000 on the two closest -- FUN_00026778 (no exact match) and FUN_000363d8 (annealer plateaus at
+  444/523 = 85%). So the existing AST permuter+annealer already cannot flip the entry allocation seed for
+  these; a "more aggressive statement-reorder permuter" is essentially what the annealer already searches,
+  so it is unlikely to help. CONCLUSION: the ~27 parked fns are at the genuine compiler-determinism floor;
+  there is no bulk-unlock tool. Coverage is already ~99.3% instr / ~77% byte. Do NOT re-grind these two.
   (cont. 23 — +3: 0x28b88 (mouse-driver INT 33h init — FP_SEG empty-pragma transcription, i86.h
   `parm caller [eax dx] value [dx]`), 0x2d9e8 (853B squad-interference test — volatile-alias
   extern also pins ENTRY-LOAD SCHEDULING, not just re-reads; compound `*=` in-place imul; named
