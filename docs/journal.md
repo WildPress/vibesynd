@@ -7,8 +7,9 @@ and each entry tries to show the *process*, not just the result.
 
 The arc runs from the first tiny functions that matched straight away, through the
 discovery that the compiler was Watcom 9.5, into the register-allocation walls that
-clean C can't cross, and out the other side into reading the code for what the game
-actually does. Each entry below is one step of that.
+clean C can't cross, out the other side into reading the code for what the game
+actually does, and finally into standing the whole reconstruction up and running it.
+Each entry below is one step of that.
 
 If a term is unfamiliar, the [foundations pages](README.md) explain the building
 blocks.
@@ -548,3 +549,55 @@ cache that had quietly accumulated correctly-built objects over the project's hi
 build from a clean slate is smaller and is the real, reproducible number. The identifier
 renames are byte-neutral either way, but the moral holds: verify against the clean build,
 not the one your tools happen to have lying around.
+
+---
+
+## Running the reconstruction, and a root cause that wasn't
+
+For most of this project the question has been "do the bytes match". This stretch asked a
+different one: does the whole thing actually run?
+
+It does, and further than expected. The reconstructed executable boots under DOS/4GW and
+draws the Bullfrog intro, the Syndicate main menu, and the world map, pixel for pixel with
+the original. It takes input too. The menu responds to its function keys and the map to
+mouse clicks, so a scripted session walks title to menu to map on its own.
+
+**But two things are missing: the text and the sound.** The map draws its coloured
+territories and the population figure, yet not a single word of it, no region name, no
+BRIEF or MENU button, no date. The original draws all of that. There's no audio either. The
+odd part is that the menu text a screen earlier renders perfectly, so the font engine works.
+Some text lives, some doesn't.
+
+The right tool for "same code, different behaviour" is a trace diff. Our build and the
+original share the exact same machine code for the game. Only the reconstructed data differs.
+So we ran both under a patched DOSBox that logs every instruction executed, launched them as
+the same filename so nothing external could differ, and looked for the first place the two
+streams part. That point is where a wrong byte of data first changed a decision. The two ran
+in lockstep for about a million and a half instructions, then split inside the game's
+decompressor, the routine that unpacks Bullfrog's RNC-compressed resources. So a resource was
+coming out wrong, and since the graphics unpack fine, only some of them.
+
+**Then the part worth writing down.** We dumped the decompressor's state at the split. The
+compressed input was identical in both, byte for byte. The code was identical. The only thing
+that differed was a single word of the decompressor's bit buffer that the routine reads before
+it ever sets it. We chased where that word came from, and it led somewhere strange: at startup
+the game shells out and runs the intro as a child process, and that child scribbles over the
+parent's low memory, right where the decompressor keeps its scratch. Our leftover there
+differed from the original's, and the decompressor read it. It was a tidy story. An
+uninitialised read, dormant in the original for thirty years, woken up by our slightly
+different memory.
+
+**The trouble is it was wrong.** To prove it we forced that word to the value the original
+happens to have, zero, and ran again. The map stayed blank. The decompressor still built an
+empty table. And when we looked once more, the compressed input matched, the initialised state
+matched, the one suspect word now matched, and the output still came out different. So that
+word was a symptom travelling alongside the real fault, not the fault. The decode still
+diverges from something we haven't found, and the root cause is open.
+
+The lesson is the naming lesson wearing a new coat. A plausible cause, traced through half a
+dozen memory dumps, reads like a conclusion long before it is one. It only becomes one when a
+fix confirms it. We would have written a confident, wrong "root cause" into the notes if we
+hadn't run the one experiment that could disprove it. The trace-diff machinery is the durable
+half of this, it will find the real input next time. The story we told ourselves about that
+one word was the fragile half, and the honest entry is the one that says we found the
+neighbourhood, not the culprit.
