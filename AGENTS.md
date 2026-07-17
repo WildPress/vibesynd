@@ -229,6 +229,29 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 
 ## Current Status  (update every session)
 
+### ⚠ CORRECTION 2026-07-17c — the g_bfbe root cause is DISPROVEN by a fix-proof test. Patched the
+### emulator (build/dosbox-dbg) to FORCE g_bfbe=0 at every rnc_decompress entry (mem_writew at ga 0x2cb52
+### = 0x3a29a) and re-ran GAMEO to the map: STILL NO TEXT (build/rec/fix_17.png == the broken map). Then
+### dumped g_be30 right after the huffman build with the hack active, BOTH runs, g_bfbe confirmed 0: GAMEO
+### g_be30 STILL ALL ZEROS, MAIN g_be30 STILL POPULATED (02 53 06 ...). So with the bit-buffer high word
+### equalized to 0, GAMEO's huffman table STILL builds empty while MAIN's builds real. => g_bfbe was a
+### CORRELATED SYMPTOM, not the cause; the decode diverges from a DEEPER difference. Also note: the g_be30
+### divergence shows up at cnt=0 decodes (BEFORE game-main, BEFORE the INTRO EXEC), so the "INTRO child
+### clobbers g_bfbe" story is NOT the mechanism for those. Since rnc_make_huffman (0x3a449) builds the
+### table from the bitstream. FURTHER EVIDENCE (SRC dump at ga 0x2cb68, both runs, clean tracer): E1/E2/E3
+### have BYTE-IDENTICAL RNC headers (52 4e 43 01, same sizes) AND (E1) byte-identical packed bodies, yet
+### GAMEO g_be30=zeros / MAIN g_be30=populated. So it is NOT a wrong resource and NOT g_bfbe --
+### rnc_make_huffman reads some OTHER divergent input and builds an empty table (reads a code-count of 0?).
+### With source+header identical, g_bfbc/g_bfc1 re-inited from that identical header, and g_bfbe forced 0,
+### the huffman build STILL diverges. NEXT (reopened, do NOT trust the g_bfbe blocks below): (a) disassemble
+### rnc_make_huffman 0x3a449 + rnc_input_bits 0x3a3c6 fully and list EVERY DGROUP global they read besides
+### 0xbfbc/0xbfbe/0xbfc1 -- one differs; (b) dump cx/the decoded length after each rnc_input_bits inside the
+### diverging build to catch the first wrong value; (c) re-verify the FULL packed buffer + the memmove
+### output at the table-read position (the header dump did not cover it). Emulator hack REVERTED (tracer =
+### LOG-start only). HONEST STATUS: root cause NOT yet found -- the g_bfbe finding was a correlated symptom.
+### The "gated on data-reconstruction fidelity" meta stance is plausible but UNPROVEN. Read THIS block; the
+### g_bfbe conclusions in the blocks below are superseded/wrong.
+###
 ### ✅✅ ROOT CAUSE COMPLETE 2026-07-17b — the "startup DOS EXEC" is the game spawning INTRO. Dumped the
 ### int-21h-AH-4Bh args in FUN_0003e1af: file=Z:\COMMAND.COM, cmdtail="/c intro >nul: /c0 /iirq7 /idma1
 ### /iio220" -- i.e. system("intro ...") launches the INTRO player as a CHILD process. (Env block arg14 is
