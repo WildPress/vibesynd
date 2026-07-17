@@ -248,10 +248,18 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ### innocent; the earlier "s1 empty" was the WRONG strcmp call; g_a240/g_a244 differ (garbage vs
 ### "C:\SYNDICAT") but forcing them did NOT fix uv (correlated symptom of the low-memory EXEC clobber). The
 ### parked container_total_size decode shows arg2 as literal 0xb0 -- WRONG; runtime arg2 is a heap pointer.
-### NEXT: find where that EXPECTED-MAGIC heap buffer (arg2, ~0x1c40e0 in MAIN) is filled -- disassemble
-### container_total_size's setup of the 2nd strcmp arg (what it pushes / where the "LX...not..." string
-### comes from), then trace who populates it and why GAMEO's is empty (likely another resource GAMEO does
-### not load/init). VERIFIED real divergence (unlike the rnc red herring).
+### RAW-STACK dump at the call (0x17a90) confirms: arg1=[esp]=&version (stack, "LX" both), arg2=[esp+4]=
+### a HEAP ptr (GAMEO 0x1c4d60 / MAIN 0x1c40e0), NOT 0xb0. So the parked-decode / static disasm of
+### container_total_size (which shows `push 0xb0` right before the call) does NOT match the runtime arg2
+### -- UNRESOLVED PUZZLE: the runtime pushes a heap pointer as arg2 where the linear.bin disasm shows
+### push 0xb0. (Both linear.bin[0x17a90] and obj1_full should match since 0x17a90 > 0x128b8; the ga->manifest
+### map is otherwise correct -- other dumps at 0x17b48/0x17bb9 fired right. So this needs a careful re-look:
+### re-disassemble container_total_size from a KNOWN-good anchor, or single-step-dump esp across 0x17a83..
+### 0x17a90 to see what actually lands at [esp+4].) NEXT (fresh context recommended -- this thread is very
+### deep): (a) resolve the arg2-source puzzle; (b) dump the FULL MAIN arg2 string ("LX\\0\\0not ...") to ID
+### what it is and search the DATA files for it; (c) trace who allocates+fills that heap buffer and why
+### GAMEO leaves it empty. VERIFIED real divergence: GAMEO's expected-magic buffer is empty -> strcmp fails
+### -> sound aborts. (This is the SOUND half; the MAP-TEXT half is still un-investigated and likely separate.)
 ###
 ### ⛔ BIGGER CORRECTION 2026-07-17d — rnc_decompress is a RED HERRING. Dumped the DECOMPRESSED OUTPUT
 ### buffer at the success return (ga 0x2cc10 = 0x3a358, mov eax,[0xbfb0]) for the E1-region decodes in
