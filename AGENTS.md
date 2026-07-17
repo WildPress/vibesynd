@@ -266,9 +266,28 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ### the map" was some earlier experimental state, not the immediately-pre-fix build.) Because the game
 ### never reaches the world map, its PANEL LABELS remain unconfirmed (blocked on this, not on input).
 ### Audible sound also still unconfirmed (dummy audio).
-### NEXT: chase the R6001 null write -- trace where linear [0] gets written during the intro->menu
-### transition (gate a write-watch on ga<0x40 / linear 0 in dosbox-dbg), and/or find the intro-end code
-### that should load the menu and see which pointer it derefs null. The DGROUP-prefix fix stands.
+### LOCALISED 2026-07-17g (trace-diff MAIN vs GAMEO, dosbox-dbg write/wild-jump/CALLTGT watches):
+### NOT a null write -- it is a WILD JUMP (int 06 invalid-opcode) through a garbage FUNCTION POINTER.
+### Crash at manifest 0x39345 = `CALL [ESI+0xbbf4]`, a 16-slot TIMER-CALLBACK dispatch (status word
+### @0xbc38==2 gates each call; fn-ptr table @DGROUP 0xbbf4, ESI=slot*4). Slot 0's pointer is garbage.
+### CALLTGT trace (both runs, same object1 so same ga): MAIN slot0 target=0x2470ba (VALID, ABOVE object1
+### -> a RUNTIME-LOADED resource = the sound/music DRIVER loaded by container_load); GAMEO slot0 target=
+### 0x73252064 == ASCII "d %s" (a "%d %s" format-string fragment) = GARBAGE. So GAMEO installs a garbage
+### driver-callback pointer. Install path: the fn-ptr table is filled by FUN_00039625(ptr) (finds first
+### free slot, status=1, stores caller's ptr). Slot 0 is installed by the dispatcher at 0x399f5-0x39a04:
+### `CALL FUN_00039280` (driver thunk, called with EAX=0x67) -> its return EAX is the callback -> pushed
+### -> FUN_00039625. So GAMEO's FUN_00039280 returns garbage (0x73252064) where MAIN returns a valid
+### loaded-driver entry (0x2470ba). => THIS CRASH IS DOWNSTREAM OF THE DGROUP/SOUND FIX: enabling
+### container_load means GAMEO now loads the sound driver and installs its callbacks, but reads one entry
+### wrong. (Region 0xbbf4 is ABOVE 0x28b8 so the DGROUP-prefix fix did not touch it; this bug was always
+### there, only now reached.) NEXT: disassemble/trace FUN_00039280 (the driver thunk, opcode 0x67) to see
+### how it computes the callback -- likely the driver loaded at a wrong address or a pointer-in-driver is
+### read at a wrong offset (reads a format string inside the driver image). Compare the driver load
+### address / the [EDI+0x20] struct field at 0x399e5 between MAIN and GAMEO. The DGROUP-prefix fix stands;
+### GAMEO now boots->full intro (with text)->crashes here instead of reaching the menu.
+### dosbox-dbg (gitignored) now has: NULLWR write-watch, WILDJUMP-origin (last-valid ga + regs), and
+### CTG2 call-target logger at ga 0x2bbfd. Build note: the container needs `apt-get update` BEFORE
+### `apt-get install build-essential libsdl1.2-dev ...` or make is missing (silent build-skip).
 ###
 ### ⛔ BIGGER CORRECTION 2026-07-17d — rnc_decompress is a RED HERRING. Dumped the DECOMPRESSED OUTPUT
 ### buffer at the success return (ga 0x2cc10 = 0x3a358, mov eax,[0xbfb0]) for the E1-region decodes in
