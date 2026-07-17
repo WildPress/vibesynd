@@ -1051,6 +1051,20 @@ is fine.) All-black frames + empty LOG.TXT suggest an early/load-ish fault. DIAG
   these; a "more aggressive statement-reorder permuter" is essentially what the annealer already searches,
   so it is unlikely to help. CONCLUSION: the ~27 parked fns are at the genuine compiler-determinism floor;
   there is no bulk-unlock tool. Coverage is already ~99.3% instr / ~77% byte. Do NOT re-grind these two.
+  **FULL triage tally (all 111 non-matched): 90 STRUCTURAL, 6 REGISTER-ROLE, 15 COMPILE-FAIL, 0 PURE-ALLOC.
+  The 15 "COMPILE-FAIL" are NOT broken -- they are dosemu-flakiness in wcc95_batch.sh under parallel load
+  (90s timeout wedges). ALL 15 compile fine one-at-a-time via plain dosbox + toolchain/watcom95. Real
+  verdicts once compiled: FUN_000128b8 97.4%, z_probe_b 96.8%, FUN_0001b908 96.1%, FUN_00012ae8 92.4%
+  (all same-size, structural), then draw_circle 82.6%, dispatch_jt45 72.6%(970B vs 845 -- jump-table, likely
+  a wrong manifest size), walk_records_2c 63.4%, FUN_0002c218 58.4%, FUN_0002bca8 57.2%, command_list_interp
+  49.4%, container_load 28.1%, FUN_00018d18 21.1%, oneshot_state_setter 20.0%. The same-size close ones are
+  allocation/lea ties: TRIED z_probe_b (`(b+1)` = single lea vs target mov+inc; 4 spellings incl.
+  int-t-copy/++/+=1) -> ALL fold back to lea, confirmed lea-vs-mov+inc tie-break wall (its src header
+  already predicted it). So the compile-fails yield NO easy wins -- same wall class. REMAINING real leads
+  (NOT walls, worth a look): the size-mismatched ones (ours bigger) have genuine structural/logic diffs, and
+  the jump-table ones (dispatch_jt45, etc.) may just have wrong manifest sizes (compare at TRUE size like
+  build_equip_row/FUN_000223c8/FUN_00011d68 did). FIX-worthy toolchain note: regdiff --triage undercounts
+  because it silently drops dosemu-flaky compiles as COMPILE-FAIL; retry-on-fail or use dosbox for a true tally.
   (cont. 23 — +3: 0x28b88 (mouse-driver INT 33h init — FP_SEG empty-pragma transcription, i86.h
   `parm caller [eax dx] value [dx]`), 0x2d9e8 (853B squad-interference test — volatile-alias
   extern also pins ENTRY-LOAD SCHEDULING, not just re-reads; compound `*=` in-place imul; named
