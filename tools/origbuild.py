@@ -157,8 +157,14 @@ def make_data_bytes():
         for m in re.findall(r"\bg_([0-9a-fA-F]+)\b", open(p, encoding="utf-8", errors="replace").read()):
             maxa = max(maxa, int(m, 16))
     d2, _ = le_object_data(1)          # OBJECT2 -> DGROUP offset 0    (FULL, incl. [0,0x28b8) prefix)
-    d4, _ = le_object_data(3)          # OBJECT4 -> DGROUP offset OBJ4_DG
-    seglen = max(OBJ4_DG + len(d4) + 0x2000, maxa + 0x1000)
+    d4, vs4 = le_object_data(3)        # OBJECT4 -> DGROUP offset OBJ4_DG
+    # The TRUE DGROUP vsize (LE-defined) = OBJ4_DG + obj4 vsize. Far "globals" like g_108110 are actually
+    # the C-runtime HEAP control block (~0xd7000 PAST DGROUP), NOT DGROUP members -- covering them in
+    # DGROUP over-sizes it by ~0x100000 and pushes the big-block heap arena (and the sound driver) up,
+    # which crashes the driver at its wrong load address (heap must match the original layout). Setting
+    # ORIGBUILD_TIGHT_DGROUP sizes DGROUP to the LE vsize so the heap lands like MAIN's.
+    dgvsize = OBJ4_DG + vs4            # = 0x14a60 + 0x1c632 = 0x31092 (the genuine DGROUP size)
+    seglen = dgvsize if os.environ.get("ORIGBUILD_TIGHT_DGROUP") else max(OBJ4_DG + len(d4) + 0x2000, maxa + 0x1000)
     buf = bytearray(seglen)
     buf[0:len(d2)] = d2                        # OBJECT2 at true DGROUP 0
     buf[OBJ4_DG:OBJ4_DG+len(d4)] = d4          # OBJECT4 at true DGROUP 0x14a60 (OBJECT3 BSS between -> zero)

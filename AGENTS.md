@@ -364,6 +364,30 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ### were aligned like MAIN's, the driver might not trip. dosbox-dbg markers now: WILDJUMP+regs, 1024-insn
 ### ring (FWD), CTG2, DRVREG+DTBL, LKUP, INST, FIDX, CBWRITE, NULLWR.
 ###
+### ✅ ROOT CAUSE of the sound crash 2026-07-17l (MALLOC size+addr diff, GAMEO vs MAIN): GAMEO's
+### reconstructed DGROUP is ~0xd8000 (880KB) TOO LARGE, which shifts the C-runtime "big-block" heap arena
+### (and the sound driver in it) UP by ~0xe9c80 to a load address where the driver crashes. Proof: the
+### malloc SIZES + ORDER are byte-identical MAIN vs GAMEO (0x32,0x3e910,0x400,0x12a,0x107a,0x7900,0x14b0,
+### 0x2110,0x171f=drv0,0x4e00,0x3caa=drv1) but the ADDRESSES diverge -- two arenas: small allocs (incl.
+### drv0 0x171f) go LOW (below object1); large allocs (drv1 0x3caa) go to a big-block arena right AFTER
+### DGROUP. GAMEO DGROUP base 0x1c4cb0 + seglen 0x109110 -> ends 0x2cddc0 -> drv1 at 0x32dcc8; MAIN DGROUP
+### base 0x1c4030 size ~0x31018 -> drv1 at 0x244048. So drv1 is ~0xe9c80 higher in GAMEO = exactly the
+### DGROUP oversize. WHY oversized: origbuild seglen = maxa+0x1000 where maxa=highest g_ in src (0x108110).
+### But g_108110 is the C-runtime HEAP CONTROL BLOCK, ~0xd7000 PAST the real DGROUP (LE vsize OBJ4_DG+
+### obj4_vsize = 0x14a60+0x1c632 = 0x31092), NOT a DGROUP global. So covering it in DGROUP is wrong.
+### ⚠ NAIVE FIX FAILS: built with ORIGBUILD_TIGHT_DGROUP=1 (seglen=0x31092) -> GAMEO ABORTS INSTANTLY to
+### DOS (build/rec/tight_*): the far globals (g_108110 heap-control-block region) are then UNBACKED memory
+### and the C-runtime heap init/malloc faults. So the tension is real: BIG DGROUP backs g_108110 but shifts
+### the heap (driver crashes); TIGHT DGROUP aligns the heap but g_108110 is unbacked (game aborts). PROPER
+### FIX (real remaining work, delicate): size DGROUP to the LE vsize (0x31092) for heap alignment AND
+### separately BACK the heap region so g_108110/the C-runtime near-heap is valid and grows like the
+### original -- e.g. reserve a BSS/heap object after DGROUP, or get DOS4GW to fault-commit the heap. This
+### is an origbuild + extender/C-runtime-heap-layout change. ORIGBUILD_TIGHT_DGROUP left in as a toggle;
+### DEFAULT stays the working oversized build (renders intro->menu->map with /s). SUMMARY of the whole
+### sound thread: not DGROUP data, not driver load/register, not callback selection (all ruled out by
+### value); it is the HEAP LAYOUT -- GAMEO's oversized DGROUP puts the sound driver at a load address that
+### crashes it (load-address-sensitive, likely an ISA-DMA 64KB-boundary or absolute-ref in the driver).
+###
 ### ⛔ BIGGER CORRECTION 2026-07-17d — rnc_decompress is a RED HERRING. Dumped the DECOMPRESSED OUTPUT
 ### buffer at the success return (ga 0x2cc10 = 0x3a358, mov eax,[0xbfb0]) for the E1-region decodes in
 ### both runs: the unpacked bytes are BYTE-IDENTICAL (00 00 00 2b 17 0f 0f 12 11 ... in both). Also dumped
