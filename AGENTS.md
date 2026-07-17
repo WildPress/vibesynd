@@ -260,8 +260,12 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ### null-pointer write in GAMEO's execution, and the intro->menu transition is where it stalls. This is
 ### almost certainly NOT the DGROUP data (that content is byte-identical to the original, which runs
 ### fine) -- more likely a fixup / still-wrong pointer, cf. the old "low-memory EXEC clobber" and
-### g_a240/g_a244 notes. Because the game never reaches the world map, its PANEL LABELS remain
-### unconfirmed (blocked on this, not on input). Audible sound also still unconfirmed (dummy audio).
+### g_a240/g_a244 notes. NOT A REGRESSION (verified by A/B build): the PRE-FIX prefix-zero build exits
+### INSTANTLY with no render at all (resource load fails on the zeroed "data/*.dat" table), while the
+### fixed build plays the whole intro with text -- clear forward progress. (The old tm2_map.png "reached
+### the map" was some earlier experimental state, not the immediately-pre-fix build.) Because the game
+### never reaches the world map, its PANEL LABELS remain unconfirmed (blocked on this, not on input).
+### Audible sound also still unconfirmed (dummy audio).
 ### NEXT: chase the R6001 null write -- trace where linear [0] gets written during the intro->menu
 ### transition (gate a write-watch on ga<0x40 / linear 0 in dosbox-dbg), and/or find the intro-end code
 ### that should load the menu and see which pointer it derefs null. The DGROUP-prefix fix stands.
