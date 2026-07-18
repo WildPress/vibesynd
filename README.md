@@ -18,14 +18,17 @@ reproduces what the original does, checked instruction by instruction against th
 441 of those (62% of the bytes) are byte-for-byte identical. The rest are provably equivalent without
 being byte-identical, and they keep their own colours so the distinction stays visible on the map.
 
-**Green** compiles byte-identical. **Cyan** is *register-only*: the same instructions, the target just
-holds a value in a different register. That is a provable zero behavioural difference, it simply can't be
-forced from C. **Blue** is *near-identical*: one or two equivalent encoding idioms differ (for example
-`xor edx,edx; mov dx,ax` vs `mov ecx,eax; and ecx,0xffff`, both zero-extend), almost certainly the same
-behaviour. **Amber** is *structural*: a real instruction-shape difference still to close, or a Watcom
-codegen tie that no C spelling reaches.
+**Green** compiles byte-identical from C. **Pink** is *decoded assembly*: the game's own hand-written
+assembly (the graphics and sound routines), which is byte-exact too but reconstructed as commented `.asm`
+listings rather than C, because no C source reproduces it (see [blitters](docs/blitter.md)). **Cyan** is
+*register-only*: the same instructions, the target just holds a value in a different register. That is a
+provable zero behavioural difference, it simply can't be forced from C. **Blue** is *near-identical*: one
+or two equivalent encoding idioms differ (for example `xor edx,edx; mov dx,ax` vs `mov ecx,eax; and
+ecx,0xffff`, both zero-extend), almost certainly the same behaviour. **Amber** is *structural*: a real
+instruction-shape difference still to close, or a Watcom codegen tie that no C spelling reaches.
 
-Green, cyan, and blue are done on the behavioural axis. Amber is where any genuine difference would live.
+Green and pink are byte-exact. Cyan and blue are done on the behavioural axis. Amber is where any genuine
+difference would live.
 Regenerate with `python tools/treemap.py`. A live, hover-able version and a matched-over-time chart are in
 `tools/progress.py` (local `dashboard/progress.html`).
 

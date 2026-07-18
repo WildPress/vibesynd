@@ -25,7 +25,7 @@ LABEL_H = 15                  # subsystem label strip
 
 BG = "#0d1117"; CARD = "#0d1117"; STROKE = "#0d1117"
 INK = "#e6edf3"; MUTED = "#8b949e"
-COL = {"matched": "#2ea043", "equivalent": "#22d3ee", "near": "#388bfd", "parked": "#d29922", "no-c": "#545d68"}
+COL = {"matched": "#2ea043", "decoded": "#ff6ac1", "equivalent": "#22d3ee", "near": "#388bfd", "parked": "#d29922", "no-c": "#545d68"}
 
 
 # ---- squarified treemap (Bruls/Huizing/van Wijk; port of the `squarify` package) -------------
@@ -101,6 +101,11 @@ def main():
         rel = os.path.relpath(p, os.path.join(ROOT, "src")).replace("\\", "/")
         SRC[os.path.basename(p)[:-2]] = os.path.dirname(rel) or "unclassified"
 
+    # ASM: functions we've decoded as hand-written assembly. They compile byte-exact from a raw
+    # `db`-transcription .c, but the readable form is a commented .asm listing (not C), so they get
+    # their own colour (pink) rather than plain "matched" green -- see docs/blitter.md.
+    ASM = {os.path.basename(p)[:-4] for p in glob.glob(os.path.join(ROOT, "src", "**", "*.asm"), recursive=True)}
+
     # equivalence.json (from classify_equiv.py): register-normalised verdict per unmatched fn.
     #   equivalent (cyan) = REGISTER-ROLE/PURE-ALLOC/MATCH: same instructions, only a register/slot
     #     differs -> PROVABLY zero behavioural difference, just not byte-identical.
@@ -119,6 +124,8 @@ def main():
                 NEAR.add(n)
 
     def klass(f):
+        if f["name"] in ASM:
+            return "decoded"
         if f.get("status") == "matched":
             return "matched"
         has_src = f["name"] in SRC or ("FUN_" + f["addr"]) in SRC
@@ -137,12 +144,15 @@ def main():
 
     tot_by = sum(f["size"] for f in man)
     mby = sum(f["size"] for f in man if klass(f) == "matched")
+    dby = sum(f["size"] for f in man if klass(f) == "decoded")
     mfn = sum(1 for f in man if klass(f) == "matched")
+    dfn = sum(1 for f in man if klass(f) == "decoded")
     efn = sum(1 for f in man if klass(f) == "equivalent")
     nefn = sum(1 for f in man if klass(f) == "near")
     pfn = sum(1 for f in man if klass(f) == "parked")
     nfn = sum(1 for f in man if klass(f) == "no-c")
-    covb = 100.0 * mby / tot_by if tot_by else 0
+    # byte-exact = matched-from-C (green) + decoded hand-asm (pink); both reproduce exact bytes
+    covb = 100.0 * (mby + dby) / tot_by if tot_by else 0
 
     # areas
     x0, y0 = PAD, HEAD
@@ -166,7 +176,7 @@ def main():
             body.append(rect(fx, fyy, fw, fhh, COL[klass(f)]))
         body.append(rect(ix, iy, iw, ih, "none", stroke="#161b22", sw=1))   # subsystem outline
         if show_label:
-            mtc = sum(1 for f in fs if klass(f) in ("matched", "equivalent"))
+            mtc = sum(1 for f in fs if klass(f) in ("matched", "decoded", "equivalent", "near"))
             lbl = f"{name}  {mtc}/{len(fs)}"
             body.append(text(ix + 4, iy + 11, lbl, fill=INK, size=10, weight="bold", outline=True))
 
@@ -174,16 +184,17 @@ def main():
     hdr = [
         rect(0, 0, W, H, CARD),
         text(PAD, 28, "Syndicate — matching decompilation", fill=INK, size=17, weight="bold"),
-        text(PAD, 50, f"{mfn} byte-matched + {efn} register-only + {nefn} near-identical = "
-                      f"{mfn+efn+nefn} of {len(man)} behaviourally complete · treemap area = code size",
+        text(PAD, 50, f"{mfn} matched in C + {dfn} decoded asm + {efn} register-only + {nefn} near-identical = "
+                      f"{mfn+dfn+efn+nefn} of {len(man)} behaviourally complete · treemap area = code size",
              fill=MUTED, size=11),
         text(W - PAD, 30, f"{covb:.1f}%", fill=COL["matched"], size=26, weight="bold", anchor="end"),
         text(W - PAD, 48, "of code bytes byte-exact", fill=MUTED, size=11, anchor="end"),
     ]
     # legend (on the title row, centred — clear of the subtitle line and the right-aligned %)
-    lx = W / 2 - 215
-    for i, (k, lab, n) in enumerate([("matched", "byte-exact", mfn), ("equivalent", "register-only", efn),
-                                     ("near", "near-identical", nefn), ("parked", "structural", pfn)]):
+    lx = W / 2 - 300
+    for i, (k, lab, n) in enumerate([("matched", "byte-exact C", mfn), ("decoded", "decoded asm", dfn),
+                                     ("equivalent", "register-only", efn), ("near", "near-identical", nefn),
+                                     ("parked", "structural", pfn)]):
         cx = lx + i * 120
         hdr.append(rect(cx, 18, 11, 11, COL[k], stroke="none"))
         hdr.append(text(cx + 16, 27, f"{lab} {n}", fill=MUTED, size=11))
@@ -196,7 +207,7 @@ def main():
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     open(OUT, "w", encoding="utf-8").write(svg)
     print(f"wrote {OUT}  ({len(svg):,} bytes)")
-    print(f"  {mfn} matched / {efn} register-only / {nefn} near-identical / {pfn} structural across {len(subs)} subsystems, "
+    print(f"  {mfn} matched / {dfn} decoded-asm / {efn} register-only / {nefn} near-identical / {pfn} structural across {len(subs)} subsystems, "
           f"{covb:.1f}% bytes")
     print("  embed in README:  ![Decompilation progress](docs/treemap.svg)")
 
