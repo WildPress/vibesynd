@@ -90,6 +90,12 @@ near-miss. They are the vocabulary of "equivalent C spellings that flip one code
     via `xor eax,eax; mov ax,bx`. In effect: inlining a value's uses <-> forcing it into a
     persistent register. This cracked 0x37738 and the previously-parked 0x34118.
   * statement / declaration reorder: shuffle independent statements; changes scheduling.
+  * volatile injection: qualify a scalar local `volatile`. Forces Watcom to RELOAD it on every
+    read (defeats common-subexpression-elimination / value-numbering) and to RETAIN an otherwise-
+    dead store. The one lever for two wall classes no other mutation reaches: CSE-collapse (the
+    target reads a value twice, -oneatx folds the two reads into one) and dead-store retention
+    (the target keeps a provably-dead init our 9.5b eliminates). Sparse by design -- blanket
+    volatile over-reloads; the search tries it on one local at a time.
 
 =============================================================================
 USAGE
@@ -352,6 +358,22 @@ def type_sites(body):
             out.append(stmt.type.type)
     return out
 
+def volatile_sites(body):
+    """Top-level scalar local Decls that can be marked `volatile`. Making a local volatile forces
+    Watcom to RELOAD it on every read (defeats CSE / value-numbering) and to RETAIN otherwise-dead
+    stores. This is the missing lever for two wall classes no other mutation reaches:
+      - CSE-collapse: the target reads a value TWICE (e.g. *p into a check reg then again as the
+        value), but -oneatx common-subexpression-eliminates the two reads into one (0x365e8);
+      - dead-store retention: the target keeps a provably-dead init (0x27428 `mov edx,1`) our 9.5b
+        eliminates. A volatile-qualified slot is not dead-store-eliminated."""
+    out = []
+    for stmt in (body.block_items or []):
+        if isinstance(stmt, c_ast.Decl) and isinstance(stmt.type, c_ast.TypeDecl) \
+           and isinstance(stmt.type.type, c_ast.IdentifierType) \
+           and "volatile" not in (stmt.quals or []):
+            out.append(stmt)
+    return out
+
 def _count_id(root, name):
     """Number of ID references to `name` anywhere under `root`."""
     c = [0]
@@ -402,7 +424,8 @@ def declblock_len(body):
 
 
 def apply_mutations(ast, loop_flags, comm_flags, rewrite_flags, hoist_types,
-                    local_types, order_seed, inline_flags=(), decl_perm=None, pads=()):
+                    local_types, order_seed, inline_flags=(), decl_perm=None, pads=(),
+                    volatile_flags=()):
     """Apply one variant's chosen mutations to `ast` in place. Each *_flags tuple is
     parallel to the corresponding *_sites list. Order of application matters and is chosen
     so earlier structural edits don't invalidate later site lookups: loop-form swaps and
@@ -522,6 +545,19 @@ def apply_mutations(ast, loop_flags, comm_flags, rewrite_flags, hoist_types,
             k += 1
         body.block_items = items
 
+    # (10) VOLATILE injection: qualify flagged scalar locals `volatile` -> Watcom reloads on every
+    # read (defeats CSE / value-numbering) and retains otherwise-dead stores. Applied last; index
+    # drift vs the seed's site list is a harmless no-op, like the other stochastic dimensions.
+    if volatile_flags:
+        vs = volatile_sites(body)
+        for i, on in enumerate(volatile_flags):
+            if on and i < len(vs):
+                d = vs[i]
+                if "volatile" not in d.quals:
+                    d.quals = d.quals + ["volatile"]
+                if hasattr(d.type, "quals") and "volatile" not in d.type.quals:
+                    d.type.quals = d.type.quals + ["volatile"]
+
 
 # ---------------------------------------------------------------------------
 # Scoring: relocation-aware byte comparison against the target.
@@ -610,7 +646,7 @@ def rand_pads(rng, ndecl):
     return tuple((rng.randint(0, ndecl), rng.choice(PAD_TYPES)) for _ in range(rng.randint(1, 2)))
 
 
-def rand_spec(rng, nloop, ncomm, nrw, nhoist, ntype, ninline, ndecl, ID):
+def rand_spec(rng, nloop, ncomm, nrw, nhoist, ntype, ninline, ndecl, ID, nvol=0):
     """One random variant spec: a FEW simultaneous mutations (most sites off)."""
     return (tuple(rng.randint(0, 1) for _ in range(nloop)),
             tuple(rng.randint(0, 1) for _ in range(ncomm)),
@@ -620,7 +656,8 @@ def rand_spec(rng, nloop, ncomm, nrw, nhoist, ntype, ninline, ndecl, ID):
             rng.randint(0, 10**9) if rng.random() < 0.5 else None,
             tuple(rng.randint(0, 1) for _ in range(ninline)),
             tuple(rng.sample(range(ndecl), ndecl)) if (ndecl >= 2 and rng.random() < 0.5) else ID,
-            rand_pads(rng, ndecl))
+            rand_pads(rng, ndecl),
+            tuple(1 if rng.random() < 0.15 else 0 for _ in range(nvol)))   # volatile: sparse
 
 
 def perturb(spec, rng):
@@ -631,9 +668,10 @@ def perturb(spec, rng):
                                    list(spec[4]), spec[5], list(spec[6]))
     dp = list(spec[7]) if spec[7] is not None else None
     pads = list(spec[8]) if len(spec) > 8 else []
+    vf = list(spec[9]) if len(spec) > 9 else []
     ndecl = len(dp) if dp is not None else 0
     dims = ["od", "pad"]                                # 'pad' always available (can add the first pad)
-    for nm, seq in (("lf", lf), ("cf", cf), ("rw", rw), ("hf", hf), ("lt", lt), ("inf", inf)):
+    for nm, seq in (("lf", lf), ("cf", cf), ("rw", rw), ("hf", hf), ("lt", lt), ("inf", inf), ("vf", vf)):
         if seq: dims.append(nm)
     if dp and len(dp) >= 2: dims.append("dp")
     d = rng.choice(dims)
@@ -641,6 +679,7 @@ def perturb(spec, rng):
     elif d == "cf": i = rng.randrange(len(cf)); cf[i] ^= 1
     elif d == "rw": i = rng.randrange(len(rw)); rw[i] ^= 1
     elif d == "inf": i = rng.randrange(len(inf)); inf[i] ^= 1
+    elif d == "vf": i = rng.randrange(len(vf)); vf[i] ^= 1
     elif d == "hf": i = rng.randrange(len(hf)); hf[i] = None if rng.random() < 0.4 else rng.choice(TYPES)
     elif d == "lt": i = rng.randrange(len(lt)); lt[i] = None if rng.random() < 0.4 else rng.choice(TYPES)
     elif d == "od": od = None if rng.random() < 0.3 else rng.randint(0, 10**9)
@@ -658,7 +697,7 @@ def perturb(spec, rng):
         else:
             pads.append((rng.randint(0, max(ndecl, 0)), rng.choice(PAD_TYPES)))   # add
     return (tuple(lf), tuple(cf), tuple(rw), tuple(hf), tuple(lt), od, tuple(inf),
-            tuple(dp) if dp is not None else None, tuple(pads))
+            tuple(dp) if dp is not None else None, tuple(pads), tuple(vf))
 
 
 def main():
@@ -698,9 +737,10 @@ def main():
     nhoist = len(hoist_sites(body_of(ast0))); ntype = len(type_sites(body_of(ast0)))
     ninline = len(inline_sites(body_of(ast0)))
     ndecl = declblock_len(body_of(ast0))
+    nvol = len(volatile_sites(body_of(ast0)))
     print(f"{name}: {nloop} loop, {ncomm} commutative, {nrw} rewrite, {nhoist} hoist, "
-          f"{ntype} type, {ninline} inline, {ndecl} decl sites, +stack-pad; sampling {N} variants, "
-          f"target={len(target)}B", flush=True)
+          f"{ntype} type, {ninline} inline, {ndecl} decl, {nvol} volatile sites, +stack-pad; "
+          f"sampling {N} variants, target={len(target)}B", flush=True)
 
     # ---- PHASE 1: broad seed sample (identity + decl-block perms + random combos) ----
     # Reserve most of the budget for annealing; the seed just needs to find a good starting point.
@@ -710,7 +750,7 @@ def main():
     SEED = min(N, max(400, N // 3))
     seen, specs = set(), []
     ident = (tuple([0]*nloop), tuple([0]*ncomm), tuple([0]*nrw),
-             tuple([None]*nhoist), tuple([None]*ntype), None, tuple([0]*ninline), ID, ())
+             tuple([None]*nhoist), tuple([None]*ntype), None, tuple([0]*ninline), ID, (), tuple([0]*nvol))
     specs.append(ident); seen.add(ident)
     base = ident[:7]                                   # decl-block perms with everything else identity
     if 2 <= ndecl <= 7:
@@ -725,7 +765,7 @@ def main():
             key = base + (tuple(rng.sample(range(ndecl), ndecl)),)
             if key not in seen: seen.add(key); specs.append(key)
     while len(specs) < SEED:
-        key = rand_spec(rng, nloop, ncomm, nrw, nhoist, ntype, ninline, ndecl, ID)
+        key = rand_spec(rng, nloop, ncomm, nrw, nhoist, ntype, ninline, ndecl, ID, nvol)
         if key not in seen: seen.add(key); specs.append(key)
 
     def render(spec):
@@ -733,7 +773,8 @@ def main():
         try:
             apply_mutations(a, spec[0], spec[1], spec[2], spec[3], spec[4], spec[5], spec[6],
                             spec[7] if len(spec) > 7 else None,
-                            spec[8] if len(spec) > 8 else ())
+                            spec[8] if len(spec) > 8 else (),
+                            spec[9] if len(spec) > 9 else ())
             return watcom_out(GEN.visit(a))            # restore __far/__near for compilation
         except Exception:
             return "void __broken(void){}"             # unrenderable -> will fail to match
