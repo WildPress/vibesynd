@@ -1,954 +1,1091 @@
-; FUN_0004287e @ 0004287e  (3636 bytes) -- hand-written assembly, reconstructed listing.
-; Original bytes disassembled from the game image; call targets and known globals
-; resolved to names. The build uses FUN_0004287e.c (db-transcription); this listing is the
-; readable companion. See docs/game-vs-library.md for why these are hand asm.
+; FUN_0004287e @ 0x4287e  (3636 bytes) -- hand-written assembly (fully commented).
 ;
+; iso_scene_walk: the isometric scene/render walker. It visits the map cells around
+; the current view centre, and for each cell that holds a visible object it dispatches
+; a draw. This is not a pixel blitter. It decides *what* to draw and in what order,
+; then hands each object to the visibility-mask merge FUN_000418ac.
+;
+; Registers in (a private, non-C convention -- another sign this is hand asm):
+;   esi = base of the cell pointer-table. It is an array of object-record pointers,
+;         one per map cell, laid out so that a step of 0x200 bytes (128 dword slots)
+;         moves one row and a step of 4 bytes moves one column. The walker reads it at
+;         fixed byte offsets that trace a diamond around the centre.
+;   edx = cell countdown. Decremented once per cell; when it goes negative the walk
+;         stops (normal completion). The caller sets how many cells to visit.
+;   ebx = scratch. Across one cell it holds, in turn: the object-record pointer, then
+;         the record's type byte, then the type-table index, then the draw-data value.
+;   ecx = scratch screen column. Low 16 bits (cx) double as the early-stop signal.
+;   [ebp-1] = one-shot "setup done" flag, also the low byte of the return value.
+;
+; Globals:
+;   0x5358  g_map_cols   subtracted from each cell's computed column to place it
+;                        relative to the visible strip.
+;   0x5360  type-table base. A record's type indexes a 0x18-byte (24-byte) entry here
+;           (type*0x18 + base); the entry holds six dword draw-data fields at offsets
+;           0, 4, 8, 0xc, 0x10, 0x14. Each cell reads one of the six. The fetched field
+;           is itself table-relative, so it is re-based (+0x5360) into a pointer before
+;           the draw call.
+;   0xe144  (reached inside the callees) the 16-slot visibility-mask accumulator.
+;
+; Callees:
+;   FUN_00046188  one-shot per-call setup. Zeroes the 16-slot mask accumulator at
+;                 0xe144. Guarded by [ebp-1] so it runs at most once, on the first
+;                 object actually drawn this call.
+;   FUN_000418ac  the 16x-unrolled visibility-mask OR-merge. Given a mask block in ebx
+;                 it folds that object's coverage into the accumulator.
+;
+; The per-cell test is the same each time:
+;   1. column = [esi]+offset ; column -= g_map_cols
+;   2. reject the cell if column >= 0xc000 or column < 0 (off the visible strip)
+;   3. rec = [esi+offset]    ; type = rec[byte offset]  (a per-cell height byte)
+;   4. reject if type <= 4   (empty / non-drawable tiles)
+;   5. entry = type*0x18 + type-table base ; data = entry[draw-slot]
+;   6. reject if data == 0   (this layer has nothing for this type)
+;   7. first drawn object only: call the one-shot setup, set the flag
+;   8. ebx = data + type-table base ; call the mask merge
+;   9. if cx <= 0 after the merge, stop early
+;
+; The body below is that same test unrolled ~36 times, once per cell, each with its own
+; cell offset, type-byte offset, and draw-slot. The offsets step through neighbouring
+; cells in an isometric diamond and the sequence walks from the far cells inward toward
+; the centre, so nearer objects are merged last. The first two or three iterations are
+; commented line by line; the rest carry a one-line banner noting the offset so the walk
+; pattern is visible without repeating 36 identical blocks.
+;
+; The two shared exits are labelled: .walk_done (all cells visited, or the last cell
+; rejected) returns AH=0, and .walk_early_out (cx fell to <=0) returns AH=1. Either way
+; AL is the [ebp-1] flag: 1 if at least one object was drawn, 0 if none. The build uses
+; FUN_0004287e.c (the raw bytes as a db-transcription); this .asm is the readable
+; companion. See docs/game-vs-library.md and docs/blitter.md.
+
 FUN_0004287e:
-        push    ebp                              ; 55
-        mov     ebp, esp                         ; 8bec
-        add     esp, -4                          ; 83c4fc
-        mov     byte ptr [ebp - 1], 0            ; c645ff00
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c150e0000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0xa18                       ; 81c1180a0000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x428ed                          ; 7d48
-        cmp     ecx, 0                           ; 83f900
-        jl      0x428ed                          ; 7c43
-        mov     ebx, dword ptr [esi + 0xa18]     ; 8b9e180a0000
-        movzx   ebx, byte ptr [ebx + 0xb]        ; 0fb65b0b
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x428ed                          ; 7e34
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx]             ; 8b1b
-        cmp     ebx, 0                           ; 83fb00
-        je      0x428ed                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x428d4                          ; 7505
-        call    0x46188                          ; e8b4380000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e8c9efffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8ebe0d0000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8cb00d0000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0xa14                       ; 81c1140a0000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x42953                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x42953                          ; 7c44
-        mov     ebx, dword ptr [esi + 0xa14]     ; 8b9e140a0000
-        movzx   ebx, byte ptr [ebx + 0xb]        ; 0fb65b0b
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x42953                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 0x10]      ; 8b5b10
-        cmp     ebx, 0                           ; 83fb00
-        je      0x42953                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x4293a                          ; 7505
-        call    0x46188                          ; e84e380000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e863efffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e580d0000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c4a0d0000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x814                       ; 81c114080000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x429b9                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x429b9                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x814]     ; 8b9e14080000
-        movzx   ebx, byte ptr [ebx + 0xb]        ; 0fb65b0b
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x429b9                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 8]         ; 8b5b08
-        cmp     ebx, 0                           ; 83fb00
-        je      0x429b9                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x429a0                          ; 7505
-        call    0x46188                          ; e8e8370000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e8fdeeffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8ef20c0000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8ce40c0000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0xa14                       ; 81c1140a0000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x42a1f                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x42a1f                          ; 7c44
-        mov     ebx, dword ptr [esi + 0xa14]     ; 8b9e140a0000
-        movzx   ebx, byte ptr [ebx + 0xa]        ; 0fb65b0a
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x42a1f                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 0xc]       ; 8b5b0c
-        cmp     ebx, 0                           ; 83fb00
-        je      0x42a1f                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x42a06                          ; 7505
-        call    0x46188                          ; e882370000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e897eeffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e8c0c0000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c7e0c0000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x814                       ; 81c114080000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x42a85                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x42a85                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x814]     ; 8b9e14080000
-        movzx   ebx, byte ptr [ebx + 0xa]        ; 0fb65b0a
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x42a85                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 4]         ; 8b5b04
-        cmp     ebx, 0                           ; 83fb00
-        je      0x42a85                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x42a6c                          ; 7505
-        call    0x46188                          ; e81c370000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e831eeffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e260c0000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c180c0000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x810                       ; 81c110080000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x42aeb                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x42aeb                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x810]     ; 8b9e10080000
-        movzx   ebx, byte ptr [ebx + 0xa]        ; 0fb65b0a
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x42aeb                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 0x14]      ; 8b5b14
-        cmp     ebx, 0                           ; 83fb00
-        je      0x42aeb                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x42ad2                          ; 7505
-        call    0x46188                          ; e8b6360000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e8cbedffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8ec00b0000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8cb20b0000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x814                       ; 81c114080000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x42b50                          ; 7d48
-        cmp     ecx, 0                           ; 83f900
-        jl      0x42b50                          ; 7c43
-        mov     ebx, dword ptr [esi + 0x814]     ; 8b9e14080000
-        movzx   ebx, byte ptr [ebx + 9]          ; 0fb65b09
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x42b50                          ; 7e34
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx]             ; 8b1b
-        cmp     ebx, 0                           ; 83fb00
-        je      0x42b50                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x42b37                          ; 7505
-        call    0x46188                          ; e851360000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e866edffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e5b0b0000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c4d0b0000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x810                       ; 81c110080000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x42bb6                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x42bb6                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x810]     ; 8b9e10080000
-        movzx   ebx, byte ptr [ebx + 9]          ; 0fb65b09
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x42bb6                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 0x10]      ; 8b5b10
-        cmp     ebx, 0                           ; 83fb00
-        je      0x42bb6                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x42b9d                          ; 7505
-        call    0x46188                          ; e8eb350000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e800edffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8ef50a0000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8ce70a0000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x610                       ; 81c110060000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x42c1c                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x42c1c                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x610]     ; 8b9e10060000
-        movzx   ebx, byte ptr [ebx + 9]          ; 0fb65b09
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x42c1c                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 8]         ; 8b5b08
-        cmp     ebx, 0                           ; 83fb00
-        je      0x42c1c                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x42c03                          ; 7505
-        call    0x46188                          ; e885350000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e89aecffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e8f0a0000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c810a0000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x810                       ; 81c110080000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x42c82                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x42c82                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x810]     ; 8b9e10080000
-        movzx   ebx, byte ptr [ebx + 8]          ; 0fb65b08
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x42c82                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 0xc]       ; 8b5b0c
-        cmp     ebx, 0                           ; 83fb00
-        je      0x42c82                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x42c69                          ; 7505
-        call    0x46188                          ; e81f350000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e834ecffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e290a0000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c1b0a0000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x610                       ; 81c110060000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x42ce8                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x42ce8                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x610]     ; 8b9e10060000
-        movzx   ebx, byte ptr [ebx + 8]          ; 0fb65b08
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x42ce8                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 4]         ; 8b5b04
-        cmp     ebx, 0                           ; 83fb00
-        je      0x42ce8                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x42ccf                          ; 7505
-        call    0x46188                          ; e8b9340000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e8ceebffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8ec3090000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8cb5090000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x60c                       ; 81c10c060000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x42d4e                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x42d4e                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x60c]     ; 8b9e0c060000
-        movzx   ebx, byte ptr [ebx + 8]          ; 0fb65b08
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x42d4e                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 0x14]      ; 8b5b14
-        cmp     ebx, 0                           ; 83fb00
-        je      0x42d4e                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x42d35                          ; 7505
-        call    0x46188                          ; e853340000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e868ebffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e5d090000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c4f090000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x610                       ; 81c110060000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x42db3                          ; 7d48
-        cmp     ecx, 0                           ; 83f900
-        jl      0x42db3                          ; 7c43
-        mov     ebx, dword ptr [esi + 0x610]     ; 8b9e10060000
-        movzx   ebx, byte ptr [ebx + 7]          ; 0fb65b07
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x42db3                          ; 7e34
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx]             ; 8b1b
-        cmp     ebx, 0                           ; 83fb00
-        je      0x42db3                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x42d9a                          ; 7505
-        call    0x46188                          ; e8ee330000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e803ebffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8ef8080000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8cea080000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x60c                       ; 81c10c060000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x42e19                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x42e19                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x60c]     ; 8b9e0c060000
-        movzx   ebx, byte ptr [ebx + 7]          ; 0fb65b07
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x42e19                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 0x10]      ; 8b5b10
-        cmp     ebx, 0                           ; 83fb00
-        je      0x42e19                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x42e00                          ; 7505
-        call    0x46188                          ; e888330000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e89deaffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e92080000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c84080000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x40c                       ; 81c10c040000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x42e7f                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x42e7f                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x40c]     ; 8b9e0c040000
-        movzx   ebx, byte ptr [ebx + 7]          ; 0fb65b07
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x42e7f                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 8]         ; 8b5b08
-        cmp     ebx, 0                           ; 83fb00
-        je      0x42e7f                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x42e66                          ; 7505
-        call    0x46188                          ; e822330000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e837eaffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e2c080000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c1e080000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x60c                       ; 81c10c060000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x42ee5                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x42ee5                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x60c]     ; 8b9e0c060000
-        movzx   ebx, byte ptr [ebx + 6]          ; 0fb65b06
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x42ee5                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 0xc]       ; 8b5b0c
-        cmp     ebx, 0                           ; 83fb00
-        je      0x42ee5                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x42ecc                          ; 7505
-        call    0x46188                          ; e8bc320000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e8d1e9ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8ec6070000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8cb8070000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x40c                       ; 81c10c040000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x42f4b                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x42f4b                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x40c]     ; 8b9e0c040000
-        movzx   ebx, byte ptr [ebx + 6]          ; 0fb65b06
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x42f4b                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 4]         ; 8b5b04
-        cmp     ebx, 0                           ; 83fb00
-        je      0x42f4b                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x42f32                          ; 7505
-        call    0x46188                          ; e856320000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e86be9ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e60070000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c52070000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x408                       ; 81c108040000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x42fb1                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x42fb1                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x408]     ; 8b9e08040000
-        movzx   ebx, byte ptr [ebx + 6]          ; 0fb65b06
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x42fb1                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 0x14]      ; 8b5b14
-        cmp     ebx, 0                           ; 83fb00
-        je      0x42fb1                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x42f98                          ; 7505
-        call    0x46188                          ; e8f0310000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e805e9ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8efa060000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8cec060000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x40c                       ; 81c10c040000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x43016                          ; 7d48
-        cmp     ecx, 0                           ; 83f900
-        jl      0x43016                          ; 7c43
-        mov     ebx, dword ptr [esi + 0x40c]     ; 8b9e0c040000
-        movzx   ebx, byte ptr [ebx + 5]          ; 0fb65b05
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x43016                          ; 7e34
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx]             ; 8b1b
-        cmp     ebx, 0                           ; 83fb00
-        je      0x43016                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x42ffd                          ; 7505
-        call    0x46188                          ; e88b310000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e8a0e8ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e95060000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c87060000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x408                       ; 81c108040000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x4307c                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x4307c                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x408]     ; 8b9e08040000
-        movzx   ebx, byte ptr [ebx + 5]          ; 0fb65b05
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x4307c                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 0x10]      ; 8b5b10
-        cmp     ebx, 0                           ; 83fb00
-        je      0x4307c                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x43063                          ; 7505
-        call    0x46188                          ; e825310000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e83ae8ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e2f060000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c21060000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x208                       ; 81c108020000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x430e2                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x430e2                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x208]     ; 8b9e08020000
-        movzx   ebx, byte ptr [ebx + 5]          ; 0fb65b05
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x430e2                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 8]         ; 8b5b08
-        cmp     ebx, 0                           ; 83fb00
-        je      0x430e2                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x430c9                          ; 7505
-        call    0x46188                          ; e8bf300000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e8d4e7ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8ec9050000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8cbb050000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x408                       ; 81c108040000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x43148                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x43148                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x408]     ; 8b9e08040000
-        movzx   ebx, byte ptr [ebx + 4]          ; 0fb65b04
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x43148                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 0xc]       ; 8b5b0c
-        cmp     ebx, 0                           ; 83fb00
-        je      0x43148                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x4312f                          ; 7505
-        call    0x46188                          ; e859300000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e86ee7ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e63050000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c55050000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x208                       ; 81c108020000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x431ae                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x431ae                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x208]     ; 8b9e08020000
-        movzx   ebx, byte ptr [ebx + 4]          ; 0fb65b04
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x431ae                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 4]         ; 8b5b04
-        cmp     ebx, 0                           ; 83fb00
-        je      0x431ae                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x43195                          ; 7505
-        call    0x46188                          ; e8f32f0000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e808e7ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8efd040000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8cef040000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x204                       ; 81c104020000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x43214                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x43214                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x204]     ; 8b9e04020000
-        movzx   ebx, byte ptr [ebx + 4]          ; 0fb65b04
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x43214                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 0x14]      ; 8b5b14
-        cmp     ebx, 0                           ; 83fb00
-        je      0x43214                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x431fb                          ; 7505
-        call    0x46188                          ; e88d2f0000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e8a2e6ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e97040000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c89040000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x208                       ; 81c108020000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x43279                          ; 7d48
-        cmp     ecx, 0                           ; 83f900
-        jl      0x43279                          ; 7c43
-        mov     ebx, dword ptr [esi + 0x208]     ; 8b9e08020000
-        movzx   ebx, byte ptr [ebx + 3]          ; 0fb65b03
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x43279                          ; 7e34
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx]             ; 8b1b
-        cmp     ebx, 0                           ; 83fb00
-        je      0x43279                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x43260                          ; 7505
-        call    0x46188                          ; e8282f0000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e83de6ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e32040000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c24040000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x204                       ; 81c104020000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x432df                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x432df                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x204]     ; 8b9e04020000
-        movzx   ebx, byte ptr [ebx + 3]          ; 0fb65b03
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x432df                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 0x10]      ; 8b5b10
-        cmp     ebx, 0                           ; 83fb00
-        je      0x432df                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x432c6                          ; 7505
-        call    0x46188                          ; e8c22e0000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e8d7e5ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8ecc030000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8cbe030000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 4                           ; 83c104
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x4333f                          ; 7d46
-        cmp     ecx, 0                           ; 83f900
-        jl      0x4333f                          ; 7c41
-        mov     ebx, dword ptr [esi + 4]         ; 8b5e04
-        movzx   ebx, byte ptr [ebx + 3]          ; 0fb65b03
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x4333f                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 8]         ; 8b5b08
-        cmp     ebx, 0                           ; 83fb00
-        je      0x4333f                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x43326                          ; 7505
-        call    0x46188                          ; e8622e0000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e877e5ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e6c030000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c5e030000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0x204                       ; 81c104020000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x433a5                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x433a5                          ; 7c44
-        mov     ebx, dword ptr [esi + 0x204]     ; 8b9e04020000
-        movzx   ebx, byte ptr [ebx + 2]          ; 0fb65b02
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x433a5                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 0xc]       ; 8b5b0c
-        cmp     ebx, 0                           ; 83fb00
-        je      0x433a5                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x4338c                          ; 7505
-        call    0x46188                          ; e8fc2d0000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e811e5ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e06030000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8cf8020000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 4                           ; 83c104
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x43405                          ; 7d46
-        cmp     ecx, 0                           ; 83f900
-        jl      0x43405                          ; 7c41
-        mov     ebx, dword ptr [esi + 4]         ; 8b5e04
-        movzx   ebx, byte ptr [ebx + 2]          ; 0fb65b02
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x43405                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 4]         ; 8b5b04
-        cmp     ebx, 0                           ; 83fb00
-        je      0x43405                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x433ec                          ; 7505
-        call    0x46188                          ; e89c2d0000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e8b1e4ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8ea6020000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c98020000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0                           ; 83c100
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x43464                          ; 7d45
-        cmp     ecx, 0                           ; 83f900
-        jl      0x43464                          ; 7c40
-        mov     ebx, dword ptr [esi]             ; 8b1e
-        movzx   ebx, byte ptr [ebx + 2]          ; 0fb65b02
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x43464                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 0x14]      ; 8b5b14
-        cmp     ebx, 0                           ; 83fb00
-        je      0x43464                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x4344b                          ; 7505
-        call    0x46188                          ; e83d2d0000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e852e4ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e47020000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c39020000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 4                           ; 83c104
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x434c3                          ; 7d45
-        cmp     ecx, 0                           ; 83f900
-        jl      0x434c3                          ; 7c40
-        mov     ebx, dword ptr [esi + 4]         ; 8b5e04
-        movzx   ebx, byte ptr [ebx + 1]          ; 0fb65b01
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x434c3                          ; 7e34
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx]             ; 8b1b
-        cmp     ebx, 0                           ; 83fb00
-        je      0x434c3                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x434aa                          ; 7505
-        call    0x46188                          ; e8de2c0000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e8f3e3ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8ee8010000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8cda010000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0                           ; 83c100
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x43522                          ; 7d45
-        cmp     ecx, 0                           ; 83f900
-        jl      0x43522                          ; 7c40
-        mov     ebx, dword ptr [esi]             ; 8b1e
-        movzx   ebx, byte ptr [ebx + 1]          ; 0fb65b01
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x43522                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 0x10]      ; 8b5b10
-        cmp     ebx, 0                           ; 83fb00
-        je      0x43522                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x43509                          ; 7505
-        call    0x46188                          ; e87f2c0000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e894e3ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e89010000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c7b010000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0xfffffe00                  ; 81c100feffff
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x43588                          ; 7d49
-        cmp     ecx, 0                           ; 83f900
-        jl      0x43588                          ; 7c44
-        mov     ebx, dword ptr [esi - 0x200]     ; 8b9e00feffff
-        movzx   ebx, byte ptr [ebx + 1]          ; 0fb65b01
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x43588                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 8]         ; 8b5b08
-        cmp     ebx, 0                           ; 83fb00
-        je      0x43588                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x4356f                          ; 7505
-        call    0x46188                          ; e8192c0000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e82ee3ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8e23010000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8c15010000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0                           ; 83c100
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x435e6                          ; 7d44
-        cmp     ecx, 0                           ; 83f900
-        jl      0x435e6                          ; 7c3f
-        mov     ebx, dword ptr [esi]             ; 8b1e
-        movzx   ebx, byte ptr [ebx]              ; 0fb61b
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x435e6                          ; 7e35
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 0xc]       ; 8b5b0c
-        cmp     ebx, 0                           ; 83fb00
-        je      0x435e6                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x435cd                          ; 7505
-        call    0x46188                          ; e8bb2b0000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e8d0e2ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 0f8ec5000000
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 0f8cb7000000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0xfffffe00                  ; 81c100feffff
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x43647                          ; 7d44
-        cmp     ecx, 0                           ; 83f900
-        jl      0x43647                          ; 7c3f
-        mov     ebx, dword ptr [esi - 0x200]     ; 8b9e00feffff
-        movzx   ebx, byte ptr [ebx]              ; 0fb61b
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x43647                          ; 7e31
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 4]         ; 8b5b04
-        cmp     ebx, 0                           ; 83fb00
-        je      0x43647                          ; 7420
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x43632                          ; 7505
-        call    0x46188                          ; e8562b0000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e86be2ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 7e64
-        dec     edx                              ; 4a
-        jl      0x436a4                          ; 7c5a
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0xfffffdfc                  ; 81c1fcfdffff
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x436a4                          ; 7d44
-        cmp     ecx, 0                           ; 83f900
-        jl      0x436a4                          ; 7c3f
-        mov     ebx, dword ptr [esi - 0x204]     ; 8b9efcfdffff
-        movzx   ebx, byte ptr [ebx]              ; 0fb61b
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x436a4                          ; 7e31
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx + 0x14]      ; 8b5b14
-        cmp     ebx, 0                           ; 83fb00
-        je      0x436a4                          ; 7420
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x4368f                          ; 7505
-        call    0x46188                          ; e8f92a0000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e80ee2ffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x436ab                          ; 7e07
-        mov     al, byte ptr [ebp - 1]           ; 8a45ff
-        mov     ah, 0                            ; b400
-        leave                                    ; c9
-        ret                                      ; c3
-        mov     al, byte ptr [ebp - 1]           ; 8a45ff
-        mov     ah, 1                            ; b401
-        leave                                    ; c9
-        ret                                      ; c3
+        push    ebp
+        mov     ebp, esp
+        add     esp, -4                          ; make room for the one local byte
+        mov     byte ptr [ebp - 1], 0            ; setup-done flag = 0 (nothing drawn yet)
+
+; --- cell 01: offset 0xa18, type byte [rec+0xb], draw-slot [entry+0] ---
+        dec     edx                              ; one fewer cell to process
+        jl      .walk_done                       ; countdown exhausted -> done (AH=0)
+        mov     ecx, esi                          ; ecx = cell-table base
+        add     ecx, 0xa18                        ;   + this cell's offset
+        sub     ecx, dword ptr [0x5358]          ; column -= g_map_cols   0x5358=g_map_cols
+        cmp     ecx, 0xc000                       ; column past the right edge?
+        jge     0x428ed                           ;   yes -> skip this cell (go to cell 02)
+        cmp     ecx, 0                             ; column left of the strip?
+        jl      0x428ed                           ;   yes -> skip this cell
+        mov     ebx, dword ptr [esi + 0xa18]      ; ebx = object record for this cell
+        movzx   ebx, byte ptr [ebx + 0xb]         ; ebx = record type byte (this height)
+        cmp     ebx, 4                             ; type <= 4 is empty / non-drawable
+        jle     0x428ed                           ;   -> skip this cell
+        imul    ebx, ebx, 0x18                    ; type * 0x18 (24-byte type entry)
+        add     ebx, dword ptr [0x5360]           ;   + type-table base -> &entry
+        mov     ebx, dword ptr [ebx]              ; ebx = entry.draw-slot0 (draw-data value)
+        cmp     ebx, 0                             ; nothing to draw for this type/layer?
+        je      0x428ed                           ;   -> skip this cell
+        cmp     byte ptr [ebp - 1], 0             ; has the one-shot setup run yet?
+        jne     0x428d4                           ;   already done -> skip the setup call
+        call    0x46188                           ; first drawn object: -> FUN_00046188 (zero the mask accumulator)
+        add     byte ptr [ebp - 1], 1             ; mark setup done (and "something drew")
+        add     ebx, dword ptr [0x5360]           ; re-base the draw-data value to a pointer
+        call    0x418ac                           ; merge this object's mask -> FUN_000418ac
+        cmp     cx, 0                              ; merge signalled stop?
+        jle     .walk_early_out                    ;   cx <= 0 -> stop early (AH=1)
+
+; --- cell 02: offset 0xa14, type byte [rec+0xb], draw-slot [entry+0x10] ---
+        dec     edx                              ; one fewer cell to process
+        jl      .walk_done                       ; countdown exhausted -> done
+        mov     ecx, esi                          ; ecx = cell-table base
+        add     ecx, 0xa14                        ;   + this cell's offset
+        sub     ecx, dword ptr [0x5358]          ; column -= g_map_cols   0x5358=g_map_cols
+        cmp     ecx, 0xc000                       ; past the right edge?
+        jge     0x42953                           ;   -> skip to cell 03
+        cmp     ecx, 0                             ; left of the strip?
+        jl      0x42953                           ;   -> skip to cell 03
+        mov     ebx, dword ptr [esi + 0xa14]      ; ebx = object record for this cell
+        movzx   ebx, byte ptr [ebx + 0xb]         ; ebx = record type byte
+        cmp     ebx, 4                             ; empty / non-drawable?
+        jle     0x42953                           ;   -> skip to cell 03
+        imul    ebx, ebx, 0x18                    ; type * 0x18
+        add     ebx, dword ptr [0x5360]           ;   + type-table base -> &entry
+        mov     ebx, dword ptr [ebx + 0x10]       ; ebx = entry.draw-slot4 (this cell's slot)
+        cmp     ebx, 0                             ; nothing for this layer?
+        je      0x42953                           ;   -> skip to cell 03
+        cmp     byte ptr [ebp - 1], 0             ; one-shot setup done?
+        jne     0x4293a                           ;   -> skip setup call
+        call    0x46188                           ; -> FUN_00046188 (one-shot setup)
+        add     byte ptr [ebp - 1], 1             ; mark setup done
+        add     ebx, dword ptr [0x5360]           ; re-base draw-data to a pointer
+        call    0x418ac                           ; -> FUN_000418ac (mask merge)
+        cmp     cx, 0                              ; stop signal?
+        jle     .walk_early_out                    ;   -> stop early
+
+; --- cell 03: offset 0x814, type byte [rec+0xb], draw-slot [entry+8] ---
+        dec     edx                              ; one fewer cell to process
+        jl      .walk_done                       ; countdown exhausted -> done
+        mov     ecx, esi                          ; ecx = cell-table base
+        add     ecx, 0x814                        ;   + this cell's offset
+        sub     ecx, dword ptr [0x5358]          ; column -= g_map_cols   0x5358=g_map_cols
+        cmp     ecx, 0xc000                       ; past the right edge?
+        jge     0x429b9                           ;   -> skip to cell 04
+        cmp     ecx, 0                             ; left of the strip?
+        jl      0x429b9                           ;   -> skip to cell 04
+        mov     ebx, dword ptr [esi + 0x814]      ; ebx = object record for this cell
+        movzx   ebx, byte ptr [ebx + 0xb]         ; ebx = record type byte
+        cmp     ebx, 4                             ; empty / non-drawable?
+        jle     0x429b9                           ;   -> skip to cell 04
+        imul    ebx, ebx, 0x18                    ; type * 0x18
+        add     ebx, dword ptr [0x5360]           ;   + type-table base -> &entry
+        mov     ebx, dword ptr [ebx + 8]          ; ebx = entry.draw-slot2
+        cmp     ebx, 0                             ; nothing for this layer?
+        je      0x429b9                           ;   -> skip to cell 04
+        cmp     byte ptr [ebp - 1], 0             ; one-shot setup done?
+        jne     0x429a0                           ;   -> skip setup call
+        call    0x46188                           ; -> FUN_00046188 (one-shot setup)
+        add     byte ptr [ebp - 1], 1             ; mark setup done
+        add     ebx, dword ptr [0x5360]           ; re-base draw-data to a pointer
+        call    0x418ac                           ; -> FUN_000418ac (mask merge)
+        cmp     cx, 0                              ; stop signal?
+        jle     .walk_early_out                    ;   -> stop early
+
+; From here the block is identical bar the three per-cell constants (cell offset,
+; type-byte offset, draw-slot). Each block: dec/jl countdown, compute+bounds-check the
+; column, load the record and its type byte, reject type<=4, index the type table, fetch
+; the draw-slot, reject null, run the one-shot setup once, merge the mask, early-out on
+; cx<=0. Only the banner is given for each.
+
+; --- cell 04: offset 0xa14, type byte [rec+0xa], draw-slot [entry+0xc] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0xa14
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x42a1f
+        cmp     ecx, 0
+        jl      0x42a1f
+        mov     ebx, dword ptr [esi + 0xa14]
+        movzx   ebx, byte ptr [ebx + 0xa]
+        cmp     ebx, 4
+        jle     0x42a1f
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 0xc]
+        cmp     ebx, 0
+        je      0x42a1f
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x42a06
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 05: offset 0x814, type byte [rec+0xa], draw-slot [entry+4] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x814
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x42a85
+        cmp     ecx, 0
+        jl      0x42a85
+        mov     ebx, dword ptr [esi + 0x814]
+        movzx   ebx, byte ptr [ebx + 0xa]
+        cmp     ebx, 4
+        jle     0x42a85
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 4]
+        cmp     ebx, 0
+        je      0x42a85
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x42a6c
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 06: offset 0x810, type byte [rec+0xa], draw-slot [entry+0x14] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x810
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x42aeb
+        cmp     ecx, 0
+        jl      0x42aeb
+        mov     ebx, dword ptr [esi + 0x810]
+        movzx   ebx, byte ptr [ebx + 0xa]
+        cmp     ebx, 4
+        jle     0x42aeb
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 0x14]
+        cmp     ebx, 0
+        je      0x42aeb
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x42ad2
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 07: offset 0x814, type byte [rec+9], draw-slot [entry+0] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x814
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x42b50
+        cmp     ecx, 0
+        jl      0x42b50
+        mov     ebx, dword ptr [esi + 0x814]
+        movzx   ebx, byte ptr [ebx + 9]
+        cmp     ebx, 4
+        jle     0x42b50
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx]
+        cmp     ebx, 0
+        je      0x42b50
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x42b37
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 08: offset 0x810, type byte [rec+9], draw-slot [entry+0x10] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x810
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x42bb6
+        cmp     ecx, 0
+        jl      0x42bb6
+        mov     ebx, dword ptr [esi + 0x810]
+        movzx   ebx, byte ptr [ebx + 9]
+        cmp     ebx, 4
+        jle     0x42bb6
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 0x10]
+        cmp     ebx, 0
+        je      0x42bb6
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x42b9d
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 09: offset 0x610, type byte [rec+9], draw-slot [entry+8] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x610
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x42c1c
+        cmp     ecx, 0
+        jl      0x42c1c
+        mov     ebx, dword ptr [esi + 0x610]
+        movzx   ebx, byte ptr [ebx + 9]
+        cmp     ebx, 4
+        jle     0x42c1c
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 8]
+        cmp     ebx, 0
+        je      0x42c1c
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x42c03
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 10: offset 0x810, type byte [rec+8], draw-slot [entry+0xc] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x810
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x42c82
+        cmp     ecx, 0
+        jl      0x42c82
+        mov     ebx, dword ptr [esi + 0x810]
+        movzx   ebx, byte ptr [ebx + 8]
+        cmp     ebx, 4
+        jle     0x42c82
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 0xc]
+        cmp     ebx, 0
+        je      0x42c82
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x42c69
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 11: offset 0x610, type byte [rec+8], draw-slot [entry+4] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x610
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x42ce8
+        cmp     ecx, 0
+        jl      0x42ce8
+        mov     ebx, dword ptr [esi + 0x610]
+        movzx   ebx, byte ptr [ebx + 8]
+        cmp     ebx, 4
+        jle     0x42ce8
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 4]
+        cmp     ebx, 0
+        je      0x42ce8
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x42ccf
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 12: offset 0x60c, type byte [rec+8], draw-slot [entry+0x14] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x60c
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x42d4e
+        cmp     ecx, 0
+        jl      0x42d4e
+        mov     ebx, dword ptr [esi + 0x60c]
+        movzx   ebx, byte ptr [ebx + 8]
+        cmp     ebx, 4
+        jle     0x42d4e
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 0x14]
+        cmp     ebx, 0
+        je      0x42d4e
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x42d35
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 13: offset 0x610, type byte [rec+7], draw-slot [entry+0] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x610
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x42db3
+        cmp     ecx, 0
+        jl      0x42db3
+        mov     ebx, dword ptr [esi + 0x610]
+        movzx   ebx, byte ptr [ebx + 7]
+        cmp     ebx, 4
+        jle     0x42db3
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx]
+        cmp     ebx, 0
+        je      0x42db3
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x42d9a
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 14: offset 0x60c, type byte [rec+7], draw-slot [entry+0x10] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x60c
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x42e19
+        cmp     ecx, 0
+        jl      0x42e19
+        mov     ebx, dword ptr [esi + 0x60c]
+        movzx   ebx, byte ptr [ebx + 7]
+        cmp     ebx, 4
+        jle     0x42e19
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 0x10]
+        cmp     ebx, 0
+        je      0x42e19
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x42e00
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 15: offset 0x40c, type byte [rec+7], draw-slot [entry+8] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x40c
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x42e7f
+        cmp     ecx, 0
+        jl      0x42e7f
+        mov     ebx, dword ptr [esi + 0x40c]
+        movzx   ebx, byte ptr [ebx + 7]
+        cmp     ebx, 4
+        jle     0x42e7f
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 8]
+        cmp     ebx, 0
+        je      0x42e7f
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x42e66
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 16: offset 0x60c, type byte [rec+6], draw-slot [entry+0xc] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x60c
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x42ee5
+        cmp     ecx, 0
+        jl      0x42ee5
+        mov     ebx, dword ptr [esi + 0x60c]
+        movzx   ebx, byte ptr [ebx + 6]
+        cmp     ebx, 4
+        jle     0x42ee5
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 0xc]
+        cmp     ebx, 0
+        je      0x42ee5
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x42ecc
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 17: offset 0x40c, type byte [rec+6], draw-slot [entry+4] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x40c
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x42f4b
+        cmp     ecx, 0
+        jl      0x42f4b
+        mov     ebx, dword ptr [esi + 0x40c]
+        movzx   ebx, byte ptr [ebx + 6]
+        cmp     ebx, 4
+        jle     0x42f4b
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 4]
+        cmp     ebx, 0
+        je      0x42f4b
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x42f32
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 18: offset 0x408, type byte [rec+6], draw-slot [entry+0x14] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x408
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x42fb1
+        cmp     ecx, 0
+        jl      0x42fb1
+        mov     ebx, dword ptr [esi + 0x408]
+        movzx   ebx, byte ptr [ebx + 6]
+        cmp     ebx, 4
+        jle     0x42fb1
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 0x14]
+        cmp     ebx, 0
+        je      0x42fb1
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x42f98
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 19: offset 0x40c, type byte [rec+5], draw-slot [entry+0] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x40c
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x43016
+        cmp     ecx, 0
+        jl      0x43016
+        mov     ebx, dword ptr [esi + 0x40c]
+        movzx   ebx, byte ptr [ebx + 5]
+        cmp     ebx, 4
+        jle     0x43016
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx]
+        cmp     ebx, 0
+        je      0x43016
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x42ffd
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 20: offset 0x408, type byte [rec+5], draw-slot [entry+0x10] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x408
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x4307c
+        cmp     ecx, 0
+        jl      0x4307c
+        mov     ebx, dword ptr [esi + 0x408]
+        movzx   ebx, byte ptr [ebx + 5]
+        cmp     ebx, 4
+        jle     0x4307c
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 0x10]
+        cmp     ebx, 0
+        je      0x4307c
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x43063
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 21: offset 0x208, type byte [rec+5], draw-slot [entry+8] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x208
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x430e2
+        cmp     ecx, 0
+        jl      0x430e2
+        mov     ebx, dword ptr [esi + 0x208]
+        movzx   ebx, byte ptr [ebx + 5]
+        cmp     ebx, 4
+        jle     0x430e2
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 8]
+        cmp     ebx, 0
+        je      0x430e2
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x430c9
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 22: offset 0x408, type byte [rec+4], draw-slot [entry+0xc] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x408
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x43148
+        cmp     ecx, 0
+        jl      0x43148
+        mov     ebx, dword ptr [esi + 0x408]
+        movzx   ebx, byte ptr [ebx + 4]
+        cmp     ebx, 4
+        jle     0x43148
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 0xc]
+        cmp     ebx, 0
+        je      0x43148
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x4312f
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 23: offset 0x208, type byte [rec+4], draw-slot [entry+4] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x208
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x431ae
+        cmp     ecx, 0
+        jl      0x431ae
+        mov     ebx, dword ptr [esi + 0x208]
+        movzx   ebx, byte ptr [ebx + 4]
+        cmp     ebx, 4
+        jle     0x431ae
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 4]
+        cmp     ebx, 0
+        je      0x431ae
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x43195
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 24: offset 0x204, type byte [rec+4], draw-slot [entry+0x14] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x204
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x43214
+        cmp     ecx, 0
+        jl      0x43214
+        mov     ebx, dword ptr [esi + 0x204]
+        movzx   ebx, byte ptr [ebx + 4]
+        cmp     ebx, 4
+        jle     0x43214
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 0x14]
+        cmp     ebx, 0
+        je      0x43214
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x431fb
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 25: offset 0x208, type byte [rec+3], draw-slot [entry+0] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x208
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x43279
+        cmp     ecx, 0
+        jl      0x43279
+        mov     ebx, dword ptr [esi + 0x208]
+        movzx   ebx, byte ptr [ebx + 3]
+        cmp     ebx, 4
+        jle     0x43279
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx]
+        cmp     ebx, 0
+        je      0x43279
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x43260
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 26: offset 0x204, type byte [rec+3], draw-slot [entry+0x10] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x204
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x432df
+        cmp     ecx, 0
+        jl      0x432df
+        mov     ebx, dword ptr [esi + 0x204]
+        movzx   ebx, byte ptr [ebx + 3]
+        cmp     ebx, 4
+        jle     0x432df
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 0x10]
+        cmp     ebx, 0
+        je      0x432df
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x432c6
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 27: offset 0x004, type byte [rec+3], draw-slot [entry+8] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 4
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x4333f
+        cmp     ecx, 0
+        jl      0x4333f
+        mov     ebx, dword ptr [esi + 4]
+        movzx   ebx, byte ptr [ebx + 3]
+        cmp     ebx, 4
+        jle     0x4333f
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 8]
+        cmp     ebx, 0
+        je      0x4333f
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x43326
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 28: offset 0x204, type byte [rec+2], draw-slot [entry+0xc] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0x204
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x433a5
+        cmp     ecx, 0
+        jl      0x433a5
+        mov     ebx, dword ptr [esi + 0x204]
+        movzx   ebx, byte ptr [ebx + 2]
+        cmp     ebx, 4
+        jle     0x433a5
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 0xc]
+        cmp     ebx, 0
+        je      0x433a5
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x4338c
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 29: offset 0x004, type byte [rec+2], draw-slot [entry+4] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 4
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x43405
+        cmp     ecx, 0
+        jl      0x43405
+        mov     ebx, dword ptr [esi + 4]
+        movzx   ebx, byte ptr [ebx + 2]
+        cmp     ebx, 4
+        jle     0x43405
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 4]
+        cmp     ebx, 0
+        je      0x43405
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x433ec
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 30: offset 0x000, type byte [rec+2], draw-slot [entry+0x14] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x43464
+        cmp     ecx, 0
+        jl      0x43464
+        mov     ebx, dword ptr [esi]
+        movzx   ebx, byte ptr [ebx + 2]
+        cmp     ebx, 4
+        jle     0x43464
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 0x14]
+        cmp     ebx, 0
+        je      0x43464
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x4344b
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 31: offset 0x004, type byte [rec+1], draw-slot [entry+0] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 4
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x434c3
+        cmp     ecx, 0
+        jl      0x434c3
+        mov     ebx, dword ptr [esi + 4]
+        movzx   ebx, byte ptr [ebx + 1]
+        cmp     ebx, 4
+        jle     0x434c3
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx]
+        cmp     ebx, 0
+        je      0x434c3
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x434aa
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 32: offset 0x000, type byte [rec+1], draw-slot [entry+0x10] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x43522
+        cmp     ecx, 0
+        jl      0x43522
+        mov     ebx, dword ptr [esi]
+        movzx   ebx, byte ptr [ebx + 1]
+        cmp     ebx, 4
+        jle     0x43522
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 0x10]
+        cmp     ebx, 0
+        je      0x43522
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x43509
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 33: offset -0x200, type byte [rec+1], draw-slot [entry+8] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0xfffffe00                   ; esi - 0x200 (one row back)
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x43588
+        cmp     ecx, 0
+        jl      0x43588
+        mov     ebx, dword ptr [esi - 0x200]
+        movzx   ebx, byte ptr [ebx + 1]
+        cmp     ebx, 4
+        jle     0x43588
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 8]
+        cmp     ebx, 0
+        je      0x43588
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x4356f
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 34: offset 0x000, type byte [rec+0], draw-slot [entry+0xc] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x435e6
+        cmp     ecx, 0
+        jl      0x435e6
+        mov     ebx, dword ptr [esi]
+        movzx   ebx, byte ptr [ebx]
+        cmp     ebx, 4
+        jle     0x435e6
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 0xc]
+        cmp     ebx, 0
+        je      0x435e6
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x435cd
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 35: offset -0x200, type byte [rec+0], draw-slot [entry+4] ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0xfffffe00                   ; esi - 0x200 (one row back)
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     0x43647
+        cmp     ecx, 0
+        jl      0x43647
+        mov     ebx, dword ptr [esi - 0x200]
+        movzx   ebx, byte ptr [ebx]
+        cmp     ebx, 4
+        jle     0x43647
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 4]
+        cmp     ebx, 0
+        je      0x43647
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x43632
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- cell 36: offset -0x204, type byte [rec+0], draw-slot [entry+0x14] (last cell) ---
+        dec     edx
+        jl      .walk_done
+        mov     ecx, esi
+        add     ecx, 0xfffffdfc                   ; esi - 0x204 (row back, one column left)
+        sub     ecx, dword ptr [0x5358]          ; 0x5358=g_map_cols
+        cmp     ecx, 0xc000
+        jge     .walk_done                         ; last cell: skip target is the exit itself
+        cmp     ecx, 0
+        jl      .walk_done
+        mov     ebx, dword ptr [esi - 0x204]
+        movzx   ebx, byte ptr [ebx]
+        cmp     ebx, 4
+        jle     .walk_done
+        imul    ebx, ebx, 0x18
+        add     ebx, dword ptr [0x5360]
+        mov     ebx, dword ptr [ebx + 0x14]
+        cmp     ebx, 0
+        je      .walk_done
+        cmp     byte ptr [ebp - 1], 0
+        jne     0x4368f
+        call    0x46188                           ; -> FUN_00046188
+        add     byte ptr [ebp - 1], 1
+        add     ebx, dword ptr [0x5360]
+        call    0x418ac                           ; -> FUN_000418ac
+        cmp     cx, 0
+        jle     .walk_early_out
+
+; --- exits ------------------------------------------------------------------------
+.walk_done:                                        ; (0x436a4) all cells visited (or last rejected)
+        mov     al, byte ptr [ebp - 1]            ; AL = "something drew" flag
+        mov     ah, 0                              ; AH = 0: finished the whole walk
+        leave
+        ret
+.walk_early_out:                                   ; (0x436ab) a merge signalled cx <= 0
+        mov     al, byte ptr [ebp - 1]            ; AL = "something drew" flag
+        mov     ah, 1                              ; AH = 1: stopped early
+        leave
+        ret

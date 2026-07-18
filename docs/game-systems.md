@@ -200,6 +200,19 @@ draw. (2) grid-cell entity chains (g_810e+id, 0x12c cap), type-dispatched blips.
 0x18d18 blip loops + conditional 0x19318 + 8× stride-14 objective-marker records at 0x1be3a.
 Callees: 0x3fb40/0x3f4b4/0x3f636/0x18d18(×2)/0x19318 (matched: 0x18d18, 0x19318).
 
+## Drawing the isometric scene, `FUN_0004287e` @ 0x4287e
+
+The world you see in a mission is drawn by walking the cells around the view centre.
+`FUN_0004287e` steps through roughly 36 neighbouring cells in an isometric diamond, working
+from the far cells inward so nearer objects are handled last and sit on top. For each cell it
+works out the screen column, drops the cell if it falls outside the visible strip, then reads
+the object record parked there. A type byte on the record picks a 24-byte entry in a per-type
+table, and that entry holds the draw data for this layer. If there is something to draw, the
+cell is handed to the coverage merge at `FUN_000418ac`, which folds the object into a shared
+visibility accumulator. So the walker decides what to draw and in what order, and the actual
+pixels are pushed by the [blitters](blitter.md) elsewhere. The readable listing, commented
+line by line, is at `src/lib/gfx/FUN_0004287e.asm`.
+
 ## Mission-cursor target-action resolver, `FUN_0002ad58` @ 0x2ad58 (cont. 25 decode)
 
 **TRUE SIZE 3694 (0x2ad58–0x2bbc5, manifest was 1737, fixed). Calls 8 not 4.** Resolves what
