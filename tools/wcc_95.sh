@@ -3,11 +3,15 @@
 # WCC386.EXE, DOS/4GW-extended) running headless under DOSBox in the container.
 #   bash tools/wcc_95.sh <name> ["<wcc386 flags>"]     # src/<name>.c -> build/<name>.obj
 # Tree: toolchain/watcom95/BIN (WCC386.EXE + DOS4GW.EXE), git-ignored.
-# NOTE: 9.5 has no -6/-5? use -4/-3. Our match sources have no #include, so no headers needed.
+# NOTE: 9.5 has no -6/-5? use -4/-3. Most match sources have no #include; a few need <string.h> for
+# the string intrinsics (strlen->repne scasb, memset->rep stos, ...). The 9.5 install ships no H/, so
+# we populate toolchain/watcom95/H from the 10.0a header set below (identical prototypes; the 9.5
+# compiler's codegen is what runs). A minimal hand-prototype does NOT satisfy the intrinsic recogniser.
 set -u
 name="${1:?usage: wcc_95.sh <name> [flags]}"
 FLAGS="${2:--4s -oneatx -zp8 -s -zq}"
 ROOT=/work/toolchain
+[ -d "$ROOT/watcom95/H" ] || cp -r "$ROOT/watcom10a/WATCOM/H" "$ROOT/watcom95/H" 2>/dev/null || true
 # src files now live in subsystem subdirs (src/<subsystem>/FUN_<addr>.c); locate by name.
 src=$(find src -name "${name}.c" 2>/dev/null | head -1)
 [ -n "$src" ] && [ -f "$src" ] || { echo "no such source: src/**/${name}.c" >&2; exit 1; }
