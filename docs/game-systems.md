@@ -9,10 +9,13 @@ we decode them, starting with the shape of it and going down to the byte-level n
 flowchart TD
     F["Map and data files, RNC-packed"] --> R["resource loader"]
     R --> G["runtime tables and object pools"]
-    G --> L["per-frame game loop"]
-    L --> T["entity_pool_tick 0x31858"]
-    T --> D["entity_behaviour_dispatch 0x2ea88<br/>picks a behaviour by state byte 0x19"]
+    G --> L["main_game_loop 0xd928<br/>the per-frame loop"]
+    L --> U["update the world<br/>entity_pool_tick 0x31858 + vehicle_pool_tick 0x36fd8"]
+    U --> D["entity_behaviour_dispatch 0x2ea88<br/>picks a behaviour by state byte 0x19"]
     D --> B["move, persuade, combat, vehicle"]
+    L --> W["walk the scene<br/>iso_scene_walk 0x4287e"]
+    W --> DR["draw with the blitters<br/>draw_sprite_rle, blit_block, plot_point"]
+    DR --> P["present the frame<br/>vga_planar_present 0x4a492"]
 ```
 
 The [concept pages](README.md) are about how we rebuild the game. This page is about what
@@ -23,16 +26,179 @@ It's the interesting half of the project. Every function we match is a small win
 how the game was built, and as those windows join up we can explain whole systems: how an
 agent moves, how a weapon fires, how a mission is scored.
 
-## A note on how early we are
+## Where the project is now
 
-Right now this page is mostly a scaffold. Much of what we've matched so far is either small
-utility code or the compiler's [runtime library](game-vs-library.md), where the game
-meaning isn't always clear yet. So the sections below are the systems we expect to find,
-waiting to be filled in. Better to have the shape ready and grow it than to start from
-nothing later.
+The page started as a scaffold, a list of systems we expected to find. It has grown past
+that. The whole binary is decoded to readable C, the low-level drawing and sound code has
+annotated listings, and the entity model is worked out field by field. So this page can now
+follow the game as it actually runs, not just name the parts.
 
-As a function's purpose becomes clear, it gets a note in the manifest and a mention in the
-relevant section here. When a system is understood well enough, it gets its own page.
+The next two sections do exactly that, end to end. First a frame: what the game does each
+tick to turn the world into a picture on screen. Then an entity's turn: how one agent or car
+is ticked, chooses a behaviour, moves, and gets drawn. Both name real functions and globals,
+and where a claim is inferred rather than proven from matched bytes it says so.
+
+As a function's purpose becomes clear it gets a note in the manifest and a mention here. When
+a system is understood well enough it gets its own page, as the [blitters](blitter.md) and the
+[object model](object-model.md) already have.
+
+## A frame, start to finish
+
+The short version: each tick the game updates the world, works out what is visible, draws it
+into an off-screen buffer, then copies that buffer to the screen. Update, walk, draw, present.
+
+The loop is `main_game_loop` (`0xd928`). It has an outer part that sets a mission up
+(`new_campaign_reset` 0x20fc8) and an inner part that repeats every frame until the mission
+ends. Reading the call sites out of its bytes, the inner frame does roughly this, in order:
+
+- **Tick the world.** A batch routine (`0x26998`) runs the per-frame updates back to back:
+  the entity pool tick `entity_pool_tick` (0x31858), the vehicle pool tick `vehicle_pool_tick`
+  (0x36fd8), and a handful of others (`0x26a18`, `0x380b8`, `0x1c2c8`, `0x29088`). The name in
+  our tree, `init_subsystems`, predates this tracing and undersells it: it is the world update,
+  and it is called from inside the frame, not once at startup.
+- **Advance sound and the economy.** The sound driver tick (`0x36038` / `0x39088`) and the
+  daily economy tick `economy_daily_tick` (0x15f58) run each pass.
+- **Push the palette and draw.** `upload_palette` (0x4987e) loads the current palette, then a
+  cluster of draw and UI routines (`0x1bb48`, `0x1b658`, `0x1ab98`, `0x2a828`) build the frame.
+- **Present.** The finished off-screen frame is copied to VGA memory by
+  `vga_planar_present` (0x4a492).
+
+```mermaid
+flowchart TD
+    S["new_campaign_reset 0x20fc8<br/>set the mission up"] --> LOOP{"per-frame loop"}
+    LOOP --> UP["tick the world 0x26998<br/>entity + vehicle pools, sound, economy"]
+    UP --> PAL["upload_palette 0x4987e"]
+    PAL --> DRAW["build the frame<br/>scene walk + blitters into g_screen_buf"]
+    DRAW --> PRES["vga_planar_present 0x4a492<br/>copy off-screen buffer to VGA"]
+    PRES --> LOOP
+    LOOP -->|mission ends| OUT["tidy up, back to the outer loop"]
+```
+
+The reason the game draws into an off-screen buffer first and only copies it at the end is
+to avoid tearing. That whole idea, and the four-plane mode-X copy that
+`vga_planar_present` does, is covered in [the blitters page](blitter.md). This section is
+about the stage before it: deciding what to draw.
+
+## The render pipeline, from what is visible to pixels
+
+Drawing a frame is two jobs. First work out which map cells and objects are on screen and in
+what order. Then stamp their pixels into the off-screen buffer. The first job is the
+isometric scene walker, the second is the blitters.
+
+The walker is `iso_scene_walk` (0x4287e). It visits about 36 cells in a diamond around the
+view centre, working from the far cells inward so nearer things are handled last and sit on
+top. For each cell it computes a screen column and drops the cell if it falls outside the
+visible strip. Then it reads the object record parked in that cell, takes a type byte off the
+record, and uses it to index a 24-byte-per-type table (`type * 0x18 + base`). That table entry
+holds the draw data for this layer. If there is something to draw, the cell is folded into a
+shared coverage accumulator by the mask merge `FUN_000418ac`, with a one-shot setup
+`FUN_00046188` that clears the accumulator on the first object drawn. The full commented
+listing is at `src/lib/gfx/iso_scene_walk.asm`.
+
+The walker does not push pixels itself. It decides what is visible and merges each object's
+coverage into a 16-slot mask accumulator at `0xe144`. It looks like this accumulator is how
+the game does the see-through effect, where a wall between the camera and an agent goes
+transparent so you can still see your people. That reading fits the far-to-near order and the
+per-object coverage merge, but we have not tied it to a running frame yet, so treat it as
+inference.
+
+The actual pixels come from the blitters, which run in the same frame. Map tiles are stamped
+with `blit_block` (copy a rectangle across all four planes). Agents, cars, and objects are
+drawn with `draw_sprite_rle`, which walks run-length-encoded sprite data and skips the
+transparent runs so a sprite layers cleanly over what is behind it. Single pixels and HUD
+marks go through `plot_point`. All of them write into the off-screen buffer `g_screen_buf`,
+which `vga_planar_present` then shows.
+
+```mermaid
+flowchart TD
+    W["iso_scene_walk 0x4287e<br/>visit ~36 cells, far to near"] --> T["per cell: type byte -> 24-byte type entry<br/>-> draw-data for this layer"]
+    T --> M["FUN_000418ac<br/>merge coverage into the mask accumulator 0xe144"]
+    M --> B["blitters stamp pixels into g_screen_buf"]
+    B --> B1["blit_block: map tiles"]
+    B --> B2["draw_sprite_rle: agents, cars, objects"]
+    B --> B3["plot_point: single pixels, HUD marks"]
+    B1 --> PR["vga_planar_present 0x4a492"]
+    B2 --> PR
+    B3 --> PR
+```
+
+## An entity's turn
+
+Every mobile thing in a mission, agent, ped, car, or projectile, lives in one of the five
+fixed object pools described in [the object model](object-model.md). The per-frame world tick
+walks them and gives each a turn. This section follows one pool-A entity through a single tick:
+how its behaviour is chosen, how it moves, and how it is drawn.
+
+**The pool walk.** `entity_pool_tick` (0x31858) is the pool-A tick. It steps through the
+entity pool a record at a time (base `0x8110`, stride `0x5c`) up to a live bound, and for each
+in-use record it reads the state/animation byte at `[0x19]` and dispatches on it through a jump
+table, with values running 0 to 0x2c. This pass handles the per-state animation and
+book-keeping for the record.
+
+**The behaviour switch.** The behaviour proper is `entity_behaviour_dispatch` (0x2ea88), a
+jump table over roughly 45 states, also keyed on the same state byte `[0x19]`. This is where
+an entity's kind of turn is chosen: seek a target, aim, fire, persuade, follow a leader, board
+or drive a car. The [object model](object-model.md) traces two of these behaviours in full,
+the Persuadertron (`persuade_capture` 0x2fe68) and the vehicle handlers.
+
+```mermaid
+flowchart TD
+    TICK["entity_pool_tick 0x31858<br/>walk pool A, stride 0x5c"] --> EACH{"record in use?"}
+    EACH -->|no| NEXT["next record"]
+    EACH -->|yes| ST["read state byte [0x19]"]
+    ST --> DISP["entity_behaviour_dispatch 0x2ea88<br/>jump table, ~45 states"]
+    DISP --> MOVE["move + aim"]
+    DISP --> COMBAT["persuade / fire / follow"]
+    DISP --> VEH["board / ride / drive / exit"]
+    MOVE --> NEXT
+    COMBAT --> NEXT
+    VEH --> NEXT
+    NEXT --> TICK
+```
+
+**How it aims and turns.** When an entity is engaging a target, `entity_aim_helper` (0x2f608)
+does the orientation. It reads the target link at `[0x44]`, and if the target is alive it takes
+the vector from self to target (`dx = target.x - self.x`, `dy = target.y - self.y`), turns that
+into a facing byte with `vec_to_angle`, and stores it at `[0x1a]`. It does the same for the
+vertical angle using the horizontal distance, sets the state byte `[0x19]` to `0x2b`, and
+raises a flag. So facing is a 256-step byte angle computed straight from the geometry each tick,
+not a stored heading.
+
+**How it moves in the world.** Position changes go through `move_entity_xyz` (0x26c78). It
+takes new world coordinates, clamps them to the map bounds, then re-files the entity in the
+spatial grid. The grid is `g_grid_heads`, a 128 by 128 table of cell heads, and each entity is
+threaded into a doubly-linked list for the cell it sits in, keyed by 16-bit ids rather than
+pointers. If the move crosses a cell boundary, the routine unlinks the entity from its old
+cell's list and head-inserts it into the new one, then writes the new coordinates at
+`[0x4]/[0x6]/[0x8]`. That grid is what lets the game find "who is in this tile" cheaply, for
+collisions, line of sight, and the scene walk.
+
+**How its animation advances.** The frame counter and colour channels are stepped by
+`anim_frame_tick` (0x2d228). It bumps the frame byte `[0x53]` (wrapping it while the entity is
+in a slow state), advances an animation stage when the counter hits the cadence set by two bits
+of a control word, and drifts the three colour or lighting channel triples at their own rates.
+The animation frame the entity shows is read off `[0x19]` and its neighbours.
+
+**How it gets drawn.** The entity is not drawn during its tick. It is drawn in the frame's
+render stage, when `iso_scene_walk` reaches the cell it occupies and its type and frame bytes
+index a sprite, which `draw_sprite_rle` then stamps into the off-screen buffer. Cars are a
+small variation: `vehicle_pool_tick` (0x36fd8) runs over pool B each frame, places each car
+body (if the car is anchored to a pool-A driver, the body is put at the driver's position plus
+an offset and re-filed in the grid with `move_entity_xyz`), then draws it by model byte through
+a sprite jump table.
+
+```mermaid
+flowchart LR
+    A["aim: entity_aim_helper 0x2f608<br/>facing [0x1a] from vec_to_angle"] --> B["move: move_entity_xyz 0x26c78<br/>clamp + re-thread in g_grid_heads"]
+    B --> C["animate: anim_frame_tick 0x2d228<br/>step frame [0x53] + colour channels"]
+    C --> D["draw (render stage):<br/>iso_scene_walk finds the cell,<br/>draw_sprite_rle stamps the sprite"]
+```
+
+Above these low-level steps sits a higher command layer. `entity_state_dispatch` (0x133a8) is a
+command and animation state machine that reads an entity's orders, sets the coarse state codes,
+and issues animation requests that the interpreter `FUN_00023158` turns into actions. It is the
+layer that decides an agent should be moving to a point or attacking, where the functions above
+are the layer that carries a single state out for one tick.
 
 ## The systems we expect to find
 
@@ -200,18 +366,20 @@ draw. (2) grid-cell entity chains (g_810e+id, 0x12c cap), type-dispatched blips.
 0x18d18 blip loops + conditional 0x19318 + 8× stride-14 objective-marker records at 0x1be3a.
 Callees: 0x3fb40/0x3f4b4/0x3f636/0x18d18(×2)/0x19318 (matched: 0x18d18, 0x19318).
 
-## Drawing the isometric scene, `FUN_0004287e` @ 0x4287e
+## Drawing the isometric scene, `FUN_0004287e` @ 0x4287e (decode note)
 
-The world you see in a mission is drawn by walking the cells around the view centre.
-`FUN_0004287e` steps through roughly 36 neighbouring cells in an isometric diamond, working
-from the far cells inward so nearer objects are handled last and sit on top. For each cell it
-works out the screen column, drops the cell if it falls outside the visible strip, then reads
-the object record parked there. A type byte on the record picks a 24-byte entry in a per-type
-table, and that entry holds the draw data for this layer. If there is something to draw, the
-cell is handed to the coverage merge at `FUN_000418ac`, which folds the object into a shared
-visibility accumulator. So the walker decides what to draw and in what order, and the actual
-pixels are pushed by the [blitters](blitter.md) elsewhere. The readable listing, commented
-line by line, is at `src/lib/gfx/FUN_0004287e.asm`.
+This is the decode note behind the [render pipeline](#the-render-pipeline-from-what-is-visible-to-pixels)
+section above, kept for the offset-level detail.
+
+`FUN_0004287e` (`iso_scene_walk`) steps through roughly 36 neighbouring cells in an isometric
+diamond, working from the far cells inward so nearer objects are handled last and sit on top.
+For each cell it works out the screen column, drops the cell if it falls outside the visible
+strip, then reads the object record parked there. A type byte on the record picks a 24-byte
+entry in a per-type table, and that entry holds the draw data for this layer. If there is
+something to draw, the cell is handed to the coverage merge at `FUN_000418ac`, which folds the
+object into a shared visibility accumulator. So the walker decides what to draw and in what
+order, and the actual pixels are pushed by the [blitters](blitter.md) elsewhere. The readable
+listing, commented line by line, is at `src/lib/gfx/iso_scene_walk.asm`.
 
 ## Mission-cursor target-action resolver, `FUN_0002ad58` @ 0x2ad58 (cont. 25 decode)
 
