@@ -1,38 +1,50 @@
-; FUN_0004d199 @ 0004d199  (66 bytes) -- hand-written assembly, reconstructed listing.
-; Original bytes disassembled from the game image; call targets and known globals
-; resolved to names. The build uses FUN_0004d199.c (db-transcription); this listing is the
-; readable companion. See docs/game-vs-library.md for why these are hand asm.
+; FUN_0004d199 @ 0x4d199  (66 bytes) -- hand-written assembly (fully commented).
 ;
+; fill_bytes: a size-optimised memset. Fill `count` bytes at `dst` with `value`.
+; It picks the widest store the count allows, so most of the work goes four bytes
+; at a time instead of one: count divisible by 4 -> rep stosd, divisible by 2 ->
+; rep stosw, otherwise -> rep stosb. (value is passed as a full dword, so its low
+; byte/word is what lands in the narrower stores.)
+;
+; Called for plain clears, e.g. FUN_0004d199(g_5594, 0, 0x1e9) zeroes a 0x1e9-byte
+; state block. Args (stack / cdecl): [ebp+8] dst, [ebp+0xc] value, [ebp+0x10] count.
+
 FUN_0004d199:
-        push    ebp                              ; 55
-        mov     ebp, esp                         ; 8bec
-        push    ecx                              ; 51
-        push    edi                              ; 57
-        mov     ecx, dword ptr [ebp + 0x10]      ; 8b4d10
-        test    ecx, 3                           ; f7c103000000
-        je      0x4d1cc                          ; 7423
-        test    ecx, 2                           ; f7c102000000
-        je      0x4d1bd                          ; 740c
-        mov     edi, dword ptr [ebp + 8]         ; 8b7d08
-        mov     eax, dword ptr [ebp + 0xc]       ; 8b450c
-        rep stosb byte ptr es:[edi], al          ; f3aa
-        pop     edi                              ; 5f
-        pop     ecx                              ; 59
-        leave                                    ; c9
-        ret                                      ; c3
-        shr     ecx, 1                           ; d1e9
-        mov     edi, dword ptr [ebp + 8]         ; 8b7d08
-        mov     eax, dword ptr [ebp + 0xc]       ; 8b450c
-        rep stosw word ptr es:[edi], ax          ; f366ab
-        pop     edi                              ; 5f
-        pop     ecx                              ; 59
-        leave                                    ; c9
-        ret                                      ; c3
-        shr     ecx, 2                           ; c1e902
-        mov     edi, dword ptr [ebp + 8]         ; 8b7d08
-        mov     eax, dword ptr [ebp + 0xc]       ; 8b450c
-        rep stosd dword ptr es:[edi], eax        ; f3ab
-        pop     edi                              ; 5f
-        pop     ecx                              ; 59
-        leave                                    ; c9
-        ret                                      ; c3
+        push    ebp
+        mov     ebp, esp
+        push    ecx
+        push    edi
+        mov     ecx, [ebp+0x10]     ; ecx = count
+        test    ecx, 3
+        je      fill_dword          ; count % 4 == 0 -> dword path
+        test    ecx, 2
+        je      fill_word           ; count % 2 == 0 (but not 4) -> word path
+
+; --- byte fill (odd count) ---
+        mov     edi, [ebp+8]        ; edi = dst
+        mov     eax, [ebp+0xc]      ; al = value
+        rep stosb                   ; store count bytes
+        pop     edi
+        pop     ecx
+        leave
+        ret
+
+fill_word:
+        shr     ecx, 1              ; count / 2 words
+        mov     edi, [ebp+8]
+        mov     eax, [ebp+0xc]      ; ax = value
+        rep stosw
+        pop     edi
+        pop     ecx
+        leave
+        ret
+
+fill_dword:
+        shr     ecx, 2              ; count / 4 dwords
+        mov     edi, [ebp+8]
+        mov     eax, [ebp+0xc]      ; eax = value
+        rep stosd
+        pop     edi
+        pop     ecx
+        leave
+        ret
