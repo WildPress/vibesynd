@@ -27,7 +27,15 @@ command -v Xvfb >/dev/null 2>&1 && command -v twm >/dev/null 2>&1 || {
 
 export DISPLAY=:99
 export SDL_VIDEODRIVER=x11        # render to the virtual display...
-export SDL_AUDIODRIVER=dummy      # ...but no real audio device in the container (else SDL aborts)
+# Audio: default to the dummy device (no real audio card in the container). Set DOSREC_AUDIO=disk to
+# capture the emulator's mixed output to a raw PCM file via SDL 1.2's "disk" driver (headless capture,
+# no device needed) -- used to confirm the game actually produces sound.
+export SDL_AUDIODRIVER=${DOSREC_AUDIO:-dummy}
+if [ "${DOSREC_AUDIO:-}" = "disk" ]; then
+  export SDL_DISKAUDIOFILE="${DOSREC_AUDIOFILE:-$(dirname "$OUT")/audio.raw}"
+  export SDL_DISKAUDIODELAY="${DOSREC_AUDIODELAY:-150}"
+  rm -f "$SDL_DISKAUDIOFILE"
+fi
 Xvfb :99 -screen 0 1024x768x24 -nolisten tcp >/dev/null 2>&1 &
 XVFB=$!
 sleep 2

@@ -364,6 +364,32 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ### were aligned like MAIN's, the driver might not trip. dosbox-dbg markers now: WILDJUMP+regs, 1024-insn
 ### ring (FWD), CTG2, DRVREG+DTBL, LKUP, INST, FIDX, CBWRITE, NULLWR.
 ###
+### ✅✅✅ SOLVED 2026-07-18 -- THE SOUND CRASH WAS A FIXUP-EMITTER BUG, not the heap/driver address at all.
+### (Everything below in this thread -- the driver-load-address "root cause", the heap/DGROUP/STK/ESP/BSS
+### work -- was a RED HERRING; kept only for the method trail.) The default GAMEO.EXE now boots sound-ON
+### to the SYNDICATE title, matching MAIN, no crash. Fix is ~15 lines in tools/origbuild.py emit_obj.
+### ROOT CAUSE: emit_obj wrote LEDATA in fixed 1024-byte chunks and emitted each FIXUPP with LOC=9 (32-bit
+### offset) at doff=off%1024. A FIXUPP LOCAT can only address bytes INSIDE its own LEDATA record, so any
+### fixup whose 4-byte source straddled a chunk boundary (doff 0x3fd..0x3ff) had only its low byte(s)
+### relocated and its target offset silently corrupted. 27 code fixups were affected. One of them is the
+### sound timer-callback DISPATCH at ga 0x2bbfd, `CALL [ESI+0xbbf4]`, disp32 at _TEXT 0x2bbff = doff 0x3ff.
+### Its 0xbbf4 relocated to 0xf4, so the dispatch read DGROUP+0xf4 -- which holds the static format string
+### "...maged %s\n" (0x73252064 = "d %s") -- and CALLed it -> wild jump to 0xc0000038. It only bit with
+### sound on (the dispatch is a sound callback), which is why /s always worked and why the crash was
+### byte-identical across every heap layout (it is a static reloc bug, not a heap/driver-address effect).
+### PROOF: a new DISP2 tracer marker (build/dbxsrc core_normal.cpp, dumps the dispatch EA) showed EA=DGROUP
+### +0xf4 [EA]="d %s" BEFORE the fix; after the fix EA=DGROUP+0xbbf4=cbslot, [EA]=the installed handler
+### 0x330cfa, CTG2 dispatches valid handlers, no WILDJUMP, clean LOG.TXT, title renders. Verified on the
+### DEFAULT build (driver still ~0xe8000 "too high") -> the load address never mattered.
+### THE FIX: end each LEDATA chunk at the start of any fixup that would straddle its tail, so every fixup
+### sits fully inside one record (offset 0 of the next chunk if pulled). GAMEO.EXE 1429840 -> 1429772 B.
+### The old CBWRITE watch never saw a "clobber" because there was none: install wrote DGROUP+0xbbf4
+### correctly, but the dispatch READ a different (mis-relocated) address. Diagnose read bugs by the EA,
+### not just the value. Audio itself is still unheard (container runs SDL_AUDIODRIVER=dummy) but the driver
+### callback path now executes exactly as MAIN's does. Reverted all the red-herring origbuild toggles;
+### only the pre-existing ORIGBUILD_TIGHT_DGROUP remains. Throwaway diag tools (gitignored): _faultrun.sh,
+### _dbxbuild.sh (installs deps + rebuilds build/dosbox-dbg in-container), _esppatch.py, _fxcheck.py.
+###
 ### ✅ ROOT CAUSE of the sound crash 2026-07-17l (MALLOC size+addr diff, GAMEO vs MAIN): GAMEO's
 ### reconstructed DGROUP is ~0xd8000 (880KB) TOO LARGE, which shifts the C-runtime "big-block" heap arena
 ### (and the sound driver in it) UP by ~0xe9c80 to a load address where the driver crashes. Proof: the
@@ -387,6 +413,71 @@ From the first Ghidra headless analysis of `OBJECT1.linear.bin` (base 0x0):
 ### sound thread: not DGROUP data, not driver load/register, not callback selection (all ruled out by
 ### value); it is the HEAP LAYOUT -- GAMEO's oversized DGROUP puts the sound driver at a load address that
 ### crashes it (load-address-sensitive, likely an ISA-DMA 64KB-boundary or absolute-ref in the driver).
+###
+### ✅✅ SOUND CRASH re-measured + reframed 2026-07-18 (dosbox-dbg CTG2/CBWRITE/MALLOC, GAMEO vs MAIN, all
+### runs `d:\GAMEO.EXE` no /s from \SYNDICAT). CORRECTS two earlier claims and localises the fault exactly.
+###  1. The naive TIGHT fix does NOT page-fault on unbacked g_108110 (the old inference). It GP-faults with
+###     a WILDJUMP: at ga 0x2bbfd (`CALL [ESI+0xbbf4]`, the sound timer-callback dispatch, slot 0, ESI=0)
+###     the slot reads 0x73252064 = ASCII "d %s" (a format-string fragment) -> jump to 0xc0000038. The
+###     SAME wildjump hits the DEFAULT build too -- it IS the sound crash; `/s` avoids it (and MAIN.EXE
+###     runs sound-on clean in this harness, so the harness is a valid A/B testbed).
+###  2. The callback slot is NOT statically wrong and is NOT a race. Order in the log: install first
+###     (### CBWRITE addr=1d01e4 val=24867a, the CORRECT drv1 handler = res+0x3072), THEN the very next
+###     dispatch reads 0x73252064 from that same slot. So it is a POST-INSTALL CLOBBER of DGROUP+0xbbf4.
+###     The object1-only NULLWR/CBWRITE watch never sees the clobbering write => it comes from driver/heap
+###     code (ga>=0x40000) or a block copy. The dispatch's disp fixup IS present (lefix src_lin=0x39347 ->
+###     tobj2 toff=0xbbf4, and origbuild emits it) so it is NOT a missing-fixup bug.
+###  3. WHY the driver mislocates, measured precisely: malloc SIZES+ORDER are byte-identical MAIN vs GAMEO
+###     (9,3e910,400,12a,107a,7900,14b0,2110,171f=drv0,4e00,3caa=drv1). Only the two arena BASES differ,
+###     each by a CONSTANT: the big-block arena is +0x1000 in GAMEO, the small-block arena ~-0x1190. Big
+###     arena base rel-to-DGROUP: MAIN DGROUP+0x31018, GAMEO DGROUP+0x32018. drv1: MAIN 0x244048, GAMEO
+###     0x245608 (= +0x1000, tracks the arena). The +0x1000 is our single DATA object rounding to a page
+###     (vsize 0x31092 -> 0x32000) while MAIN's `_edata`/brk sits at ~0x31018 -- MAIN's data objects carry
+###     a trailing BSS region our reconstruction bakes as initialised data, so our `_edata` is ~0x1000 too
+###     high. The 0x1000-high driver then writes through its own base and lands on DGROUP+0xbbf4.
+###  4. STACK/heap-start model corrected: the near heap begins at load_base + TOTAL image size (top of the
+###     highest object), NOT at `_edata` of the DGROUP group. So the earlier "separate BSS object after
+###     DGROUP" fix is WRONG -- it RAISES the heap. Proof: our extra 0x10000 STACK object (which MAIN lacks;
+###     MAIN header is EIP obj1:0x2d85c, ESP obj2:0x13e60, no stack object) put drv1 at +0x11000 vs MAIN.
+###     Dropping the STACK object and patching the LE header ESP to obj2:0x13e60 (tools/_esppatch.py, on a
+###     ORIGBUILD_NO_STK build) cut the gap 0x11000 -> 0x1000 and the build reaches sound init. Residual is
+###     the 0x1000 arena-base offset above.
+### NEXT (two concrete experiments): (a) give the DATA object a real BSS tail so `_edata`/brk lands at
+###     DGROUP+0x31018 like MAIN (match the initialised-vs-BSS boundary; the tail [~0x31018,0x31092) is
+###     zeros anyway) -> arena/driver drop 0x1000 -> re-test the clobber; (b) if the clobber persists, add
+###     an UNCONDITIONAL linear write-watch on the slot addr (not gated to ga<0x40000) in core_normal.cpp,
+###     rebuild dosbox-dbg, and catch the exact clobbering instruction. origbuild.py toggles added this
+###     session: ORIGBUILD_TIGHT_DGROUP, ORIGBUILD_HEAP_OBJ, ORIGBUILD_NO_STK, ORIGBUILD_STK_FIRST (DEFAULT
+###     unchanged = oversized working build, 1429840 B, re-verified). Throwaway harness: tools/_faultrun.sh
+###     (DBG=1 -> dosbox-dbg+core=normal, dumps WILDJUMP/CBWRITE/CTG2/MALLOC), tools/_esppatch.py,
+###     tools/_fxcheck.py. Build variants staged as build/GAMEO_{default,tight,heapobj,nostk,stkfirst,ESP}.EXE.
+###
+### ⛔⛔ DRIVER LOAD ADDRESS IS A RED HERRING FOR THE CRASH -- experiment (a) done, corrected 2026-07-18
+### (same session). The "driver sits 0x1000/0xe9c80 high -> crash" thread (incl. the ROOT CAUSE block
+### above) explains a REAL layout difference but NOT the crash. Decisive: the crash is BYTE-IDENTICAL
+### across every layout -- default (driver +0xe8000), tight+STK (+0x11000), NO_STK+ESP (+0x1000),
+### NO_STK+ESP+BSS_TAIL (+0x1000): all wildjump at ga 0x2bbfd reading the SAME 0x73252064 = "d %s". Moving
+### the driver 0xe8000 -> 0x1000 does not change the crash, so the fault does not depend on the driver's
+### load address. (Also: experiment (a), the BSS tail, did NOT move the heap at all -- DOS4GW commits the
+### full object vsize regardless of the LEDATA/_edata split, so drv1 stayed at 0x245608. The heap-base
+### model was wrong too; not worth chasing since the address is irrelevant to the crash.)
+### WHAT IT ACTUALLY IS: a layout-INDEPENDENT runtime CLOBBER of the callback slot at DGROUP+0xbbf4.
+### Proven chain (dosbox-dbg log order): (1) static DGROUP+0xbbf4 in our reconstructed data = 0x00000000
+### (verified vs SYNDICAT_MAIN.EXE obj2 pages) -- NOT a data bug. (2) install writes the CORRECT drv1
+### handler: LKUP op=67 fnptr=24867a -> INST -> CBWRITE addr=1d01e4 val=24867a. (3) the very next timer
+### dispatch (CTG2 slot=0 esi=0) reads 0x73252064 from that slot -> CALL -> wildjump. So between install
+### and dispatch some write puts "d %s" (a "%d %s" format-string fragment) over the slot. The object1-only
+### NULLWR/CBWRITE watch does NOT catch that write, and 0x73252064 is a constant/static value (not a heap
+### pointer), so the clobber is a FIXED write of string data to the FIXED address DGROUP+0xbbf4. The
+### dispatch's reloc is fine (fixup src_lin=0x39347 -> obj2:0xbbf4 present + emitted; install & dispatch
+### both resolve to 0x1d01e4). MAIN dispatches the installed handler (0x2470ba) and never sees "d %s", so
+### MAIN clobbers BEFORE install or takes a different branch. Ties to the COVERAGE diff: GAMEO runs ~2000
+### FEWER obj1 offsets than MAIN in the sound/container/font cluster, so GAMEO likely skips a step that
+### sets a scratch-buffer pointer, then an sprintf("%d %s",...) lands on DGROUP+0xbbf4. The heap/STK/ESP/
+### BSS work is still a correct LAYOUT characterisation but is NOT the crash fix. REAL NEXT STEP: add an
+### UNCONDITIONAL linear write-watch on the slot addr (hook the mem-write core, NOT gated to ga<0x40000)
+### in build/dbxsrc/.../core_normal.cpp, rebuild build/dosbox-dbg, run GAMEO sound-on, and read the exact
+### instruction + caller that writes 0x73252064 to DGROUP+0xbbf4; then diff that path GAMEO vs MAIN.
 ###
 ### ⛔ BIGGER CORRECTION 2026-07-17d — rnc_decompress is a RED HERRING. Dumped the DECOMPRESSED OUTPUT
 ### buffer at the success return (ga 0x2cc10 = 0x3a358, mov eax,[0xbfb0]) for the E1-region decodes in

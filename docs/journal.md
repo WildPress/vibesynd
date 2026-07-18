@@ -660,3 +660,137 @@ The last thread was the opposite of a fix. We were asked to reach a hundred per 
 The tempting tool was a permuter that rewrites register assignments in the compiled object to reach the target bytes. We scoped it before building it, which saved building it. A register-normalised diff over all hundred-and-eleven functions still short of a match found not one that a pure renaming could fix. They diverge in the shape of the instructions, not just the names of the registers, and that shape is driven by the compiler's own allocation choices, which no source spelling steers. We pushed on the closest handful anyway, including one that differs by a single `lea`, and every spelling folded back to the same bytes.
 
 So the number will not reach a hundred per cent from compiling C, and now we can say that as a measurement rather than a mood. The finding is written up properly in [register allocation](register-allocation.md). What is worth recording here is the discipline of it. The useful outcome of scoping a tool is sometimes learning not to build it, and the useful outcome of grinding a wall is sometimes a clean proof that it is a wall. Both are progress, even though neither moves the score. The decompilation is complete, every function decoded to readable C, and the reconstructed binary is byte-exact because it is built from the original bytes. The one claim we cannot make in full, that our C recompiles to every exact byte, is capped by the compiler, not by us.
+
+## The sound crash, measured to a thousand bytes
+
+The last honest word on the sound was that it crashed and we knew roughly why. The heap sat too
+high, the driver loaded at the wrong address, and the fix was "delicate remaining work". This
+stretch turned that mood into numbers, corrected two things we had believed, and left the fault
+cornered in a space one page wide.
+
+Start with what the crash actually is. Running the reconstruction with sound on, under a patched
+emulator that logs the moment control runs wild, the game jumps through a garbage pointer inside
+the sound driver's timer callback. The dispatch is a single instruction, a call through slot zero
+of a small function-pointer table that lives in the data segment. At the instant it fires, that
+slot holds the four bytes of an ASCII fragment, "d %s", a scrap of a format string. Calling it
+lands at nowhere and the game dies. The same crash hits the shipping build too, so this was never
+a side effect of our experiments. It is the sound bug itself, and the game's own no-sound flag
+steps around it. The original binary, run the same way in the same harness, plays past it without
+a stumble, so we had a clean A to B bench: same code, one plays, one falls over.
+
+Then the part that overturned a belief. We had assumed the slot was either wrong from the start or
+lost to a race, the timer firing before the driver was installed. Neither is true. The log puts
+the install first, writing the correct handler into the slot, and the very next dispatch reads the
+scrap of format string back out of the same address. Something overwrites the slot between the two.
+Our watch for stray writes only sees writes issued by the game's own code, and it saw nothing, so
+the clobber comes from the driver's code or a block copy, from a part of the program the watch was
+not looking at. We also checked the obvious innocent explanation, a missing relocation on the
+dispatch instruction, and cleared it: the fixup is there in the original table and our build emits
+it. So the slot is installed correctly and then trampled.
+
+Why the driver tramples it comes down to a single measurement. We logged every allocation in both
+runs. The sizes and the order match to the byte, the same eleven blocks in the same sequence. Only
+the addresses drift, and they drift by a constant. The large-block arena, where the driver lives,
+begins one page higher in our build than in the original, four thousand ninety-six bytes, no more.
+That page is our own doing. The original's data segment ends its initialised part lower down and
+lets the rest be uninitialised tail. We rebuild the whole segment as initialised data, so the
+mark the runtime reads for "end of data" sits a page too high, and the heap, and the driver in it,
+follow it up. A driver a page out of place writes through its own base and puts its scribble where
+the callback table happens to be.
+
+The second correction was about the heap's own starting point. We had a plan on the shelf, to back
+the far heap region with a separate zero-filled object placed after the data. Measuring killed it.
+The heap does not begin at the end of the data group, it begins at the top of the whole loaded
+image, so an extra object after the data pushes the heap up, the exact opposite of what we wanted.
+The proof came for free from another quarter: our build carries a sixty-four kilobyte stack object
+the original does not, and that object alone put the driver sixty-four kilobytes too high. The
+original keeps its stack the extender's way, with the entry and stack pointers named in the file
+header and no object of its own. We matched that, dropped our stack object and pointed the header's
+stack at the top of the data as the original does, and the gap fell from sixty-five thousand bytes
+to that stubborn one page.
+
+So the sound is not fixed, but it is no longer vague. It is a page of arithmetic and a clobbered
+table, and the next moves are written down: give the data segment its proper uninitialised tail so
+the heap lands where the original's does, and if the scribble survives that, widen the write watch
+until it names the instruction that makes it. The lesson is the one this project keeps teaching in
+new clothes. "The heap is wrong" was true and useless. "The large arena is four thousand and
+ninety-six bytes high because we marked a page of tail as data" is the same fact with a handle on
+it. The distance between the two was a day of measuring things we had preferred to reason about.
+
+### A correction, the same day
+
+The entry above was too quick to blame the driver's address. We tested it and it does not hold.
+We gave the data segment its proper uninitialised tail, the fix that was supposed to drop the
+heap a page, and the heap did not move. The extender commits the whole segment however we split
+it, so the mark we thought set the heap does nothing at runtime. That alone would only mean one
+experiment missed. The real lesson came from lining up all four builds we had made, with the
+driver landing anywhere from a page to nearly a megabyte out of place, and reading the crash off
+each. They are identical, to the byte, the same wild jump reading the same four bytes. A cause
+that does not change when you move it by a megabyte is not the cause.
+
+So the driver's address is a true difference and a false trail. What is left is cleaner and
+stranger. The callback slot is zero in our data before anything runs. The driver installs the
+right handler into it. Then, before the timer can call it, something writes the four bytes "d %s"
+over the top, the tail of a "%d %s" format string, and the timer calls that. The value is fixed,
+not a moving heap pointer, so the write goes to a fixed address from a fixed source, the same in
+every build. The original never sees it, so the original either does that write before the install
+or never takes the branch that does it. That last part rhymes with an older measurement we had
+set aside, that our build runs two thousand fewer instructions than the original through the sound
+and resource code, a branch turned the wrong way by a wrong value in the data.
+
+The honest state is this. We spent the day proving what the crash is not, and it was worth it,
+because "the heap is a page wrong" was about to become a fix we would have written up as done. It
+is not the fault. The fault is a stray formatted string landing on a function pointer, and the
+next move is plain: watch that one address for every write, from any code, and name the instruction
+that lands on it. We had built the watch to look only at the game's own code, and the writer is
+not the game's own code, which is exactly why we never saw it.
+
+### The bug was in our linker, and the sound plays
+
+The whole thread had been about the heap. It was about the heap for days. It was not the heap. It
+was a fixup we emitted wrong, and once we found it the fix was fifteen lines and the game boots
+with sound.
+
+The turn came from asking the machine one more question. We had proven the callback slot held a
+scrap of format string, "d %s", at the moment the timer called it, and we had assumed something
+overwrote the slot after the driver installed the right handler into it. We built a wider watch to
+catch that write, expecting to name the instruction that trampled the table. It caught nothing,
+because nothing trampled it. What we had not logged, all this time, was the address the dispatch
+actually reads. When we logged it, the answer fell out at once. The install wrote the handler to
+one address. The dispatch read a different one. The slot was never clobbered. It was never read.
+
+The dispatch is a single instruction, a call through a function pointer at a fixed offset in the
+data segment, "call [esi + 0xbbf4]". At runtime the loader is supposed to turn that 0xbbf4 into the
+real address of the table. In our build it had turned into 0xf4, the low byte only, the top bytes
+lost. The address 0xf4 in the data segment is not a function pointer, it is the middle of a printf
+format string, "damaged %s". So the game called into the letters of an error message and died. The
+value was the same in every build we had made because it was baked in by us, not computed from any
+heap. That is why moving the heap a megabyte never changed the crash. We had been rearranging the
+furniture in the wrong house.
+
+The reason the loader mangled 0xbbf4 is small and exact. We hand the linker the code in thousand-
+byte blocks, and for each relocation we tell it where in the block to patch. A relocation can only
+name a spot inside its own block. This one sat on the very last byte of a block, so its four bytes
+spilled into the next one, and only the byte in the first block was fixed up. Twenty-seven
+relocations in the program fell on that seam. Most never mattered, because most of the code they
+sat in never runs, or runs only in paths we were not exercising. One of them was the sound timer.
+That is the whole reason the game played fine without sound and fell over the instant sound was on,
+and the whole reason the fault looked like it lived in the audio driver when it lived in our
+linker.
+
+The fix is to stop cutting a block in the middle of a relocation. End the block a few bytes early,
+so the relocation starts the next one and stays whole. With that in place the dispatch reads the
+address it should, finds the handler the driver installed, and the reconstruction boots to the
+Bullfrog title with sound turned on, the same screen that used to crash on the way there. We cannot
+hear it, the test rig has no audio device, but the driver's callbacks now run exactly as the
+original's do.
+
+There are two lessons and they are both old friends. The first is that a wrong value read is not
+always a wrong value written, and the only way to tell them apart is to look at the address, not
+the number. We had stared at "d %s" for a day and never asked where it came from. The second is the
+one this project keeps paying for. We built an elegant theory about heaps and arenas and stack
+objects, measured it to the byte, and corrected our own notes twice inside it, and all of it was
+scaffolding around the wrong wall. The heap really is laid out differently from the original. It
+simply had nothing to do with the crash. The cost of the detour was real. The refund was a genuine
+bug in our own tools that had been quietly corrupting twenty-seven relocations in every build we
+had ever made, and now does not.

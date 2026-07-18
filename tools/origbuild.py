@@ -103,20 +103,30 @@ def emit_obj(name, seg_bytes, fixups, own_seg, own_name, extern_name, entry_off=
         entry_rec = rec(0x8B, bytes([0x00]))
     else:
         entry_rec = rec(0x8B, bytes([0xC1, 0x50]) + idx(1) + struct.pack("<I", entry_off))
-    # LEDATA + FIXUPP, 1024-byte chunks
-    by_chunk = {}
-    for off, tk, disp in fixups:
-        by_chunk.setdefault(off // 1024, []).append((off, tk, disp))
+    # LEDATA + FIXUPP. Chunks are up to 1024 bytes, but a chunk boundary must NEVER bisect a fixup's
+    # 4-byte source: a FIXUPP LOCAT can only address bytes inside its own LEDATA record, so a 32-bit
+    # fixup straddling the boundary (doff 0x3fd..0x3ff) gets only its low byte relocated and its target
+    # offset is silently corrupted (e.g. 0xbbf4 -> 0xf4). That was the sound-callback dispatch crash:
+    # `CALL [ESI+0xbbf4]` relocated to DGROUP+0xf4 (a "%s" format string) -> wild jump with sound on.
+    # So end each chunk at the start of any fixup that would otherwise straddle its tail; the fixup then
+    # sits at offset 0 of the next chunk, fully contained. (27 code fixups were affected.)
+    fix_at = {off: (tk, disp) for off, tk, disp in fixups}
+    fixoffs = sorted(fix_at)
     o = 0
     while o < len(data):
-        chunk = bytes(data[o:o+1024]); clen = len(chunk)
-        out += rec(0xA1, idx(1) + struct.pack("<I", o) + chunk)
+        end = min(o + 1024, len(data))
+        while True:                                     # pull `end` back past any straddling fixup
+            crossers = [X for X in fixoffs if o < X < end and X + 4 > end]
+            if not crossers:
+                break
+            end = min(crossers)
+        out += rec(0xA1, idx(1) + struct.pack("<I", o) + bytes(data[o:end]))
         fb = bytearray()
-        for off, tk, disp in by_chunk.get(o // 1024, []):
-            doff = off - o
-            if doff < 0 or doff > 0x3ff:
+        for off in fixoffs:
+            if off < o or off + 4 > end:                # only fixups whose full 4 bytes lie in [o,end)
                 continue
-            locat = 0x8000 | (1 << 14) | (9 << 10) | (doff & 0x3FF)      # M=1 abs, LOC=9 32-bit off
+            tk, disp = fix_at[off]
+            locat = 0x8000 | (1 << 14) | (9 << 10) | ((off - o) & 0x3FF)  # M=1 abs, LOC=9 32-bit off
             fb += bytes([locat >> 8, locat & 0xFF])
             if tk == own_seg:
                 # same-object target: frame=SEGDEF(1), target=SEGDEF(1) + disp
@@ -126,7 +136,7 @@ def emit_obj(name, seg_bytes, fixups, own_seg, own_name, extern_name, entry_off=
                 fb += bytes([0x52]) + idx(1) + struct.pack("<I", disp)
         if fb:
             out += rec(0x9D, bytes(fb))
-        o += clen
+        o = end
     out += entry_rec
     open(os.path.join(WORK, name + ".OBJ"), "wb").write(out)
     return len(data)
