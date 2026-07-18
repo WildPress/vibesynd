@@ -10,14 +10,16 @@ for byte, one function at a time. A project to learn how decompilation works.
 
 ![Decompilation progress treemap: functions sized by code bytes, coloured by match status](docs/treemap.svg)
 
-Every function in the code segment, area proportional to its size, grouped by subsystem.
-**Green** = our C compiles byte-identical to the original. **Blue** = complete, differing only in a
-register the compiler happened to choose. **Amber** = decoded to readable C, but the period Watcom
-compiler will not reproduce these exact bytes from any source spelling. Amber is a codegen ceiling,
-proven in [register allocation](docs/register-allocation.md), **not unfinished work**: those functions
-are understood and written, they simply cannot go green from C. So green is the byte-match score and
-amber is "done as far as the compiler allows". Regenerate with `python tools/treemap.py`; a live,
-hover-able version and a matched-over-time chart are in `tools/progress.py` (local `dashboard/progress.html`).
+Every function in the code segment, area proportional to its size, grouped by subsystem, coloured by a
+register-normalised diff against the original (`tools/classify_equiv.py`).
+**Green** = our C compiles byte-identical. **Cyan** = *register-only*: same instructions, the target
+just keeps a value in a different register — **provably zero behavioural difference**, only unforceable
+from C. **Blue** = *near-identical*: one or two equivalent encoding idioms differ (e.g. `xor edx,edx;
+mov dx,ax` vs `mov ecx,eax; and ecx,0xffff`, both zero-extend) — almost surely semantically the same.
+**Amber** = *structural*: a real instruction-shape difference remains (a source change still to find).
+So green+cyan are behaviourally complete-and-safe; blue is near-certainly so; amber is where any genuine
+difference would live. Regenerate with `python tools/treemap.py`; a live, hover-able version and a
+matched-over-time chart are in `tools/progress.py` (local `dashboard/progress.html`).
 
 ## The reconstruction runs
 
