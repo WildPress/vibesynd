@@ -912,10 +912,6 @@
   "addr": "0003c42d",
   "flags": "-3s -d2 -os -zp8 -s -zq"
  },
- "init_subsystems": {
-  "addr": "00026998",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
  "zero_bss_region": {
   "addr": "00022708",
   "flags": "-4s -oneatx -zp8 -s -zq"
@@ -1567,5 +1563,9 @@
  "apply_command_effect": {
   "addr": "000149e8",
   "flags": "-4s -or -zp8 -s -zq"
+ },
+ "world_tick": {
+  "addr": "00026998",
+  "flags": "-4s -oneatx -zp8 -s -zq"
  }
 }

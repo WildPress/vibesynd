@@ -2,7 +2,7 @@
 extern void FUN_00026a18(void), entity_pool_tick(void), FUN_000380b8(void),
             FUN_0001c2c8(void), FUN_00029088(void), vehicle_pool_tick(void);
 
-void init_subsystems(void)
+void world_tick(void)
 {
     FUN_00026a18();
     entity_pool_tick();
