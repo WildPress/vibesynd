@@ -1,6 +1,6 @@
 # Syndicate matching decompilation
 
-<!--PROGRESS--><a href="https://github.com/WildPress/vibesynd/wiki"><img alt="game matched" src="https://img.shields.io/badge/game%20matched-61.83%25%20bytes%20%7C%20403%2F514%20fns-blue"></a><!--/PROGRESS-->
+<!--PROGRESS--><a href="https://github.com/WildPress/vibesynd/wiki"><img alt="game matched" src="https://img.shields.io/badge/game%20matched-61.83%25%20bytes%20%7C%20403%2F514%20fns-blue"></a><!--/PROGRESS--> <a href="docs/journal.md"><img alt="runtime" src="https://img.shields.io/badge/runs-boot%20%E2%86%92%20menu%20%E2%86%92%20world%20map-2ea043"></a> <a href="docs/journal.md"><img alt="sound" src="https://img.shields.io/badge/sound-plays%20(matches%20original)-2ea043"></a>
 
 A matching decompilation of the original 1993/95 DOS *Syndicate*: C source that,
 compiled with the period Watcom toolchain, reproduces the game's machine code byte
@@ -11,10 +11,22 @@ for byte, one function at a time. A project to learn how decompilation works.
 ![Decompilation progress treemap: functions sized by code bytes, coloured by match status](docs/treemap.svg)
 
 Every function in the code segment, area proportional to its size, grouped by subsystem.
-**Green** = our C compiles byte-identical to the original; **blue** = complete but not byte-identical
-(same instructions, differs only in a register or equivalent encoding the compiler chose); **amber** =
-decoded but still parked on a codegen wall. Regenerate with `python tools/treemap.py`; a live,
+**Green** = our C compiles byte-identical to the original. **Blue** = complete, differing only in a
+register the compiler happened to choose. **Amber** = decoded to readable C, but the period Watcom
+compiler will not reproduce these exact bytes from any source spelling. Amber is a codegen ceiling,
+proven in [register allocation](docs/register-allocation.md), **not unfinished work**: those functions
+are understood and written, they simply cannot go green from C. So green is the byte-match score and
+amber is "done as far as the compiler allows". Regenerate with `python tools/treemap.py`; a live,
 hover-able version and a matched-over-time chart are in `tools/progress.py` (local `dashboard/progress.html`).
+
+## The reconstruction runs
+
+The treemap measures one axis, byte-matching. There is a second axis it does not show: whether the
+rebuilt executable actually *runs*. It does. Built from the original bytes with the fixups reconstructed,
+it boots under DOS/4GW, plays the Bullfrog intro with subtitles, reaches the main menu and the world map
+with full dashboard text, and **plays sound** whose captured output matches the original's to a fraction
+of a decibel. The full story is in the [journal](docs/journal.md); the most recent entry is the sound
+fix, a relocation the rebuild had been emitting across a record boundary and so corrupting.
 
 ## Start with the wiki
 

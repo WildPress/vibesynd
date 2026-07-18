@@ -159,8 +159,11 @@ rate-driven byte drift.
   and returns the matching handler. `0x398d7` registers a loaded driver, checking the `"Copy"` marker
   and storing its table pointer into that slot array. `0x39625` installs a handler into one of the
   sixteen timer-callback slots at DGROUP `0xbbf4`, which a periodic dispatch loop at `0x39345` then
-  calls. This is the machinery a mistimed or mislocated driver trips over (see the journal entry on
-  the sound crash).
+  calls. That dispatch, `CALL [ESI+0xbbf4]`, is where the long-standing sound crash lived, and the
+  cause was ours, not the game's: our rebuild emitted the instruction's `0xbbf4` relocation across a
+  record boundary, so the loader fixed up only its low byte and the dispatch read `0xbbf4` as `0xf4`.
+  It called into a format string and died, but only with sound on. Fixed by keeping each relocation
+  inside one record (see the journal entry on the sound crash); the driver itself was innocent.
 
 ## 14. C runtime (`0x3a000+`, Watcom CLIB3S, NOT game code)
 
