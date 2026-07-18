@@ -24,6 +24,7 @@
 - [Architecture map](architecture)
 - [How the game works](game-systems)
 - [How the game draws (blitters)](blitter)
+- [Sound and cutscenes](sound-and-cutscenes)
 - [The object model](object-model)
 
 **Log**
