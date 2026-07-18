@@ -1,9 +1,10 @@
 # Sound, and how the cutscenes play
 
-The files under `src/lib/sound/` are two quite different things that happen to share one
-object in the build. One is a music and sound-effect driver. The other is the animation
-player that shows the intro and the mission cutscenes. They sit together because the
-linker packed them into the same module, not because they do the same job.
+Two quite different things sit next to each other in the shipped binary, sharing one object
+because the linker packed them into the same module. One is a music and sound-effect driver.
+The other is the animation player that shows the intro and the mission cutscenes. In our
+source we keep them apart for clarity, the driver under `src/lib/sound/` and the player under
+`src/lib/flic/`, but in the game itself they are neighbours.
 
 So this page is really two pages. The first half is the sound driver: how it makes the
 PC's timer chip fire an interrupt over and over so music can be timed. The second half is
