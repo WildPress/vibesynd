@@ -91,8 +91,8 @@ top. For each cell it computes a screen column and drops the cell if it falls ou
 visible strip. Then it reads the object record parked in that cell, takes a type byte off the
 record, and uses it to index a 24-byte-per-type table (`type * 0x18 + base`). That table entry
 holds the draw data for this layer. If there is something to draw, the cell is folded into a
-shared coverage accumulator by the mask merge `FUN_000418ac`, with a one-shot setup
-`FUN_00046188` that clears the accumulator on the first object drawn. The full commented
+shared coverage accumulator by the mask merge `merge_cell_mask`, with a one-shot setup
+`clear_occlusion_mask` that clears the accumulator on the first object drawn. The full commented
 listing is at `src/lib/gfx/iso_scene_walk.asm`.
 
 The walker does not push pixels itself. It decides what is visible and merges each object's
@@ -112,7 +112,7 @@ which `vga_planar_present` then shows.
 ```mermaid
 flowchart TD
     W["iso_scene_walk 0x4287e<br/>visit ~36 cells, far to near"] --> T["per cell: type byte -> 24-byte type entry<br/>-> draw-data for this layer"]
-    T --> M["FUN_000418ac<br/>merge coverage into the mask accumulator 0xe144"]
+    T --> M["`merge_cell_mask`<br/>merge coverage into the mask accumulator 0xe144"]
     M --> B["blitters stamp pixels into g_screen_buf"]
     B --> B1["blit_block: map tiles"]
     B --> B2["draw_sprite_rle: agents, cars, objects"]
@@ -196,9 +196,51 @@ flowchart LR
 
 Above these low-level steps sits a higher command layer. `entity_state_dispatch` (0x133a8) is a
 command and animation state machine that reads an entity's orders, sets the coarse state codes,
-and issues animation requests that the interpreter `FUN_00023158` turns into actions. It is the
+and issues animation requests that the interpreter `run_mission_command` turns into actions. It is the
 layer that decides an agent should be moving to a point or attacking, where the functions above
 are the layer that carries a single state out for one tick.
+
+## The behaviour state machine
+
+Every object in a pool carries a one-byte state at offset 0x19, and that byte decides how it
+behaves this tick. `entity_behaviour_dispatch` (0x2ea88) is the switchboard. It reads the state
+byte, rejects anything above 0x2c, and jumps through a 45-entry table to the handler for that
+state. So there are up to 45 distinct behaviours, and an object moves between them by having its
+state byte changed.
+
+Two layers meet here. The upper one is `entity_state_dispatch` (0x133a8), the orders machine
+above, which decides an agent should be walking to a point or attacking and writes the coarse
+state. The lower one is `entity_behaviour_dispatch`, which each tick carries out whatever state is
+currently set. Most of the handlers are named now, so we can group them by what they do.
+
+- **Aiming and target selection.** `find_target_for_agent` (0x2ee18) scans the object pool for a
+  valid enemy, skipping the shooter's own squad. `entity_aim_helper` (0x2f608) turns the object to
+  face its target, setting the facing byte 0x1a from `vec_to_angle` of the vector to the target.
+  `combat_aim_update` (0x2d358) and `aim_step` (0x2d6c8) step the aim over time. `los_trace`
+  (0x2e5f8) and `los_trace_far` (0x2e808) walk the line between shooter and target to check the
+  shot is not blocked.
+- **Shooting and projectiles.** `projectile_step` (0x2d738) advances a shot one unit along its
+  direction, `find_projectile_step` (0x2e4f8) tries up to four directions for a valid step, and
+  `homing_step` (0x2e408) steers a homing shot. `record_kill_stats` (0x2ed28) books a hit or kill.
+- **Movement.** `move_entity_xyz` (0x26c78) applies a new position, clamps it to the map, and
+  re-threads the object in the 128x128 spatial grid.
+- **Persuasion.** This is the Persuadertron, the game's signature weapon. `persuade_capture`
+  (0x2fe68) converts a target to your side, and `follow_leader` (0x30078) and `follow_leader_b`
+  (0x301e8) are how a persuaded unit trails the agent who converted it.
+- **Vehicles.** `vehicle_board` (0x2fa48), `vehicle_ride` (0x2fca8), and `vehicle_exit` (0x2fbc8)
+  move an agent in and out of a car, and `vehicle_drive_state` (0x2f878) and `vehicle_move_drive`
+  (0x2f908) drive it.
+- **Damage and health.** `entity_apply_damage` (0x30708) subtracts from an object's HP by a code
+  derived from its flags and marks it dead when the HP goes negative. `entity_halve_hp` (0x30508)
+  is a lighter variant.
+- **Animation.** `anim_frame_tick` (0x2d228) steps the frame counter at the cadence the object's
+  control word asks for.
+
+One piece is still open. The exact map from state index to handler lives in that 45-entry jump
+table at 0x21244, and the table is stored with load-time relocations we have not resolved from the
+static image, so we cannot yet say "state 7 is shoot". What we can say is the set of behaviours the
+machine chooses between, which is the list above, and that the state byte is the dial that moves an
+object through them.
 
 ## The systems we expect to find
 
@@ -310,13 +352,13 @@ graph links the loader to the routines that consume them. That's the method now:
 system, find its top function, and match down the tree, understanding each piece as part of
 the whole rather than as an isolated puzzle.
 
-## Mission/orders command interpreter, `FUN_00023158` @ 0x23158 (cont. 24 decode)
+## Mission/orders command interpreter, `run_mission_command` @ 0x23158 (cont. 24 decode)
 
 **TRUE SIZE 5280 (0x14A0)**, 0x23158–0x245f7 (manifest was 107, fixed). Per-record command
 interpreter: executes one queued command for record `idx` (u32 param), then clears the slot.
 Entry: `ESI = 0x105d4 + idx*0xe` (14-byte command record, opcode at `record[+0xd]`).
 `EDX = 0xe49c + idx*0x417` (the 0x417-stride equip/research template row consumed by matched
-siblings `FUN_000223c8`/`FUN_00012da8`, and `[EDX+0xb5]` = `g_e551[idx*0x417]` = pool-A base-slot
+siblings `FUN_000223c8`/`build_equip_row`, and `[EDX+0xb5]` = `g_e551[idx*0x417]` = pool-A base-slot
 header). Every case ends `MOV byte [ESI+0xd],0` (consume), `ADD ESP,0x34`, pops, `RET`.
 
 Jump table: literal `CS:[EAX*4+0x15920]`, manifest **0x23068** (0x15920+0xd748),
@@ -341,11 +383,11 @@ Case map (case, body):
 Sampled ops: 1/0x21 = broadcast `FUN_000223c8` (equip-template apply) + `FUN_000229f8`
 across players (bound `g_10b0c`), single-player uses `FUN_00029d88`, per-player flags to
 `g_e4ab`. op 3 = loop pool-A agents (0x8110 stride 0x5c, bound `(g_e551[idx*0x417]+4)`)
-calling `FUN_0002f608` (aim/step). op 8 = squad broadcast (`[+0x20]==agent-id`, then
-`FUN_0002f608`). op 0x16 = `node[0x44]=FUN_00037d08(node,0,cmd[0])` (sub-object spawn, banked
+calling `entity_aim_helper` (aim/step). op 8 = squad broadcast (`[+0x20]==agent-id`, then
+`entity_aim_helper`). op 0x16 = `node[0x44]=`best_weapon_select_typed`(node,0,cmd[0])` (sub-object spawn, banked
 0x37d08). op 0x39 = per-agent `g_5358` map/tile scan, then `node[0x19]=7`, `node[0x58]=7`,
-clear `+0xa` bit3. Dominant callee `FUN_0002f608`. To match: fix size (done), then go
-body-by-body, reusing the cont.22 cross-jump law for the recurring merged `FUN_0002f608` call
+clear `+0xa` bit3. Dominant callee `entity_aim_helper`. To match: fix size (done), then go
+body-by-body, reusing the cont.22 cross-jump law for the recurring merged `entity_aim_helper` call
 tails.
 
 ## Tactical-map / radar renderer, `FUN_00019608` @ 0x19608 (cont. 25 decode)
@@ -366,22 +408,22 @@ draw. (2) grid-cell entity chains (g_810e+id, 0x12c cap), type-dispatched blips.
 0x18d18 blip loops + conditional 0x19318 + 8× stride-14 objective-marker records at 0x1be3a.
 Callees: 0x3fb40/0x3f4b4/0x3f636/0x18d18(×2)/0x19318 (matched: 0x18d18, 0x19318).
 
-## Drawing the isometric scene, `FUN_0004287e` @ 0x4287e (decode note)
+## Drawing the isometric scene, `iso_scene_walk` @ 0x4287e (decode note)
 
 This is the decode note behind the [render pipeline](#the-render-pipeline-from-what-is-visible-to-pixels)
 section above, kept for the offset-level detail.
 
-`FUN_0004287e` (`iso_scene_walk`) steps through roughly 36 neighbouring cells in an isometric
+`iso_scene_walk` (`iso_scene_walk`) steps through roughly 36 neighbouring cells in an isometric
 diamond, working from the far cells inward so nearer objects are handled last and sit on top.
 For each cell it works out the screen column, drops the cell if it falls outside the visible
 strip, then reads the object record parked there. A type byte on the record picks a 24-byte
 entry in a per-type table, and that entry holds the draw data for this layer. If there is
-something to draw, the cell is handed to the coverage merge at `FUN_000418ac`, which folds the
+something to draw, the cell is handed to the coverage merge at `merge_cell_mask`, which folds the
 object into a shared visibility accumulator. So the walker decides what to draw and in what
 order, and the actual pixels are pushed by the [blitters](blitter.md) elsewhere. The readable
 listing, commented line by line, is at `src/lib/gfx/iso_scene_walk.asm`.
 
-## Mission-cursor target-action resolver, `FUN_0002ad58` @ 0x2ad58 (cont. 25 decode)
+## Mission-cursor target-action resolver, `mission_target_resolve` @ 0x2ad58 (cont. 25 decode)
 
 **TRUE SIZE 3694 (0x2ad58–0x2bbc5, manifest was 1737, fixed). Calls 8 not 4.** Resolves what
 the mission cursor points at and writes an action order into `ushort *p` (p[0]=x/id, p[2]=y,
@@ -395,7 +437,7 @@ cursor-line-draw), fresh-target pick via the R/G/B reticle-ramp interpolators
 (g_5390/5392/52f8) into reticle window g_10b1c/1e/20, final g_e120 dispatch. DOUBLY WALLED: it
 indexes the 0x417-stride agent template records (g_e551/e552 via idx=g_10b16) AND the g_810e
 pool (0x5c stride) about 12× each with mixed and-form/movsx byte loads, and it directly calls
-the parked register-wall FUN_0002d7a8. Park (decode-only).
+the parked register-wall `interp_scale_a`. Park (decode-only).
 
 ## The entity model and the Persuadertron
 
