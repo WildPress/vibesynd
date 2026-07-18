@@ -1,45 +1,57 @@
-; FUN_0004a42f @ 0004a42f  (99 bytes) -- hand-written assembly, reconstructed listing.
-; Original bytes disassembled from the game image; call targets and known globals
-; resolved to names. The build uses FUN_0004a42f.c (db-transcription); this listing is the
-; readable companion. See docs/game-vs-library.md for why these are hand asm.
+; FUN_0004a42f @ 0x4a42f  (99 bytes) -- hand-written assembly (fully commented).
+;
+; FUN_0004a42f: save a 16-pixel-wide, 17-row column from g_screen_buf into the fixed
+; scratch area at 0x3cb74. This is the "save" half of a backing-store pair; the
+; matching "restore" FUN_0004a3cc copies the same column back the other way.
+;
+; Structurally identical to FUN_0004a3cc but with source and destination swapped: it
+; reads the four plane dwords (offsets 0, 0x7d00, 0xfa00, 0x17700) at the left edge of
+; each of 17 rows starting at scanline arg0 and writes them in sequence into the
+; linear scratch buffer. If the start row is >= 0x190 (400) it does nothing.
+;
+; Args (stack / cdecl):
+;   [ebp+8]   start row (word); incremented in place as the loop advances
+; Globals:  0x5368  g_screen_buf     0x3cb74  scratch backing store (17*16 bytes)
 ;
 FUN_0004a42f:
-        push    ebp                              ; 55
-        mov     ebp, esp                         ; 8bec
-        push    eax                              ; 50
-        push    ebx                              ; 53
-        push    ecx                              ; 51
-        push    edx                              ; 52
-        push    esi                              ; 56
-        push    edi                              ; 57
-        mov     esi, dword ptr [0x5368]          ; 8b3568530000   0x5368=g_screen_buf
-        mov     edi, 0x3cb74                     ; bf74cb0300
-        movzx   eax, word ptr [ebp + 8]          ; 0fb74508
-        imul    eax, eax, 0x50                   ; 6bc050
-        add     esi, eax                         ; 03f0
-        mov     ecx, 0x11                        ; b911000000
-        cmp     word ptr [ebp + 8], 0x190        ; 66817d089001
-        jge     0x4a48a                          ; 7d31
-        mov     edx, dword ptr [esi]             ; 8b16
-        mov     dword ptr [edi], edx             ; 8917
-        add     edi, 4                           ; 83c704
-        mov     edx, dword ptr [esi + 0x7d00]    ; 8b96007d0000
-        mov     dword ptr [edi], edx             ; 8917
-        add     edi, 4                           ; 83c704
-        mov     edx, dword ptr [esi + 0xfa00]    ; 8b9600fa0000
-        mov     dword ptr [edi], edx             ; 8917
-        add     edi, 4                           ; 83c704
-        mov     edx, dword ptr [esi + 0x17700]   ; 8b9600770100
-        mov     dword ptr [edi], edx             ; 8917
-        add     edi, 4                           ; 83c704
-        add     esi, 0x50                        ; 83c650
-        inc     word ptr [ebp + 8]               ; 66ff4508
-        loop    0x4a451                          ; e2c7
-        pop     edi                              ; 5f
-        pop     esi                              ; 5e
-        pop     edx                              ; 5a
-        pop     ecx                              ; 59
-        pop     ebx                              ; 5b
-        pop     eax                              ; 58
-        leave                                    ; c9
-        ret                                      ; c3
+        push    ebp
+        mov     ebp, esp
+        push    eax
+        push    ebx
+        push    ecx
+        push    edx
+        push    esi
+        push    edi
+        mov     esi, dword ptr [0x5368]          ; esi = g_screen_buf
+        mov     edi, 0x3cb74                     ; edi = scratch destination
+        movzx   eax, word ptr [ebp + 8]          ; eax = start row
+        imul    eax, eax, 0x50                   ; row * 0x50 (row pitch)
+        add     esi, eax                         ; esi = source at (col 0, row)
+        mov     ecx, 0x11                        ; 17 rows
+        cmp     word ptr [ebp + 8], 0x190        ; start row >= 400 ?
+        jge     done                             ;   yes -> off the buffer, skip
+copy_row:
+        mov     edx, dword ptr [esi]             ; plane 0 -> scratch
+        mov     dword ptr [edi], edx
+        add     edi, 4
+        mov     edx, dword ptr [esi + 0x7d00]    ; plane 1 -> scratch
+        mov     dword ptr [edi], edx
+        add     edi, 4
+        mov     edx, dword ptr [esi + 0xfa00]    ; plane 2 -> scratch
+        mov     dword ptr [edi], edx
+        add     edi, 4
+        mov     edx, dword ptr [esi + 0x17700]   ; plane 3 -> scratch
+        mov     dword ptr [edi], edx
+        add     edi, 4
+        add     esi, 0x50                        ; next screen row
+        inc     word ptr [ebp + 8]               ; advance row counter
+        loop    copy_row
+done:
+        pop     edi
+        pop     esi
+        pop     edx
+        pop     ecx
+        pop     ebx
+        pop     eax
+        leave
+        ret

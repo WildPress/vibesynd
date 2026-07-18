@@ -1,218 +1,253 @@
-; FUN_00049edf @ 00049edf  (989 bytes) -- hand-written assembly, reconstructed listing.
-; Original bytes disassembled from the game image; call targets and known globals
-; resolved to names. The build uses FUN_00049edf.c (db-transcription); this listing is the
-; readable companion. See docs/game-vs-library.md for why these are hand asm.
+; FUN_00049edf @ 0x49edf  (989 bytes) -- hand-written assembly (fully commented).
+;
+; FUN_00049edf: present a 16-column x 16-row region of the offscreen buffer to VGA,
+; one plane at a time, gated by a countdown byte. Only runs in planar render mode.
+;
+; The base offset is y*0x500 + 0x10 (a 16-row band). Source is g_screen_buf, dest is
+; VGA memory (0x536c). For each of the four planes it selects the plane through the
+; Sequencer Map Mask (port 0x3c4 -> 0x0102/0x0202/0x0402/0x0802) and, if the byte at
+; [arg0] is > 0, copies 16 columns; each column is an unrolled run of 16 dwords one
+; scanline (0x50) apart, then the column pointer steps on by one dword (4 bytes).
+; After each plane the pointers rewind 0x40 (16 dwords) to the region's left edge.
+; The final plane also decrements the byte at [arg0] once.
+;
+; The [arg0] byte therefore acts as a whole-region on/off gate that counts down once
+; per call -- looks like a timed reveal of a screen patch (a transition/refresh).
+;
+; Args (stack / cdecl):
+;   [ebp+8]   pointer to the gate/countdown byte
+;   [ebp+0xc] region y (in 16-row bands)
+; Globals:  0x105 render-mode flags   0x5368 g_screen_buf   0x536c VGA base
+; Ports:    0x3c4/0x3c5 Sequencer (Map Mask = idx 2)
 ;
 FUN_00049edf:
-        push    ebp                              ; 55
-        mov     ebp, esp                         ; 8bec
-        push    eax                              ; 50
-        push    ebx                              ; 53
-        push    ecx                              ; 51
-        push    edx                              ; 52
-        push    esi                              ; 56
-        push    edi                              ; 57
-        test    byte ptr [0x105], 2              ; f6050501000002
-        je      0x4a2a0                          ; 0f84ab030000
-        imul    eax, dword ptr [ebp + 0xc], 0x500 ; 69450c00050000
-        add     eax, 0x10                        ; 83c010
-        mov     esi, dword ptr [0x5368]          ; 8b3568530000   0x5368=g_screen_buf
-        mov     edi, dword ptr [0x536c]          ; 8b3d6c530000
-        add     esi, eax                         ; 03f0
-        add     edi, eax                         ; 03f8
-        mov     dx, 0x3c4                        ; 66bac403
-        mov     ax, 0x102                        ; 66b80201
-        out     dx, ax                           ; 66ef
-        mov     ecx, 0x10                        ; b910000000
-        mov     ebx, dword ptr [ebp + 8]         ; 8b5d08
-        cmp     byte ptr [ebx], 0                ; 803b00
-        jle     0x49fdc                          ; 0f8eb2000000
-        mov     eax, dword ptr [esi]             ; 8b06
-        mov     dword ptr [edi], eax             ; 8907
-        mov     eax, dword ptr [esi + 0x50]      ; 8b4650
-        mov     dword ptr [edi + 0x50], eax      ; 894750
-        mov     eax, dword ptr [esi + 0xa0]      ; 8b86a0000000
-        mov     dword ptr [edi + 0xa0], eax      ; 8987a0000000
-        mov     eax, dword ptr [esi + 0xf0]      ; 8b86f0000000
-        mov     dword ptr [edi + 0xf0], eax      ; 8987f0000000
-        mov     eax, dword ptr [esi + 0x140]     ; 8b8640010000
-        mov     dword ptr [edi + 0x140], eax     ; 898740010000
-        mov     eax, dword ptr [esi + 0x190]     ; 8b8690010000
-        mov     dword ptr [edi + 0x190], eax     ; 898790010000
-        mov     eax, dword ptr [esi + 0x1e0]     ; 8b86e0010000
-        mov     dword ptr [edi + 0x1e0], eax     ; 8987e0010000
-        mov     eax, dword ptr [esi + 0x230]     ; 8b8630020000
-        mov     dword ptr [edi + 0x230], eax     ; 898730020000
-        mov     eax, dword ptr [esi + 0x280]     ; 8b8680020000
-        mov     dword ptr [edi + 0x280], eax     ; 898780020000
-        mov     eax, dword ptr [esi + 0x2d0]     ; 8b86d0020000
-        mov     dword ptr [edi + 0x2d0], eax     ; 8987d0020000
-        mov     eax, dword ptr [esi + 0x320]     ; 8b8620030000
-        mov     dword ptr [edi + 0x320], eax     ; 898720030000
-        mov     eax, dword ptr [esi + 0x370]     ; 8b8670030000
-        mov     dword ptr [edi + 0x370], eax     ; 898770030000
-        mov     eax, dword ptr [esi + 0x3c0]     ; 8b86c0030000
-        mov     dword ptr [edi + 0x3c0], eax     ; 8987c0030000
-        mov     eax, dword ptr [esi + 0x410]     ; 8b8610040000
-        mov     dword ptr [edi + 0x410], eax     ; 898710040000
-        mov     eax, dword ptr [esi + 0x460]     ; 8b8660040000
-        mov     dword ptr [edi + 0x460], eax     ; 898760040000
-        mov     eax, dword ptr [esi + 0x4b0]     ; 8b86b0040000
-        mov     dword ptr [edi + 0x4b0], eax     ; 8987b0040000
-        add     esi, 4                           ; 83c604
-        add     edi, 4                           ; 83c704
-        inc     ebx                              ; 43
-        dec     ecx                              ; 49
-        jne     0x49f21                          ; 0f8537ffffff
-        sub     edi, 0x40                        ; 83ef40
-        sub     esi, 0x40                        ; 83ee40
-        mov     ax, 0x202                        ; 66b80202
-        out     dx, ax                           ; 66ef
-        mov     ecx, 0x10                        ; b910000000
-        mov     ebx, dword ptr [ebp + 8]         ; 8b5d08
-        cmp     byte ptr [ebx], 0                ; 803b00
-        jle     0x4a0c0                          ; 0f8eb9000000
-        mov     eax, dword ptr [esi + 0x7d00]    ; 8b86007d0000
-        mov     dword ptr [edi], eax             ; 8907
-        mov     eax, dword ptr [esi + 0x7d50]    ; 8b86507d0000
-        mov     dword ptr [edi + 0x50], eax      ; 894750
-        mov     eax, dword ptr [esi + 0x7da0]    ; 8b86a07d0000
-        mov     dword ptr [edi + 0xa0], eax      ; 8987a0000000
-        mov     eax, dword ptr [esi + 0x7df0]    ; 8b86f07d0000
-        mov     dword ptr [edi + 0xf0], eax      ; 8987f0000000
-        mov     eax, dword ptr [esi + 0x7e40]    ; 8b86407e0000
-        mov     dword ptr [edi + 0x140], eax     ; 898740010000
-        mov     eax, dword ptr [esi + 0x7e90]    ; 8b86907e0000
-        mov     dword ptr [edi + 0x190], eax     ; 898790010000
-        mov     eax, dword ptr [esi + 0x7ee0]    ; 8b86e07e0000
-        mov     dword ptr [edi + 0x1e0], eax     ; 8987e0010000
-        mov     eax, dword ptr [esi + 0x7f30]    ; 8b86307f0000
-        mov     dword ptr [edi + 0x230], eax     ; 898730020000
-        mov     eax, dword ptr [esi + 0x7f80]    ; 8b86807f0000
-        mov     dword ptr [edi + 0x280], eax     ; 898780020000
-        mov     eax, dword ptr [esi + 0x7fd0]    ; 8b86d07f0000
-        mov     dword ptr [edi + 0x2d0], eax     ; 8987d0020000
-        mov     eax, dword ptr [esi + 0x8020]    ; 8b8620800000
-        mov     dword ptr [edi + 0x320], eax     ; 898720030000
-        mov     eax, dword ptr [esi + 0x8070]    ; 8b8670800000
-        mov     dword ptr [edi + 0x370], eax     ; 898770030000
-        mov     eax, dword ptr [esi + 0x80c0]    ; 8b86c0800000
-        mov     dword ptr [edi + 0x3c0], eax     ; 8987c0030000
-        mov     eax, dword ptr [esi + 0x8110]    ; 8b8610810000
-        mov     dword ptr [edi + 0x410], eax     ; 898710040000
-        mov     eax, dword ptr [esi + 0x8160]    ; 8b8660810000
-        mov     dword ptr [edi + 0x460], eax     ; 898760040000
-        mov     eax, dword ptr [esi + 0x81b0]    ; 8b86b0810000
-        mov     dword ptr [edi + 0x4b0], eax     ; 8987b0040000
-        add     esi, 4                           ; 83c604
-        add     edi, 4                           ; 83c704
-        inc     ebx                              ; 43
-        dec     ecx                              ; 49
-        jne     0x49ffe                          ; 0f8530ffffff
-        sub     edi, 0x40                        ; 83ef40
-        sub     esi, 0x40                        ; 83ee40
-        mov     ax, 0x402                        ; 66b80204
-        out     dx, ax                           ; 66ef
-        mov     ecx, 0x10                        ; b910000000
-        mov     ebx, dword ptr [ebp + 8]         ; 8b5d08
-        cmp     byte ptr [ebx], 0                ; 803b00
-        jle     0x4a1a4                          ; 0f8eb9000000
-        mov     eax, dword ptr [esi + 0xfa00]    ; 8b8600fa0000
-        mov     dword ptr [edi], eax             ; 8907
-        mov     eax, dword ptr [esi + 0xfa50]    ; 8b8650fa0000
-        mov     dword ptr [edi + 0x50], eax      ; 894750
-        mov     eax, dword ptr [esi + 0xfaa0]    ; 8b86a0fa0000
-        mov     dword ptr [edi + 0xa0], eax      ; 8987a0000000
-        mov     eax, dword ptr [esi + 0xfaf0]    ; 8b86f0fa0000
-        mov     dword ptr [edi + 0xf0], eax      ; 8987f0000000
-        mov     eax, dword ptr [esi + 0xfb40]    ; 8b8640fb0000
-        mov     dword ptr [edi + 0x140], eax     ; 898740010000
-        mov     eax, dword ptr [esi + 0xfb90]    ; 8b8690fb0000
-        mov     dword ptr [edi + 0x190], eax     ; 898790010000
-        mov     eax, dword ptr [esi + 0xfbe0]    ; 8b86e0fb0000
-        mov     dword ptr [edi + 0x1e0], eax     ; 8987e0010000
-        mov     eax, dword ptr [esi + 0xfc30]    ; 8b8630fc0000
-        mov     dword ptr [edi + 0x230], eax     ; 898730020000
-        mov     eax, dword ptr [esi + 0xfc80]    ; 8b8680fc0000
-        mov     dword ptr [edi + 0x280], eax     ; 898780020000
-        mov     eax, dword ptr [esi + 0xfcd0]    ; 8b86d0fc0000
-        mov     dword ptr [edi + 0x2d0], eax     ; 8987d0020000
-        mov     eax, dword ptr [esi + 0xfd20]    ; 8b8620fd0000
-        mov     dword ptr [edi + 0x320], eax     ; 898720030000
-        mov     eax, dword ptr [esi + 0xfd70]    ; 8b8670fd0000
-        mov     dword ptr [edi + 0x370], eax     ; 898770030000
-        mov     eax, dword ptr [esi + 0xfdc0]    ; 8b86c0fd0000
-        mov     dword ptr [edi + 0x3c0], eax     ; 8987c0030000
-        mov     eax, dword ptr [esi + 0xfe10]    ; 8b8610fe0000
-        mov     dword ptr [edi + 0x410], eax     ; 898710040000
-        mov     eax, dword ptr [esi + 0xfe60]    ; 8b8660fe0000
-        mov     dword ptr [edi + 0x460], eax     ; 898760040000
-        mov     eax, dword ptr [esi + 0xfeb0]    ; 8b86b0fe0000
-        mov     dword ptr [edi + 0x4b0], eax     ; 8987b0040000
-        add     esi, 4                           ; 83c604
-        add     edi, 4                           ; 83c704
-        inc     ebx                              ; 43
-        dec     ecx                              ; 49
-        jne     0x4a0e2                          ; 0f8530ffffff
-        sub     edi, 0x40                        ; 83ef40
-        sub     esi, 0x40                        ; 83ee40
-        mov     ax, 0x802                        ; 66b80208
-        out     dx, ax                           ; 66ef
-        mov     ecx, 0x10                        ; b910000000
-        mov     ebx, dword ptr [ebp + 8]         ; 8b5d08
-        cmp     byte ptr [ebx], 0                ; 803b00
-        jle     0x4a28a                          ; 0f8ebb000000
-        dec     byte ptr [ebx]                   ; fe0b
-        mov     eax, dword ptr [esi + 0x17700]   ; 8b8600770100
-        mov     dword ptr [edi], eax             ; 8907
-        mov     eax, dword ptr [esi + 0x17750]   ; 8b8650770100
-        mov     dword ptr [edi + 0x50], eax      ; 894750
-        mov     eax, dword ptr [esi + 0x177a0]   ; 8b86a0770100
-        mov     dword ptr [edi + 0xa0], eax      ; 8987a0000000
-        mov     eax, dword ptr [esi + 0x177f0]   ; 8b86f0770100
-        mov     dword ptr [edi + 0xf0], eax      ; 8987f0000000
-        mov     eax, dword ptr [esi + 0x17840]   ; 8b8640780100
-        mov     dword ptr [edi + 0x140], eax     ; 898740010000
-        mov     eax, dword ptr [esi + 0x17890]   ; 8b8690780100
-        mov     dword ptr [edi + 0x190], eax     ; 898790010000
-        mov     eax, dword ptr [esi + 0x178e0]   ; 8b86e0780100
-        mov     dword ptr [edi + 0x1e0], eax     ; 8987e0010000
-        mov     eax, dword ptr [esi + 0x17930]   ; 8b8630790100
-        mov     dword ptr [edi + 0x230], eax     ; 898730020000
-        mov     eax, dword ptr [esi + 0x17980]   ; 8b8680790100
-        mov     dword ptr [edi + 0x280], eax     ; 898780020000
-        mov     eax, dword ptr [esi + 0x179d0]   ; 8b86d0790100
-        mov     dword ptr [edi + 0x2d0], eax     ; 8987d0020000
-        mov     eax, dword ptr [esi + 0x17a20]   ; 8b86207a0100
-        mov     dword ptr [edi + 0x320], eax     ; 898720030000
-        mov     eax, dword ptr [esi + 0x17a70]   ; 8b86707a0100
-        mov     dword ptr [edi + 0x370], eax     ; 898770030000
-        mov     eax, dword ptr [esi + 0x17ac0]   ; 8b86c07a0100
-        mov     dword ptr [edi + 0x3c0], eax     ; 8987c0030000
-        mov     eax, dword ptr [esi + 0x17b10]   ; 8b86107b0100
-        mov     dword ptr [edi + 0x410], eax     ; 898710040000
-        mov     eax, dword ptr [esi + 0x17b60]   ; 8b86607b0100
-        mov     dword ptr [edi + 0x460], eax     ; 898760040000
-        mov     eax, dword ptr [esi + 0x17bb0]   ; 8b86b07b0100
-        mov     dword ptr [edi + 0x4b0], eax     ; 8987b0040000
-        add     esi, 4                           ; 83c604
-        add     edi, 4                           ; 83c704
-        inc     ebx                              ; 43
-        dec     ecx                              ; 49
-        jne     0x4a1c6                          ; 0f852effffff
-        sub     edi, 0x40                        ; 83ef40
-        sub     esi, 0x40                        ; 83ee40
-        jmp     0x4a2b4                          ; eb14
-        test    byte ptr [0x105], 4              ; f6050501000004
-        je      0x4a2ab                          ; 7402
-        jmp     0x4a2b4                          ; eb09
-        test    byte ptr [0x105], 1              ; f6050501000001
-        je      0x4a2b4                          ; 7400
-        pop     edi                              ; 5f
-        pop     esi                              ; 5e
-        pop     edx                              ; 5a
-        pop     ecx                              ; 59
-        pop     ebx                              ; 5b
-        pop     eax                              ; 58
-        leave                                    ; c9
-        ret                                      ; c3
+        push    ebp
+        mov     ebp, esp
+        push    eax
+        push    ebx
+        push    ecx
+        push    edx
+        push    esi
+        push    edi
+        test    byte ptr [0x105], 2              ; planar mode?
+        je      mode_tail                        ;   no -> shared mode tail
+        imul    eax, dword ptr [ebp + 0xc], 0x500 ; y * 0x500
+        add     eax, 0x10                        ; + 0x10 (region bias)
+        mov     esi, dword ptr [0x5368]          ; g_screen_buf
+        mov     edi, dword ptr [0x536c]          ; VGA base
+        add     esi, eax                         ; source pointer
+        add     edi, eax                         ; dest pointer
+        mov     dx, 0x3c4                        ; Sequencer index port
+
+; --- plane 0 ---
+        mov     ax, 0x102                        ; Map Mask <- plane 0
+        out     dx, ax
+        mov     ecx, 0x10                        ; 16 columns
+        mov     ebx, dword ptr [ebp + 8]         ; ebx = &gate byte
+        cmp     byte ptr [ebx], 0                ; gate > 0 ?
+        jle     p1_setup                         ;   no -> skip this plane
+p0_loop:
+        mov     eax, dword ptr [esi]             ; column of 16 rows (each 0x50 apart)
+        mov     dword ptr [edi], eax
+        mov     eax, dword ptr [esi + 0x50]
+        mov     dword ptr [edi + 0x50], eax
+        mov     eax, dword ptr [esi + 0xa0]
+        mov     dword ptr [edi + 0xa0], eax
+        mov     eax, dword ptr [esi + 0xf0]
+        mov     dword ptr [edi + 0xf0], eax
+        mov     eax, dword ptr [esi + 0x140]
+        mov     dword ptr [edi + 0x140], eax
+        mov     eax, dword ptr [esi + 0x190]
+        mov     dword ptr [edi + 0x190], eax
+        mov     eax, dword ptr [esi + 0x1e0]
+        mov     dword ptr [edi + 0x1e0], eax
+        mov     eax, dword ptr [esi + 0x230]
+        mov     dword ptr [edi + 0x230], eax
+        mov     eax, dword ptr [esi + 0x280]
+        mov     dword ptr [edi + 0x280], eax
+        mov     eax, dword ptr [esi + 0x2d0]
+        mov     dword ptr [edi + 0x2d0], eax
+        mov     eax, dword ptr [esi + 0x320]
+        mov     dword ptr [edi + 0x320], eax
+        mov     eax, dword ptr [esi + 0x370]
+        mov     dword ptr [edi + 0x370], eax
+        mov     eax, dword ptr [esi + 0x3c0]
+        mov     dword ptr [edi + 0x3c0], eax
+        mov     eax, dword ptr [esi + 0x410]
+        mov     dword ptr [edi + 0x410], eax
+        mov     eax, dword ptr [esi + 0x460]
+        mov     dword ptr [edi + 0x460], eax
+        mov     eax, dword ptr [esi + 0x4b0]
+        mov     dword ptr [edi + 0x4b0], eax
+        add     esi, 4                           ; next column
+        add     edi, 4
+        inc     ebx                              ; walk the gate pointer
+        dec     ecx
+        jne     p0_loop
+        sub     edi, 0x40                        ; rewind to region left edge
+        sub     esi, 0x40
+p1_setup:
+; --- plane 1 ---
+        mov     ax, 0x202                        ; Map Mask <- plane 1
+        out     dx, ax
+        mov     ecx, 0x10
+        mov     ebx, dword ptr [ebp + 8]
+        cmp     byte ptr [ebx], 0
+        jle     p2_setup
+p1_loop:
+        mov     eax, dword ptr [esi + 0x7d00]    ; plane-1 slice (+0x7d00)
+        mov     dword ptr [edi], eax
+        mov     eax, dword ptr [esi + 0x7d50]
+        mov     dword ptr [edi + 0x50], eax
+        mov     eax, dword ptr [esi + 0x7da0]
+        mov     dword ptr [edi + 0xa0], eax
+        mov     eax, dword ptr [esi + 0x7df0]
+        mov     dword ptr [edi + 0xf0], eax
+        mov     eax, dword ptr [esi + 0x7e40]
+        mov     dword ptr [edi + 0x140], eax
+        mov     eax, dword ptr [esi + 0x7e90]
+        mov     dword ptr [edi + 0x190], eax
+        mov     eax, dword ptr [esi + 0x7ee0]
+        mov     dword ptr [edi + 0x1e0], eax
+        mov     eax, dword ptr [esi + 0x7f30]
+        mov     dword ptr [edi + 0x230], eax
+        mov     eax, dword ptr [esi + 0x7f80]
+        mov     dword ptr [edi + 0x280], eax
+        mov     eax, dword ptr [esi + 0x7fd0]
+        mov     dword ptr [edi + 0x2d0], eax
+        mov     eax, dword ptr [esi + 0x8020]
+        mov     dword ptr [edi + 0x320], eax
+        mov     eax, dword ptr [esi + 0x8070]
+        mov     dword ptr [edi + 0x370], eax
+        mov     eax, dword ptr [esi + 0x80c0]
+        mov     dword ptr [edi + 0x3c0], eax
+        mov     eax, dword ptr [esi + 0x8110]
+        mov     dword ptr [edi + 0x410], eax
+        mov     eax, dword ptr [esi + 0x8160]
+        mov     dword ptr [edi + 0x460], eax
+        mov     eax, dword ptr [esi + 0x81b0]
+        mov     dword ptr [edi + 0x4b0], eax
+        add     esi, 4
+        add     edi, 4
+        inc     ebx
+        dec     ecx
+        jne     p1_loop
+        sub     edi, 0x40
+        sub     esi, 0x40
+p2_setup:
+; --- plane 2 ---
+        mov     ax, 0x402                        ; Map Mask <- plane 2
+        out     dx, ax
+        mov     ecx, 0x10
+        mov     ebx, dword ptr [ebp + 8]
+        cmp     byte ptr [ebx], 0
+        jle     p3_setup
+p2_loop:
+        mov     eax, dword ptr [esi + 0xfa00]    ; plane-2 slice (+0xfa00)
+        mov     dword ptr [edi], eax
+        mov     eax, dword ptr [esi + 0xfa50]
+        mov     dword ptr [edi + 0x50], eax
+        mov     eax, dword ptr [esi + 0xfaa0]
+        mov     dword ptr [edi + 0xa0], eax
+        mov     eax, dword ptr [esi + 0xfaf0]
+        mov     dword ptr [edi + 0xf0], eax
+        mov     eax, dword ptr [esi + 0xfb40]
+        mov     dword ptr [edi + 0x140], eax
+        mov     eax, dword ptr [esi + 0xfb90]
+        mov     dword ptr [edi + 0x190], eax
+        mov     eax, dword ptr [esi + 0xfbe0]
+        mov     dword ptr [edi + 0x1e0], eax
+        mov     eax, dword ptr [esi + 0xfc30]
+        mov     dword ptr [edi + 0x230], eax
+        mov     eax, dword ptr [esi + 0xfc80]
+        mov     dword ptr [edi + 0x280], eax
+        mov     eax, dword ptr [esi + 0xfcd0]
+        mov     dword ptr [edi + 0x2d0], eax
+        mov     eax, dword ptr [esi + 0xfd20]
+        mov     dword ptr [edi + 0x320], eax
+        mov     eax, dword ptr [esi + 0xfd70]
+        mov     dword ptr [edi + 0x370], eax
+        mov     eax, dword ptr [esi + 0xfdc0]
+        mov     dword ptr [edi + 0x3c0], eax
+        mov     eax, dword ptr [esi + 0xfe10]
+        mov     dword ptr [edi + 0x410], eax
+        mov     eax, dword ptr [esi + 0xfe60]
+        mov     dword ptr [edi + 0x460], eax
+        mov     eax, dword ptr [esi + 0xfeb0]
+        mov     dword ptr [edi + 0x4b0], eax
+        add     esi, 4
+        add     edi, 4
+        inc     ebx
+        dec     ecx
+        jne     p2_loop
+        sub     edi, 0x40
+        sub     esi, 0x40
+p3_setup:
+; --- plane 3 ---
+        mov     ax, 0x802                        ; Map Mask <- plane 3
+        out     dx, ax
+        mov     ecx, 0x10
+        mov     ebx, dword ptr [ebp + 8]
+        cmp     byte ptr [ebx], 0
+        jle     after_planes
+        dec     byte ptr [ebx]                   ; count the gate down once per call
+p3_loop:
+        mov     eax, dword ptr [esi + 0x17700]   ; plane-3 slice (+0x17700)
+        mov     dword ptr [edi], eax
+        mov     eax, dword ptr [esi + 0x17750]
+        mov     dword ptr [edi + 0x50], eax
+        mov     eax, dword ptr [esi + 0x177a0]
+        mov     dword ptr [edi + 0xa0], eax
+        mov     eax, dword ptr [esi + 0x177f0]
+        mov     dword ptr [edi + 0xf0], eax
+        mov     eax, dword ptr [esi + 0x17840]
+        mov     dword ptr [edi + 0x140], eax
+        mov     eax, dword ptr [esi + 0x17890]
+        mov     dword ptr [edi + 0x190], eax
+        mov     eax, dword ptr [esi + 0x178e0]
+        mov     dword ptr [edi + 0x1e0], eax
+        mov     eax, dword ptr [esi + 0x17930]
+        mov     dword ptr [edi + 0x230], eax
+        mov     eax, dword ptr [esi + 0x17980]
+        mov     dword ptr [edi + 0x280], eax
+        mov     eax, dword ptr [esi + 0x179d0]
+        mov     dword ptr [edi + 0x2d0], eax
+        mov     eax, dword ptr [esi + 0x17a20]
+        mov     dword ptr [edi + 0x320], eax
+        mov     eax, dword ptr [esi + 0x17a70]
+        mov     dword ptr [edi + 0x370], eax
+        mov     eax, dword ptr [esi + 0x17ac0]
+        mov     dword ptr [edi + 0x3c0], eax
+        mov     eax, dword ptr [esi + 0x17b10]
+        mov     dword ptr [edi + 0x410], eax
+        mov     eax, dword ptr [esi + 0x17b60]
+        mov     dword ptr [edi + 0x460], eax
+        mov     eax, dword ptr [esi + 0x17bb0]
+        mov     dword ptr [edi + 0x4b0], eax
+        add     esi, 4
+        add     edi, 4
+        inc     ebx
+        dec     ecx
+        jne     p3_loop
+        sub     edi, 0x40
+        sub     esi, 0x40
+after_planes:
+        jmp     done
+
+; --- shared render-mode tail (non-planar modes do nothing extra) ---
+mode_tail:
+        test    byte ptr [0x105], 4              ; discard-layer mode?
+        je      try_bit0
+        jmp     done
+try_bit0:
+        test    byte ptr [0x105], 1              ; 8bpp mode?
+        je      done
+done:
+        pop     edi
+        pop     esi
+        pop     edx
+        pop     ecx
+        pop     ebx
+        pop     eax
+        leave
+        ret

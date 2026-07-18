@@ -1,33 +1,45 @@
-; FUN_0004a6fe @ 0004a6fe  (54 bytes) -- hand-written assembly, reconstructed listing.
-; Original bytes disassembled from the game image; call targets and known globals
-; resolved to names. The build uses FUN_0004a6fe.c (db-transcription); this listing is the
-; readable companion. See docs/game-vs-library.md for why these are hand asm.
+; FUN_0004a6fe @ 0x4a6fe  (54 bytes) -- hand-written assembly (fully commented).
+;
+; FUN_0004a6fe: draw an RLE (transparent) sprite from a descriptor straight to VGA.
+; Identical to FUN_0004a6c8 except the destination is VGA memory (global 0x536c)
+; instead of g_screen_buf, so the sprite is stamped directly onto the live display.
+;
+; The descriptor (pointer in arg2) is: +0 = RLE pixel stream, +4 = width byte,
+; +5 = height byte. x/y are in draw_sprite_rle's doubled coordinate system.
+;
+; Args (stack / cdecl):
+;   [ebp+8]    x (word, sign-extended)   [ebp+0xc] y (word, sign-extended)
+;   [ebp+0x10] descriptor ptr
+; Registers passed to draw_sprite_rle:
+;   ebx=x  ecx=y  dl=width  dh=height  esi=RLE data  edi=dest buffer  eax=0
+; Globals:  0x536c  VGA video base (destination)
+; Calls:    draw_sprite_rle @ 0x4a734
 ;
 FUN_0004a6fe:
-        push    ebp                              ; 55
-        mov     ebp, esp                         ; 8bec
-        push    eax                              ; 50
-        push    ebx                              ; 53
-        push    ecx                              ; 51
-        push    edx                              ; 52
-        push    edi                              ; 57
-        push    esi                              ; 56
-        push    ebp                              ; 55
-        mov     esi, dword ptr [ebp + 0x10]      ; 8b7510
-        movsx   ebx, word ptr [ebp + 8]          ; 0fbf5d08
-        movsx   ecx, word ptr [ebp + 0xc]        ; 0fbf4d0c
-        mov     edi, dword ptr [0x536c]          ; 8b3d6c530000
-        mov     dl, byte ptr [esi + 4]           ; 8a5604
-        mov     dh, byte ptr [esi + 5]           ; 8a7605
-        mov     eax, 0                           ; b800000000
-        mov     esi, dword ptr [esi]             ; 8b36
-        call    0x4a734                          ; e809000000     -> draw_sprite_rle
-        pop     ebp                              ; 5d
-        pop     esi                              ; 5e
-        pop     edi                              ; 5f
-        pop     edx                              ; 5a
-        pop     ecx                              ; 59
-        pop     ebx                              ; 5b
-        pop     eax                              ; 58
-        leave                                    ; c9
-        ret                                      ; c3
+        push    ebp
+        mov     ebp, esp
+        push    eax
+        push    ebx
+        push    ecx
+        push    edx
+        push    edi
+        push    esi
+        push    ebp
+        mov     esi, dword ptr [ebp + 0x10]      ; esi = descriptor ptr
+        movsx   ebx, word ptr [ebp + 8]          ; ebx = x
+        movsx   ecx, word ptr [ebp + 0xc]        ; ecx = y
+        mov     edi, dword ptr [0x536c]          ; edi = VGA base (dest)
+        mov     dl, byte ptr [esi + 4]           ; dl = width
+        mov     dh, byte ptr [esi + 5]           ; dh = height
+        mov     eax, 0                           ; eax = 0
+        mov     esi, dword ptr [esi]             ; esi = RLE pixel stream
+        call    0x4a734                          ; draw_sprite_rle
+        pop     ebp
+        pop     esi
+        pop     edi
+        pop     edx
+        pop     ecx
+        pop     ebx
+        pop     eax
+        leave
+        ret

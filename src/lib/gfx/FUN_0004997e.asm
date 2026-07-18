@@ -1,65 +1,84 @@
-; FUN_0004997e @ 0004997e  (179 bytes) -- hand-written assembly, reconstructed listing.
-; Original bytes disassembled from the game image; call targets and known globals
-; resolved to names. The build uses FUN_0004997e.c (db-transcription); this listing is the
-; readable companion. See docs/game-vs-library.md for why these are hand asm.
+; FUN_0004997e @ 0x4997e  (179 bytes) -- hand-written assembly (fully commented).
+;
+; FUN_0004997e: clear the visible VGA screen to a solid colour, all four planes.
+; Only runs in planar (mode-X) render mode. It first resets the Graphics Controller
+; to plain write mode (Bit Mask 0xff, Mode 0 via port 0x3ce), then for each of the
+; four planes it enables that plane through the Sequencer Map Mask (port 0x3c4,
+; index 2 -> 0x0102/0x0202/0x0402/0x0802) and fills 0x9600 (38400) bytes of VGA
+; memory at 0xa0000 with the colour byte via fill_bytes.
+;
+; Writing straight to physical VGA base 0xa0000 (rather than the offscreen buffer)
+; means this paints the live display directly.
+;
+; Args (stack / cdecl):
+;   [ebp+8]    colour byte (passed as a dword to fill_bytes)
+; Globals:  0x105  render-mode flags
+; Ports:    0x3ce/0x3cf  GC index/data      0x3c4/0x3c5  Sequencer (Map Mask = idx 2)
+; Calls:    fill_bytes @ 0x4d199
 ;
 FUN_0004997e:
-        push    ebp                              ; 55
-        mov     ebp, esp                         ; 8bec
-        push    eax                              ; 50
-        push    ebx                              ; 53
-        push    ecx                              ; 51
-        push    edx                              ; 52
-        push    esi                              ; 56
-        push    edi                              ; 57
-        cld                                      ; fc
-        test    byte ptr [0x105], 2              ; f6050501000002
-        je      0x49a15                          ; 0f8480000000
-        mov     dx, 0x3ce                        ; 66bace03
-        mov     ax, 0xff08                       ; 66b808ff
-        out     dx, ax                           ; 66ef
-        mov     ax, 5                            ; 66b80500
-        out     dx, ax                           ; 66ef
-        mov     dl, 0xc4                         ; b2c4
-        mov     ax, 0x102                        ; 66b80201
-        out     dx, ax                           ; 66ef
-        push    0x9600                           ; 6800960000
-        push    dword ptr [ebp + 8]              ; ff7508
-        push    0xa0000                          ; 6800000a00
-        call    0x4d199                          ; e8da370000     -> fill_bytes
-        add     esp, 0xc                         ; 83c40c
-        mov     ax, 0x202                        ; 66b80202
-        out     dx, ax                           ; 66ef
-        push    0x9600                           ; 6800960000
-        push    dword ptr [ebp + 8]              ; ff7508
-        push    0xa0000                          ; 6800000a00
-        call    0x4d199                          ; e8bf370000     -> fill_bytes
-        add     esp, 0xc                         ; 83c40c
-        mov     ax, 0x402                        ; 66b80204
-        out     dx, ax                           ; 66ef
-        push    0x9600                           ; 6800960000
-        push    dword ptr [ebp + 8]              ; ff7508
-        push    0xa0000                          ; 6800000a00
-        call    0x4d199                          ; e8a4370000     -> fill_bytes
-        add     esp, 0xc                         ; 83c40c
-        mov     ax, 0x802                        ; 66b80208
-        out     dx, ax                           ; 66ef
-        push    0x9600                           ; 6800960000
-        push    dword ptr [ebp + 8]              ; ff7508
-        push    0xa0000                          ; 6800000a00
-        call    0x4d199                          ; e889370000     -> fill_bytes
-        add     esp, 0xc                         ; 83c40c
-        jmp     0x49a29                          ; eb14
-        test    byte ptr [0x105], 4              ; f6050501000004
-        je      0x49a20                          ; 7402
-        jmp     0x49a29                          ; eb09
-        test    byte ptr [0x105], 1              ; f6050501000001
-        je      0x49a29                          ; 7400
-        pop     edi                              ; 5f
-        pop     esi                              ; 5e
-        pop     edx                              ; 5a
-        pop     ecx                              ; 59
-        pop     ebx                              ; 5b
-        pop     eax                              ; 58
-        leave                                    ; c9
-        ret                                      ; c3
+        push    ebp
+        mov     ebp, esp
+        push    eax
+        push    ebx
+        push    ecx
+        push    edx
+        push    esi
+        push    edi
+        cld
+        test    byte ptr [0x105], 2              ; planar mode?
+        je      try_bit2                         ;   no -> other modes
+        mov     dx, 0x3ce                        ; GC index port
+        mov     ax, 0xff08                       ; Bit Mask (idx 8) <- 0xff
+        out     dx, ax
+        mov     ax, 5                            ; Mode (idx 5) <- 0 : plain writes
+        out     dx, ax
+        mov     dl, 0xc4                         ; dx = 0x3c4 (Sequencer index)
+
+        mov     ax, 0x102                        ; Map Mask <- plane 0
+        out     dx, ax
+        push    0x9600                           ; count = 38400 bytes
+        push    dword ptr [ebp + 8]              ; value = colour
+        push    0xa0000                          ; dst = VGA base
+        call    0x4d199                          ; fill_bytes -> clear plane 0
+        add     esp, 0xc
+
+        mov     ax, 0x202                        ; Map Mask <- plane 1
+        out     dx, ax
+        push    0x9600
+        push    dword ptr [ebp + 8]
+        push    0xa0000
+        call    0x4d199                          ; fill_bytes -> clear plane 1
+        add     esp, 0xc
+
+        mov     ax, 0x402                        ; Map Mask <- plane 2
+        out     dx, ax
+        push    0x9600
+        push    dword ptr [ebp + 8]
+        push    0xa0000
+        call    0x4d199                          ; fill_bytes -> clear plane 2
+        add     esp, 0xc
+
+        mov     ax, 0x802                        ; Map Mask <- plane 3
+        out     dx, ax
+        push    0x9600
+        push    dword ptr [ebp + 8]
+        push    0xa0000
+        call    0x4d199                          ; fill_bytes -> clear plane 3
+        add     esp, 0xc
+        jmp     done
+try_bit2:
+        test    byte ptr [0x105], 4              ; discard-layer mode?
+        je      try_bit0
+        jmp     done                             ;   yes -> nothing to do
+try_bit0:
+        test    byte ptr [0x105], 1              ; 8bpp mode?
+        je      done                             ;   (this routine only clears the planar screen)
+        pop     edi
+        pop     esi
+        pop     edx
+        pop     ecx
+        pop     ebx
+        pop     eax
+        leave
+        ret

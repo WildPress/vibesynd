@@ -1,16 +1,24 @@
-; FUN_00049922 @ 00049922  (25 bytes) -- hand-written assembly, reconstructed listing.
-; Original bytes disassembled from the game image; call targets and known globals
-; resolved to names. The build uses FUN_00049922.c (db-transcription); this listing is the
-; readable companion. See docs/game-vs-library.md for why these are hand asm.
+; FUN_00049922 @ 0x49922  (25 bytes) -- hand-written assembly (fully commented).
+;
+; FUN_00049922: reset the VGA Graphics Controller to plain write mode. It writes the
+; Bit Mask register (index 8) back to 0xff (all eight bits writable) and the Mode
+; register (index 5) back to 0. This undoes any set/reset or special write mode a
+; previous draw left in place, so ordinary CPU byte writes behave normally again.
+;
+; The same two GC writes appear inline at the head of the fill/present routines in
+; this cluster (e.g. FUN_0004997e, FUN_0004a5a8); this is the standalone version.
+;
+; No args. Preserves ax and dx. Ports: 0x3ce VGA GC index, 0x3cf GC data
+; (accessed here as a 16-bit OUT: AL=index, AH=data).
 ;
 FUN_00049922:
-        push    ax                               ; 6650
-        push    dx                               ; 6652
-        mov     dx, 0x3ce                        ; 66bace03
-        mov     ax, 0xff08                       ; 66b808ff
-        out     dx, ax                           ; 66ef
-        mov     ax, 5                            ; 66b80500
-        out     dx, ax                           ; 66ef
-        pop     dx                               ; 665a
-        pop     ax                               ; 6658
-        ret                                      ; c3
+        push    ax
+        push    dx
+        mov     dx, 0x3ce                        ; VGA Graphics Controller index port
+        mov     ax, 0xff08                       ; index 8 (Bit Mask) <- 0xff : all bits writable
+        out     dx, ax
+        mov     ax, 5                            ; index 5 (Mode) <- 0 : plain write mode
+        out     dx, ax
+        pop     dx
+        pop     ax
+        ret

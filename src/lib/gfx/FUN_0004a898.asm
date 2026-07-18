@@ -1,36 +1,53 @@
-; FUN_0004a898 @ 0004a898  (57 bytes) -- hand-written assembly, reconstructed listing.
-; Original bytes disassembled from the game image; call targets and known globals
-; resolved to names. The build uses FUN_0004a898.c (db-transcription); this listing is the
-; readable companion. See docs/game-vs-library.md for why these are hand asm.
+; FUN_0004a898 @ 0x4a898  (57 bytes) -- hand-written assembly (fully commented).
+;
+; FUN_0004a898: descriptor blit between VGA memory and the descriptor's own buffer,
+; through the width-dispatched worker FUN_0004b073. It sets ES = DS (the worker uses
+; ES:EDI string stores) and unpacks a sprite descriptor, but note the pointer roles
+; are swapped relative to FUN_0004a63a: here EDI holds the descriptor's pixel buffer
+; and ESI holds the VGA base. If FUN_0004b073 treats ESI as source and EDI as dest,
+; this copies FROM VGA INTO the descriptor buffer -- i.e. it looks like a masked
+; read-back / capture of a sprite-shaped screen region, rather than a draw. (Inferred
+; from the reversed pointers; the operation selector dx is left as the caller set it,
+; not reloaded here.)
+;
+; The descriptor (pointer in arg4) is: +0 = pixel buffer, +4 = width, +5 = height.
+;
+; Args (stack / cdecl):
+;   [ebp+8]    x (word)          [ebp+0xc]  y (word)
+;   [ebp+0x14] descriptor ptr
+; Registers passed to FUN_0004b073:
+;   ax=x  bx=y  cl=width  ch=height  edi=descriptor buffer  esi=VGA base
+; Globals:  0x536c  VGA video base
+; Calls:    FUN_0004b073 @ 0x4b073
 ;
 FUN_0004a898:
-        push    ebp                              ; 55
-        mov     ebp, esp                         ; 8bec
-        push    eax                              ; 50
-        push    ebx                              ; 53
-        push    ecx                              ; 51
-        push    edx                              ; 52
-        push    edi                              ; 57
-        push    esi                              ; 56
-        push    ebp                              ; 55
-        push    es                               ; 06
-        mov     ax, ds                           ; 668cd8
-        mov     es, ax                           ; 668ec0
-        mov     esi, dword ptr [ebp + 0x14]      ; 8b7514
-        mov     ax, word ptr [ebp + 8]           ; 668b4508
-        mov     bx, word ptr [ebp + 0xc]         ; 668b5d0c
-        mov     cl, byte ptr [esi + 4]           ; 8a4e04
-        mov     ch, byte ptr [esi + 5]           ; 8a6e05
-        mov     edi, dword ptr [esi]             ; 8b3e
-        mov     esi, dword ptr [0x536c]          ; 8b356c530000
-        call    0x4b073                          ; e8ac070000     -> FUN_0004b073
-        pop     es                               ; 07
-        pop     ebp                              ; 5d
-        pop     esi                              ; 5e
-        pop     edi                              ; 5f
-        pop     edx                              ; 5a
-        pop     ecx                              ; 59
-        pop     ebx                              ; 5b
-        pop     eax                              ; 58
-        leave                                    ; c9
-        ret                                      ; c3
+        push    ebp
+        mov     ebp, esp
+        push    eax
+        push    ebx
+        push    ecx
+        push    edx
+        push    edi
+        push    esi
+        push    ebp
+        push    es                               ; save ES (worker uses ES:EDI)
+        mov     ax, ds
+        mov     es, ax                           ; ES = DS (flat)
+        mov     esi, dword ptr [ebp + 0x14]      ; esi = descriptor ptr
+        mov     ax, word ptr [ebp + 8]           ; ax = x
+        mov     bx, word ptr [ebp + 0xc]         ; bx = y
+        mov     cl, byte ptr [esi + 4]           ; cl = width
+        mov     ch, byte ptr [esi + 5]           ; ch = height
+        mov     edi, dword ptr [esi]             ; edi = descriptor pixel buffer
+        mov     esi, dword ptr [0x536c]          ; esi = VGA base
+        call    0x4b073                          ; FUN_0004b073: width-dispatched blit
+        pop     es
+        pop     ebp
+        pop     esi
+        pop     edi
+        pop     edx
+        pop     ecx
+        pop     ebx
+        pop     eax
+        leave
+        ret
