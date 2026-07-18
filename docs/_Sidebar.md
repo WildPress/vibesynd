@@ -23,6 +23,7 @@
 
 - [Architecture map](architecture)
 - [How the game works](game-systems)
+- [How the game draws (blitters)](blitter)
 - [The object model](object-model)
 
 **Log**
