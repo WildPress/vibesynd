@@ -21,7 +21,7 @@ extern char **g_map_cols;
 extern short snap_direction(int cur, int step);
 extern void FUN_000269b8(unsigned char *b);
 
-void FUN_00028ec8(unsigned char *b)
+void map_row_col_index(unsigned char *b)
 {
     char **base;
     char **slot;

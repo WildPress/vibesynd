@@ -10,7 +10,7 @@ extern int rnc_decompress(void *dst, void *src);
 extern void FUN_0003ad66(int code, char *path);
 extern void FUN_00018878(int fd);
 
-int FUN_000188e8(char *path, void *buf)
+int load_unpack_file(char *path, void *buf)
 {
     int fd = cond_3call(path, 0x200);
 

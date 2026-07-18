@@ -61,11 +61,11 @@ extern void FUN_000223c8(unsigned short row, unsigned short mode);
 extern void FUN_00029d88(void);
 extern void FUN_00027a88(unsigned short a);
 extern int  FUN_00023038(unsigned char *p);
-extern unsigned short FUN_00037d08(unsigned char *node, unsigned short dist, unsigned char type);
+extern unsigned short best_weapon_select_typed(unsigned char *node, unsigned short dist, unsigned char type);
 extern void entity_aim_helper(unsigned char *p, int x, int y, int z);
 extern int  chain_length(unsigned char *p);
 extern void dispatch_jt45(unsigned char *p);
-extern unsigned short FUN_00037ad8(unsigned char *node, int flag);
+extern unsigned short best_weapon_select(unsigned char *node, int flag);
 extern void FUN_00037ff8(int a, int b, int c, int d, int e, int f, int g, int h);
 extern void record_max(unsigned char a, unsigned char b);
 extern unsigned short lcg_rand(unsigned short n);
@@ -245,7 +245,7 @@ void FUN_00023158(unsigned int idx)
              p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if (p[0x1d] & 4) {
                 if (p != g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c) {
-                    unsigned char *nn = g_entity_pool + FUN_00037d08(p, 0, carried[0x19]);
+                    unsigned char *nn = g_entity_pool + best_weapon_select_typed(p, 0, carried[0x19]);
                     if (nn[0x19] == carried[0x19])
                         *(unsigned short *)(p + 0x44) = (unsigned short)(nn - g_entity_pool);
                     p[0x46] = 0;
@@ -610,7 +610,7 @@ void FUN_00023158(unsigned int idx)
 
     case 0x11: {
         unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
-        unsigned short r = FUN_00037ad8(node, 0);
+        unsigned short r = best_weapon_select(node, 0);
         node[0x49] = 0xff;
         node[0x4d] = 0xff;
         node[0x51] = 0xff;
@@ -623,7 +623,7 @@ void FUN_00023158(unsigned int idx)
         for (p = g_pool_a + tpl[0xb5] * 0x5c;
              p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if (p[0x1d] & 4) {
-                unsigned short r = FUN_00037ad8(p, 0);
+                unsigned short r = best_weapon_select(p, 0);
                 p[0x49] = 0xff;
                 p[0x4d] = 0xff;
                 p[0x51] = 0xff;
@@ -637,7 +637,7 @@ void FUN_00023158(unsigned int idx)
         unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
         if (node[0xa] & 8)
             goto consume;
-        *(unsigned short *)(node + 0x44) = FUN_00037d08(node, 0, rec[0]);
+        *(unsigned short *)(node + 0x44) = best_weapon_select_typed(node, 0, rec[0]);
         break;
     }
 
@@ -649,7 +649,7 @@ void FUN_00023158(unsigned int idx)
                 unsigned char *nn = g_entity_pool + *(unsigned short *)(p + 0x44);
                 if (nn >= (unsigned char *)0x11670 &&
                     *(short *)(nn + 0x14) < 0 && p[0x19] != 0xa)
-                    *(unsigned short *)(p + 0x44) = FUN_00037d08(p, 0, nn[0x19]);
+                    *(unsigned short *)(p + 0x44) = best_weapon_select_typed(p, 0, nn[0x19]);
             }
         }
         break;

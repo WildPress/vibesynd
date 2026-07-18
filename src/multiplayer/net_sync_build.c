@@ -10,7 +10,7 @@ extern unsigned short g_a6c2[];
 extern void FUN_00023158(int a);
 extern int los_trace_far(unsigned char *a, unsigned char *b, int c);
 
-void FUN_00014078(unsigned char *s, unsigned char *m, unsigned char idx,
+void net_sync_build(unsigned char *s, unsigned char *m, unsigned char idx,
                   unsigned char *o)
 {
     if (s[5] == 0) {

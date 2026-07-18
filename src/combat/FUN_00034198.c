@@ -48,7 +48,7 @@ extern short g_dir_dx[];
 extern short g_dir_dy[];
 extern unsigned short FUN_00034608(short dir);
 extern unsigned char *shot_collision_query(void);
-extern void FUN_00034118(unsigned char *dst, unsigned char *src, unsigned short thr);
+extern void field54_sub_threshold(unsigned char *dst, unsigned char *src, unsigned short thr);
 extern void clamp_dec_field54(unsigned char *p, unsigned short n);
 
 void FUN_00034198(unsigned char *p2, unsigned char *p, unsigned short count)
@@ -72,7 +72,7 @@ void FUN_00034198(unsigned char *p2, unsigned char *p, unsigned short count)
                     if (i < 1)
                         p[0x54] = 0;
                     else
-                        FUN_00034118(p, node, 8);
+                        field54_sub_threshold(p, node, 8);
                     hit = 0x3e7;
                     break;
                 }

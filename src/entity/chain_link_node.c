@@ -1,10 +1,10 @@
-/* FUN_00037658 @ 0x37658 (leaf) - link param_1 into param_2's chain.
+/* chain_link_node @ 0x37658 (leaf) - link param_1 into param_2's chain.
  * Chain nodes live in the g_entity_pool pool; next-link is node[0x1c].
  * Returns 0 only when the chain is already full (>6); other paths
  * fall off the end (target: MOV EAX,ESI with ESI unaffected). */
 extern unsigned char g_entity_pool[];
 
-int FUN_00037658(int param_1, int param_2)
+int chain_link_node(int param_1, int param_2)
 {
     unsigned short n;
     unsigned char *node;

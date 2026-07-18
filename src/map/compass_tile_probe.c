@@ -7,7 +7,7 @@
    g_tile_flags[tile] equals the per-direction expected type (N=8, E=7, S=9, W=6),
    else 0.  Signed div idioms: %0x6000 (idiv), /0x100 and /0x80 (sar-with-sbb).
    g_map_cols/g_tile_flags pointer vars saved in ESI/EDI and re-stored at every return
-   (single-exit).  Sibling idioms: FUN_00033fb8 / FUN_00028ec8 (g_map_cols column).
+   (single-exit).  Sibling idioms: map_passability_check / map_row_col_index (g_map_cols column).
    Recipe: -4s -oneatx -zp8 -s -zq
 
    PARKED near-miss: ours 659B vs target 666B, difflib 0.334. The instruction

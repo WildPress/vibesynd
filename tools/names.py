@@ -109,6 +109,17 @@ LABELS = {
     "0003a1ec": "rnc_decompress",        "0003a37a": "rnc_read_be_len",
     "0003a3c6": "rnc_input_bits",        "0003a449": "rnc_make_huffman",
     "0003a383": "rnc_read_huffman",      "000188a8": "file_read_n",
+    # cont.29 -- game-subsystem batch (named from documented headers; matched fns)
+    "0002d228": "anim_frame_tick",       "0002d3b8": "aim_cursor_advance",
+    "00030508": "entity_halve_hp",       "00030708": "entity_apply_damage",
+    "00034118": "field54_sub_threshold", "000164c8": "player_target_sweep",
+    "00035b68": "save_game",             "00026e18": "grid_insert_object",
+    "00037658": "chain_link_node",       "00037878": "chain_unlink_node",
+    "00028ec8": "map_row_col_index",     "00033fb8": "map_passability_check",
+    "00037ad8": "best_weapon_select",    "00037d08": "best_weapon_select_typed",
+    "00014078": "net_sync_build",        "000279f8": "conn_status_scan",
+    "00028878": "xfer_chunked",          "00012ca8": "session_init",
+    "000188e8": "load_unpack_file",      "00035638": "set_message_line",
 }
 
 

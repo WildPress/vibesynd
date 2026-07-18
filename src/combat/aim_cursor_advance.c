@@ -1,5 +1,5 @@
 /*
- * FUN_0002d3b8 - commit/advance the shot-cursor accumulator.
+ * aim_cursor_advance - commit/advance the shot-cursor accumulator.
  *
  * Validates the current shot-cursor position (g_aim_x, g_aim_y, g_aim_level)
  * against the entity param_1 via path_probe_y. If valid, it advances the
@@ -17,7 +17,7 @@ extern short g_level_step;
 extern short path_probe_y(int, int, int, int);
 extern int move_entity_xyz(int, int, int, int);
 
-int FUN_0002d3b8(int param_1)
+int aim_cursor_advance(int param_1)
 {
     if (path_probe_y(g_aim_x, g_aim_y, g_aim_level, param_1) != 0) {
         g_aim_level = g_aim_level + g_level_step;

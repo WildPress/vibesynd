@@ -11,7 +11,7 @@ struct slot22 {
     char pad19[5];                            /* -> stride 0x1e */
 };
 extern struct slot22 g_15e70[256];
-extern void FUN_00026e18(struct slot22 *s, int a, int b, int c);
+extern void grid_insert_object(struct slot22 *s, int a, int b, int c);
 struct slot22 *find_free_slot_15e70(int p1, int p2, int p3)
 {
     struct slot22 *s;
@@ -24,7 +24,7 @@ struct slot22 *find_free_slot_15e70(int p1, int p2, int p3)
             s->wa = 0;
             s->w10 = 0;
             s->w12 = (short)0xffff;
-            FUN_00026e18(s, s->w4, s->w6, s->w8);
+            grid_insert_object(s, s->w4, s->w6, s->w8);
             return s;
         }
     }

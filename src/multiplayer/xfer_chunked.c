@@ -5,7 +5,7 @@
    (the call may change g_df38). Callee's chunk arg is 16-bit (unsigned short). */
 extern unsigned short g_df38;
 extern short xfer_buf_req94(int, unsigned int, unsigned int *, unsigned short);
-void FUN_00028878(int param_1, unsigned short param_2, unsigned int *param_3, unsigned int param_4)
+void xfer_chunked(int param_1, unsigned short param_2, unsigned int *param_3, unsigned int param_4)
 {
     unsigned int i = 0;
     goto test;

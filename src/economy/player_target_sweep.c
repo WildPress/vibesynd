@@ -19,7 +19,7 @@ extern int count_syndicate_recs(int slot);
 extern unsigned short lcg_rand(unsigned short n);
 extern int scan_syndicate_recs(int d, int slot);
 
-void FUN_000164c8(void)
+void player_target_sweep(void)
 {
     unsigned char i;
     unsigned char r;

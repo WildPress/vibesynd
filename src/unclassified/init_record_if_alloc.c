@@ -11,7 +11,7 @@ struct S226 {
     unsigned char b1a;    /* 0x1a */
 };
 extern struct S226 *spawn_pool_11670(int a, int b, int c);
-extern void FUN_00037658(struct S226 *r, struct P226 *p);
+extern void chain_link_node(struct S226 *r, struct P226 *p);
 struct S226 *init_record_if_alloc(struct P226 *p, unsigned char param2, int param3)
 {
     struct S226 *r = spawn_pool_11670(p->w4, p->w6, p->w8);
@@ -21,7 +21,7 @@ struct S226 *init_record_if_alloc(struct P226 *p, unsigned char param2, int para
         r->we = 0;
         r->b19 = param2;
         r->w14 = (short)param3;
-        FUN_00037658(r, p);
+        chain_link_node(r, p);
     }
     return r;
 }

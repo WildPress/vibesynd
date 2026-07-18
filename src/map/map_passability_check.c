@@ -13,7 +13,7 @@
  */
 extern char **g_map_cols;
 extern unsigned char *g_tile_flags;
-int FUN_00033fb8(short x, short y, short z)
+int map_passability_check(short x, short y, short z)
 {
     int row = (y % 0x6000) / 256;
     int col = (x & 0xff00) / 256;

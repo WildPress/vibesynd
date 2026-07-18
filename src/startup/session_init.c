@@ -21,7 +21,7 @@ extern short g_cur_player;
 extern unsigned char g_player_flags[];
 extern void build_equip_row(unsigned char k);
 
-void FUN_00012ca8(void)
+void session_init(void)
 {
     unsigned char *p = g_1beb2;
     unsigned short i = 0;

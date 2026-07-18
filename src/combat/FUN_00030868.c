@@ -21,7 +21,7 @@ extern unsigned char g_entity_pool[];
 extern unsigned char g_a6c2[];
 extern short g_e12e;
 extern int interp_scale_b(unsigned char *node, int cap);
-extern unsigned short FUN_00037ad8(unsigned char *node, int flag);
+extern unsigned short best_weapon_select(unsigned char *node, int flag);
 extern void recompute_state_code(unsigned char *node);
 extern int interp_scale_a(unsigned char *node, int range);
 extern unsigned char *FUN_0002ee18(unsigned char *node, int dist, int d);
@@ -44,7 +44,7 @@ void FUN_00030868(unsigned char *node)
     if (*(unsigned short *)(node + 0x44) != 0) {
         p2 = g_entity_pool + *(unsigned short *)(node + 0x44);
         if (*(short *)(p2 + 0x14) < 0) {
-            t = FUN_00037ad8(node, 0);
+            t = best_weapon_select(node, 0);
             if (t == *(unsigned short *)(node + 0x44))
                 recompute_state_code(node);
             else

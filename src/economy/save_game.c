@@ -20,7 +20,7 @@ extern char g_list_recs[];
 extern char g_5594[];
 extern char g_roster_index[];
 
-void FUN_00035b68(char *name, int n)
+void save_game(char *name, int n)
 {
     char buf[100];
     int fd;

@@ -36,12 +36,12 @@ extern unsigned char g_1bc76, g_1bc77, g_1bc78, g_1bc79, g_1bc7a, g_1bc7b;
 extern short g_1be34;
 extern void relocate_map_columns(int);
 extern void add_c_stride6(int, int, int);
-extern void FUN_00012ca8(void);
+extern void session_init(void);
 extern void vehicle_hp_stamp(void);
 extern void FUN_000498ef(int);
 extern void FUN_0004997e(int);
 extern void FUN_0003a4fa(char *buf, char *fmt, ...);
-extern void FUN_000188e8(char *, int);
+extern void load_unpack_file(char *, int);
 extern void FUN_0004993b(int, int);
 extern void FUN_0004987e(int);
 extern void FUN_00022768(void);
@@ -56,7 +56,7 @@ void mission_map_init(void)
     add_c_stride6(g_531c, g_5320, g_5334);
     g_10ac8 = 0;
     if (g_radar_detail == 0)
-        FUN_00012ca8();
+        session_init();
     vehicle_hp_stamp();
     FUN_000498ef(0x12);
     FUN_0004997e(0);
@@ -64,7 +64,7 @@ void mission_map_init(void)
         FUN_0003a4fa(buf, g_1f4);
     else
         FUN_0003a4fa(buf, g_204, g_4170[g_10b2e]);
-    FUN_000188e8(buf, g_5378);
+    load_unpack_file(buf, g_5378);
     FUN_0004993b(g_screen_buf, 0);
     FUN_0004987e(g_screen_buf);
     g_5324 = g_5308 + 6;

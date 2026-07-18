@@ -13,7 +13,7 @@
    evaluation order upstream, NOT the destination -- wrong lever here.) */
 extern unsigned char g_entity_pool[];
 extern unsigned short g_grid_heads[];
-void FUN_00026e18(unsigned char *p, unsigned short a, unsigned short b, unsigned short d)
+void grid_insert_object(unsigned char *p, unsigned short a, unsigned short b, unsigned short d)
 {
     if (!(p[0xa] & 4)) {
         unsigned int bp = (b & 0x7f00) >> 1;

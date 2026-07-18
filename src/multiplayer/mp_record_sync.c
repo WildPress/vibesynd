@@ -8,7 +8,7 @@
    MATCHED by cpermute (agent hand-parked at 361/363 on an EBX-vs-EAX home for the
    param load + self-compare; the fuzzer found the flipping spelling). */
 extern void FUN_0003ad66(char *fmt, ...);
-extern short FUN_00028878(int a, unsigned short b, void *buf, int len);
+extern short xfer_chunked(int a, unsigned short b, void *buf, int len);
 extern int FUN_000288f8(int a, unsigned short b, void *buf, int len);
 extern short g_num_players;
 extern short g_cur_player;
@@ -40,7 +40,7 @@ int mp_record_sync(int param_1)
           if ((g_df30[j] != 0) && (j != g_cur_player))
           {
             FUN_0003ad66(g_36a0);
-            if (0 != FUN_00028878(g_10644[j].a, g_10644[j].b, g_player_recs[i], 0x417))
+            if (0 != xfer_chunked(g_10644[j].a, g_10644[j].b, g_player_recs[i], 0x417))
               return -1;
           }
         }

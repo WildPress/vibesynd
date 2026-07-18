@@ -3,7 +3,7 @@
    the 4-way jump table `jmp CS:[EAX*4+0x5650]` (table file offset 0x12d98,
    entries 0x13095/0x130d2/0x1310c/0x13146 recovered via lefix.py +
    disassemble_bytes; 235 hidden bytes of case bodies + the shared 0x1317e
-   tail). Called by matched FUN_00012ca8 (session init) for every remote
+   tail). Called by matched session_init (session init) for every remote
    player k with rec flag 2.
 
    🅿️ PARKED ~1090/1188 (9 source configs, -4s -oneatx -zp8 -s -zq; verify

@@ -7,7 +7,7 @@
 extern unsigned short advance_linked_index(unsigned char *);
 extern void           recompute_state_code(unsigned char *);
 
-void FUN_00030708(unsigned char *p)
+void entity_apply_damage(unsigned char *p)
 {
     unsigned short c;
 

@@ -19,7 +19,7 @@ extern void bulk_dword_copy_b(void);
 extern void bulk_dword_copy(void);
 extern char g_b958[];
 
-void FUN_00035638(int i)
+void set_message_line(int i)
 {
     g_506c = 1;
     g_5064 = 0;

@@ -17,7 +17,7 @@
  *
  * @ 0x33e78 (jump-table dispatcher, 6-entry table at manifest 0x33e60, jmp
  * literal 0x26718). Map-tile hit dispatcher: same map/tile lookup as
- * FUN_00033fb8 (row = (y % 0x6000)/256, col = (x & 0xff00)/256, slot =
+ * map_passability_check (row = (y % 0x6000)/256, col = (x & 0xff00)/256, slot =
  * g_map_cols + col + row*128, tile byte at (z-1)/128 + *slot) but instead of a
  * passability bool it dispatches on the tile class g_tile_flags[tile]:
  *   6 -> FUN_00033b88(x,y,z)   7 -> grid_hit_x(x,y,z)

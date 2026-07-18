@@ -1,11 +1,11 @@
-/* FUN_00037878 @ 0x37878 (leaf) - unlink param_1 from its pool chain.
+/* chain_unlink_node @ 0x37878 (leaf) - unlink param_1 from its pool chain.
  * Chain nodes live in the g_entity_pool pool; node = g_entity_pool + param_1[0x44].
  * prev id = node[0x1e], next id = node[0x1c], scratch at node[0x20],
  * flag byte node[0xa]. Two cases: param_1 is the chain head (its own
- * prev-slot points back at it) vs mid-chain. Sibling: FUN_00037658. */
+ * prev-slot points back at it) vs mid-chain. Sibling: chain_link_node. */
 extern unsigned char g_entity_pool[];
 
-void FUN_00037878(int param_1)
+void chain_unlink_node(int param_1)
 {
     unsigned char *node;
     unsigned char *prev;

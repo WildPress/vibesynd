@@ -9,7 +9,7 @@
 extern void rate_byte_drift(unsigned char *p, unsigned char *q, unsigned char *r,
                          int a, int b, int c);
 
-void FUN_0002d228(unsigned char *b)
+void anim_frame_tick(unsigned char *b)
 {
 
     b[0x53]++;

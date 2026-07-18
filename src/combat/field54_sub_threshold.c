@@ -6,7 +6,7 @@
    the stack at each width (word compare / byte subtract) exactly like the target,
    instead of caching a named var. */
 extern unsigned char g_entity_pool[];
-void FUN_00034118(unsigned char *dst, unsigned char *src, unsigned short thr)
+void field54_sub_threshold(unsigned char *dst, unsigned char *src, unsigned short thr)
 {
     if (*(unsigned short *)(src + 0x1c) != 0) {
         unsigned char *node = g_entity_pool + *(unsigned short *)(src + 0x1c);

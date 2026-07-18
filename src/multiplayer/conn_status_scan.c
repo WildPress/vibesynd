@@ -13,7 +13,7 @@ extern short g_num_players;
 extern char g_376c[];
 extern void FUN_000289a8(char *s, int b, int c);
 
-int FUN_000279f8(void)
+int conn_status_scan(void)
 {
     int n = 0;
     unsigned short i;
