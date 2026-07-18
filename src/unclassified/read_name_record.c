@@ -14,7 +14,7 @@ extern char g_b970[];
 extern unsigned char g_language;
 extern char *g_4720[];
 
-void FUN_00035c88(char *out, int n)
+void read_name_record(char *out, int n)
 {
     char buf[100];
     int fd;

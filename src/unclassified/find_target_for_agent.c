@@ -24,7 +24,7 @@ extern unsigned char g_pool_a[];
 extern unsigned char *g_10ae0;
 extern unsigned char *los_trace(unsigned char *a, unsigned char *rec, short p);
 
-unsigned char *FUN_0002ee18(unsigned char *a, short p2, short p3)
+unsigned char *find_target_for_agent(unsigned char *a, short p2, short p3)
 {
     unsigned short di;
     unsigned short si;

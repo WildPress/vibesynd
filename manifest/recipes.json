@@ -1,12 +1,4 @@
 {
- "FUN_000139a8": {
-  "addr": "000139a8",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
- "FUN_00014c58": {
-  "addr": "00014c58",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
  "FUN_00015d98": {
   "addr": "00015d98",
   "flags": "-4s -oneatx -zp8 -s -zq"
@@ -15,20 +7,12 @@
   "addr": "00015e08",
   "flags": "-4s -oneatx -zp8 -s -zq"
  },
- "FUN_00016438": {
-  "addr": "00016438",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
  "FUN_00018878": {
   "addr": "00018878",
   "flags": "-4s -oneatx -zp8 -s -zq"
  },
  "FUN_000188c8": {
   "addr": "000188c8",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
- "FUN_00022ed8": {
-  "addr": "00022ed8",
   "flags": "-4s -oneatx -zp8 -s -zq"
  },
  "FUN_000269b8": {
@@ -43,32 +27,12 @@
   "addr": "00026ba8",
   "flags": "-4s -oneatx -zp8 -s -zq"
  },
- "FUN_000289a8": {
-  "addr": "000289a8",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
- "FUN_00028d08": {
-  "addr": "00028d08",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
  "FUN_00029a28": {
   "addr": "00029a28",
   "flags": "-4s -oneatx -zp8 -s -zq"
  },
  "FUN_0002c4e8": {
   "addr": "0002c4e8",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
- "FUN_0002de18": {
-  "addr": "0002de18",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
- "FUN_00035c88": {
-  "addr": "00035c88",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
- "FUN_000377e8": {
-  "addr": "000377e8",
   "flags": "-4s -oneatx -zp8 -s -zq"
  },
  "FUN_00039088": {
@@ -285,10 +249,6 @@
  },
  "FUN_00028628": {
   "addr": "00028628",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
- "FUN_0002ee18": {
-  "addr": "0002ee18",
   "flags": "-4s -oneatx -zp8 -s -zq"
  },
  "FUN_000149e8": {
@@ -1163,10 +1123,6 @@
   "addr": "00018458",
   "flags": "-4s -oneatx -zp8 -s -zq"
  },
- "FUN_00036168": {
-  "addr": "00036168",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
  "FUN_00037818": {
   "addr": "00037818",
   "flags": "-4s -oneatx -zp8 -s -zq",
@@ -1566,6 +1522,50 @@
  },
  "set_message_line": {
   "addr": "00035638",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "kill_credit_eligible": {
+  "addr": "000139a8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "sum_of_squares_call": {
+  "addr": "00014c58",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "syndicate_timer_pct": {
+  "addr": "00016438",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "reset_player_slot": {
+  "addr": "00022ed8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "report_net_status": {
+  "addr": "000289a8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "probe_nesw_zones": {
+  "addr": "00028d08",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "launch_move_setup": {
+  "addr": "0002de18",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "find_target_for_agent": {
+  "addr": "0002ee18",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "read_name_record": {
+  "addr": "00035c88",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "guarded_sound_call": {
+  "addr": "00036168",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "pool_table_lookup": {
+  "addr": "000377e8",
   "flags": "-4s -oneatx -zp8 -s -zq"
  }
 }

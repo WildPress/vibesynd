@@ -120,6 +120,13 @@ LABELS = {
     "00014078": "net_sync_build",        "000279f8": "conn_status_scan",
     "00028878": "xfer_chunked",          "00012ca8": "session_init",
     "000188e8": "load_unpack_file",      "00035638": "set_message_line",
+    # cont.29 -- unclassified batch (clear-semantic matched fns; generic forwarders left as FUN_)
+    "000139a8": "kill_credit_eligible",  "00014c58": "sum_of_squares_call",
+    "00016438": "syndicate_timer_pct",   "00022ed8": "reset_player_slot",
+    "000289a8": "report_net_status",     "00028d08": "probe_nesw_zones",
+    "0002de18": "launch_move_setup",     "0002ee18": "find_target_for_agent",
+    "00035c88": "read_name_record",      "00036168": "guarded_sound_call",
+    "00036d18": "flag_hp_adjust",        "000377e8": "pool_table_lookup",
 }
 
 

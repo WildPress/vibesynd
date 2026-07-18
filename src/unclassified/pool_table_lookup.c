@@ -23,7 +23,7 @@ extern unsigned char g_a686[];
 
 /* @ 0x377e8: field = p->[0x44]; node = g_entity_pool + field; if node < &g_11670 -> 0;
    else return g_a6ea[node[0x19]]. Owns the shared return-0 stub at 0x3780f. */
-unsigned short FUN_000377e8(unsigned char *p)
+unsigned short pool_table_lookup(unsigned char *p)
 {
     unsigned char *node = g_entity_pool + *(unsigned short *)(p + 0x44);
     if (node >= &g_11670)

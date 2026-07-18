@@ -9,7 +9,7 @@
    (short `test al,imm` form) and misses by 4 bytes. */
 extern void pool_chain_reset(unsigned char *p);
 
-void FUN_00036d18(unsigned char *p)
+void flag_hp_adjust(unsigned char *p)
 {
     if (p[0xb] & 1)
         return;

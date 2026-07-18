@@ -32,7 +32,7 @@
 extern char g_name_pad[];
 extern char g_376c[];
 extern short submit_ncb(unsigned char __far *p);
-extern void FUN_000289a8(char *s, int b, int c);
+extern void report_net_status(char *s, int b, int c);
 
 extern void fstrcpy91(unsigned char __far *dst, unsigned char __far *src);
 #pragma aux fstrcpy91 = "db 30" "db 6" "db 80" "db 102" "db 142" "db 194" "db 102" "db 142" "db 217" "db 139" "db 243" "db 139" "db 248" "db 138" "db 6" "db 38" "db 136" "db 7" "db 60" "db 0" "db 15" "db 132" "db 17" "db 0" "db 0" "db 0" "db 138" "db 70" "db 1" "db 131" "db 198" "db 2" "db 38" "db 136" "db 71" "db 1" "db 131" "db 199" "db 2" "db 60" "db 0" "db 117" "db 226" "db 88" "db 7" "db 31" parm [dx eax] [cx ebx] modify [esi edi];
@@ -61,7 +61,7 @@ int netbios_op91(unsigned int off, unsigned short sel, char *name,
     while ((sel :> (unsigned char *)off)[0x31] == 0xff)
         ;
     if ((sel :> (unsigned char *)off)[0x31] != 0)
-        FUN_000289a8(g_376c, 0x217, (sel :> (unsigned char *)off)[0x31]);
+        report_net_status(g_376c, 0x217, (sel :> (unsigned char *)off)[0x31]);
     {
         unsigned char st = (sel :> (unsigned char *)off)[0x31];
         *(unsigned short __far *)((sel :> (unsigned char *)off) + 4) = 0;

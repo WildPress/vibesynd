@@ -14,7 +14,7 @@
 
 extern void FUN_0003aaf8(void *dst, int val, int len);   /* memset */
 extern void int386(int a, void *msg, void *scratch);
-extern void FUN_000289a8(int a, int b, int c);
+extern void report_net_status(int a, int b, int c);
 
 void FUN_000287e8(int param_1, unsigned short param_2)
 {
@@ -29,6 +29,6 @@ void FUN_000287e8(int param_1, unsigned short param_2)
         buf[3] = param_2;
         int386(0x31, buf, buf + 7);
         if (buf[13] != 0)
-            FUN_000289a8(0x376c, 0x2af, -1);
+            report_net_status(0x376c, 0x2af, -1);
     }
 }

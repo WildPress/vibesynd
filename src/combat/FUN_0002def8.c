@@ -20,7 +20,7 @@ extern short g_aim_x;
 extern short g_aim_y;
 extern short g_aim_level;
 
-extern int FUN_00014c58(int dx, int dy);
+extern int sum_of_squares_call(int dx, int dy);
 extern int projectile_step(unsigned char *obj, unsigned char dir);
 extern unsigned short aim_step(unsigned char *obj, unsigned char dir);
 extern int max_abs(short a, short b);
@@ -45,7 +45,7 @@ void FUN_0002def8(unsigned char *obj, int tgt)
     unsigned char dA;
     int b2dist;
 
-    aim = FUN_00014c58(
+    aim = sum_of_squares_call(
         (short)(*(short *)(obj + 0x2e) - *(short *)(obj + 4)),
         (short)(*(short *)(obj + 0x30) - *(short *)(obj + 6)));
     if (g_5300 != 0)

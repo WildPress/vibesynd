@@ -8,9 +8,9 @@
  * char local. Recipe: -4s -oneatx -zp8 -s -zq
  */
 extern unsigned short aim_step(unsigned char *obj, unsigned char dir);
-extern short FUN_00014c58(int dx, int dy);
+extern short sum_of_squares_call(int dx, int dy);
 
-void FUN_0002de18(unsigned char *p, int tgt)
+void launch_move_setup(unsigned char *p, int tgt)
 {
     char d = ((p[0x1a] + 0x20) >> 6 << 6) - 0x40;
     unsigned short i = 0;
@@ -22,7 +22,7 @@ void FUN_0002de18(unsigned char *p, int tgt)
         i++;
     } while (i < 4);
     p[0x59] = 4;
-    *(short *)(p + 0x1e) = FUN_00014c58(
+    *(short *)(p + 0x1e) = sum_of_squares_call(
         (short)(*(short *)(p + 0x2e) - *(short *)(p + 4)),
         (short)(*(short *)(p + 0x30) - *(short *)(p + 6)));
     p[0x5a] = d;

@@ -33,7 +33,7 @@
 
 extern void FUN_0003aaf8(void *dst, int val, int len);   /* memset helper */
 extern void int386(int a, void *inr, void *outr);  /* int386 */
-extern void FUN_000289a8(char *s, int line, int code);
+extern void report_net_status(char *s, int line, int code);
 extern char g_376c[];
 
 extern void __far *_fmemset(void __far *dst, int c, unsigned n);
@@ -53,7 +53,7 @@ unsigned char __far *dpmi_alloc_5para(void)
     in[1] = 5;
     int386(0x31, in, out);
     if (out[6]) {
-        FUN_000289a8(g_376c, 0x1c7, -2);
+        report_net_status(g_376c, 0x1c7, -2);
         return 0;
     }
     sel = *(__segment *)(out + 3);

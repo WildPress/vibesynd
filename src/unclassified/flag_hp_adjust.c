@@ -7,7 +7,7 @@
  * loses the CMP-mem-0 top) -- not the target's shape. */
 extern void pool_chain_reset(int p);
 
-void FUN_00036d18(int p)
+void flag_hp_adjust(int p)
 {
     unsigned char b;
 

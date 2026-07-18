@@ -32,7 +32,7 @@ extern unsigned char __far *g_5056fp2;  /* alias of the same */
 extern unsigned char __far *g_5056fp3;  /* alias for the return re-read */
 extern char g_376c[];
 extern short submit_ncb(unsigned int off, unsigned short sel);
-extern void FUN_000289a8(char *s, int b, int c);
+extern void report_net_status(char *s, int b, int c);
 
 short FUN_00028628(unsigned int off, unsigned short sel)
 {
@@ -47,6 +47,6 @@ short FUN_00028628(unsigned int off, unsigned short sel)
     while (g_5056fp[0x31] == 0xff)
         ;
     if (g_5056fp[0x31] != 0 && g_5056fp[0x31] != 0x24)
-        FUN_000289a8(g_376c, 0x273, g_5056fp[0x31]);
+        report_net_status(g_376c, 0x273, g_5056fp[0x31]);
     return -(short)g_5056fp3[0x31];
 }

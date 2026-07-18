@@ -44,7 +44,7 @@ extern void timer_setup(void);
 extern void FUN_00025348(void);
 extern void walk_records_2c(char *p);
 extern void FUN_00039188(void);
-extern void FUN_00036168(void);
+extern void guarded_sound_call(void);
 
 extern char *strcpy(char *dst, const char *src);
 extern char *strcat(char *dst, const char *src);
@@ -199,7 +199,7 @@ void startup_main(short argc, char **argv)
     FUN_00025348();
     walk_records_2c(g_4d9c);
     FUN_00039188();
-    FUN_00036168();
+    guarded_sound_call();
     noop_ret();
 
     ((unsigned char *)buf)[0] = mode;

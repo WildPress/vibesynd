@@ -52,7 +52,7 @@
  * matched FUN_00018d18; draw_circle draws the selected-agent pulse ring; and
  * the phase-3 loop scans 8 objective slots (0x1be3a, stride 14) and draws the
  * first active one's animated marker (fixed-coord type 0x10, or node-tracking
- * types 1/2/3/5/0xf) via FUN_00014c58 (length) + draw_circle, returning.
+ * types 1/2/3/5/0xf) via sum_of_squares_call (length) + draw_circle, returning.
  */
 extern char **g_map_cols;              /* map column-pointer table               */
 extern unsigned char *g_tile_flags;     /* tile -> terrain-shape table            */
@@ -78,7 +78,7 @@ extern void FUN_0003f4b4(int a, int b, int c, int d);   /* radar x recentre    *
 extern void FUN_0003f636(int a, int b, int c, int d);   /* radar y recentre    */
 extern void FUN_00018d18(int x, int y, int chr, int colour);      /* draw blip  */
 extern void draw_circle(int x, int y, int r, int colour);        /* draw ring  */
-extern int  FUN_00014c58(int a, int b);                 /* marker anim length  */
+extern int  sum_of_squares_call(int a, int b);                 /* marker anim length  */
 extern void record_max(int a, int b);                 /* off-screen indicator*/
 
 void FUN_00019608(unsigned char *agent, short zoom)
@@ -346,7 +346,7 @@ void FUN_00019608(unsigned char *agent, short zoom)
             }
 
             /* advance the shared dashed-line animation phase */
-            off = FUN_00014c58(0x40 - mx, 0x40 - my);
+            off = sum_of_squares_call(0x40 - mx, 0x40 - my);
             g_marker_anim += zoom;
             len = (off & 0xffff) + zoom * 4;
             if (g_marker_anim > len) {

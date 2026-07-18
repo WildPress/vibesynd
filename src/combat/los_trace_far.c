@@ -17,7 +17,7 @@
    sub+cwde arg forms are correct. */
 extern short g_dir_dx[];
 extern short g_dir_dy[];
-extern int FUN_00014c58(int a, int b);
+extern int sum_of_squares_call(int a, int b);
 extern unsigned char FUN_0004d221(int dx, int dy);
 extern int passability_4corner(int x, int y, int z);
 extern unsigned char *FUN_00011d68(unsigned char *p, int x, int y, int z,
@@ -32,7 +32,7 @@ unsigned char *los_trace_far(unsigned char *p1, unsigned char *p2, int dist)
     int d1, d2;
     unsigned char *q;
 
-    d1 = FUN_00014c58((short)(*(short *)(p2 + 4) - *(short *)(p1 + 4)),
+    d1 = sum_of_squares_call((short)(*(short *)(p2 + 4) - *(short *)(p1 + 4)),
                       (short)(*(short *)(p2 + 6) - *(short *)(p1 + 6)));
     if ((short)d1 >= (short)dist)
         return 0;
@@ -44,7 +44,7 @@ unsigned char *los_trace_far(unsigned char *p1, unsigned char *p2, int dist)
     z = *(short *)(p1 + 8);
     dir1 = FUN_0004d221((short)(*(short *)(p2 + 4) - x),
                         (short)(*(short *)(p2 + 6) - y));
-    d2 = FUN_00014c58((short)(*(short *)(p2 + 4) - x),
+    d2 = sum_of_squares_call((short)(*(short *)(p2 + 4) - x),
                       (short)(*(short *)(p2 + 6) - y));
     dir2 = FUN_0004d221((short)(*(short *)(p2 + 8) - z), (short)d2);
     for (i = 0; (short)i < (short)dist; i++) {

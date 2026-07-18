@@ -7,7 +7,7 @@
 
 extern void FUN_0003aaf8(void *dst, int val, int len);   /* memset helper */
 extern void int386(int a, void *msg, void *scratch);
-extern void FUN_000289a8(int a, int b, int c);
+extern void report_net_status(int a, int b, int c);
 
 extern void __far *_fmemset(void __far *dst, int c, unsigned n);
 #pragma intrinsic(_fmemset)
@@ -26,7 +26,7 @@ unsigned int FUN_00028728(unsigned short *param_1, unsigned short param_2)
     int386(0x31, msg, scratch);
     local_c = scratch[6];
     if (local_c != 0) {
-        FUN_000289a8(0x376c, 0x297, -2);
+        report_net_status(0x376c, 0x297, -2);
         return 0;
     }
     *param_1 = *(unsigned short *)scratch;

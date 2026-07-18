@@ -17,7 +17,7 @@ extern struct rec g_syndicate_recs[];
 extern unsigned short g_cur_player;
 extern unsigned char g_10b36;
 
-unsigned int FUN_00016438(unsigned char param_1)
+unsigned int syndicate_timer_pct(unsigned char param_1)
 {
     unsigned int result;
     int t;

@@ -1,4 +1,4 @@
-/* FUN_00022ed8 @ 0x22ed8 (159 bytes)
+/* reset_player_slot @ 0x22ed8 (159 bytes)
  * Reset the per-index slot for index param_1: clear a 0x417-byte block,
  * zero the 0xe-stride record fields, stamp the id byte / flag, and set the
  * per-index angle (param<<3) and a word copied from g_10b2e.
@@ -10,7 +10,7 @@ extern unsigned char g_player_recs[];
 extern unsigned char g_command_recs[];
 extern unsigned short g_10b2e;
 
-void FUN_00022ed8(unsigned short param_1)
+void reset_player_slot(unsigned short param_1)
 {
     FUN_0004d1db(g_player_recs, g_player_recs + param_1 * 0x417, 0x417);
 

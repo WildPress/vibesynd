@@ -35,7 +35,7 @@
 
 extern short submit_ncb(unsigned char __far *p);
 extern void FUN_0003ad66(char *fmt, ...);
-extern void FUN_000289a8(char *s, int line, int code);
+extern void report_net_status(char *s, int line, int code);
 
 extern char g_name_pad[];   /* pad chunk appended until name field is 15 chars */
 extern char g_3780[];   /* "loaded ..." style format */
@@ -72,7 +72,7 @@ int submit_command(unsigned char __far *p, char *name)
     if ((sel :> o)[0x31] != 0 && (sel :> o)[0x31] != 0x16) {
         FUN_0003ad66(g_3798, name);
         sel = (__segment)p;
-        FUN_000289a8(g_376c, 0x1e6, (sel :> o)[0x31]);
+        report_net_status(g_376c, 0x1e6, (sel :> o)[0x31]);
     }
     return -(int)p[0x31];
 }

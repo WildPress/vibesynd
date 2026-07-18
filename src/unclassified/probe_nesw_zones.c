@@ -8,7 +8,7 @@
 extern void FUN_LE_0000ffc8(unsigned char *b, int x, int y, int z,
                             int w, int h, int d, int e);
 
-void FUN_00028d08(unsigned char *b, short n, short e, short s, short w)
+void probe_nesw_zones(unsigned char *b, short n, short e, short s, short w)
 {
     if (n != 0)
         FUN_LE_0000ffc8(b, (short)(*(short *)(b + 4) + 0x100),

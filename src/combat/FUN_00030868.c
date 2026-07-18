@@ -24,7 +24,7 @@ extern int interp_scale_b(unsigned char *node, int cap);
 extern unsigned short best_weapon_select(unsigned char *node, int flag);
 extern void recompute_state_code(unsigned char *node);
 extern int interp_scale_a(unsigned char *node, int range);
-extern unsigned char *FUN_0002ee18(unsigned char *node, int dist, int d);
+extern unsigned char *find_target_for_agent(unsigned char *node, int dist, int d);
 extern void entity_aim_helper(unsigned char *node, int x, int y, int z);
 extern void advance_linked_index(unsigned char *node);
 extern unsigned char entity_event_dispatch(unsigned char *node);
@@ -54,7 +54,7 @@ void FUN_00030868(unsigned char *node)
         off += off;
         w = *(unsigned short *)(g_a6c2 + off);
         g_e12e = interp_scale_a(node, (unsigned short)(w / 0x100)) << 8;
-        q = FUN_0002ee18(node, g_e12e, d);
+        q = find_target_for_agent(node, g_e12e, d);
         if (q != 0) {
             entity_aim_helper(node, *(short *)(q + 4), *(short *)(q + 6),
                          (short)(*(unsigned short *)(q + 8) + 0x80));

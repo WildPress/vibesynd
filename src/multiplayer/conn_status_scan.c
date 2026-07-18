@@ -11,7 +11,7 @@ extern unsigned char g_df30[];
 extern short g_cur_player;
 extern short g_num_players;
 extern char g_376c[];
-extern void FUN_000289a8(char *s, int b, int c);
+extern void report_net_status(char *s, int b, int c);
 
 int conn_status_scan(void)
 {
@@ -27,7 +27,7 @@ int conn_status_scan(void)
             if (i == g_cur_player)
                 continue;
             if (p[0x31] != 0)
-                FUN_000289a8(g_376c, 0x10a, (unsigned char)p[0x31]);
+                report_net_status(g_376c, 0x10a, (unsigned char)p[0x31]);
             g_df30[i] = 1;
             n++;
         } else {

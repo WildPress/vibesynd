@@ -15,7 +15,7 @@ extern unsigned char g_sound_enabled;
 extern void FUN_000395b6(int);
 #pragma aux FUN_000395b6 modify [ebx];
 
-void FUN_00036168(void)
+void guarded_sound_call(void)
 {
     if (g_sound_enabled != 0)
         FUN_000395b6(0);

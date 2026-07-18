@@ -27,7 +27,7 @@ extern unsigned char __far *g_df2afp;   /* transfer buffer far ptr: off @0xdf2a,
 extern unsigned short g_df28;
 extern char g_376c[];
 extern short submit_ncb(unsigned char __far *p);
-extern void FUN_000289a8(char *s, int b, int c);
+extern void report_net_status(char *s, int b, int c);
 
 extern void fmemcpy94(unsigned char __far *dst, unsigned char __far *src, unsigned n);
 #pragma aux fmemcpy94 = "db 30" "db 6" "db 87" "db 145" "db 142" "db 216" "db 142" "db 194" "db 137" "db 200" "db 193" "db 233" "db 2" "db 242" "db 165" "db 138" "db 200" "db 128" "db 225" "db 3" "db 242" "db 164" "db 88" "db 7" "db 31" parm [dx edi] [cx esi] [eax] modify exact [eax ecx esi edi];
@@ -47,7 +47,7 @@ int xfer_buf_req94(unsigned int off, unsigned short sel, void *src, int len)
     while (p[0x31] == 0xff)
         ;
     if (p[0x31] != 0)
-        FUN_000289a8(g_376c, 0x249, p[0x31]);
+        report_net_status(g_376c, 0x249, p[0x31]);
     p = sel :> (unsigned char *)p;
     return -(int)p[0x31];
 }

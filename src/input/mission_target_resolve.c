@@ -56,7 +56,7 @@ extern void copy_5fields_8recs(void);
 extern int  interp_scale_a(unsigned char *rec, int a);
 extern int  interp_scale_b(unsigned char *rec, int a);
 extern int  FUN_00036be8(unsigned char *rec, unsigned short *node);
-extern int  FUN_000377e8(unsigned char *rec);
+extern int  pool_table_lookup(unsigned char *rec);
 extern unsigned char *FUN_00037608(unsigned char *rec);
 
 #define AGENT_FIRST(idx)  ((unsigned int)g_agent_slots[(int)(idx) * 0x417])
@@ -215,7 +215,7 @@ after_scan:                                          /* 0x2b01b */
     case 1:
     case 2:
         /* movement/aim commit block (0x2b44c..0x2b8a6) -- long; sets p and various
-           g_10b/g_e state, may call FUN_00036be8 / FUN_000377e8 / FUN_00037608.
+           g_10b/g_e state, may call FUN_00036be8 / pool_table_lookup / FUN_00037608.
            Decode preserved structurally in the disassembly; omitted here for brevity
            as this path is register-role walled (idx*0x417 + pool-A scans). */
         return 0;

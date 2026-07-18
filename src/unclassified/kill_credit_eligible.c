@@ -9,7 +9,7 @@
 extern unsigned char g_pool_a[];
 extern unsigned char g_player_flags[];
 
-char FUN_000139a8(unsigned char *b, unsigned char *n, unsigned char idx)
+char kill_credit_eligible(unsigned char *b, unsigned char *n, unsigned char idx)
 {
     char result = 0;
     int p;

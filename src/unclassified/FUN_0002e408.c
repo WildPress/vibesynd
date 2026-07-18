@@ -28,7 +28,7 @@
 extern short g_dir_dx[];
 extern short g_dir_dy[];
 extern int path_probe_y(int x, int y, int z, unsigned char *obj);
-extern short FUN_00014c58(int dx, int dy);
+extern short sum_of_squares_call(int dx, int dy);
 
 int FUN_0002e408(unsigned char *p, char step)
 {
@@ -44,7 +44,7 @@ int FUN_0002e408(unsigned char *p, char step)
         d -= step;
         i++;
     } while (i < 4);
-    if ((unsigned short)FUN_00014c58(
+    if ((unsigned short)sum_of_squares_call(
             (short)(*(short *)(p + 0x2e) - *(short *)(p + 4)),
             (short)(*(short *)(p + 0x30) - *(short *)(p + 6)))
         < *(unsigned short *)(p + 0x1e)) {

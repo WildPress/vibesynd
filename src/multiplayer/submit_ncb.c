@@ -16,7 +16,7 @@
 extern void FUN_0003aaf8(void *dst, int val, int len);
 extern void segread(void *sregs);
 extern void FUN_0003b3e6(int inum, void *inr, void *outr, void *sregs);
-extern void FUN_000289a8(char *s, int line, int code);
+extern void report_net_status(char *s, int line, int code);
 extern char g_376c[];
 
 int submit_ncb(unsigned char __far *p)
@@ -45,7 +45,7 @@ int submit_ncb(unsigned char __far *p)
     in[1] = 0x5c;
     FUN_0003b3e6(0x31, in, out, sr);
     if (out[6] != 0) {
-        FUN_000289a8(g_376c, 0x195, -3);
+        report_net_status(g_376c, 0x195, -3);
         return -1;
     }
     return 0;
