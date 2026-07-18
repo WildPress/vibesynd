@@ -47,7 +47,7 @@
 extern char g_name_pad[];
 extern char g_37b8[];
 extern short submit_ncb(unsigned char __far *p);
-extern void FUN_0003ad66(char *fmt, char *s);
+extern void printf(char *fmt, char *s);
 
 extern void fstrcpy118(unsigned char __far *dst, unsigned char __far *src);
 #pragma aux fstrcpy118 = "db 30" "db 6" "db 80" "db 102" "db 142" "db 194" "db 102" "db 142" "db 217" "db 139" "db 243" "db 139" "db 248" "db 138" "db 6" "db 38" "db 136" "db 7" "db 60" "db 0" "db 15" "db 132" "db 17" "db 0" "db 0" "db 0" "db 138" "db 70" "db 1" "db 131" "db 198" "db 2" "db 38" "db 136" "db 71" "db 1" "db 131" "db 199" "db 2" "db 60" "db 0" "db 117" "db 226" "db 88" "db 7" "db 31" parm [dx eax] [cx ebx] modify [esi edi];
@@ -71,6 +71,6 @@ int xfer_buf_req_b1(unsigned int off, unsigned short sel, char *src)
     while ((sel :> (unsigned char *)off)[0x31] == 0xff)
         ;
     if ((sel :> (unsigned char *)off)[0x31] != 0)
-        FUN_0003ad66(g_37b8, src);
+        printf(g_37b8, src);
     return -(int)(sel :> (unsigned char *)off)[0x31];
 }

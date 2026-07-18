@@ -59,8 +59,8 @@ extern void FUN_000498ef(int);
 extern void FUN_0003b2b5(char *s);
 extern void FUN_0003b326(char *buf);
 extern long atol(char *s);
-extern void FUN_0003ad66(char *fmt, ...);
-extern void FUN_0003a4fa(char *buf, char *fmt, ...);
+extern void printf(char *fmt, ...);
+extern void sprintf(char *buf, char *fmt, ...);
 extern int  submit_command(unsigned char __far *p, char *name);
 extern int  xfer_buf_req_b1(unsigned char __far *p, char *name);
 extern int  netbios_op91(unsigned char __far *p, char *name, unsigned short async, char rto, char sto);
@@ -93,7 +93,7 @@ readloop:
     if (g_num_players > 8) goto readloop;
     if (g_num_players == 1) return -3;
     g_input_echo = save;
-    FUN_0003ad66(g_36cc);
+    printf(g_36cc);
     for (i = 0; i < g_num_players; i++)
         g_df30[i] = 0;
 esccheck:
@@ -113,18 +113,18 @@ esccheck:
     }
 found:
     if (g_cur_player == -1) goto esccheck;
-    FUN_0003ad66(g_36ec);
+    printf(g_36ec);
     for (i = 0; i < g_num_players; i++) {
         if (i != g_cur_player) {
             _fstrcpy((char __far *)(g_conn[i] + 0x1a), (char __far *)(g_conn[g_cur_player] + 0x1a));
             g_conn[i][3] = g_conn[g_cur_player][3];
-            FUN_0003a4fa(nbuf, g_3684, g_name_buf, i);
+            sprintf(nbuf, g_3684, g_name_buf, i);
             netbios_op91(g_conn[i], nbuf, 1, 0, 0);
         }
         g_df30[i] = 0;
         g_player_status[i * 14] = 0;
     }
-    FUN_0003ad66(g_370c);
+    printf(g_370c);
     for (i = 0; i < g_num_players; i++) {
         int r;
         g_df30[i] = 0;
@@ -132,18 +132,18 @@ found:
         if (g_conn[i][2] == 0) goto do_connect;
         if (g_conn[i][0x31] != 0xff) continue;
     do_connect:
-        FUN_0003ad66(g_372c, i, g_conn[i][2], g_conn[i][0x31]);
-        FUN_0003a4fa(nbuf, g_3684, g_name_buf, i);
+        printf(g_372c, i, g_conn[i][2], g_conn[i][0x31]);
+        sprintf(nbuf, g_3684, g_name_buf, i);
         r = netbios_op90(g_conn[g_cur_player], nbuf, 0, 0, 0);
         if (r != 0) continue;
-        FUN_0003ad66(g_3740, i);
+        printf(g_3740, i);
         FUN_00028628(g_conn[i]);
         _fstrcpy((char __far *)(g_conn[i] + 0xa), (char __far *)(g_conn[g_cur_player] + 0xa));
         g_conn[i][2] = g_conn[g_cur_player][2];
         connected++;
         g_df30[i] = 1;
     }
-    FUN_0003ad66(g_375c);
+    printf(g_375c);
     if (g_e285 != 0) return -2;
     nt = g_num_players;
 poll:

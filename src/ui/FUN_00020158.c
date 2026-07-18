@@ -35,7 +35,7 @@ extern char g_184[];
 extern char g_19c[];
 
 extern void FUN_0004a6c8(int x, int y, unsigned char *spr);
-extern void FUN_0003a4fa(char *buf, char *fmt, ...);
+extern void sprintf(char *buf, char *fmt, ...);
 extern void FUN_00036698(char *s, unsigned short x, int a3, int a4, unsigned short a5,
                          unsigned char *tbl, signed char a7, signed char a8, int a9,
                          int a10);
@@ -54,31 +54,31 @@ void FUN_00020158(unsigned char param1, unsigned char param2)
         else
             FUN_0004a6c8(0x1f6, 0x6a, g_text_pal + (param2 + 0x3f) * 6);
 
-        FUN_0003a4fa(buf, g_19c,
+        sprintf(buf, g_19c,
                      *(char **)((char *)g_4b10 + g_language * 4
                                 + g_7bf4[(param2 - 1) * 0x1f5] * 12));
         FUN_00036698(buf, 0x1f8, 0xc4, 0xe, 0x54, g_text_pal, -2, 6, 0, 0);
 
         FUN_00036698(*(char **)((char *)g_47a4 + g_language * 4), 0x1f8, 0xd0, 0xf, 0x54, g_text_pal, -2, 8, 0, 0);
-        FUN_0003a4fa(buf, g_184, *(int *)(g_7bf4 + (param2 - 1) * 0x1f5 + 1));
+        sprintf(buf, g_184, *(int *)(g_7bf4 + (param2 - 1) * 0x1f5 + 1));
         FUN_00036698(buf, 0x22c, 0xd0, 0xe, 0x54, g_text_pal, -2, 6, 0, 0);
 
         y = 0xdc;
         if (g_frame_enable[param2] != 0) {
             FUN_00036698(*(char **)((char *)g_47b0 + g_language * 4), 0x1f8, 0xdc, 0xf, 0x54, g_text_pal, -2, 8, 0, 0);
-            FUN_0003a4fa(buf, g_184, *(short *)(g_7bf4 + (param2 - 1) * 0x1f5 + 5) + 1);
+            sprintf(buf, g_184, *(short *)(g_7bf4 + (param2 - 1) * 0x1f5 + 5) + 1);
             FUN_00036698(buf, 0x22c, 0xdc, 0xe, 0x54, g_text_pal, -2, 6, 0, 0);
             y = 0xe8;
         }
 
         FUN_00036698(*(char **)((char *)g_47bc + g_language * 4), 0x1f8, y, 0xf, 0x54, g_text_pal, -2, 8, 0, 0);
-        FUN_0003a4fa(buf, g_184, *(short *)(g_7bf4 + (param2 - 1) * 0x1f5 + 0xb));
+        sprintf(buf, g_184, *(short *)(g_7bf4 + (param2 - 1) * 0x1f5 + 0xb));
         FUN_00036698(buf, 0x22c, y, 0xe, 0x54, g_text_pal, -2, 6, 0, 0);
         y += 0xc;
 
         if (g_frame_enable[param2] != 0) {
             FUN_00036698(*(char **)((char *)g_47c8 + g_language * 4), 0x1f8, y, 0xf, 0x54, g_text_pal, -2, 8, 0, 0);
-            FUN_0003a4fa(buf, g_184, *(int *)(g_7bf4 + (param2 - 1) * 0x1f5 + 7));
+            sprintf(buf, g_184, *(int *)(g_7bf4 + (param2 - 1) * 0x1f5 + 7));
             FUN_00036698(buf, 0x22c, y, 0xe, 0x54, g_text_pal, -2, 6, 0, 0);
         }
     } else {
@@ -87,7 +87,7 @@ void FUN_00020158(unsigned char param1, unsigned char param2)
                      0x1f8, 0x6e, 0xe, 0x54, g_text_pal, -2, 6, 0, 0);
 
         FUN_00036698(*(char **)((char *)g_47a4 + g_language * 4), 0x1f8, 0x7e, 0xf, 0x54, g_text_pal, -2, 8, 0, 0);
-        FUN_0003a4fa(buf, g_184, *(int *)(g_list_recs + (param2 - 1) * 0x1eb + 1));
+        sprintf(buf, g_184, *(int *)(g_list_recs + (param2 - 1) * 0x1eb + 1));
         FUN_00036698(buf, 0x22c, 0x7e, 0xe, 0x54, g_text_pal, -2, 6, 0, 0);
 
         if ((char *)g_4960 + g_list_recs[(param2 - 1) * 0x1eb + 5] * 12 != 0) {

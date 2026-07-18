@@ -40,7 +40,7 @@ extern void session_init(void);
 extern void vehicle_hp_stamp(void);
 extern void FUN_000498ef(int);
 extern void FUN_0004997e(int);
-extern void FUN_0003a4fa(char *buf, char *fmt, ...);
+extern void sprintf(char *buf, char *fmt, ...);
 extern void load_unpack_file(char *, int);
 extern void FUN_0004993b(int, int);
 extern void FUN_0004987e(int);
@@ -61,9 +61,9 @@ void mission_map_init(void)
     FUN_000498ef(0x12);
     FUN_0004997e(0);
     if (g_radar_detail != 0)
-        FUN_0003a4fa(buf, g_1f4);
+        sprintf(buf, g_1f4);
     else
-        FUN_0003a4fa(buf, g_204, g_4170[g_10b2e]);
+        sprintf(buf, g_204, g_4170[g_10b2e]);
     load_unpack_file(buf, g_5378);
     FUN_0004993b(g_screen_buf, 0);
     FUN_0004987e(g_screen_buf);

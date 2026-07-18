@@ -11,7 +11,7 @@ extern char g_366c[];
 extern unsigned char *g_text_pal;
 extern unsigned short g_cur_player;
 extern unsigned char g_syndicate_recs[];
-extern void FUN_0003a4fa(char *buf, char *fmt, unsigned int val);
+extern void sprintf(char *buf, char *fmt, unsigned int val);
 extern void FUN_00036698(char *s, unsigned short x, int y, int a4, unsigned short colour,
                          unsigned char *tbl, signed char a7, signed char a8, int a9,
                          int a10);
@@ -22,11 +22,11 @@ void stats_panel_draw(unsigned char p)
     char buf[40];
     unsigned int t;
 
-    FUN_0003a4fa(buf, g_365c,
+    sprintf(buf, g_365c,
                  *(unsigned int *)(g_syndicate_recs + p * 10 + 6) / 1000000 * 14
                      * (signed char)g_syndicate_recs[p * 10 + 4] / 10);
     FUN_00036698(buf, 0x10c, 0x15c, 0xf, 0x54, g_text_pal, -2, 8, 0, 0);
-    FUN_0003a4fa(buf, g_3664, (signed char)g_syndicate_recs[p * 10 + 4]);
+    sprintf(buf, g_3664, (signed char)g_syndicate_recs[p * 10 + 4]);
     FUN_00036698(buf, 0x184, 0x15c, 0xf, 0x54, g_text_pal, -2, 8, 0, 0);
     FUN_00036698(g_366c, 0x160, 0x15c, 0xf, 0x54, g_text_pal, -2, 8, 0, 0);
     t = g_syndicate_recs[p * 10 + 2];

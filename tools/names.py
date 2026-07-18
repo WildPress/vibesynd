@@ -139,6 +139,10 @@ LABELS = {
     "0003e7f7": "strchr",     "0003a8d7": "strcpy",    "0003aef9": "stricmp",
     "0003aea6": "strncmp",    "0003deee": "strnicmp",  "0003a97c": "tell",
     "0003da37": "tolower",    "0003dce5": "toupper",   "0003e590": "unlink",
+    # cont.29 -- runtime lib, medium libname coverage but corroborated by each fn's own
+    # header/signature (printf/system/rewind/getstream headers; sprintf/dosret by usage).
+    "0003ad66": "printf",     "0003af38": "system",    "0003b407": "rewind",
+    "0003a4fa": "sprintf",    "0003c479": "dosret",    "0003b90d": "getstream",
 }
 
 

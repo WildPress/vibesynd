@@ -55,7 +55,7 @@ extern void FUN_00036698(char *s, unsigned short x, int a3, int a4, unsigned sho
                          int a10);
 extern void measure_draw_text(char *a, unsigned short b, unsigned short c, unsigned short d,
                          unsigned short e, signed char f, unsigned char g);
-extern void FUN_0003a4fa(char *buf, char *fmt, ...);
+extern void sprintf(char *buf, char *fmt, ...);
 extern void stats_panel_draw(unsigned char p);
 extern char slot_claim_test(unsigned char p);
 
@@ -76,7 +76,7 @@ void FUN_00025d58(unsigned char param1)
     /* section 2 */
     FUN_00036698(*(char **)((char *)g_469c + g_language * 4), 0xc2, 0x14e, 0xf, 0x166,
                  g_text_pal, -2, 8, 0, 0);
-    FUN_0003a4fa(buf, g_365c, *(unsigned int *)(g_syndicate_recs + param1 * 10 + 6));
+    sprintf(buf, g_365c, *(unsigned int *)(g_syndicate_recs + param1 * 10 + 6));
     FUN_00036698(buf, 0x10c, 0x14e, 0xf, 0x54, g_text_pal, -2, 8, 0, 0);
     FUN_00036698(*(char **)((char *)g_46b4 + g_language * 4), 0xc2, 0x15c, 0xf, 0x166,
                  g_text_pal, -2, 8, 0, 0);
@@ -115,19 +115,19 @@ void FUN_00025d58(unsigned char param1)
         || *(unsigned short *)(g_syndicate_recs + param1 * 10) == 0xff) {
         claim = *(short *)(g_syndicate_recs + param1 * 10);
         if (claim < 0x2f)
-            FUN_0003a4fa(buf, *(char **)((char *)g_46d8 + g_language * 4));
+            sprintf(buf, *(char **)((char *)g_46d8 + g_language * 4));
         else if (claim < 0x5f)
-            FUN_0003a4fa(buf, *(char **)((char *)g_46e4 + g_language * 4));
+            sprintf(buf, *(char **)((char *)g_46e4 + g_language * 4));
         else if (claim < 0xa0)
-            FUN_0003a4fa(buf, *(char **)((char *)g_46f0 + g_language * 4));
+            sprintf(buf, *(char **)((char *)g_46f0 + g_language * 4));
         else if (claim < 0xd1)
-            FUN_0003a4fa(buf, *(char **)((char *)g_46fc + g_language * 4));
+            sprintf(buf, *(char **)((char *)g_46fc + g_language * 4));
         else if (claim < 0xfe)
-            FUN_0003a4fa(buf, *(char **)((char *)g_4708 + g_language * 4));
+            sprintf(buf, *(char **)((char *)g_4708 + g_language * 4));
         else
-            FUN_0003a4fa(buf, *(char **)((char *)g_4714 + g_language * 4));
+            sprintf(buf, *(char **)((char *)g_4714 + g_language * 4));
     } else {
-        FUN_0003a4fa(buf, g_3660,
+        sprintf(buf, g_3660,
                      g_player_recs + g_syndicate_recs[param1 * 10 + 2] * 1047 + 0x23);
     }
     FUN_00036698(buf, 0x10c, 0x16a, 0xf, 0x54, g_text_pal, -2, 8, 0, 0);

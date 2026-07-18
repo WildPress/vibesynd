@@ -8,7 +8,7 @@
  */
 extern short g_cur_player;
 extern unsigned char g_player_recs[];
-extern void FUN_0003a4fa(char *buf, char *fmt, char *s, int n);
+extern void sprintf(char *buf, char *fmt, char *s, int n);
 extern char g_3cf0[];
 extern char g_b970[];
 extern int cond_3call(char *path, int mode);
@@ -28,7 +28,7 @@ void save_game(char *name, int n)
     if (*(unsigned int *)(g_player_recs + g_cur_player * 0x417) > 0x7530)
         *(unsigned int *)(g_player_recs + g_cur_player * 0x417) -=
             *(unsigned int *)(g_player_recs + g_cur_player * 0x417) * 10 / 100;
-    FUN_0003a4fa(buf, g_3cf0, g_b970, n);
+    sprintf(buf, g_3cf0, g_b970, n);
     fd = cond_3call(buf, 0x222);
     if (fd > 0) {
         FUN_000188c8(fd, name, 0x14);

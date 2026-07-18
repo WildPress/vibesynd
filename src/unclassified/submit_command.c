@@ -34,7 +34,7 @@
    g_3798 and report 0x289a8(g_376c, 0x1e6, status). Returns -status. */
 
 extern short submit_ncb(unsigned char __far *p);
-extern void FUN_0003ad66(char *fmt, ...);
+extern void printf(char *fmt, ...);
 extern void report_net_status(char *s, int line, int code);
 
 extern char g_name_pad[];   /* pad chunk appended until name field is 15 chars */
@@ -67,10 +67,10 @@ int submit_command(unsigned char __far *p, char *name)
         ;
     o = (unsigned char *)p;
     sel = (__segment)p;
-    FUN_0003ad66(g_3780, (sel :> o)[0x31], name);
+    printf(g_3780, (sel :> o)[0x31], name);
     sel = (__segment)p;
     if ((sel :> o)[0x31] != 0 && (sel :> o)[0x31] != 0x16) {
-        FUN_0003ad66(g_3798, name);
+        printf(g_3798, name);
         sel = (__segment)p;
         report_net_status(g_376c, 0x1e6, (sel :> o)[0x31]);
     }

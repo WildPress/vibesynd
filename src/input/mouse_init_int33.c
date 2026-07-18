@@ -26,7 +26,7 @@ extern void int386(int inum, void *inr, void *outr);   /* int386 */
 extern void segread(void *sregs);                       /* segread */
 extern void FUN_0003b3e6(int inum, void *inr, void *outr, void *sregs); /* int386x */
 extern void *FUN_0003aa74(unsigned n);                       /* malloc */
-extern void FUN_0003ad66(char *s);                           /* error */
+extern void printf(char *s);                           /* error */
 extern void FUN_0001b290(void);                              /* mouse event handler */
 
 extern unsigned short FP_SEG(void __far *p);
@@ -69,7 +69,7 @@ int mouse_init_int33(void)
             int386(0x33, in, out);
             return 1;
         }
-        FUN_0003ad66(g_37fc);
+        printf(g_37fc);
     }
     return 0;
 }

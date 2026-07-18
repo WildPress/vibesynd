@@ -24,13 +24,13 @@
 struct s12 { long a, b, c; };
 
 extern void int386(int inter, void *in, void *out);   /* int386 */
-extern void FUN_0003af38(void *s);
+extern void system(void *s);
 extern long atol(char *s);                          /* atol */
 extern int  parse_hex_arg(char *s);                          /* hex parse */
 extern void init_call5(void);
 extern void FUN_0003ad89(int code);
 #pragma aux FUN_0003ad89 aborts;
-extern void FUN_0003ad66(char *fmt, char *s);
+extern void printf(char *fmt, char *s);
 extern void validate_records_or_abort(char *p);
 extern void pool_records_add(unsigned char *start, unsigned char *end, int arg3);
 extern void init_input_subsystem(void);
@@ -85,7 +85,7 @@ void startup_main(short argc, char **argv)
         strcat(cmdbuf, g_3568);
         strcat(cmdbuf, argv[i]);
     }
-    FUN_0003af38(cmdbuf);
+    system(cmdbuf);
 
     g_10b2e = 1;
     g_1be30 = 1;
@@ -161,7 +161,7 @@ void startup_main(short argc, char **argv)
                 strcpy(g_name_buf, argv[i] + 2);
                 break;
             default:
-                FUN_0003ad66(g_356c, argv[i] + 1);
+                printf(g_356c, argv[i] + 1);
                 FUN_0003ad89(1);
             }
         }

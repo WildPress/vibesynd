@@ -7,7 +7,7 @@
    via 0x288f8 until a full 0x417 bytes arrive. Returns 0.
    MATCHED by cpermute (agent hand-parked at 361/363 on an EBX-vs-EAX home for the
    param load + self-compare; the fuzzer found the flipping spelling). */
-extern void FUN_0003ad66(char *fmt, ...);
+extern void printf(char *fmt, ...);
 extern short xfer_chunked(int a, unsigned short b, void *buf, int len);
 extern int FUN_000288f8(int a, unsigned short b, void *buf, int len);
 extern short g_num_players;
@@ -28,7 +28,7 @@ int mp_record_sync(int param_1)
 {
   unsigned short i;
   unsigned short j;
-  FUN_0003ad66(g_368c);
+  printf(g_368c);
   if ((g_num_players > 1) && (g_cur_player == ((short) param_1)))
   {
     for (i = 0; i < g_num_players; i++)
@@ -39,7 +39,7 @@ int mp_record_sync(int param_1)
         {
           if ((g_df30[j] != 0) && (j != g_cur_player))
           {
-            FUN_0003ad66(g_36a0);
+            printf(g_36a0);
             if (0 != xfer_chunked(g_10644[j].a, g_10644[j].b, g_player_recs[i], 0x417))
               return -1;
           }
@@ -49,7 +49,7 @@ int mp_record_sync(int param_1)
       else
         if (1 == g_df30[i])
       {
-        FUN_0003ad66(g_36ac);
+        printf(g_36ac);
         while (FUN_000288f8(g_10644[i].a, g_10644[i].b, g_player_recs[i], 0x417) != 0x417)
         {
         }

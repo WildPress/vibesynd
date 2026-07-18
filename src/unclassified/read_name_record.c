@@ -4,7 +4,7 @@
  * the pointer table g_4720[g_language]. Always terminates at out[0x13].
  * Recipe: -4s -oneatx -zp8 -s -zq
  */
-extern void FUN_0003a4fa(char *buf, char *fmt, char *s, int n);
+extern void sprintf(char *buf, char *fmt, char *s, int n);
 extern int cond_3call(char *path, int mode);
 extern void file_read_n(int fd, void *buf, int n);
 extern void FUN_00018878(int fd);
@@ -20,7 +20,7 @@ void read_name_record(char *out, int n)
     int fd;
 
     *out = 0;
-    FUN_0003a4fa(buf, g_3cf0, g_b970, n);
+    sprintf(buf, g_3cf0, g_b970, n);
     fd = cond_3call(buf, 0x202);
     if (fd > 0) {
         file_read_n(fd, out, 0x14);

@@ -8,7 +8,7 @@ extern signed char g_11e35;
 extern int g_11e36;
 extern unsigned short g_11e3a;
 
-extern void FUN_0003b407(void *p);
+extern void rewind(void *p);
 extern void FUN_0003b420(void *dst, int n, int f, void *p);
 extern void FUN_0003b594(void *p, int a, int b);
 extern void *FUN_0003aa74(unsigned n);
@@ -20,7 +20,7 @@ void *FUN_00038c28(unsigned char *p, int a1, int a2)
     if (p == 0)
         return 0;
 
-    FUN_0003b407(p);
+    rewind(p);
     do {
         FUN_0003b420(&g_11e34, 6, 1, p);
         if (g_11e35 == -1)

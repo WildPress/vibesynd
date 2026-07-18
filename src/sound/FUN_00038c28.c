@@ -10,7 +10,7 @@
    9.5b assigns them the opposite callee-saved registers in the match loop. A clean
    register tie-break: not moved by cpermute (2500), by &&-vs-continue restructuring, or
    by five flag variants. Register-role family. */
-extern int FUN_0003b407(void *h);
+extern int rewind(void *h);
 extern int FUN_0003b420(void *dst, int size, int count, void *h);
 extern int FUN_0003b594(void *h, int off, int whence);
 extern void *FUN_0003aa74(int size);
@@ -24,7 +24,7 @@ void *FUN_00038c28(unsigned char *p1, unsigned short p2, unsigned short p3)
     unsigned char *blob;
     if (p1 == 0)
         return 0;
-    FUN_0003b407(p1);
+    rewind(p1);
     for (;;) {
         FUN_0003b420(&g_11e34, 6, 1, p1);
         if (g_11e35 == -1)

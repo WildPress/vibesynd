@@ -5,7 +5,7 @@
    bytes). Returns the core's result (character count). */
 extern int FUN_0003cb24(void *dest, const char *fmt, char **argp);
 
-int FUN_0003ad66(const char *fmt, ...)
+int printf(const char *fmt, ...)
 {
     char *args = (char *)(&fmt + 1);
 
