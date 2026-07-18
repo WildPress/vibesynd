@@ -204,3 +204,39 @@ on the walls. 10.0 breaks 9.5-matched fns. Since NO available Watcom emits the `
 unfold/loop-align forms, those bytes are almost certainly **source-form driven** (a specific C
 construct), i.e. the near-misses are hard-but-source-reachable, not blocked by a lost compiler. The
 compiler hunt is closed. Effort returns to source.
+
+## Could it be more than one compiler? Interleaving rules it out
+
+Everything above hunts for the single compiler behind the code. A fair follow-up is whether there is
+more than one. DOS executables are linked from object files, and different objects can come from
+different compilers. The runtime library is exactly that, a separate Watcom 9.5 CLIB3S linked in and
+proven byte-identical. So could Bullfrog's own code be a second such block, compiled by a different
+Watcom that happens to produce the wall bytes?
+
+The binary's own layout says no. The linker keeps each object's functions contiguous, so a
+differently-compiled module would show up as one unbroken block of walls. The walls are not blocked
+like that. They are scattered. Twenty-four of the hundred-and-ten sit isolated, a single wall
+function with a matched function on each side, and the longest unbroken run of walls anywhere is
+eight functions. You cannot wedge one function from another compiler between two functions that are
+its own source neighbours.
+
+The NetBIOS session-op family is the clearest picture. Seven functions at consecutive addresses,
+plainly one source file doing one job:
+
+```
+0x27fc8  submit_command    wall
+0x28118  xfer_buf_req_b1   wall
+0x28228  netbios_op91      wall
+0x28368  netbios_op90      wall
+0x284a8  xfer_buf_req94    matched
+0x28558  netbios_recv95    matched
+0x28628  FUN_00028628      matched
+```
+
+Three of them match base 9.5 to the byte while their siblings in the same file do not. That is one
+compiler having different luck on the same source-local codegen pattern, not two compilers. DOS/4GW
+does not change this either. It is the extender that lets 32-bit code run under DOS, a runtime stub
+added at link time, not a compiler. Every function in the image is one flat 32-bit compilation. So
+the mixed-compiler theory closes the same way the version hunt did. The walls share their neighbours'
+compiler, and the remaining explanation is source form, not toolchain. (Measured with
+`tools/classify_equiv.py` output over the address-sorted manifest.)

@@ -794,3 +794,68 @@ scaffolding around the wrong wall. The heap really is laid out differently from 
 simply had nothing to do with the crash. The cost of the detour was real. The refund was a genuine
 bug in our own tools that had been quietly corrupting twenty-seven relocations in every build we
 had ever made, and now does not.
+
+## The register question, and what a probe actually showed
+
+We had written the floor down as a measurement. The score will not reach a hundred per cent from
+compiling C, because the last hundred-odd functions diverge in the shape of the instructions, and
+that shape is the compiler's own allocation choice, which no source spelling steers. That last
+clause was too strong, and a plain question caught it. If one function wants a value in ESI and ours
+puts it in EDI, is there really no way to write the C so it flips?
+
+So we built the smallest thing that could answer it. Two tiny functions, identical but for the order
+of two statements, compiled through the same 9.5. Reorder which value is computed first and the
+register it lands in flips, EBX to EAX and back, and the store order follows it. A second pair, one
+comparison written `a == b` and the other `b == a`, and the compare loads the other operand first
+and the bytes change. Source does steer allocation. The instinct behind the question was right, and
+our sentence was wrong.
+
+The precise truth is narrower and more stubborn than either. Allocation is a whole-function decision,
+not a local one. The compiler builds an interference graph of every value that is live at the same
+time and hands out registers so no two live values collide. When a value arrives from memory, as it
+does in the probe, we are free to choose the register it enters, so a reorder moves it cleanly. When
+both operands of a compare are already sitting in registers, pinned there by everything around them,
+the direction of the compare is fixed by that earlier pinning and the local swap has nothing to
+move. That is exactly the collision query that differs by one compare byte. Its two operands are a
+field loaded three instructions earlier and a parameter carried in a register across the whole body.
+We tried both orders and a temporary, and every spelling gave the same byte, because the pin was set
+long before that line.
+
+So the wall is real, but it is not that source never steers registers. It is that these functions
+are a coupled constraint. You can satisfy any one register slot, and for the parked cases there is
+no single arrangement of the source that satisfies all of them at once. When the permuter grinds
+thousands of variants and stops a byte short, that stop is the evidence of the pin, not a sign we
+stopped trying. The idioms that owe nothing to memory, a constant written straight to memory rather
+than through a register, a `lea` where the target used a copy and an increment, have no lever at
+all, because the compiler settles them after allocation by fixed rules.
+
+There is one more escape a fair question keeps raising. Maybe a different point release of the
+compiler settles a tie the other way. We had already bracketed this once and written it up in the
+[compiler-version](compiler-version.md) notes, and this stretch re-ran the core of it as a check
+after a plain question deserved a fresh answer. The install we build with is the base 9.5, with 9.5a,
+9.5b, and 9.5c built beside it by patching. Three of the parked ties compiled to identical bytes on
+all four, with the build banner confirming each distinct binary really ran. Some other functions do
+shift between the letters, the address fold at 0x20d18 folds tighter under b and c for instance, but
+none of the shifts lands on the target, and 10.0 breaks functions that 9.5 already matches. So no
+obtainable Watcom emits the wall bytes. The letters are mostly correctness and library fixes over one
+9.5 code generator, and where they do change codegen they change it away from the target, not toward
+it. The full matrix is in the compiler-version notes. The short version is that the point release is
+not the lever.
+
+One class of miss could still be fixed from C, and this stretch confirmed it is spent. A handful of
+functions once called the string routines as ordinary calls where the original inlined them, `strlen`
+as a `repne scasb` and the like. Wiring in the real headers and the intrinsic pragma turned the call
+into the inline and matched the bytes, which is how the centre-string function went green. A sweep of
+every remaining function for that same signature, a real string call with no intrinsic in force,
+turned up nothing but false alarms, comments that mention the word and far-string routines that are
+already hand-assembled. The winnable kind is done.
+
+Which leaves the honest reframing. The map now leads with the number that means something. Four
+hundred and sixty-four of five hundred and fifty-one functions are behaviourally complete, two
+thirds of the code by size, our C doing what the original does and checked instruction by
+instruction against it. Four hundred and forty-one of those are byte-for-byte identical. The rest
+are provably the same behaviour in a different register or a different encoding, and they keep their
+own colours on the treemap so the distinction is never hidden. Green, cyan, and blue are done on the
+axis that decides whether the game runs correctly. Amber is where a genuine difference would still
+live. The score we cannot move is a compiler tie, measured and named, and the score that matters now
+has a headline that tells the truth.

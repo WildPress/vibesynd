@@ -12,14 +12,22 @@ for byte, one function at a time. A project to learn how decompilation works.
 
 Every function in the code segment, area proportional to its size, grouped by subsystem, coloured by a
 register-normalised diff against the original (`tools/classify_equiv.py`).
-**Green** = our C compiles byte-identical. **Cyan** = *register-only*: same instructions, the target
-just keeps a value in a different register — **provably zero behavioural difference**, only unforceable
-from C. **Blue** = *near-identical*: one or two equivalent encoding idioms differ (e.g. `xor edx,edx;
-mov dx,ax` vs `mov ecx,eax; and ecx,0xffff`, both zero-extend) — almost surely semantically the same.
-**Amber** = *structural*: a real instruction-shape difference remains (a source change still to find).
-So green+cyan are behaviourally complete-and-safe; blue is near-certainly so; amber is where any genuine
-difference would live. Regenerate with `python tools/treemap.py`; a live, hover-able version and a
-matched-over-time chart are in `tools/progress.py` (local `dashboard/progress.html`).
+
+The headline is 464 of 551 functions, about 66% of the code by size, are behaviourally complete: our C
+reproduces what the original does, checked instruction by instruction against the game's own machine code.
+441 of those (62% of the bytes) are byte-for-byte identical. The rest are provably equivalent without
+being byte-identical, and they keep their own colours so the distinction stays visible on the map.
+
+**Green** compiles byte-identical. **Cyan** is *register-only*: the same instructions, the target just
+holds a value in a different register. That is a provable zero behavioural difference, it simply can't be
+forced from C. **Blue** is *near-identical*: one or two equivalent encoding idioms differ (for example
+`xor edx,edx; mov dx,ax` vs `mov ecx,eax; and ecx,0xffff`, both zero-extend), almost certainly the same
+behaviour. **Amber** is *structural*: a real instruction-shape difference still to close, or a Watcom
+codegen tie that no C spelling reaches.
+
+Green, cyan, and blue are done on the behavioural axis. Amber is where any genuine difference would live.
+Regenerate with `python tools/treemap.py`. A live, hover-able version and a matched-over-time chart are in
+`tools/progress.py` (local `dashboard/progress.html`).
 
 ## The reconstruction runs
 

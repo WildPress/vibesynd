@@ -155,3 +155,40 @@ perspective: those functions are already decoded to correct, readable C, and the
 reconstructed binary is byte-exact because it is built from the original bytes. The floor
 is a limit on one specific claim, that our C recompiles to the exact bytes, and not on
 the decompilation being complete or the build being faithful.
+
+## A probe, to see the lever move
+
+The claim that source cannot steer allocation is easy to overstate, so here is the
+smallest test that shows where it holds and where it breaks. Take two functions that
+differ only in the order of two statements:
+
+```c
+void p(int a, int b){ int x, y; x = g(a); y = g(b); gx = x; gy = y; }   /* A */
+void p(int a, int b){ int x, y; y = g(b); x = g(a); gx = x; gy = y; }   /* B */
+```
+
+Compiled through 9.5b, both keep the first value computed in EBX so it survives the
+second call, and leave the second value in EAX. Reorder the two statements and which
+register backs each named store flips: A writes `gx` from EBX and `gy` from EAX, B
+writes them the other way round. The register a value lands in followed the source
+order. The lever is real.
+
+Now the other half. Take a comparison written both ways:
+
+```c
+void c(int a, int b){ gr = (a == b); }    /* loads a, then cmp a,b */
+void c(int a, int b){ gr = (b == a); }    /* loads b, then cmp b,a */
+```
+
+Here the operands come from memory, so the source order decides which one loads first
+and the bytes differ. That looks like a lever too, and for a memory compare it is. The
+wall appears only when both operands are already pinned in registers by the surrounding
+code. Then the compare direction is settled by that earlier pinning, and swapping the
+source operands changes nothing. That is the collision-query byte we could not move: its
+two operands are a field loaded a few instructions earlier and a parameter carried in a
+register across the whole body, both pinned long before the compare.
+
+So the honest rule is not that source never steers allocation. It steers it whenever the
+value is free. The parked functions are the ones where the value is not free, pinned by a
+whole-function interference graph that no single reordering satisfies at every slot at
+once. `tools/_regprobe.sh` runs the test above if you want to watch the bytes shift.
