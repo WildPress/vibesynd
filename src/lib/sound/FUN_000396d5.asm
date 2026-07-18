@@ -9,7 +9,7 @@
 ; No return value. Runs inside a cli critical section.
 ;
 ; Globals:  0xbc38 g_seq_state[17] (word)   0xbbf0 g_active_seq_count
-; Calls:    0x39467 reprogram_pit_ch0(0) (stop PIT)   0x3942f FUN_0003942f (uninstall ISR)
+; Calls:    0x39467 reprogram_pit_ch0(0) (stop PIT)   0x3942f uninstall_timer_isr (uninstall ISR)
 ;
 FUN_000396d5:
         push    ebp                              ; 55
@@ -31,7 +31,7 @@ FUN_000396d5:
         push    0                                  ; 6a00        reload count 0 = stop PIT ch0
         call    0x39467                            ; e85efdffff -> reprogram_pit_ch0(0)
         add     esp, 4                             ; 83c404
-        call    0x3942f                            ; e81efdffff -> FUN_0003942f: uninstall timer ISR
+        call    0x3942f                            ; e81efdffff -> uninstall_timer_isr: uninstall timer ISR
 ; .exit (0x39711): critical-section exit
         push    ebp                               ; 55
         mov     ebp, esp                          ; 8bec

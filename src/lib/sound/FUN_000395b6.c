@@ -2,7 +2,7 @@
  * disasm: framed; pushfd; cli;
  *   for (i=0; i<0x10; i++) if (g_bcfa[i]) {
  *       if (g_bd3a[i] != -1) FUN_000396d5(g_bd3a[i]);
- *       FUN_00039a82(i, [ebp+8]);
+ *       stop_voice(i, [ebp+8]);
  *   }
  *   FUN_00039722();
  *   <restore-IF>; leave; ret

@@ -9,7 +9,7 @@
 ;   0xbd3a  g_voice_handle[16]  per-voice handle                          -> 0xffffffff (none)
 ;   0xbd7a  g_voice_active[16]  per-voice active flag                     -> 0 (idle)
 ; The -1 fill for g_voice_handle matches the "-1 = no handle" convention the play/stop
-; paths (FUN_000399bd / FUN_00039a82) test against.
+; paths (FUN_000399bd / stop_voice) test against.
 ;
 ; Also: 0xbdca is loaded with DS and copied into ES -- caching the data selector the ISR
 ; uses for its string ops; 0xbbf0/0xbbf2 are two state words zeroed here.

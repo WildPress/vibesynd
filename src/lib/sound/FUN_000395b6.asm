@@ -7,16 +7,16 @@
 ; For each slot i in 0..15:
 ;   ptr    = g_driver_ptr[i]  (0xbcfa) -- skip the slot if it is empty (ptr == 0)
 ;   handle = g_driver_seq[i]  (0xbd3a) -- if not -1, FUN_000396d5(handle) stops that seq
-;   FUN_00039a82(i) releases the slot (clears its busy flag and dispatches a driver
+;   stop_voice(i) releases the slot (clears its busy flag and dispatches a driver
 ;                   "free" message)
 ; Then FUN_00039722() stops all 16 sequences.
 ;
-; Uses 0xbdbe as a plain loop counter. Args: [ebp+8] -- passed on to FUN_00039a82,
+; Uses 0xbdbe as a plain loop counter. Args: [ebp+8] -- passed on to stop_voice,
 ; which reads only its own (slot) argument, so this second value is effectively unused
 ; by the callee. Runs inside a cli critical section.
 ;
 ; Globals:  0xbcfa g_driver_ptr[16]   0xbd3a g_driver_seq[16]   0xbdbe loop counter
-; Calls:    0x396d5 FUN_000396d5 (stop seq)   0x39a82 FUN_00039a82 (free slot)
+; Calls:    0x396d5 FUN_000396d5 (stop seq)   0x39a82 stop_voice (free slot)
 ;           0x39722 FUN_00039722 (stop all seqs)
 ;
 FUN_000395b6:
@@ -42,7 +42,7 @@ FUN_000395b6:
 ; .free (0x395ef): release the driver slot
         push    dword ptr [ebp + 8]              ; ff7508        (extra arg, ignored by callee)
         push    dword ptr [0xbdbe]               ; ff35bebd0000  arg = slot index i
-        call    0x39a82                           ; e885040000   -> FUN_00039a82(i): free slot
+        call    0x39a82                           ; e885040000   -> stop_voice(i): free slot
         add     esp, 8                            ; 83c408
 ; .next (0x39600):
         inc     dword ptr [0xbdbe]               ; ff05bebd0000  i++

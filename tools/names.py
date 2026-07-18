@@ -147,6 +147,20 @@ LABELS = {
     "00040236": "plot_point",     "0004d199": "fill_bytes",
     "0004d0b4": "blit_block",     "0004a734": "draw_sprite_rle",
     "0004a492": "vga_planar_present",
+    # cont.30 -- hand-asm gfx/sound fns named from their commented .asm listings
+    "0004287e": "iso_scene_walk",
+    "00039ca0": "flic_play",      "00039e42": "flic_decode_frame",
+    "00039ee2": "flic_parse_header", "00039f92": "flic_load_palette",
+    "0003942f": "uninstall_timer_isr", "00039a82": "stop_voice",
+    "0004cb68": "draw_text",      "0004cde3": "draw_text_fixed",
+    "0004cacc": "draw_hex",       "0004cb1a": "draw_dec",
+    "0004d221": "vec_to_angle",   "0004d393": "isqrt32",
+    "0004d352": "isqrt16",        "0004d1db": "copy_bytes",
+    "0004d04b": "copy_fixed_block", "0004d442": "poll_key",
+    "0004d513": "hex32_to_ascii", "0004d451": "dec32_to_ascii",
+    "000498ef": "set_video_mode", "0004987e": "upload_palette",
+    "00049922": "reset_gfx_write_mode", "0004993b": "clear_offscreen",
+    "0004997e": "clear_vga_screen",
 }
 
 

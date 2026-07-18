@@ -1,7 +1,7 @@
 ; FUN_0004ce87 @ 0004ce87  (421 bytes) -- hand-written assembly (fully commented).
 ;
 ; glyph_stamp_fixed: stamp one fixed-size font glyph into the four-plane offscreen
-; buffer. Called by the fixed-width text renderer FUN_0004cde3.
+; buffer. Called by the fixed-width text renderer draw_text_fixed.
 ;
 ; The glyph is byte-aligned and 8 pixels wide (one byte per plane per row). Its source
 ; data at edx is stored plane-interleaved: for each row it holds four consecutive
