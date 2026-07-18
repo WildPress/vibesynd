@@ -1,40 +1,52 @@
-; init_voice_tables @ 0003954c  (106 bytes) -- hand-written assembly, reconstructed listing.
-; Original bytes disassembled from the game image; call targets and known globals
-; resolved to names. The build uses init_voice_tables.c (db-transcription); this listing is the
-; readable companion. See docs/game-vs-library.md for why these are hand asm.
+; init_voice_tables @ 0x3954c  (106 bytes) -- hand-written assembly (fully commented).
 ;
+; init_voice_tables: reset the per-voice driver state to "empty" at driver start-up.
+; It clears three parallel 16-entry dword tables and a couple of scalar cells, with
+; interrupts disabled so a timer tick can't observe a half-initialised table.
+;
+; The three tables (each 16 dwords, indexed by voice 0..15):
+;   0xbcfa  g_voice_driver[16]  driver dispatch-table pointer per voice  -> 0
+;   0xbd3a  g_voice_handle[16]  per-voice handle                          -> 0xffffffff (none)
+;   0xbd7a  g_voice_active[16]  per-voice active flag                     -> 0 (idle)
+; The -1 fill for g_voice_handle matches the "-1 = no handle" convention the play/stop
+; paths (FUN_000399bd / FUN_00039a82) test against.
+;
+; Also: 0xbdca is loaded with DS and copied into ES -- caching the data selector the ISR
+; uses for its string ops; 0xbbf0/0xbbf2 are two state words zeroed here.
+
 init_voice_tables:
-        push    esi                              ; 56
-        push    edi                              ; 57
-        push    es                               ; 06
-        pushfd                                   ; 9c
-        cli                                      ; fa
-        mov     word ptr [0xbdca], ds            ; 668c1dcabd0000
-        mov     es, word ptr [0xbdca]            ; 668e05cabd0000
-        mov     word ptr [0xbbf0], 0             ; 66c705f0bb00000000
-        mov     word ptr [0xbbf2], 0             ; 66c705f2bb00000000
-        cld                                      ; fc
-        mov     edi, 0xbcfa                      ; bffabc0000
-        mov     ecx, 0x10                        ; b910000000
-        mov     eax, 0                           ; b800000000
-        rep stosd dword ptr es:[edi], eax        ; f3ab
-        mov     edi, 0xbd3a                      ; bf3abd0000
-        mov     ecx, 0x10                        ; b910000000
-        mov     eax, 0xffffffff                  ; b8ffffffff
-        rep stosd dword ptr es:[edi], eax        ; f3ab
-        mov     edi, 0xbd7a                      ; bf7abd0000
-        mov     ecx, 0x10                        ; b910000000
-        mov     eax, 0                           ; b800000000
-        rep stosd dword ptr es:[edi], eax        ; f3ab
-        push    ebp                              ; 55
-        mov     ebp, esp                         ; 8bec
-        test    byte ptr [ebp + 5], 2            ; f6450502
-        cli                                      ; fa
-        je      0x395b0                          ; 7401
-        sti                                      ; fb
-        pop     ebp                              ; 5d
-        popfd                                    ; 9d
-        pop     es                               ; 07
-        pop     edi                              ; 5f
-        pop     esi                              ; 5e
-        ret                                      ; c3
+        push    esi
+        push    edi
+        push    es
+        pushfd                               ; save flags (incl. IF)
+        cli                                  ; critical section
+        mov     word ptr [0xbdca], ds        ; cache the data selector...
+        mov     es, word ptr [0xbdca]        ; ...and load it into ES for the stos runs
+        mov     word ptr [0xbbf0], 0         ; clear state word
+        mov     word ptr [0xbbf2], 0         ; clear state word
+        cld
+        mov     edi, 0xbcfa                  ; g_voice_driver[]
+        mov     ecx, 0x10                    ; 16 entries
+        mov     eax, 0
+        rep stosd dword ptr es:[edi], eax    ;   = 0 (no driver)
+        mov     edi, 0xbd3a                  ; g_voice_handle[]
+        mov     ecx, 0x10
+        mov     eax, 0xffffffff
+        rep stosd dword ptr es:[edi], eax    ;   = -1 (no handle)
+        mov     edi, 0xbd7a                  ; g_voice_active[]
+        mov     ecx, 0x10
+        mov     eax, 0
+        rep stosd dword ptr es:[edi], eax    ;   = 0 (idle)
+        push    ebp                          ; --- restore caller's interrupt state, then flags ---
+        mov     ebp, esp
+        test    byte ptr [ebp + 5], 2        ; saved EFLAGS bit 9 (IF) set on entry?
+        cli
+        je      flags_done
+        sti
+flags_done:
+        pop     ebp
+        popfd
+        pop     es
+        pop     edi
+        pop     esi
+        ret

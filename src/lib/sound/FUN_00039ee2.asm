@@ -1,23 +1,36 @@
-; FUN_00039ee2 @ 00039ee2  (71 bytes) -- hand-written assembly, reconstructed listing.
-; Original bytes disassembled from the game image; call targets and known globals
-; resolved to names. The build uses FUN_00039ee2.c (db-transcription); this listing is the
-; readable companion. See docs/game-vs-library.md for why these are hand asm.
+; FUN_00039ee2 @ 0x39ee2  (71 bytes) -- hand-written assembly (fully commented).
 ;
+; FUN_00039ee2: read and parse the rest of a FLIC/FLC file header. This lives in the
+; sound module but is part of the animation player driven by FUN_00039ca0 (the magic
+; word 0xAF12 identifies an Autodesk FLC file). The caller has already read the leading
+; 6 bytes of the header (a 4-byte size + 2-byte type/magic); this routine slurps the
+; remaining (size-6) bytes into g_back_buf and pulls out the three fields the player
+; needs: frame count, width and height.
+;
+; No args. Globals:
+;   0xbddc  chunk size (dword; low word used) of the FLC main header
+;   0xbdd0  g_flic_handle  open file handle
+;   0x5370  g_back_buf     scratch buffer the header body is read into
+;   0xbdd6  frame count   (word)  <- header[0]
+;   0xbdd8  width         (word)  <- header[2]
+;   0xbdda  height        (word)  <- header[4]
+; Calls: FUN_0003a7c4(handle, buf, count) -- read `count` bytes from the file.
+
 FUN_00039ee2:
-        movzx   eax, word ptr [0xbddc]           ; 0fb705dcbd0000
-        sub     eax, 6                           ; 83e806
-        push    eax                              ; 50
-        push    dword ptr [0x5370]               ; ff3570530000   0x5370=g_back_buf
-        push    dword ptr [0xbdd0]               ; ff35d0bd0000
-        call    0x3a7c4                          ; e8c6080000     -> FUN_0003a7c4
-        add     esp, 0xc                         ; 83c40c
-        mov     edi, dword ptr [0x5370]          ; 8b3d70530000   0x5370=g_back_buf
-        mov     ax, word ptr [edi]               ; 668b07
-        mov     word ptr [0xbdd6], ax            ; 66a3d6bd0000
-        add     edi, 2                           ; 83c702
-        mov     ax, word ptr [edi]               ; 668b07
-        mov     word ptr [0xbdd8], ax            ; 66a3d8bd0000
-        add     edi, 2                           ; 83c702
-        mov     ax, word ptr [edi]               ; 668b07
-        mov     word ptr [0xbdda], ax            ; 66a3dabd0000
-        ret                                      ; c3
+        movzx   eax, word ptr [0xbddc]       ; eax = FLC header size (low word)
+        sub     eax, 6                        ; minus the 6 bytes already read
+        push    eax                          ; count
+        push    dword ptr [0x5370]           ; buffer = g_back_buf
+        push    dword ptr [0xbdd0]           ; handle = g_flic_handle
+        call    0x3a7c4                      ; -> FUN_0003a7c4: read the header body
+        add     esp, 0xc
+        mov     edi, dword ptr [0x5370]      ; edi -> g_back_buf (header body)
+        mov     ax, word ptr [edi]           ; header[0] = frame count
+        mov     word ptr [0xbdd6], ax
+        add     edi, 2
+        mov     ax, word ptr [edi]           ; header[2] = width
+        mov     word ptr [0xbdd8], ax
+        add     edi, 2
+        mov     ax, word ptr [edi]           ; header[4] = height
+        mov     word ptr [0xbdda], ax
+        ret

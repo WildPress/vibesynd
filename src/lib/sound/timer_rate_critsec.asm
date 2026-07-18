@@ -1,32 +1,41 @@
-; timer_rate_critsec @ 00039846  (51 bytes) -- hand-written assembly, reconstructed listing.
-; Original bytes disassembled from the game image; call targets and known globals
-; resolved to names. The build uses timer_rate_critsec.c (db-transcription); this listing is the
-; readable companion. See docs/game-vs-library.md for why these are hand asm.
+; timer_rate_critsec @ 0x39846  (51 bytes) -- hand-written assembly (fully commented).
 ;
+; timer_rate_critsec: set a voice's timer/callback rate, expressed as a frequency in Hz,
+; inside a critical section. It converts the requested frequency to a period in
+; microseconds (period = 1_000_000 / freq) and forwards it to FUN_000397f1, which stores
+; it in the voice's timer slot and calls recompute_timer_period so the shared PIT ends up
+; at the fastest voice's rate.
+;
+; Args (cdecl): [ebp+8]  = voice index (0..15)
+;               [ebp+0xc] = requested frequency in Hz (the divisor below)
+; The div: edx:eax = 0xf4240 (1,000,000) / [ebp+0xc]  ->  eax = microseconds per tick.
+; Calls: FUN_000397f1(voice, period_us) which in turn runs recompute_timer_period.
+
 timer_rate_critsec:
-        push    ebp                              ; 55
-        mov     ebp, esp                         ; 8bec
-        push    esi                              ; 56
-        push    edi                              ; 57
-        pushfd                                   ; 9c
-        cli                                      ; fa
-        mov     edx, 0                           ; ba00000000
-        mov     eax, 0xf4240                     ; b840420f00
-        mov     ebx, dword ptr [ebp + 0xc]       ; 8b5d0c
-        div     ebx                              ; f7f3
-        push    eax                              ; 50
-        push    dword ptr [ebp + 8]              ; ff7508
-        call    0x397f1                          ; e88cffffff     -> FUN_000397f1
-        add     esp, 8                           ; 83c408
-        push    ebp                              ; 55
-        mov     ebp, esp                         ; 8bec
-        test    byte ptr [ebp + 5], 2            ; f6450502
-        cli                                      ; fa
-        je      0x39873                          ; 7401
-        sti                                      ; fb
-        pop     ebp                              ; 5d
-        popfd                                    ; 9d
-        pop     edi                              ; 5f
-        pop     esi                              ; 5e
-        leave                                    ; c9
-        ret                                      ; c3
+        push    ebp
+        mov     ebp, esp
+        push    esi
+        push    edi
+        pushfd                               ; save flags (incl. IF)
+        cli                                  ; critical section
+        mov     edx, 0                       ; edx:eax dividend high = 0
+        mov     eax, 0xf4240                 ; 1,000,000 microseconds per second
+        mov     ebx, dword ptr [ebp + 0xc]   ; ebx = frequency in Hz
+        div     ebx                          ; eax = period in microseconds
+        push    eax                          ; arg2 = period_us
+        push    dword ptr [ebp + 8]          ; arg1 = voice index
+        call    0x397f1                      ; -> FUN_000397f1: store period, recompute PIT rate
+        add     esp, 8
+        push    ebp                          ; --- restore caller's interrupt state, then flags ---
+        mov     ebp, esp
+        test    byte ptr [ebp + 5], 2        ; saved EFLAGS bit 9 (IF) set on entry?
+        cli
+        je      flags_done
+        sti
+flags_done:
+        pop     ebp
+        popfd
+        pop     edi
+        pop     esi
+        leave
+        ret
