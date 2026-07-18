@@ -9,9 +9,18 @@ Functions with no library hit are the GAME's own code."""
 import json, subprocess, re, os
 
 SEG = "inputs/SYNDICAT_MAIN_OBJECT1.linear.bin"
+# The 9.5 .LIB files are decompressed from the original floppy media with
+# tools/archive/wunpack95.sh (WPACK under DOSBox). CLIB3S/R is the C runtime;
+# GRAPH/MATH were added to TEST whether the game links Watcom's graphics or math
+# libraries -- it does NOT (lib/gfx and lib/sound score 0%, they are the game's
+# own code, proven not-Watcom). The 10.0a CLIBs are kept only for contrast; the
+# game matches the 9.5 build, so it scores ~0% against them.
 LIBS = [
     ("95S", "toolchain/watcom95/unpacked/CLIB3S.LIB"),
     ("95R", "toolchain/watcom95/unpacked/CLIB3R.LIB"),
+    ("GR",  "toolchain/watcom95/unpacked/GRAPH.LIB"),
+    ("M387","toolchain/watcom95/unpacked/MATH387S.LIB"),
+    ("M3",  "toolchain/watcom95/unpacked/MATH3S.LIB"),
     ("10S", "toolchain/watcom10a/WATCOM/LIB386/DOS/CLIB3S.LIB"),
     ("10R", "toolchain/watcom10a/WATCOM/LIB386/DOS/CLIB3R.LIB"),
 ]

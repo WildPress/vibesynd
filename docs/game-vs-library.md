@@ -68,3 +68,25 @@ A few functions in that region aren't C at all, they're hand-written assembly:
 things that talk directly to the DOS operating system or to hardware ports. Those
 were never going to come from a C compiler, so we don't try to match them from C
 either. They're part of the runtime plumbing, not the game.
+
+## What about the graphics and sound code?
+
+Two other regions sit apart from the game's main logic: a block of graphics
+routines around `0x40000` and a block of sound code around `0x39000`. It's
+reasonable to guess these are Watcom libraries too, since Watcom did ship a
+graphics library with the compiler. We checked, and they are not.
+
+We extracted the actual 9.5-era Watcom 386 graphics and maths libraries from the
+original install floppies (`GRAPH.LIB` and the `MATH` libraries, decompressed with
+`tools/archive/wunpack95.sh`) and searched them for the bytes of every graphics and
+sound function, the same way we did for the C runtime. Not one matched. As a
+control, the C runtime functions score 100% against their own library. The graphics
+and sound functions score zero.
+
+So these are the game's own code, not the toolchain's. The graphics routines are
+hand-written assembly, and the disassembly shows why: each one saves and restores
+every register, including EAX, ECX, and EDX, which the compiler treats as scratch
+and never preserves. That save-everything shape is an assembly convention, and it's
+also why we couldn't reproduce these functions from C and transcribed their raw
+bytes instead. The sound code is a third-party or in-house driver, working in the
+XMIDI format, again linked in but not from Watcom.
