@@ -1,7 +1,72 @@
-; FUN_0004483d @ 0004483d  (4482 bytes) -- hand-written assembly, reconstructed listing.
-; Original bytes disassembled from the game image; call targets and known globals
-; resolved to names. The build uses FUN_0004483d.c (db-transcription); this listing is the
-; readable companion. See docs/game-vs-library.md for why these are hand asm.
+; FUN_0004483d @ 0004483d  (4491 bytes) -- hand-written assembly (fully commented).
+;
+; FUN_0004483d: the isometric scene visibility walker again (same body as FUN_000436b2,
+; including the two-cell exclusion test against 0x38952 / 0x38956), but walking a
+; DIFFERENT diamond of cells -- the sweep starts at slot offset 0xa18 and follows its own
+; order (see the cell table below). This is the companion pass to FUN_000436b2, covering
+; the other set of cells / the opposite facing of the same occlusion build-up.
+;
+; esi points at the map cell-pointer array (4-byte cells; row stride 0x200, column stride
+; 4). edx is the cell budget. The walk is fully unrolled, one block per cell.
+;
+; Each cell block (see the fully-commented first block below):
+;   1. form the slot offset, subtract g_map_cols (0x5358), reject if not in [0, 0xc000);
+;   2. read the one-byte tile/height code; codes <= 4 are skipped;
+;   3. index the type->draw-data table at 0x5360 (stride 0x18), fetch a mask-data offset;
+;      a zero offset is skipped;
+;   4. skip the cell if its slot equals the excluded pair at 0x38952 / 0x38956;
+;   5. clear the mask table once on the first survivor (FUN_00046188);
+;   6. OR the cell's inverted mask into the table (FUN_000418ac).
+;
+; After each processed cell, if the folded column index (cx) has reached 0 the walk stops
+; early. The tile sub-layer field and mask slot advance per cell as tabulated below.
+;
+; Returns AX:  AL = 1 if any cell was processed, else 0;  AH = 0 if the walk finished or
+; the edx budget ran out, AH = 1 if it stopped early on a column index of 0. [ebp-1] is
+; the did-any flag. Globals: 0x5358 g_map_cols, 0x5360 type->draw-data base, 0x38952 /
+; 0x38956 excluded-cell pointers, 0xe144 running mask table.
+;
+; The cell walk order (slot offset, tile sub-layer field, draw-data mask slot):
+;
+;   cell  1:  esi+0xa18       tile[+0xb]   mask[+0]
+;   cell  2:  esi+0xa14       tile[+0xb]   mask[+0x10]
+;   cell  3:  esi+0x814       tile[+0xb]   mask[+8]
+;   cell  4:  esi+0xa14       tile[+0xa]   mask[+0xc]
+;   cell  5:  esi+0x814       tile[+0xa]   mask[+4]
+;   cell  6:  esi+0x810       tile[+0xa]   mask[+0x14]
+;   cell  7:  esi+0x814       tile[+9]   mask[+0]
+;   cell  8:  esi+0x810       tile[+9]   mask[+0x10]
+;   cell  9:  esi+0x610       tile[+9]   mask[+8]
+;   cell 10:  esi+0x810       tile[+8]   mask[+0xc]
+;   cell 11:  esi+0x610       tile[+8]   mask[+4]
+;   cell 12:  esi+0x60c       tile[+8]   mask[+0x14]
+;   cell 13:  esi+0x610       tile[+7]   mask[+0]
+;   cell 14:  esi+0x60c       tile[+7]   mask[+0x10]
+;   cell 15:  esi+0x40c       tile[+7]   mask[+8]
+;   cell 16:  esi+0x60c       tile[+6]   mask[+0xc]
+;   cell 17:  esi+0x40c       tile[+6]   mask[+4]
+;   cell 18:  esi+0x408       tile[+6]   mask[+0x14]
+;   cell 19:  esi+0x40c       tile[+5]   mask[+0]
+;   cell 20:  esi+0x408       tile[+5]   mask[+0x10]
+;   cell 21:  esi+0x208       tile[+5]   mask[+8]
+;   cell 22:  esi+0x408       tile[+4]   mask[+0xc]
+;   cell 23:  esi+0x208       tile[+4]   mask[+4]
+;   cell 24:  esi+0x204       tile[+4]   mask[+0x14]
+;   cell 25:  esi+0x208       tile[+3]   mask[+0]
+;   cell 26:  esi+0x204       tile[+3]   mask[+0x10]
+;   cell 27:  esi+4           tile[+3]   mask[+8]
+;   cell 28:  esi+0x204       tile[+2]   mask[+0xc]
+;   cell 29:  esi+4           tile[+2]   mask[+4]
+;   cell 30:  esi+0           tile[+2]   mask[+0x14]
+;   cell 31:  esi+4           tile[+1]   mask[+0]
+;   cell 32:  esi+0           tile[+1]   mask[+0x10]
+;   cell 33:  esi+0xfffffe00  tile[+1]   mask[+8]
+;   cell 34:  esi+0           tile[+0]   mask[+0xc]
+;   cell 35:  esi+0xfffffe00  tile[+0]   mask[+4]
+;   cell 36:  esi+0xfffffdfc  tile[+0]   mask[+0x14]
+;
+; The build uses FUN_0004483d.c (a db-transcription of the raw bytes); this .asm is the
+; readable companion. See docs/game-vs-library.md.
 ;
 FUN_0004483d:
         push    ebp                              ; 55
@@ -10,38 +75,42 @@ FUN_0004483d:
         mov     byte ptr [ebp - 1], 0            ; c645ff00
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c63110000
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0xa18                       ; 81c1180a0000
-        sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
-        cmp     ecx, 0xc000                      ; 81f900c00000
-        jge     0x448c4                          ; 7d60
-        cmp     ecx, 0                           ; 83f900
-        jl      0x448c4                          ; 7c5b
-        mov     ebx, dword ptr [esi + 0xa18]     ; 8b9e180a0000
-        movzx   ebx, byte ptr [ebx + 0xb]        ; 0fb65b0b
-        cmp     ebx, 4                           ; 83fb04
-        jle     0x448c4                          ; 7e4c
-        imul    ebx, ebx, 0x18                   ; 6bdb18
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        mov     ebx, dword ptr [ebx]             ; 8b1b
-        cmp     ebx, 0                           ; 83fb00
-        je      0x448c4                          ; 743c
-        mov     ecx, esi                         ; 8bce
-        add     ecx, 0xa18                       ; 81c1180a0000
-        cmp     ecx, dword ptr [0x38952]         ; 3b0d52890300
-        je      0x448c4                          ; 742c
-        cmp     ecx, dword ptr [0x38956]         ; 3b0d56890300
-        je      0x448c4                          ; 7424
-        cmp     byte ptr [ebp - 1], 0            ; 807dff00
-        jne     0x448ab                          ; 7505
-        call    0x46188                          ; e8dd180000     -> FUN_00046188
-        add     byte ptr [ebp - 1], 1            ; 8045ff01
-        add     ebx, dword ptr [0x5360]          ; 031d60530000
-        call    0x418ac                          ; e8f2cfffff     -> FUN_000418ac
-        cmp     cx, 0                            ; 6683f900
-        jle     0x459b8                          ; 0f8ef4100000
-        dec     edx                              ; 4a
-        jl      0x459b1                          ; 0f8ce6100000
+
+; ----- cell 1: esi+0xa18  tile[+0xb]  mask[+0] -----
+        mov     ecx, esi                         ; ecx = cell-array cursor (esi)
+        add     ecx, 0xa18                       ; point at this cell's map slot (cursor + offset)
+        sub     ecx, dword ptr [0x5358]          ; - g_map_cols: fold to a 0-based on-map index
+        cmp     ecx, 0xc000                      ; index still inside the map array (< 0xc000)?
+        jge     0x448c4                          ; no -> skip this cell, try the next
+        cmp     ecx, 0                           ; index >= 0 ?
+        jl      0x448c4                          ; no -> skip this cell, try the next
+        mov     ebx, dword ptr [esi + 0xa18]     ; ebx = this cell's record pointer
+        movzx   ebx, byte ptr [ebx + 0xb]        ; read the tile/height code for this sub-layer
+        cmp     ebx, 4                           ; codes 0..4 are empty/floor
+        jle     0x448c4                          ; -> nothing to occlude here, skip
+        imul    ebx, ebx, 0x18                   ; index the type table (stride 0x18)
+        add     ebx, dword ptr [0x5360]          ; + type->draw-data table base (0x5360)
+        mov     ebx, dword ptr [ebx]             ; fetch this layer's mask-data offset (draw-data slot)
+        cmp     ebx, 0                           ; no mask for this layer?
+        je      0x448c4                          ; -> skip
+        mov     ecx, esi                         ; recompute this cell's slot address
+        add     ecx, 0xa18                       ; (same slot offset)
+        cmp     ecx, dword ptr [0x38952]         ; is it the first cell drawn separately (excluded)?
+        je      0x448c4                          ; -> skip
+        cmp     ecx, dword ptr [0x38956]         ; the second excluded cell?
+        je      0x448c4                          ; -> skip
+        cmp     byte ptr [ebp - 1], 0            ; running mask table already cleared this call?
+        jne     0x448ab                          ; yes -> don't clear it again
+        call    0x46188                          ; one-time: zero the mask table at 0xe144 (FUN_00046188)
+        add     byte ptr [ebp - 1], 1            ; mark it cleared (this byte is also return value AL)
+        add     ebx, dword ptr [0x5360]          ; mask pointer = offset + draw-data base (0x5360)
+        call    0x418ac                          ; OR this cell's inverted mask into the table (FUN_000418ac)
+        cmp     cx, 0                            ; column index (low word) still ahead of the view?
+        jle     0x459b8                          ; no -> stop, return AH=1
+        dec     edx                              ; cell budget--
+        jl      0x459b1                          ; budget exhausted -> stop, return AH=0
+
+; ----- cell 2: esi+0xa14  tile[+0xb]  mask[+0x10] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0xa14                       ; 81c1140a0000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -74,6 +143,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e76100000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c68100000
+
+; ----- cell 3: esi+0x814  tile[+0xb]  mask[+8] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x814                       ; 81c114080000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -106,6 +177,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8ef80f0000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8cea0f0000
+
+; ----- cell 4: esi+0xa14  tile[+0xa]  mask[+0xc] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0xa14                       ; 81c1140a0000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -138,6 +211,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e7a0f0000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c6c0f0000
+
+; ----- cell 5: esi+0x814  tile[+0xa]  mask[+4] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x814                       ; 81c114080000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -170,6 +245,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8efc0e0000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8cee0e0000
+
+; ----- cell 6: esi+0x810  tile[+0xa]  mask[+0x14] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x810                       ; 81c110080000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -202,6 +279,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e7e0e0000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c700e0000
+
+; ----- cell 7: esi+0x814  tile[+9]  mask[+0] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x814                       ; 81c114080000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -234,6 +313,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e010e0000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8cf30d0000
+
+; ----- cell 8: esi+0x810  tile[+9]  mask[+0x10] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x810                       ; 81c110080000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -266,6 +347,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e830d0000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c750d0000
+
+; ----- cell 9: esi+0x610  tile[+9]  mask[+8] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x610                       ; 81c110060000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -298,6 +381,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e050d0000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8cf70c0000
+
+; ----- cell 10: esi+0x810  tile[+8]  mask[+0xc] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x810                       ; 81c110080000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -330,6 +415,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e870c0000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c790c0000
+
+; ----- cell 11: esi+0x610  tile[+8]  mask[+4] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x610                       ; 81c110060000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -362,6 +449,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e090c0000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8cfb0b0000
+
+; ----- cell 12: esi+0x60c  tile[+8]  mask[+0x14] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x60c                       ; 81c10c060000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -394,6 +483,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e8b0b0000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c7d0b0000
+
+; ----- cell 13: esi+0x610  tile[+7]  mask[+0] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x610                       ; 81c110060000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -426,6 +517,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e0e0b0000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c000b0000
+
+; ----- cell 14: esi+0x60c  tile[+7]  mask[+0x10] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x60c                       ; 81c10c060000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -458,6 +551,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e900a0000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c820a0000
+
+; ----- cell 15: esi+0x40c  tile[+7]  mask[+8] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x40c                       ; 81c10c040000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -490,6 +585,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e120a0000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c040a0000
+
+; ----- cell 16: esi+0x60c  tile[+6]  mask[+0xc] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x60c                       ; 81c10c060000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -522,6 +619,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e94090000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c86090000
+
+; ----- cell 17: esi+0x40c  tile[+6]  mask[+4] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x40c                       ; 81c10c040000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -554,6 +653,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e16090000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c08090000
+
+; ----- cell 18: esi+0x408  tile[+6]  mask[+0x14] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x408                       ; 81c108040000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -586,6 +687,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e98080000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c8a080000
+
+; ----- cell 19: esi+0x40c  tile[+5]  mask[+0] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x40c                       ; 81c10c040000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -618,6 +721,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e1b080000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c0d080000
+
+; ----- cell 20: esi+0x408  tile[+5]  mask[+0x10] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x408                       ; 81c108040000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -650,6 +755,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e9d070000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c8f070000
+
+; ----- cell 21: esi+0x208  tile[+5]  mask[+8] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x208                       ; 81c108020000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -682,6 +789,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e1f070000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c11070000
+
+; ----- cell 22: esi+0x408  tile[+4]  mask[+0xc] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x408                       ; 81c108040000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -714,6 +823,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8ea1060000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c93060000
+
+; ----- cell 23: esi+0x208  tile[+4]  mask[+4] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x208                       ; 81c108020000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -746,6 +857,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e23060000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c15060000
+
+; ----- cell 24: esi+0x204  tile[+4]  mask[+0x14] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x204                       ; 81c104020000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -778,6 +891,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8ea5050000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c97050000
+
+; ----- cell 25: esi+0x208  tile[+3]  mask[+0] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x208                       ; 81c108020000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -810,6 +925,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e28050000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c1a050000
+
+; ----- cell 26: esi+0x204  tile[+3]  mask[+0x10] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x204                       ; 81c104020000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -842,6 +959,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8eaa040000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c9c040000
+
+; ----- cell 27: esi+4  tile[+3]  mask[+8] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 4                           ; 83c104
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -874,6 +993,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e35040000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c27040000
+
+; ----- cell 28: esi+0x204  tile[+2]  mask[+0xc] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0x204                       ; 81c104020000
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -906,6 +1027,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8eb7030000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8ca9030000
+
+; ----- cell 29: esi+4  tile[+2]  mask[+4] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 4                           ; 83c104
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -938,6 +1061,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e42030000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c34030000
+
+; ----- cell 30: esi+0  tile[+2]  mask[+0x14] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0                           ; 83c100
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -970,6 +1095,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8ece020000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8cc0020000
+
+; ----- cell 31: esi+4  tile[+1]  mask[+0] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 4                           ; 83c104
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -1002,6 +1129,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e5a020000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c4c020000
+
+; ----- cell 32: esi+0  tile[+1]  mask[+0x10] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0                           ; 83c100
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -1034,6 +1163,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8ee6010000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8cd8010000
+
+; ----- cell 33: esi+0xfffffe00  tile[+1]  mask[+8] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0xfffffe00                  ; 81c100feffff
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -1066,6 +1197,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8e68010000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8c5a010000
+
+; ----- cell 34: esi+0  tile[+0]  mask[+0xc] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0                           ; 83c100
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -1098,6 +1231,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 0f8ef5000000
         dec     edx                              ; 4a
         jl      0x459b1                          ; 0f8ce7000000
+
+; ----- cell 35: esi+0xfffffe00  tile[+0]  mask[+4] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0xfffffe00                  ; 81c100feffff
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -1130,6 +1265,8 @@ FUN_0004483d:
         jle     0x459b8                          ; 7e7c
         dec     edx                              ; 4a
         jl      0x459b1                          ; 7c72
+
+; ----- cell 36: esi+0xfffffdfc  tile[+0]  mask[+0x14] -----
         mov     ecx, esi                         ; 8bce
         add     ecx, 0xfffffdfc                  ; 81c1fcfdffff
         sub     ecx, dword ptr [0x5358]          ; 2b0d58530000   0x5358=g_map_cols
@@ -1160,11 +1297,13 @@ FUN_0004483d:
         call    0x418ac                          ; e801bfffff     -> FUN_000418ac
         cmp     cx, 0                            ; 6683f900
         jle     0x459b8                          ; 7e07
-        mov     al, byte ptr [ebp - 1]           ; 8a45ff
-        mov     ah, 0                            ; b400
+
+; ===== exit =====
+        mov     al, byte ptr [ebp - 1]           ; AL = did-any-cell flag
+        mov     ah, 0                            ; AH=0: walk finished / budget ran out
         leave                                    ; c9
         ret                                      ; c3
-        mov     al, byte ptr [ebp - 1]           ; 8a45ff
-        mov     ah, 1                            ; b401
+        mov     al, byte ptr [ebp - 1]           ; AL = did-any-cell flag
+        mov     ah, 1                            ; AH=1: stopped early (column index <= 0)
         leave                                    ; c9
         ret                                      ; c3

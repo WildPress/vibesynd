@@ -1,46 +1,74 @@
-; FUN_00045f8a @ 00045f8a  (151 bytes) -- hand-written assembly, reconstructed listing.
-; Original bytes disassembled from the game image; call targets and known globals
-; resolved to names. The build uses FUN_00045f8a.c (db-transcription); this listing is the
-; readable companion. See docs/game-vs-library.md for why these are hand asm.
+; FUN_00045f8a @ 00045f8a  (151 bytes) -- hand-written assembly (fully commented).
+;
+; The twin of FUN_00045e61: the same 2-unit tile-address-and-triangle dispatch, with
+; its own handler table at 0x388bd and its own shared epilogue at 0x4607e. It maps
+; (x, y) to a cell offset and an iso-triangle selector, scales two block-size stack
+; arguments into planar form, then tail-jumps to one of four quadrant draw handlers.
+;
+; Coordinate maths (a "tile" is 2 units here):
+;   tile column = x >> 1,  tile row = y >> 1,  index = row*128 + column
+;   esi = index * 4 + [0x5358]                 (cell-array base at 0x5358)
+;   xf = x & 1,  yf = y & 1
+;   selector = 0; if xf+yf >= 2 selector += 8; if xf >= yf selector += 4  -> {0,4,8,12}
+;
+; When render-mode bit 1 (0x105) is set it rewrites two stack args in place into the
+; planar block form used by blit_block: arg[+0x18] *= 0x500 (one 16-row band),
+; arg[+0x14] <<= 2 (dword -> byte x). It then dispatches through the 4-entry table at
+; 0x388bd. If bit 1 is clear it branches to the shared epilogue at 0x4607e (register
+; restore + return), which lies past the bytes shown here.
+;
+; Args (stack / cdecl):  [ebp+8] x   [ebp+0xc] y   [ebp+0x14], [ebp+0x18] block size
+; Reads:  0x105 render-mode flags   0x5358 cell-array base   0x388bd handler table
+; Saves every register on entry (the shared epilogue pops them).
+;
+; The build uses FUN_00045f8a.c (a db-transcription of the raw bytes); this .asm is
+; the readable companion. See docs/game-vs-library.md.
 ;
 FUN_00045f8a:
-        push    ebp                              ; 55
-        mov     ebp, esp                         ; 8bec
-        push    eax                              ; 50
-        push    ebx                              ; 53
-        push    ecx                              ; 51
-        push    edx                              ; 52
-        push    esi                              ; 56
-        push    edi                              ; 57
-        mov     ax, word ptr [ebp + 8]           ; 668b4508
-        mov     bx, word ptr [ebp + 0xc]         ; 668b5d0c
-        mov     cx, ax                           ; 668bc8
-        mov     dx, bx                           ; 668bd3
-        sar     ax, 1                            ; 66d1f8
-        sar     bx, 1                            ; 66d1fb
-        shl     bx, 7                            ; 66c1e307
-        mov     si, ax                           ; 668bf0
-        add     si, bx                           ; 6603f3
-        and     esi, 0xffff                      ; 81e6ffff0000
-        shl     esi, 2                           ; c1e602
-        and     cx, 1                            ; 6683e101
-        and     dx, 1                            ; 6683e201
-        mov     bx, dx                           ; 668bda
-        add     bx, cx                           ; 6603d9
-        mov     eax, 0                           ; b800000000
-        cmp     bx, 2                            ; 6683fb02
-        jl      0x45fd6                          ; 7c03
-        add     eax, 8                           ; 83c008
-        cmp     cx, dx                           ; 663bca
-        jl      0x45fde                          ; 7c03
-        add     eax, 4                           ; 83c004
-        test    byte ptr [0x105], 2              ; f6050501000002
-        je      0x4607e                          ; 0f8493000000
-        imul    ebx, dword ptr [ebp + 0x18], 0x500 ; 695d1800050000
-        mov     dword ptr [ebp + 0x18], ebx      ; 895d18
-        shl     dword ptr [ebp + 0x14], 2        ; c1651402
-        add     esi, dword ptr [0x5358]          ; 033558530000   0x5358=g_map_cols
-        jmp     dword ptr [eax + 0x388bd]        ; ffa0bd880300
+        push    ebp
+        mov     ebp, esp
+        push    eax
+        push    ebx
+        push    ecx
+        push    edx
+        push    esi
+        push    edi
+        mov     ax, word ptr [ebp + 8]           ; ax = x
+        mov     bx, word ptr [ebp + 0xc]         ; bx = y
+        mov     cx, ax                           ; copy of x
+        mov     dx, bx                           ; copy of y
+        sar     ax, 1                            ; ax = x >> 1 (tile column)
+        sar     bx, 1                            ; bx = y >> 1 (tile row)
+        shl     bx, 7                            ; bx = row * 128
+        mov     si, ax                           ; si = column
+        add     si, bx                           ; si = row*128 + column (tile index)
+        and     esi, 0xffff                      ; keep 16-bit index
+        shl     esi, 2                            ; esi = index * 4 (dword stride)
+        and     cx, 1                            ; cx = xf (x & 1)
+        and     dx, 1                            ; dx = yf (y & 1)
+        mov     bx, dx                           ; bx = yf
+        add     bx, cx                           ; bx = xf + yf
+        mov     eax, 0                           ; selector = 0
+        cmp     bx, 2                            ; xf + yf >= 2 ?
+        jl      lower_half                       ;   no
+        add     eax, 8                           ;   yes -> +8
+lower_half:
+        cmp     cx, dx                           ; xf < yf ?
+        jl      have_index                       ;   yes
+        add     eax, 4                           ;   no -> +4
+have_index:
+        test    byte ptr [0x105], 2              ; render-mode bit 1 set?
+        je      0x4607e                          ;   no -> shared epilogue (restore + ret)
+        imul    ebx, dword ptr [ebp + 0x18], 0x500 ; arg[+0x18] *= 0x500 (16-row band)
+        mov     dword ptr [ebp + 0x18], ebx      ; store it back
+        shl     dword ptr [ebp + 0x14], 2        ; arg[+0x14] <<= 2 (dword -> byte x)
+        add     esi, dword ptr [0x5358]          ; esi = tile*4 + cell-array base (0x5358)
+        jmp     dword ptr [eax + 0x388bd]        ; tail-jump to quadrant handler [selector]
+
+; The bytes below are NOT a straight-line continuation. They decode (little-endian)
+; to a 4-entry jump table of code pointers into the 0x388xx quadrant-handler block,
+; followed by two short re-entry fragments (`add esi,0x200 / jmp 0x4604c / add esi,4`).
+; Kept verbatim (with raw bytes) so the listing stays a faithful disassembly.
         fimul   dword ptr [eax - 0x76fbfffd]     ; da8803000489
         add     eax, dword ptr [eax]             ; 0300
         int     0x88                             ; cd88
