@@ -60,7 +60,7 @@ extern unsigned char g_keep_synd_colours;     /* keep-syndicate-colours flag    
 
 extern int lcg_rand(int n);            /* random in [0,n)                 */
 extern unsigned char keyboard_state_machine(void);   /* random weapon/type byte         */
-extern void FUN_0004d199(unsigned char *dst, int val, int len); /* memset      */
+extern void fill_bytes(unsigned char *dst, int val, int len); /* memset      */
 
 void new_campaign_reset(void)
 {
@@ -175,7 +175,7 @@ void new_campaign_reset(void)
     }
 
     /* ---- flat state block ---- */
-    FUN_0004d199(g_5594, 0, 0x1e9);                /* memset(g_5594, 0, 0x1e9) */
+    fill_bytes(g_5594, 0, 0x1e9);                /* memset(g_5594, 0, 0x1e9) */
     *(int *)(g_5594 + 3) = -1;                     /* g_5597 */
     g_5594[0] = 2;
 }

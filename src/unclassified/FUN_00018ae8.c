@@ -18,7 +18,7 @@
    target via decl order -- here decl order is NOT byte-inert, unlike 0x338d8.
 
    Semantics: Bresenham line draw from (x1,y1) to (x2,y2) in colour c, plotting
-   each point via FUN_00040236(x, y, c). Step size comes from the mode byte
+   each point via plot_point(x, y, c). Step size comes from the mode byte
    g_105: bit 1 -> 1, else bits 0/2 -> 2 (uninitialised otherwise, as original).
    Splits into an x-major and a y-major half, each walking from the smaller
    endpoint of the major axis with the classic 2*minor error accumulator
@@ -27,7 +27,7 @@
    Recipe: -4s -oneatx -zp8 -s -zq. */
 extern unsigned char g_105;
 long labs(long x);
-void FUN_00040236(int x, int y, int c);
+void plot_point(int x, int y, int c);
 
 void FUN_00018ae8(short x1, short y1, short x2, short y2, unsigned char c)
 {
@@ -85,7 +85,7 @@ void FUN_00018ae8(short x1, short y1, short x2, short y2, unsigned char c)
         }
         ystep = step;
     go1:
-        FUN_00040236(p, q, c);
+        plot_point(p, q, c);
         while (p < end) {
             p += step;
             if (d < 0) {
@@ -94,7 +94,7 @@ void FUN_00018ae8(short x1, short y1, short x2, short y2, unsigned char c)
                 q += ystep;
                 d += incNE;
             }
-            FUN_00040236(p, q, c);
+            plot_point(p, q, c);
         }
     } else {
         incE2 = dx * 2;
@@ -121,7 +121,7 @@ void FUN_00018ae8(short x1, short y1, short x2, short y2, unsigned char c)
         }
         xstep = step;
     go2:
-        FUN_00040236(q, p, c);
+        plot_point(q, p, c);
         while (p < end2) {
             p += step;
             if (d < 0) {
@@ -130,7 +130,7 @@ void FUN_00018ae8(short x1, short y1, short x2, short y2, unsigned char c)
                 q += xstep;
                 d += incNE2;
             }
-            FUN_00040236(q, p, c);
+            plot_point(q, p, c);
         }
     }
 }

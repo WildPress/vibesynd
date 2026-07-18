@@ -28,7 +28,7 @@ extern void find_projectile_step(unsigned char *obj, char dir);
 extern unsigned char lcg_rand(int a);
 extern void FUN_00026ad8(unsigned short mult, unsigned short idx);
 extern int aim_cursor_advance(int obj);
-extern void FUN_0004d1db(void *a, void *b, unsigned int n);
+extern void copy_bytes(void *a, void *b, unsigned int n);
 
 void FUN_0002def8(unsigned char *obj, int tgt)
 {
@@ -71,7 +71,7 @@ void FUN_0002def8(unsigned char *obj, int tgt)
     obj[0x59] = 4;
     *(short *)(obj + 0x1e) = aim;
 
-    FUN_0004d1db(obj, buf1, 0x5c);
+    copy_bytes(obj, buf1, 0x5c);
     buf1[0x1a] = dA - 0x40;
     buf1[0x5a] = dA - 0x40;
     buf1[0x54] = 0x80;
@@ -79,7 +79,7 @@ void FUN_0002def8(unsigned char *obj, int tgt)
         (short)(*(short *)(buf1 + 0x2e) - *(short *)(buf1 + 4)),
         (short)(*(short *)(buf1 + 0x30) - *(short *)(buf1 + 6)));
 
-    FUN_0004d1db(obj, buf2, 0x5c);
+    copy_bytes(obj, buf2, 0x5c);
     buf2[0x1a] = dA + 0x40;
     buf2[0x5a] = dA + 0x40;
     buf2[0x54] = 0x80;

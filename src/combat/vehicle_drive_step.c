@@ -1,7 +1,7 @@
 /* @ 0x34858: top-level weapon-fire routine (964B, 8 distinct callees). Two
  * top-level modes on the firing entity's type byte p2[0x19]:
  *  - type 5/6 (guided/tracking): step the shot cursor (g_aim_x/g_aim_y) one
- *    tile toward the shooter's target coords, pick facing via FUN_0004d221,
+ *    tile toward the shooter's target coords, pick facing via vec_to_angle,
  *    snap the off-axis coord toward centre via snap_direction, adjust the charge
  *    byte p1[0x54] by the remaining tile distance, drop the shot if it reached
  *    the tile (recompute_state_code), accumulate the shot vector (FUN_00026ad8) and
@@ -53,7 +53,7 @@ extern char **g_map_cols;
 extern unsigned char *g_tile_flags;
 
 extern int labs(int x);
-extern unsigned char FUN_0004d221(int dx, int dy);
+extern unsigned char vec_to_angle(int dx, int dy);
 extern short snap_direction(int cur, int step);
 extern void recompute_state_code(unsigned char *p);
 extern void FUN_00026ad8(unsigned short mult, unsigned short idx);
@@ -71,11 +71,11 @@ void vehicle_drive_step(unsigned char *p1, unsigned char *p2)
         unsigned short steps;
 
         if ((short)dxa > (short)dya) {
-            p2[0x29] = FUN_0004d221((short)(*(short *)(p1 + 0x2e) - g_aim_x), 0);
+            p2[0x29] = vec_to_angle((short)(*(short *)(p1 + 0x2e) - g_aim_x), 0);
             g_aim_y = snap_direction(g_aim_y, 0x80);
             steps = dxa;
         } else {
-            p2[0x29] = FUN_0004d221(0, (short)(*(short *)(p1 + 0x30) - g_aim_y));
+            p2[0x29] = vec_to_angle(0, (short)(*(short *)(p1 + 0x30) - g_aim_y));
             g_aim_x = snap_direction(g_aim_x, 0x80);
             steps = dya;
         }

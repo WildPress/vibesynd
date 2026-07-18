@@ -33,7 +33,7 @@ extern unsigned char g_dcbc[];
 extern unsigned char g_agent_slots[];
 extern void FUN_000269b8(unsigned char *p);
 extern int init_record_if_alloc(unsigned char *node, unsigned short kind, int cnt);
-extern void FUN_0004d199(unsigned char *p, int val, int n);
+extern void fill_bytes(unsigned char *p, int val, int n);
 
 void FUN_000223c8(unsigned short row, unsigned short mode)
 {
@@ -110,7 +110,7 @@ void FUN_000223c8(unsigned short row, unsigned short mode)
                     FUN_000269b8(p);
                 }
                 FUN_000269b8(node);
-                FUN_0004d199(node, 0, 0x5c);
+                fill_bytes(node, 0, 0x5c);
             }
         }
     }

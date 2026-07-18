@@ -38,12 +38,12 @@ extern void relocate_map_columns(int);
 extern void add_c_stride6(int, int, int);
 extern void session_init(void);
 extern void vehicle_hp_stamp(void);
-extern void FUN_000498ef(int);
-extern void FUN_0004997e(int);
+extern void set_video_mode(int);
+extern void clear_vga_screen(int);
 extern void sprintf(char *buf, char *fmt, ...);
 extern void load_unpack_file(char *, int);
-extern void FUN_0004993b(int, int);
-extern void FUN_0004987e(int);
+extern void clear_offscreen(int, int);
+extern void upload_palette(int);
 extern void FUN_00022768(void);
 extern void zero_even_bytes(void);
 
@@ -58,15 +58,15 @@ void mission_map_init(void)
     if (g_radar_detail == 0)
         session_init();
     vehicle_hp_stamp();
-    FUN_000498ef(0x12);
-    FUN_0004997e(0);
+    set_video_mode(0x12);
+    clear_vga_screen(0);
     if (g_radar_detail != 0)
         sprintf(buf, g_1f4);
     else
         sprintf(buf, g_204, g_4170[g_10b2e]);
     load_unpack_file(buf, g_5378);
-    FUN_0004993b(g_screen_buf, 0);
-    FUN_0004987e(g_screen_buf);
+    clear_offscreen(g_screen_buf, 0);
+    upload_palette(g_screen_buf);
     g_5324 = g_5308 + 6;
     g_10b3f = 0;
     g_10b3e = 0;

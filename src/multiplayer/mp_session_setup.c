@@ -55,7 +55,7 @@ extern char g_36b8[], g_36cc[], g_36ec[], g_370c[];
 extern char g_372c[], g_3740[], g_375c[], g_3684[];
 extern unsigned char __far *g_conn[]; /* connection records (far ptrs) @ 0x10644 */
 
-extern void FUN_000498ef(int);
+extern void set_video_mode(int);
 extern void FUN_0003b2b5(char *s);
 extern void FUN_0003b326(char *buf);
 extern long atol(char *s);
@@ -84,7 +84,7 @@ int mp_session_setup(void)
     save = g_input_echo;
     i = 1;
     g_input_echo = 1;
-    FUN_000498ef(0x12);
+    set_video_mode(0x12);
 readloop:
     FUN_0003b2b5(g_36b8);
     FUN_0003b326(rbuf);

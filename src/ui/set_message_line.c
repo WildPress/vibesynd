@@ -13,8 +13,8 @@ extern volatile unsigned char g_10b3f;
 extern volatile unsigned char g_5591;
 extern unsigned char g_5591w; /* same address; write alias so the store schedules non-volatile (reloc masked) */
 extern int g_10aa0;
-extern void FUN_0004987e(int a);
-extern void FUN_00039ca0(int a, int b, char *c);
+extern void upload_palette(int a);
+extern void flic_play(int a, int b, char *c);
 extern void bulk_dword_copy_b(void);
 extern void bulk_dword_copy(void);
 extern char g_b958[];
@@ -26,10 +26,10 @@ void set_message_line(int i)
     strcpy(g_bdfc, g_b4c0[i]);
     g_10b3f = 0;
     if (g_5591 != 0) {
-        FUN_0004987e(g_10aa0);
+        upload_palette(g_10aa0);
         g_5591w = 0;
     }
-    FUN_00039ca0(0, 0, g_b958);
+    flic_play(0, 0, g_b958);
     bulk_dword_copy_b();
     bulk_dword_copy();
     g_506c = 1;

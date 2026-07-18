@@ -5,14 +5,14 @@
  * Watcom C 9.5b, recipe -4s -oneatx -zp8 -s -zq.
  */
 
-extern void FUN_0004d1db(void *dst, void *src, unsigned int len);
+extern void copy_bytes(void *dst, void *src, unsigned int len);
 extern unsigned char g_player_recs[];
 extern unsigned char g_command_recs[];
 extern unsigned short g_10b2e;
 
 void reset_player_slot(unsigned short param_1)
 {
-    FUN_0004d1db(g_player_recs, g_player_recs + param_1 * 0x417, 0x417);
+    copy_bytes(g_player_recs, g_player_recs + param_1 * 0x417, 0x417);
 
     *(unsigned short *)(g_command_recs + param_1 * 0xe + 0) = 0;
     *(unsigned short *)(g_command_recs + param_1 * 0xe + 2) = 0;

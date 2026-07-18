@@ -1,5 +1,5 @@
 /* @ 0x26778 (544 bytes): dashed Bresenham line drawer, plotting every 2nd pixel
-   from (x1,y1) to (x2,y2) via the pixel-plot callee FUN_00040236(x,y,color).
+   from (x1,y1) to (x2,y2) via the pixel-plot callee plot_point(x,y,color).
    Color alternates between c1 and c2 on bit 2 of the ushort pattern counter a7
    (a7 is decremented per step on shallow lines, incremented on steep ones, so
    4-pixel dashes of each color). Classic two-branch integer Bresenham: shallow
@@ -31,7 +31,7 @@
    in; slot order then needs decl-order juggling (reverse-decl mapping held in
    attempt 2 but is perturbed by copy decls). */
 
-extern void FUN_00040236(int x, int y, int c);
+extern void plot_point(int x, int y, int c);
 
 void FUN_00026778(unsigned short x1, unsigned short y1, int x2, int y2,
                   unsigned char c1, unsigned char c2, unsigned short a7)
@@ -85,7 +85,7 @@ void FUN_00026778(unsigned short x1, unsigned short y1, int x2, int y2,
                 stepa = two;
             }
         }
-        FUN_00040236(i, j, (a7 & 4) ? c2 : c1);
+        plot_point(i, j, (a7 & 4) ? c2 : c1);
         while (i < end1) {
             i += two;
             if (err < 0) {
@@ -94,7 +94,7 @@ void FUN_00026778(unsigned short x1, unsigned short y1, int x2, int y2,
                 j += stepa;
                 err += inc1a;
             }
-            FUN_00040236(i, j, (a7 & 4) ? c2 : c1);
+            plot_point(i, j, (a7 & 4) ? c2 : c1);
             a7--;
         }
     } else {
@@ -122,7 +122,7 @@ void FUN_00026778(unsigned short x1, unsigned short y1, int x2, int y2,
                 stepb = two;
             }
         }
-        FUN_00040236(j, i, (a7 & 4) ? c2 : c1);
+        plot_point(j, i, (a7 & 4) ? c2 : c1);
         while (i < end2) {
             i += two;
             if (err < 0) {
@@ -131,7 +131,7 @@ void FUN_00026778(unsigned short x1, unsigned short y1, int x2, int y2,
                 j += stepb;
                 err += inc1b;
             }
-            FUN_00040236(j, i, (a7 & 4) ? c2 : c1);
+            plot_point(j, i, (a7 & 4) ? c2 : c1);
             a7++;
         }
     }

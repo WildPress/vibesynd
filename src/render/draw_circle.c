@@ -26,7 +26,7 @@
  * diverges, 572B), -ot (much worse). 10 compiles.
  * Recipe: -4s -oneatx -zp8 -s -zq (parked) */
 extern unsigned char g_105;
-extern void FUN_00040236(int x, int y, int c);   /* plot pixel */
+extern void plot_point(int x, int y, int c);   /* plot pixel */
 
 void draw_circle(short cx, short cy, short r, unsigned char color)
 {
@@ -42,14 +42,14 @@ void draw_circle(short cx, short cy, short r, unsigned char color)
     y = r;
     d = 3 - (r + r);
     while (x < y) {
-        FUN_00040236(cx - x, cy - y, color);
-        FUN_00040236(cx + x, cy - y, color);
-        FUN_00040236(cx - x, cy + y, color);
-        FUN_00040236(cx + x, cy + y, color);
-        FUN_00040236(cx - y, cy - x, color);
-        FUN_00040236(cx + y, cy - x, color);
-        FUN_00040236(cx - y, cy + x, color);
-        FUN_00040236(cx + y, cy + x, color);
+        plot_point(cx - x, cy - y, color);
+        plot_point(cx + x, cy - y, color);
+        plot_point(cx - x, cy + y, color);
+        plot_point(cx + x, cy + y, color);
+        plot_point(cx - y, cy - x, color);
+        plot_point(cx + y, cy - x, color);
+        plot_point(cx - y, cy + x, color);
+        plot_point(cx + y, cy + x, color);
         if (d < 0) {
             d = x * 4 + d + 6;
         } else {
@@ -59,13 +59,13 @@ void draw_circle(short cx, short cy, short r, unsigned char color)
         x += step;
     }
     if (x == y) {
-        FUN_00040236(cx - x, cy - y, color);
-        FUN_00040236(cx + x, cy - y, color);
-        FUN_00040236(cx - x, cy + y, color);
-        FUN_00040236(cx + x, cy + y, color);
-        FUN_00040236(cx - y, cy - x, color);
-        FUN_00040236(cx + y, cy - x, color);
-        FUN_00040236(cx - y, cy + x, color);
-        FUN_00040236(cx + y, cy + x, color);
+        plot_point(cx - x, cy - y, color);
+        plot_point(cx + x, cy - y, color);
+        plot_point(cx - x, cy + y, color);
+        plot_point(cx + x, cy + y, color);
+        plot_point(cx - y, cy - x, color);
+        plot_point(cx + y, cy - x, color);
+        plot_point(cx - y, cy + x, color);
+        plot_point(cx + y, cy + x, color);
     }
 }

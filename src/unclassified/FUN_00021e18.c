@@ -108,7 +108,7 @@ extern short         g_cur_player;
 extern unsigned char g_radar_detail;
 
 extern int  keyboard_state_machine(void);
-extern void FUN_0004d1db(unsigned char *dst, unsigned char *src, int n);
+extern void copy_bytes(unsigned char *dst, unsigned char *src, int n);
 
 /* compiled-out 2-arg hook: emits arg push + cdecl cleanup, no call bytes */
 #define req_hook(a, b)
@@ -230,7 +230,7 @@ void FUN_00021e18(unsigned short param)
 
     /* --- tail: reset path (mutually exclusive with the main body) + clamp --- */
     if (param > 0 && g_radar_detail != 0) {
-        FUN_0004d1db(g_player_recs + REC, g_player_recs, 0x417);
+        copy_bytes(g_player_recs + REC, g_player_recs, 0x417);
         g_cur_player = 0;
     }
     if (g_10afe > g_10b02)

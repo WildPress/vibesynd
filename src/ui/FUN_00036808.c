@@ -32,7 +32,7 @@ extern unsigned char g_e2d3;
 extern unsigned char g_e2d7;
 extern unsigned char g_e292;
 
-extern unsigned char FUN_0004d442(void);
+extern unsigned char poll_key(void);
 extern void FUN_00036698(char *s, unsigned short x, unsigned short y, unsigned char a4,
                          unsigned short a5, unsigned char *tbl, signed char a7,
                          unsigned char a8, unsigned char a9, unsigned char a10);
@@ -67,7 +67,7 @@ int FUN_00036808(unsigned short x, unsigned short y, int width, unsigned short m
 
     ret = 0;
     if (*active != 0) {
-        key = FUN_0004d442();
+        key = poll_key();
         ch = key;
         if (key != 0 && key >= 0x20 && (unsigned short)len < maxlen) {
             if (key >= 0x61 && key <= 0x7a && caps != 0)

@@ -22,7 +22,7 @@ extern unsigned char g_pool_a[];
 extern short g_dir_dx[];
 extern short g_dir_dy[];
 extern int sum_of_squares_call(int a, int b);
-extern unsigned char FUN_0004d221(int dx, int dy);
+extern unsigned char vec_to_angle(int dx, int dy);
 extern int passability_4corner(int x, int y, int z);
 extern unsigned char *FUN_00011d68(unsigned char *p, int x, int y, int z,
                                    int rx, int ry, int rz);
@@ -58,11 +58,11 @@ unsigned char *los_trace(unsigned char *p1, unsigned char *p2, int dist)
     x = *(short *)(p1 + 4);
     y = *(short *)(p1 + 6);
     z = *(short *)(p1 + 8);
-    dir1 = FUN_0004d221((short)(*(short *)(p2 + 4) - x),
+    dir1 = vec_to_angle((short)(*(short *)(p2 + 4) - x),
                         (short)(*(short *)(p2 + 6) - y));
     d2 = sum_of_squares_call((short)(*(short *)(p2 + 4) - x),
                       (short)(*(short *)(p2 + 6) - y));
-    dir2 = FUN_0004d221((short)(*(short *)(p2 + 8) - z), (short)d2);
+    dir2 = vec_to_angle((short)(*(short *)(p2 + 8) - z), (short)d2);
     for (; (short)i < (short)dist; i++) {
         if ((short)passability_4corner(x, y, (short)(z + 0x80)) != 0)
             return 0;
