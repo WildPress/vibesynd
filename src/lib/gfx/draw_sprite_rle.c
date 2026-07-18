@@ -16,5 +16,5 @@ extern void __db_FUN_0004a734_6(void);
 #pragma aux __db_FUN_0004a734_6 = "db 15" "db 191" "db 192" "db 43" "db 248" "db 235" "db 222" "db 129" "db 197" "db 64" "db 1" "db 0" "db 0" "db 139" "db 253" "db 138" "db 217" "db 254" "db 205" "db 117" "db 208" "db 235" "db 44" "db 15" "db 182" "db 198" "db 3" "db 193" "db 126" "db 37" "db 138" "db 240" "db 50" "db 228" "db 172" "db 60" "db 0" "db 116" "db 6" "db 120" "db 249" "db 3" "db 240" "db 235" "db 245" "db 65" "db 117" "db 242" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_0004a734_7(void);
 #pragma aux __db_FUN_0004a734_7 = "db 233" "db 217" "db 254" "db 255" "db 255" "db 184" "db 200" "db 0" "db 0" "db 0" "db 43" "db 193" "db 138" "db 240" "db 233" "db 203" "db 254" "db 255" "db 255" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_0004a734 modify [eax ebx ecx edx esi edi ebp];
-void FUN_0004a734(void) { __db_FUN_0004a734_0(); __db_FUN_0004a734_1(); __db_FUN_0004a734_2(); __db_FUN_0004a734_3(); __db_FUN_0004a734_4(); __db_FUN_0004a734_5(); __db_FUN_0004a734_6(); __db_FUN_0004a734_7(); }
+#pragma aux draw_sprite_rle modify [eax ebx ecx edx esi edi ebp];
+void draw_sprite_rle(void) { __db_FUN_0004a734_0(); __db_FUN_0004a734_1(); __db_FUN_0004a734_2(); __db_FUN_0004a734_3(); __db_FUN_0004a734_4(); __db_FUN_0004a734_5(); __db_FUN_0004a734_6(); __db_FUN_0004a734_7(); }

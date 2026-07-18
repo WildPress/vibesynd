@@ -8,5 +8,5 @@ extern void __db_FUN_00040236_2(void);
 #pragma aux __db_FUN_00040236_2 = "db 0" "db 102" "db 211" "db 232" "db 102" "db 139" "db 216" "db 102" "db 247" "db 211" "db 232" "db 59" "db 0" "db 0" "db 0" "db 235" "db 49" "db 246" "db 5" "db 5" "db 1" "db 0" "db 0" "db 4" "db 116" "db 2" "db 235" "db 38" "db 246" "db 5" "db 5" "db 1" "db 0" "db 0" "db 1" "db 116" "db 29" "db 139" "db 69" "db 8" "db 209" "db 248" "db 139" "db 93" "db 12" "db 209" "db 251" "db 105" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_00040236_3(void);
 #pragma aux __db_FUN_00040236_3 = "db 219" "db 64" "db 1" "db 0" "db 0" "db 3" "db 195" "db 3" "db 5" "db 104" "db 83" "db 0" "db 0" "db 139" "db 93" "db 16" "db 136" "db 24" "db 95" "db 94" "db 90" "db 89" "db 91" "db 88" "db 201" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_00040236 modify [eax ebx ecx edx esi edi ebp];
-void FUN_00040236(void) { __db_FUN_00040236_0(); __db_FUN_00040236_1(); __db_FUN_00040236_2(); __db_FUN_00040236_3(); }
+#pragma aux plot_point modify [eax ebx ecx edx esi edi ebp];
+void plot_point(void) { __db_FUN_00040236_0(); __db_FUN_00040236_1(); __db_FUN_00040236_2(); __db_FUN_00040236_3(); }

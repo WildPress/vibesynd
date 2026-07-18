@@ -10,5 +10,5 @@ extern void __db_FUN_0004d0b4_3(void);
 #pragma aux __db_FUN_0004d0b4_3 = "db 139" "db 200" "db 243" "db 165" "db 3" "db 242" "db 3" "db 250" "db 75" "db 127" "db 245" "db 91" "db 95" "db 94" "db 129" "db 199" "db 0" "db 125" "db 0" "db 0" "db 129" "db 198" "db 0" "db 125" "db 0" "db 0" "db 86" "db 87" "db 83" "db 139" "db 200" "db 243" "db 165" "db 3" "db 242" "db 3" "db 250" "db 75" "db 127" "db 245" "db 91" "db 95" "db 94" "db 129" "db 199" "db 0" "db 125" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_0004d0b4_4(void);
 #pragma aux __db_FUN_0004d0b4_4 = "db 0" "db 129" "db 198" "db 0" "db 125" "db 0" "db 0" "db 235" "db 20" "db 246" "db 5" "db 5" "db 1" "db 0" "db 0" "db 4" "db 116" "db 2" "db 235" "db 9" "db 246" "db 5" "db 5" "db 1" "db 0" "db 0" "db 1" "db 116" "db 0" "db 95" "db 94" "db 90" "db 89" "db 91" "db 88" "db 201" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_0004d0b4 modify [eax ebx ecx edx esi edi ebp];
-void FUN_0004d0b4(void) { __db_FUN_0004d0b4_0(); __db_FUN_0004d0b4_1(); __db_FUN_0004d0b4_2(); __db_FUN_0004d0b4_3(); __db_FUN_0004d0b4_4(); }
+#pragma aux blit_block modify [eax ebx ecx edx esi edi ebp];
+void blit_block(void) { __db_FUN_0004d0b4_0(); __db_FUN_0004d0b4_1(); __db_FUN_0004d0b4_2(); __db_FUN_0004d0b4_3(); __db_FUN_0004d0b4_4(); }

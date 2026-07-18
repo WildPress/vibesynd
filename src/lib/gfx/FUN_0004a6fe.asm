@@ -21,7 +21,7 @@ FUN_0004a6fe:
         mov     dh, byte ptr [esi + 5]           ; 8a7605
         mov     eax, 0                           ; b800000000
         mov     esi, dword ptr [esi]             ; 8b36
-        call    0x4a734                          ; e809000000     -> FUN_0004a734
+        call    0x4a734                          ; e809000000     -> draw_sprite_rle
         pop     ebp                              ; 5d
         pop     esi                              ; 5e
         pop     edi                              ; 5f

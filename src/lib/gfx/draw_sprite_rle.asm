@@ -1,4 +1,4 @@
-; FUN_0004a734 @ 0x4a734  (356 bytes) -- hand-written assembly (fully commented).
+; draw_sprite_rle @ 0x4a734  (356 bytes) -- hand-written assembly (fully commented).
 ;
 ; draw_sprite_rle: draw a run-length-encoded, masked (transparent) sprite into the
 ; 320x200 frame at edi, with clipping. This is the routine that stamps characters,
@@ -22,7 +22,7 @@
 ; pitch is 0x140 (320). ebp holds the current row's start so each row can restart
 ; cleanly. Saves nothing itself; callers preserve what they need.
 
-FUN_0004a734:
+draw_sprite_rle:
         sar     ebx, 1              ; x  >>= 1
         sar     ecx, 1              ; y  >>= 1
         shr     dl, 1               ; width  >>= 1

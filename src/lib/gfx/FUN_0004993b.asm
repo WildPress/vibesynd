@@ -17,7 +17,7 @@ FUN_0004993b:
         push    0x1f400                          ; 6800f40100
         push    dword ptr [ebp + 0xc]            ; ff750c
         push    dword ptr [ebp + 8]              ; ff7508
-        call    0x4d199                          ; e83c380000     -> FUN_0004d199
+        call    0x4d199                          ; e83c380000     -> fill_bytes
         add     esp, 0xc                         ; 83c40c
         jmp     0x49976                          ; eb14
         test    byte ptr [0x105], 4              ; f6050501000004

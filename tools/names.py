@@ -143,6 +143,10 @@ LABELS = {
     # header/signature (printf/system/rewind/getstream headers; sprintf/dosret by usage).
     "0003ad66": "printf",     "0003af38": "system",    "0003b407": "rewind",
     "0003a4fa": "sprintf",    "0003c479": "dosret",    "0003b90d": "getstream",
+    # cont.29 -- hand-asm graphics blitters (fully commented in their .asm companions)
+    "00040236": "plot_point",     "0004d199": "fill_bytes",
+    "0004d0b4": "blit_block",     "0004a734": "draw_sprite_rle",
+    "0004a492": "vga_planar_present",
 }
 
 

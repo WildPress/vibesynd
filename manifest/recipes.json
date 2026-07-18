@@ -451,10 +451,6 @@
   "addr": "0003eda6",
   "flags": "-3s -oneatx -zp8 -s -zq"
  },
- "FUN_00040236": {
-  "addr": "00040236",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
  "FUN_000418ac": {
   "addr": "000418ac",
   "flags": "-3s -oneatx -zp8 -s -zq"
@@ -469,10 +465,6 @@
  },
  "FUN_0004cd19": {
   "addr": "0004cd19",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0004a492": {
-  "addr": "0004a492",
   "flags": "-3s -oneatx -zp8 -s -zq"
  },
  "FUN_0004d1db": {
@@ -511,20 +503,12 @@
   "addr": "0004a639",
   "flags": "-3s -oneatx -zp8 -s -zq"
  },
- "FUN_0004d199": {
-  "addr": "0004d199",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
  "FUN_0003dea0": {
   "addr": "0003dea0",
   "flags": "-3s -oneatx -zp8 -s -zq"
  },
  "FUN_0003e2bb": {
   "addr": "0003e2bb",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0004a734": {
-  "addr": "0004a734",
   "flags": "-3s -oneatx -zp8 -s -zq"
  },
  "FUN_0003e4f8": {
@@ -557,10 +541,6 @@
  },
  "FUN_0003e5b4": {
   "addr": "0003e5b4",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0004d0b4": {
-  "addr": "0004d0b4",
   "flags": "-3s -oneatx -zp8 -s -zq"
  },
  "FUN_0003f0f1": {
@@ -1566,6 +1546,26 @@
  },
  "getstream": {
   "addr": "0003b90d",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "plot_point": {
+  "addr": "00040236",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fill_bytes": {
+  "addr": "0004d199",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "blit_block": {
+  "addr": "0004d0b4",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_sprite_rle": {
+  "addr": "0004a734",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "vga_planar_present": {
+  "addr": "0004a492",
   "flags": "-3s -oneatx -zp8 -s -zq"
  }
 }

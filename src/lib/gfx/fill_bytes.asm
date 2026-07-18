@@ -1,4 +1,4 @@
-; FUN_0004d199 @ 0x4d199  (66 bytes) -- hand-written assembly (fully commented).
+; fill_bytes @ 0x4d199  (66 bytes) -- hand-written assembly (fully commented).
 ;
 ; fill_bytes: a size-optimised memset. Fill `count` bytes at `dst` with `value`.
 ; It picks the widest store the count allows, so most of the work goes four bytes
@@ -6,10 +6,10 @@
 ; rep stosw, otherwise -> rep stosb. (value is passed as a full dword, so its low
 ; byte/word is what lands in the narrower stores.)
 ;
-; Called for plain clears, e.g. FUN_0004d199(g_5594, 0, 0x1e9) zeroes a 0x1e9-byte
+; Called for plain clears, e.g. fill_bytes(g_5594, 0, 0x1e9) zeroes a 0x1e9-byte
 ; state block. Args (stack / cdecl): [ebp+8] dst, [ebp+0xc] value, [ebp+0x10] count.
 
-FUN_0004d199:
+fill_bytes:
         push    ebp
         mov     ebp, esp
         push    ecx

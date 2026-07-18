@@ -1,4 +1,4 @@
-; FUN_0004d0b4 @ 0x4d0b4  (229 bytes) -- hand-written assembly (fully commented).
+; blit_block @ 0x4d0b4  (229 bytes) -- hand-written assembly (fully commented).
 ;
 ; blit_block: copy a rectangular block of pixels from the back buffer to the
 ; screen buffer, across all four mode-X planes.
@@ -26,7 +26,7 @@
 ;           0x5368  g_screen_buf (dest)
 ;           0x105   render-mode flags
 
-FUN_0004d0b4:
+blit_block:
         push    ebp
         mov     ebp, esp
         push    eax

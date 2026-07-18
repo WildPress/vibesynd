@@ -26,28 +26,28 @@ FUN_0004997e:
         push    0x9600                           ; 6800960000
         push    dword ptr [ebp + 8]              ; ff7508
         push    0xa0000                          ; 6800000a00
-        call    0x4d199                          ; e8da370000     -> FUN_0004d199
+        call    0x4d199                          ; e8da370000     -> fill_bytes
         add     esp, 0xc                         ; 83c40c
         mov     ax, 0x202                        ; 66b80202
         out     dx, ax                           ; 66ef
         push    0x9600                           ; 6800960000
         push    dword ptr [ebp + 8]              ; ff7508
         push    0xa0000                          ; 6800000a00
-        call    0x4d199                          ; e8bf370000     -> FUN_0004d199
+        call    0x4d199                          ; e8bf370000     -> fill_bytes
         add     esp, 0xc                         ; 83c40c
         mov     ax, 0x402                        ; 66b80204
         out     dx, ax                           ; 66ef
         push    0x9600                           ; 6800960000
         push    dword ptr [ebp + 8]              ; ff7508
         push    0xa0000                          ; 6800000a00
-        call    0x4d199                          ; e8a4370000     -> FUN_0004d199
+        call    0x4d199                          ; e8a4370000     -> fill_bytes
         add     esp, 0xc                         ; 83c40c
         mov     ax, 0x802                        ; 66b80208
         out     dx, ax                           ; 66ef
         push    0x9600                           ; 6800960000
         push    dword ptr [ebp + 8]              ; ff7508
         push    0xa0000                          ; 6800000a00
-        call    0x4d199                          ; e889370000     -> FUN_0004d199
+        call    0x4d199                          ; e889370000     -> fill_bytes
         add     esp, 0xc                         ; 83c40c
         jmp     0x49a29                          ; eb14
         test    byte ptr [0x105], 4              ; f6050501000004

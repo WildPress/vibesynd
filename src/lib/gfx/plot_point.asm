@@ -1,4 +1,4 @@
-; FUN_00040236 @ 0x40236  (170 bytes) -- hand-written assembly (fully commented).
+; plot_point @ 0x40236  (170 bytes) -- hand-written assembly (fully commented).
 ;
 ; plot_point: draw one point into the active overlay buffer, with viewport clipping.
 ; Two target buffers are supported, chosen by the render-mode flag byte at 0x105:
@@ -23,10 +23,10 @@
 ;
 ; It saves and restores every register, including EAX/ECX/EDX, which a C compiler
 ; treats as scratch and never preserves. That save-everything shape is why this is
-; hand asm and not compiler output. The build uses FUN_00040236.c (the raw bytes as
+; hand asm and not compiler output. The build uses plot_point.c (the raw bytes as
 ; a db-transcription); this .asm is the readable companion. See docs/game-vs-library.md.
 
-FUN_00040236:
+plot_point:
         push    ebp
         mov     ebp, esp
         push    eax                 ; save the caller's registers whole (asm convention)

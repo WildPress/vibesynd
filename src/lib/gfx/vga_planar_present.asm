@@ -1,4 +1,4 @@
-; FUN_0004a492 @ 0x4a492  (226 bytes) -- hand-written assembly (fully commented).
+; vga_planar_present @ 0x4a492  (226 bytes) -- hand-written assembly (fully commented).
 ;
 ; vga_planar_present: copy the finished offscreen frame to VGA display memory in
 ; the "unchained" mode-X planar layout.
@@ -22,7 +22,7 @@
 ;           0x105   render-mode flags
 ; Ports:    0x3c4   VGA Sequencer address/data (Map Mask is index 2)
 
-FUN_0004a492:
+vga_planar_present:
         push    eax
         push    ebx
         push    ecx
