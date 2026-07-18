@@ -36,7 +36,7 @@
  *   3. g_map_cols column lookup: byte-structurally identical to target AFTER the
  *      `base += index` in-place lever (gives `add edi,eax` not `lea`), residual is
  *      a consistent EDI<->ECX register-role swap of the divisor/row/base triangle
- *      -- the exact FUN_0002d5b8 / FUN_00033e78 g_map_cols column register wall.
+ *      -- the exact FUN_0002d5b8 / map_tile_hit_dispatch g_map_cols column register wall.
  *   4. tile-class widen: target `xor edx,edx; mov dl,[eax]` vs ours `mov al;
  *      and eax,0xff` (uchar and-form vs xor-first; FUN_0002d5b8 wall).
  */

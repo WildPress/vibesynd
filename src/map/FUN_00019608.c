@@ -49,7 +49,7 @@
  *
  * Tail: FUN_0003f4b4 / FUN_0003f636 recentre the radar on the followed agent;
  * two passes over the blip buffer draw each blip (shadow then sprite) via the
- * matched FUN_00018d18; draw_circle draws the selected-agent pulse ring; and
+ * matched draw_filled_shape; draw_circle draws the selected-agent pulse ring; and
  * the phase-3 loop scans 8 objective slots (0x1be3a, stride 14) and draws the
  * first active one's animated marker (fixed-coord type 0x10, or node-tracking
  * types 1/2/3/5/0xf) via sum_of_squares_call (length) + draw_circle, returning.
@@ -76,7 +76,7 @@ extern unsigned char g_e397;       /* objective-marker colour phase          */
 extern void FUN_0003fb40(int x, int y, int w, int h, int colour); /* fill quad */
 extern void FUN_0003f4b4(int a, int b, int c, int d);   /* radar x recentre    */
 extern void FUN_0003f636(int a, int b, int c, int d);   /* radar y recentre    */
-extern void FUN_00018d18(int x, int y, int chr, int colour);      /* draw blip  */
+extern void draw_filled_shape(int x, int y, int chr, int colour);      /* draw blip  */
 extern void draw_circle(int x, int y, int r, int colour);        /* draw ring  */
 extern int  sum_of_squares_call(int a, int b);                 /* marker anim length  */
 extern void record_max(int a, int b);                 /* off-screen indicator*/
@@ -290,11 +290,11 @@ void FUN_00019608(unsigned char *agent, short zoom)
         for (i = 0; i < count; i++) {
             int chr = blip[i * 6 + 4] + 1;
             int arg = (g_e395 != 0) ? 0 : (blip[i * 6 + 5] + 8) & 0xf;
-            FUN_00018d18(*(short *)(blip + i * 6), *(short *)(blip + i * 6 + 2),
+            draw_filled_shape(*(short *)(blip + i * 6), *(short *)(blip + i * 6 + 2),
                          chr, arg);
         }
         for (i = 0; i < count; i++) {
-            FUN_00018d18(*(short *)(blip + i * 6), *(short *)(blip + i * 6 + 2),
+            draw_filled_shape(*(short *)(blip + i * 6), *(short *)(blip + i * 6 + 2),
                          blip[i * 6 + 4], blip[i * 6 + 5]);
         }
     }

@@ -15,7 +15,7 @@
 ;   0xbce2  g_timer_cur_period  period currently programmed into the PIT
 ;   0xbcee  reset marker, set to -1 when the rate changes
 ;   0xbc5a  g_timer_accum[17]   per-slot accumulators, zeroed on a rate change
-; Calls: FUN_00039495 (convert period -> PIT divisor and program channel 0).
+; Calls: program_pit_period_us (convert period -> PIT divisor and program channel 0).
 
 recompute_timer_period:
         push    esi
@@ -45,7 +45,7 @@ next_voice:
         mov     dword ptr [0xbcee], 0xffffffff ; mark the rate as reset
         mov     dword ptr [0xbce2], eax       ; remember the new current period
         push    eax
-        call    0x39495                      ; -> FUN_00039495: period -> divisor, program PIT ch0
+        call    0x39495                      ; -> program_pit_period_us: period -> divisor, program PIT ch0
         add     esp, 4
         mov     edi, 0xbc5a                  ; zero all 17 per-slot accumulators...
         mov     ecx, 0x11

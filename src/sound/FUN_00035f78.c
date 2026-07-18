@@ -22,7 +22,7 @@ extern void FUN_00039b05(int h);
 extern unsigned getDS(void);
 #pragma aux getDS = "db 0x8c" "db 0xda" value [edx] modify exact [edx];
 
-void FUN_00035f78(unsigned char idx)
+void play_sound_slot(unsigned char idx)
 {
     unsigned char *rec;
     if (g_10b4a == 0)

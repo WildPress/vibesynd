@@ -12,7 +12,7 @@
 extern unsigned char *g_rec8_table;
 extern unsigned char *g_rec5_table;
 extern int g_5314;
-extern void FUN_0004a63a(int x, int y, int sy, int w);
+extern void draw_sprite_buf(int x, int y, int sy, int w);
 
 void FUN_0001b858(unsigned short p1, int dx_base, int dy_base)
 {
@@ -22,7 +22,7 @@ void FUN_0001b858(unsigned short p1, int dx_base, int dy_base)
         unsigned base = (unsigned)g_5314;
         unsigned sy = (unsigned short)*(unsigned short *)r + base;
         if (sy > base) {
-            FUN_0004a63a((short)(*(unsigned short *)(r + 2) + dx_base),
+            draw_sprite_buf((short)(*(unsigned short *)(r + 2) + dx_base),
                          (short)(*(unsigned short *)(r + 4) + dy_base),
                          (int)sy,
                          *(unsigned short *)(r + 6));

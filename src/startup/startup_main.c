@@ -41,7 +41,7 @@ extern void noop_ret_b(void);
 extern void guarded_init_alloc(void);
 extern void main_game_loop(void);
 extern void timer_setup(void);
-extern void FUN_00025348(void);
+extern void install_int9_handler(void);
 extern void walk_records_2c(char *p);
 extern void FUN_00039188(void);
 extern void guarded_sound_call(void);
@@ -196,7 +196,7 @@ void startup_main(short argc, char **argv)
         timer_setup();
     }
 
-    FUN_00025348();
+    install_int9_handler();
     walk_records_2c(g_4d9c);
     FUN_00039188();
     guarded_sound_call();

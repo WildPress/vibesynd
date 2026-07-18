@@ -61,7 +61,7 @@ plot_point:
         shr     ax, cl              ; ax = set-mask   (0x80 >> (x & 7))
         mov     bx, ax
         not     bx                  ; bx = clear-mask (~set-mask)
-        call    FUN_000402e0        ; jmp [edx*4 + 0x32b9f]: apply the chosen op to [esi]
+        call    plot_op_dispatch        ; jmp [edx*4 + 0x32b9f]: apply the chosen op to [esi]
         jmp     done
 
 try_8bpp:

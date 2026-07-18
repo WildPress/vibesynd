@@ -3,7 +3,7 @@
 ; iso_scene_walk: the isometric scene/render walker. It visits the map cells around
 ; the current view centre, and for each cell that holds a visible object it dispatches
 ; a draw. This is not a pixel blitter. It decides *what* to draw and in what order,
-; then hands each object to the visibility-mask merge FUN_000418ac.
+; then hands each object to the visibility-mask merge merge_cell_mask.
 ;
 ; Registers in (a private, non-C convention -- another sign this is hand asm):
 ;   esi = base of the cell pointer-table. It is an array of object-record pointers,
@@ -28,10 +28,10 @@
 ;   0xe144  (reached inside the callees) the 16-slot visibility-mask accumulator.
 ;
 ; Callees:
-;   FUN_00046188  one-shot per-call setup. Zeroes the 16-slot mask accumulator at
+;   clear_occlusion_mask  one-shot per-call setup. Zeroes the 16-slot mask accumulator at
 ;                 0xe144. Guarded by [ebp-1] so it runs at most once, on the first
 ;                 object actually drawn this call.
-;   FUN_000418ac  the 16x-unrolled visibility-mask OR-merge. Given a mask block in ebx
+;   merge_cell_mask  the 16x-unrolled visibility-mask OR-merge. Given a mask block in ebx
 ;                 it folds that object's coverage into the accumulator.
 ;
 ; The per-cell test is the same each time:
@@ -85,10 +85,10 @@ iso_scene_walk:
         je      0x428ed                           ;   -> skip this cell
         cmp     byte ptr [ebp - 1], 0             ; has the one-shot setup run yet?
         jne     0x428d4                           ;   already done -> skip the setup call
-        call    0x46188                           ; first drawn object: -> FUN_00046188 (zero the mask accumulator)
+        call    0x46188                           ; first drawn object: -> clear_occlusion_mask (zero the mask accumulator)
         add     byte ptr [ebp - 1], 1             ; mark setup done (and "something drew")
         add     ebx, dword ptr [0x5360]           ; re-base the draw-data value to a pointer
-        call    0x418ac                           ; merge this object's mask -> FUN_000418ac
+        call    0x418ac                           ; merge this object's mask -> merge_cell_mask
         cmp     cx, 0                              ; merge signalled stop?
         jle     .walk_early_out                    ;   cx <= 0 -> stop early (AH=1)
 
@@ -113,10 +113,10 @@ iso_scene_walk:
         je      0x42953                           ;   -> skip to cell 03
         cmp     byte ptr [ebp - 1], 0             ; one-shot setup done?
         jne     0x4293a                           ;   -> skip setup call
-        call    0x46188                           ; -> FUN_00046188 (one-shot setup)
+        call    0x46188                           ; -> clear_occlusion_mask (one-shot setup)
         add     byte ptr [ebp - 1], 1             ; mark setup done
         add     ebx, dword ptr [0x5360]           ; re-base draw-data to a pointer
-        call    0x418ac                           ; -> FUN_000418ac (mask merge)
+        call    0x418ac                           ; -> merge_cell_mask (mask merge)
         cmp     cx, 0                              ; stop signal?
         jle     .walk_early_out                    ;   -> stop early
 
@@ -141,10 +141,10 @@ iso_scene_walk:
         je      0x429b9                           ;   -> skip to cell 04
         cmp     byte ptr [ebp - 1], 0             ; one-shot setup done?
         jne     0x429a0                           ;   -> skip setup call
-        call    0x46188                           ; -> FUN_00046188 (one-shot setup)
+        call    0x46188                           ; -> clear_occlusion_mask (one-shot setup)
         add     byte ptr [ebp - 1], 1             ; mark setup done
         add     ebx, dword ptr [0x5360]           ; re-base draw-data to a pointer
-        call    0x418ac                           ; -> FUN_000418ac (mask merge)
+        call    0x418ac                           ; -> merge_cell_mask (mask merge)
         cmp     cx, 0                              ; stop signal?
         jle     .walk_early_out                    ;   -> stop early
 
@@ -175,10 +175,10 @@ iso_scene_walk:
         je      0x42a1f
         cmp     byte ptr [ebp - 1], 0
         jne     0x42a06
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -203,10 +203,10 @@ iso_scene_walk:
         je      0x42a85
         cmp     byte ptr [ebp - 1], 0
         jne     0x42a6c
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -231,10 +231,10 @@ iso_scene_walk:
         je      0x42aeb
         cmp     byte ptr [ebp - 1], 0
         jne     0x42ad2
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -259,10 +259,10 @@ iso_scene_walk:
         je      0x42b50
         cmp     byte ptr [ebp - 1], 0
         jne     0x42b37
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -287,10 +287,10 @@ iso_scene_walk:
         je      0x42bb6
         cmp     byte ptr [ebp - 1], 0
         jne     0x42b9d
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -315,10 +315,10 @@ iso_scene_walk:
         je      0x42c1c
         cmp     byte ptr [ebp - 1], 0
         jne     0x42c03
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -343,10 +343,10 @@ iso_scene_walk:
         je      0x42c82
         cmp     byte ptr [ebp - 1], 0
         jne     0x42c69
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -371,10 +371,10 @@ iso_scene_walk:
         je      0x42ce8
         cmp     byte ptr [ebp - 1], 0
         jne     0x42ccf
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -399,10 +399,10 @@ iso_scene_walk:
         je      0x42d4e
         cmp     byte ptr [ebp - 1], 0
         jne     0x42d35
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -427,10 +427,10 @@ iso_scene_walk:
         je      0x42db3
         cmp     byte ptr [ebp - 1], 0
         jne     0x42d9a
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -455,10 +455,10 @@ iso_scene_walk:
         je      0x42e19
         cmp     byte ptr [ebp - 1], 0
         jne     0x42e00
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -483,10 +483,10 @@ iso_scene_walk:
         je      0x42e7f
         cmp     byte ptr [ebp - 1], 0
         jne     0x42e66
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -511,10 +511,10 @@ iso_scene_walk:
         je      0x42ee5
         cmp     byte ptr [ebp - 1], 0
         jne     0x42ecc
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -539,10 +539,10 @@ iso_scene_walk:
         je      0x42f4b
         cmp     byte ptr [ebp - 1], 0
         jne     0x42f32
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -567,10 +567,10 @@ iso_scene_walk:
         je      0x42fb1
         cmp     byte ptr [ebp - 1], 0
         jne     0x42f98
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -595,10 +595,10 @@ iso_scene_walk:
         je      0x43016
         cmp     byte ptr [ebp - 1], 0
         jne     0x42ffd
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -623,10 +623,10 @@ iso_scene_walk:
         je      0x4307c
         cmp     byte ptr [ebp - 1], 0
         jne     0x43063
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -651,10 +651,10 @@ iso_scene_walk:
         je      0x430e2
         cmp     byte ptr [ebp - 1], 0
         jne     0x430c9
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -679,10 +679,10 @@ iso_scene_walk:
         je      0x43148
         cmp     byte ptr [ebp - 1], 0
         jne     0x4312f
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -707,10 +707,10 @@ iso_scene_walk:
         je      0x431ae
         cmp     byte ptr [ebp - 1], 0
         jne     0x43195
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -735,10 +735,10 @@ iso_scene_walk:
         je      0x43214
         cmp     byte ptr [ebp - 1], 0
         jne     0x431fb
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -763,10 +763,10 @@ iso_scene_walk:
         je      0x43279
         cmp     byte ptr [ebp - 1], 0
         jne     0x43260
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -791,10 +791,10 @@ iso_scene_walk:
         je      0x432df
         cmp     byte ptr [ebp - 1], 0
         jne     0x432c6
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -819,10 +819,10 @@ iso_scene_walk:
         je      0x4333f
         cmp     byte ptr [ebp - 1], 0
         jne     0x43326
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -847,10 +847,10 @@ iso_scene_walk:
         je      0x433a5
         cmp     byte ptr [ebp - 1], 0
         jne     0x4338c
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -875,10 +875,10 @@ iso_scene_walk:
         je      0x43405
         cmp     byte ptr [ebp - 1], 0
         jne     0x433ec
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -903,10 +903,10 @@ iso_scene_walk:
         je      0x43464
         cmp     byte ptr [ebp - 1], 0
         jne     0x4344b
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -931,10 +931,10 @@ iso_scene_walk:
         je      0x434c3
         cmp     byte ptr [ebp - 1], 0
         jne     0x434aa
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -959,10 +959,10 @@ iso_scene_walk:
         je      0x43522
         cmp     byte ptr [ebp - 1], 0
         jne     0x43509
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -987,10 +987,10 @@ iso_scene_walk:
         je      0x43588
         cmp     byte ptr [ebp - 1], 0
         jne     0x4356f
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -1015,10 +1015,10 @@ iso_scene_walk:
         je      0x435e6
         cmp     byte ptr [ebp - 1], 0
         jne     0x435cd
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -1043,10 +1043,10 @@ iso_scene_walk:
         je      0x43647
         cmp     byte ptr [ebp - 1], 0
         jne     0x43632
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 
@@ -1071,10 +1071,10 @@ iso_scene_walk:
         je      .walk_done
         cmp     byte ptr [ebp - 1], 0
         jne     0x4368f
-        call    0x46188                           ; -> FUN_00046188
+        call    0x46188                           ; -> clear_occlusion_mask
         add     byte ptr [ebp - 1], 1
         add     ebx, dword ptr [0x5360]
-        call    0x418ac                           ; -> FUN_000418ac
+        call    0x418ac                           ; -> merge_cell_mask
         cmp     cx, 0
         jle     .walk_early_out
 

@@ -22,10 +22,10 @@
 extern int alloc_init_with_errcode(int name, int flag);
 extern int container_load(int buf, int kind, int flag);
 extern void FUN_0003ab59(void *buf);
-extern int FUN_000398d7(int res);
-extern unsigned char *FUN_00039994(int handle);
+extern int register_driver(int res);
+extern unsigned char *voice_get_driver_obj(int handle);
 extern int FUN_000399b3(int handle, int c, int a, int b, int d);
-extern void FUN_000399bd(int handle, int c, int a, int b, int d);
+extern void start_voice(int handle, int c, int a, int b, int d);
 extern int FUN_00039b55(int handle);
 extern int FUN_00039b5f(int handle, int image, unsigned seq, void *state, int ctl);
 extern unsigned short FUN_00039b73(int handle);
@@ -69,10 +69,10 @@ int xmidi_music_init(int a1, int a2, unsigned short a, unsigned short b, unsigne
     if (res == 0)
         return 0;
     FUN_0003ab59((void *)drv);
-    g_seq_ctx = FUN_000398d7(res);
+    g_seq_ctx = register_driver(res);
     if (g_seq_ctx == -1)
         return 0;
-    hdr = FUN_00039994(g_seq_ctx);
+    hdr = voice_get_driver_obj(g_seq_ctx);
     if (*(int *)(hdr + 4) != 3)
         return 0;
     if (a == 0)
@@ -83,7 +83,7 @@ int xmidi_music_init(int a1, int a2, unsigned short a, unsigned short b, unsigne
         c = *(unsigned short *)(hdr + 0x10);
     if (FUN_000399b3(g_seq_ctx, c, a, bb, *(int *)(hdr + 0x1c)) == 0)
         return 0;
-    FUN_000399bd(g_seq_ctx, c, a, bb, *(int *)(hdr + 0x1c));
+    start_voice(g_seq_ctx, c, a, bb, *(int *)(hdr + 0x1c));
     size = FUN_00039b55(g_seq_ctx);
     mem = alloc_init_with_errcode(a1, 0);
     if (mem == 0)

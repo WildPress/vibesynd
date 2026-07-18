@@ -6,7 +6,7 @@
 ; previous draw left in place, so ordinary CPU byte writes behave normally again.
 ;
 ; The same two GC writes appear inline at the head of the fill/present routines in
-; this cluster (e.g. clear_vga_screen, FUN_0004a5a8); this is the standalone version.
+; this cluster (e.g. clear_vga_screen, present_frame_planar); this is the standalone version.
 ;
 ; No args. Preserves ax and dx. Ports: 0x3ce VGA GC index, 0x3cf GC data
 ; (accessed here as a 16-bit OUT: AL=index, AH=data).

@@ -44,7 +44,7 @@ extern void sprintf(char *buf, char *fmt, ...);
 extern void load_unpack_file(char *, int);
 extern void clear_offscreen(int, int);
 extern void upload_palette(int);
-extern void FUN_00022768(void);
+extern void find_free_pool_slots(void);
 extern void zero_even_bytes(void);
 
 void mission_map_init(void)
@@ -71,7 +71,7 @@ void mission_map_init(void)
     g_10b3f = 0;
     g_10b3e = 0;
     g_10b50 = 0;
-    FUN_00022768();
+    find_free_pool_slots();
     zero_even_bytes();
     g_1bc77 = 0x10;
     g_1bc76 = 0x14;

@@ -17,7 +17,7 @@ extern unsigned char g_entity_pool[];
 extern unsigned char g_pool_a[];
 extern unsigned char g_10af4, g_10af5, g_10af6, g_10af7, g_10af8, g_10afa;
 
-void FUN_0002ed28(unsigned char *p1)
+void record_kill_stats(unsigned char *p1)
 {
     unsigned cat;
     unsigned char *rec, *lo, *hi;

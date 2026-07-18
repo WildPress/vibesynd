@@ -33,7 +33,7 @@
  * DRAW PRIMITIVES (all in the hand-asm graphics region, args below in C order):
  *   FUN_0003feb3(x, y, w, h, color)   -- filled rectangle / bar segment.
  *   FUN_0003f575(y0, y1, x, color)    -- clipped vertical line (bar end cap).
- *   FUN_0001b908(entity, idx, x, y)   -- draw the agent's weapon/inventory icon.
+ *   draw_slot_record_chain(entity, idx, x, y)   -- draw the agent's weapon/inventory icon.
  *   store_4_globals(a, b, c, d)          -- store the 4 clip-rect globals.
  *
  * The three IPA channels are byte-identical in the binary apart from their entity
@@ -63,7 +63,7 @@ extern unsigned char  g_frame_enable[];     /* per-frame enable flags */
 extern void store_4_globals(int a, int b, int c, int d);
 extern void FUN_0003feb3(int x, int y, int w, int h, int color);
 extern void FUN_0003f575(int y0, int y1, int x, int color);
-extern void FUN_0001b908(int p, unsigned short idx, int x, int y);
+extern void draw_slot_record_chain(int p, unsigned short idx, int x, int y);
 
 #define HUD_X(i) (*(unsigned short *)(g_hud_panel + (i) * 0x12))
 #define HUD_Y(i) (*(unsigned short *)(g_hud_panel + (i) * 0x12 + 2))
@@ -145,7 +145,7 @@ void agent_hud_render(void)
         }
 
     draw_icon:
-        FUN_0001b908((int)p, *(unsigned short *)(p + 0x10),
+        draw_slot_record_chain((int)p, *(unsigned short *)(p + 0x10),
                      HUD_X(i) + 0x20, HUD_Y(i) + 0x26);
     }
 

@@ -24,7 +24,7 @@ extern short g_dir_dy[];
 extern int sum_of_squares_call(int a, int b);
 extern unsigned char vec_to_angle(int dx, int dy);
 extern int passability_4corner(int x, int y, int z);
-extern unsigned char *FUN_00011d68(unsigned char *p, int x, int y, int z,
+extern unsigned char *find_blocking_entity(unsigned char *p, int x, int y, int z,
                                    int rx, int ry, int rz);
 
 unsigned char *los_trace(unsigned char *p1, unsigned char *p2, int dist)
@@ -66,7 +66,7 @@ unsigned char *los_trace(unsigned char *p1, unsigned char *p2, int dist)
     for (; (short)i < (short)dist; i++) {
         if ((short)passability_4corner(x, y, (short)(z + 0x80)) != 0)
             return 0;
-        q = FUN_00011d68(p1, x, y, z, 0x80, 0x80, 0x100);
+        q = find_blocking_entity(p1, x, y, z, 0x80, 0x80, 0x100);
         if (q != 0) {
             if (*(q + 0x18) != 1)
                 return 0;

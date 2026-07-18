@@ -40,7 +40,7 @@ extern unsigned char g_1beb2[];
 extern unsigned char g_c358[];
 extern unsigned short g_item_max_qty[];
 extern unsigned short g_a6c2[];
-extern void FUN_00023158(unsigned int);
+extern void run_mission_command(unsigned int);
 extern unsigned short lcg_rand(int);
 extern unsigned char *pool_list_dispatch(unsigned char *, unsigned char *, int);
 extern char forward_if_flag(unsigned short *, unsigned char *, unsigned char *, unsigned char);
@@ -54,7 +54,7 @@ extern unsigned char *walk_15byte_chain(unsigned char *);
 extern char FUN_000141f8(unsigned char *, unsigned char *, unsigned char,
                          unsigned char, unsigned short *);
 extern void FUN_00014828(unsigned char *);
-extern void FUN_000149e8(unsigned char *, unsigned char *);
+extern void apply_command_effect(unsigned char *, unsigned char *);
 
 void entity_state_dispatch(unsigned char *param_1, unsigned char param_2, unsigned char param_3,
                   unsigned short *param_4, char param_5)
@@ -76,7 +76,7 @@ void entity_state_dispatch(unsigned char *param_1, unsigned char param_2, unsign
     *(short *)(cur + 0x14) = (short)((int)(unsigned short)g_item_max_qty[cur[0x19]] / 4);
     *param_4 = (unsigned short)param_2;
     *((unsigned char *)param_4 + 0xd) = 6;
-    FUN_00023158((unsigned short)param_3);
+    run_mission_command((unsigned short)param_3);
 
     hnd = *(unsigned char **)(param_1 + 0xc);
     if (hnd[0xc] & 0x40) {
@@ -88,7 +88,7 @@ void entity_state_dispatch(unsigned char *param_1, unsigned char param_2, unsign
         } else {
             unsigned char old = param_1[3];
             *((unsigned char *)param_4 + 0xd) = 0x18;
-            FUN_00023158((unsigned short)param_3);
+            run_mission_command((unsigned short)param_3);
             param_1[2] = 1;
             *(unsigned short *)(param_1 + 0xa) =
                 *(unsigned short *)(*(unsigned char **)(param_1 + 0xc) + 0x16);
@@ -132,7 +132,7 @@ dispatch:
             if (rec[7] == 4)
                 FUN_00014828(param_1);
             else
-                FUN_000149e8(param_1, rec);
+                apply_command_effect(param_1, rec);
             FUN_00013c98(param_4, rec, param_3, param_2, param_1, cur);
             goto tail;
         }
@@ -146,7 +146,7 @@ dispatch:
         goto tail;
     case 4:
         *((unsigned char *)param_4 + 0xd) = 0x10;
-        FUN_00023158((unsigned short)param_3);
+        run_mission_command((unsigned short)param_3);
         goto tail;
     case 6:
         if (forward_if_flag(param_4, tnode, param_1, param_3)) {
@@ -197,10 +197,10 @@ dispatch:
                 *param_4 = 0xff;
                 param_4[1] = 0x7f;
                 param_4[2] = 0x7f;
-                FUN_00023158((unsigned short)param_3);
+                run_mission_command((unsigned short)param_3);
                 *((unsigned char *)param_4 + 0xd) = 4;
                 *param_4 = *(unsigned short *)(param_1 + 0xa);
-                FUN_00023158((unsigned short)param_3);
+                run_mission_command((unsigned short)param_3);
             }
         } else {
             reset_flash_palette(param_1, param_4, param_3);
@@ -213,7 +213,7 @@ dispatch:
     case 11:
         if ((*(unsigned char **)(param_1 + 0xc))[0x19] != 0) {
             *((unsigned char *)param_4 + 0xd) = 0x18;
-            FUN_00023158((unsigned short)param_3);
+            run_mission_command((unsigned short)param_3);
             param_1[0] = 0xff;
             param_1[2] = 0;
             param_1[5] = 0;

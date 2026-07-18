@@ -14,12 +14,12 @@
 ; Returns:
 ;   whatever the handler returns, or eax = 0 if the voice has no handler for this command.
 ;
-; Globals: none directly; the lookup walks g_voice_driver[] via FUN_00039280.
+; Globals: none directly; the lookup walks g_voice_driver[] via driver_msg_lookup.
 
 sound_dispatch_trampoline:
         mov     ebx, esp                     ; point at the incoming stack
         mov     ebx, dword ptr [ebx + 4]     ; ebx = first arg = voice index
-        call    0x39280                      ; -> FUN_00039280: resolve handler for (voice ebx, command eax)
+        call    0x39280                      ; -> driver_msg_lookup: resolve handler for (voice ebx, command eax)
         cmp     eax, 0                        ; handler found?
         je      not_found                    ;   no -> return 0
         jmp     eax                          ; tail-jump into handler (keeps caller's args/stack)

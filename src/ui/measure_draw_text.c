@@ -4,7 +4,7 @@
  * (nested-call arg overlap). Stack-calling (-4s). */
 extern unsigned short text_width_kern(char *s, unsigned char *tbl, unsigned short base,
                                    signed char adj, int a5);
-extern void FUN_00036698(char *s, unsigned short x, int a3, int a4, unsigned short a5,
+extern void draw_ui_text(char *s, unsigned short x, int a3, int a4, unsigned short a5,
                          unsigned char *tbl, signed char a7, unsigned char a8, int a9,
                          int a10);
 extern unsigned char *g_text_pal;
@@ -12,7 +12,7 @@ extern unsigned char *g_text_pal;
 void measure_draw_text(char *a, unsigned short b, unsigned short c, unsigned short d,
                   unsigned short e, signed char f, unsigned char g)
 {
-    FUN_00036698(a,
+    draw_ui_text(a,
                  (unsigned short)(b + (d - text_width_kern(a, g_text_pal, e, f, g)) / 2),
                  (unsigned short)(c + 8), 0xa, e, g_text_pal, f, g, 0, 0);
 }

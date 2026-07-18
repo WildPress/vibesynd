@@ -21,11 +21,11 @@ extern int alloc_init_with_errcode(int size, int flag);
 extern int container_load(int buf, int kind, int flag);
 extern void FUN_0003ab59(int buf);
 extern void init_voice_tables(void);
-extern int FUN_000398d7(int res);
-extern void FUN_000395b6(int arg);
-extern int FUN_00039994(int handle);
+extern int register_driver(int res);
+extern void unload_all_drivers(int arg);
+extern int voice_get_driver_obj(int handle);
 extern int FUN_000399b3(int handle, int c, int a, int b, int d);
-extern void FUN_000399bd(int handle, int c, int a, int b, int d);
+extern void start_voice(int handle, int c, int a, int b, int d);
 extern int g_11df0;
 extern int g_11df4;
 extern int g_snd_driver;
@@ -42,14 +42,14 @@ int sound_driver_init(unsigned short a, unsigned short b, unsigned short c)
         return 0;
     FUN_0003ab59(g_11df0);
     init_voice_tables();
-    g_snd_driver = FUN_000398d7(g_11df4);
+    g_snd_driver = register_driver(g_11df4);
     if (g_snd_driver == -1) {
-        FUN_000395b6(0);
+        unload_all_drivers(0);
         return 0;
     }
-    g_11dfc = (unsigned char __far *)FUN_00039994(g_snd_driver);
+    g_11dfc = (unsigned char __far *)voice_get_driver_obj(g_snd_driver);
     if (*(int __far *)(g_11dfc + 4) != 2) {
-        FUN_000395b6(0);
+        unload_all_drivers(0);
         return 0;
     }
     if (a == 0)
@@ -60,9 +60,9 @@ int sound_driver_init(unsigned short a, unsigned short b, unsigned short c)
         c = *(unsigned short __far *)(g_11dfc + 0x10);
     if (FUN_000399b3(g_snd_driver, c, a, bb,
                      *(int __far *)(g_11dfc + 0x1c)) == 0) {
-        FUN_000395b6(0);
+        unload_all_drivers(0);
         return 0;
     }
-    FUN_000399bd(g_snd_driver, c, a, bb, *(int __far *)(g_11dfc + 0x1c));
+    start_voice(g_snd_driver, c, a, bb, *(int __far *)(g_11dfc + 0x1c));
     return 1;
 }

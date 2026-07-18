@@ -7,7 +7,7 @@
  */
 extern unsigned char g_entity_pool[];
 extern unsigned short g_a6c2[];
-extern void FUN_00023158(int a);
+extern void run_mission_command(int a);
 extern int los_trace_far(unsigned char *a, unsigned char *b, int c);
 
 void net_sync_build(unsigned char *s, unsigned char *m, unsigned char idx,
@@ -16,7 +16,7 @@ void net_sync_build(unsigned char *s, unsigned char *m, unsigned char idx,
     if (s[5] == 0) {
         m[0xd] = 4;
         *(short *)m = (short)(*(unsigned char **)(s + 0x10) - g_entity_pool);
-        FUN_00023158((unsigned short)idx);
+        run_mission_command((unsigned short)idx);
         s[5] = 1;
         return;
     }
@@ -25,20 +25,20 @@ void net_sync_build(unsigned char *s, unsigned char *m, unsigned char idx,
         unsigned short i = idx;
 
         m[0xd] = 0x18;
-        FUN_00023158(i);
+        run_mission_command(i);
         m[0xd] = 7;
         *(short *)m = *(short *)(*(unsigned char **)(s + 0xc) + 0x3a);
-        FUN_00023158(i);
+        run_mission_command(i);
         m[0xd] = 0x14;
         *(short *)m = 0x7f;
         *(short *)(m + 2) = 0x7f;
         *(short *)(m + 4) = 0xff;
-        FUN_00023158(i);
+        run_mission_command(i);
         m[0xd] = 8;
         *(short *)m = *(short *)(*(unsigned char **)(s + 0x10) + 4);
         *(short *)(m + 2) = *(short *)(*(unsigned char **)(s + 0x10) + 6);
         *(short *)(m + 4) = *(short *)(*(unsigned char **)(s + 0x10) + 8) + 0x80;
-        FUN_00023158(i);
+        run_mission_command(i);
     } else {
         if (*(*(unsigned char **)(s + 0xc) + 0x19) == 0)
             s[5] = 0;

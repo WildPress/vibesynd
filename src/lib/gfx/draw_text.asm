@@ -14,8 +14,8 @@
 ;
 ; For each character the pen x is read, the glyph descriptor fetched, x advanced by
 ; (width + 1) for the inter-character gap, and the glyph drawn: glyphs wider than 8
-; pixels go through the wide dispatcher (FUN_0004cc4d), narrower ones through the
-; narrow dispatcher (FUN_0004cd19), which in turn select the per-mode renderer. The
+; pixels go through the wide dispatcher (glyph_dispatch_wide), narrower ones through the
+; narrow dispatcher (glyph_dispatch_narrow), which in turn select the per-mode renderer. The
 ; colour ([ebp+0x18]) is passed through in dx. A 0x0d resets x to the line start
 ; (saved at [ebp-2]) and advances y by the line height (0xc planar / 6 half-res). In
 ; the half-resolution mode (render bit 1 clear) the incoming x and y are halved first.
@@ -77,11 +77,11 @@ next_char:                                       ;            <- (0x4cbad) main 
         cmp     dx, 0                             ; 6683fa00
         je      draw_narrow                      ; 740b       -- width < 8 -> narrow renderer
         mov     dx, word ptr [ebp + 0x18]        ; 668b5518   -- dx = colour
-        call    0x4cc4d                          ; e841000000  -- FUN_0004cc4d: draw wide glyph
+        call    0x4cc4d                          ; e841000000  -- glyph_dispatch_wide: draw wide glyph
         jmp     cont                             ; eb09
 draw_narrow:                                     ;            <- (0x4cc0e)
         mov     dx, word ptr [ebp + 0x18]        ; 668b5518   -- dx = colour
-        call    0x4cd19                          ; e802010000  -- FUN_0004cd19: draw narrow glyph
+        call    0x4cd19                          ; e802010000  -- glyph_dispatch_narrow: draw narrow glyph
 cont:                                            ;            <- (0x4cc17)
         jmp     next_char                        ; eb94       -- next character
 newline:                                         ;            <- (0x4cc19)

@@ -24,9 +24,9 @@ extern int g_defc;
 extern void FUN_00017a70(void);
 extern void FUN_00017a90(void);
 
-extern int  FUN_00039625(void *p);
+extern int  alloc_seq_slot(void *p);
 extern void timer_rate_critsec(int a, int b);
-extern void FUN_00039747(int a);
+extern void start_seq(int a);
 
 extern void __far *d_getvec(unsigned n);
 extern void outp(int a, int b);
@@ -37,10 +37,10 @@ extern void __far *g_df08;   /* off @0xdf08, seg @0xdf0c */
 void guarded_init_alloc(void)
 {
     if (g_sound_enabled != 0 || g_music_enabled != 0) {
-        g_defc = FUN_00039625((void *)FUN_00017a70);
+        g_defc = alloc_seq_slot((void *)FUN_00017a70);
         if (g_defc != -1) {
             timer_rate_critsec(g_defc, 0x48);
-            FUN_00039747(g_defc);
+            start_seq(g_defc);
             return;
         }
     } else {

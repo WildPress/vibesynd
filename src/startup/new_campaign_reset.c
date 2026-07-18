@@ -6,7 +6,7 @@
  *
  * PARKED (decode-only). This lives in the WALLED 0x417-template region: the
  * per-player template row (g_player_recs + p*0x417) and the 0x105d4 command record are
- * the same records the parked siblings FUN_00023158 / FUN_000223c8 /
+ * the same records the parked siblings run_mission_command / FUN_000223c8 /
  * build_equip_row consume, and they carry the same register-role tie-break wall
  * (the p*0x417 / si*0x1eb / di*0x1f5 imul-by-constant stride is re-materialised
  * per store from the memory-homed 16-bit counter, and the encoder's

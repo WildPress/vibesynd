@@ -47,7 +47,7 @@ extern unsigned char g_3ee8;
 extern unsigned char g_5594;
 extern unsigned char g_syndicate_money[];
 extern unsigned char commit_funding(void);
-extern void FUN_00016318(unsigned char i);
+extern void research_funding_tick(unsigned char i);
 extern unsigned int syndicate_timer_pct(unsigned char i);
 extern void player_target_sweep(void);
 extern unsigned short lcg_rand(unsigned short n);
@@ -106,7 +106,7 @@ char economy_daily_tick(unsigned int param_1)
                     *(unsigned short *)(g_player_budget + idx + 4) = 1;
                 }
                 for (i = 0; i < 0x32; i++) {
-                    FUN_00016318(i);
+                    research_funding_tick(i);
                     *(int *)(g_player_recs + g_cur_player * 0x417) += syndicate_timer_pct(i);
                     *(int *)(g_syndicate_money + i * 10) += 0x1f4 - (lcg_rand(0x3e8) & 0xffff);
                 }

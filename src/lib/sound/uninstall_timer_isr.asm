@@ -3,7 +3,7 @@
 ; uninstall_timer_isr: uninstall the sound timer ISR -- restore the original INT 8 (IRQ0
 ; timer) handler that install_timer_isr saved away. This is the teardown counterpart
 ; to install_timer_isr, called when the last active sequence is released (see
-; FUN_000396d5). It runs inside a cli critical section and restores the caller's
+; free_seq_slot). It runs inside a cli critical section and restores the caller's
 ; interrupt-enable state on the way out.
 ;
 ; No args, no return value.

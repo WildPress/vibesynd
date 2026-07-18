@@ -7,7 +7,7 @@
 ;
 ; The font pixel data lives at [0x10abc]; [ebp+0x14] selects a font page 0x2800 bytes
 ; apart. Each glyph occupies a 64-byte cell reached as (char - 0x20) * 64, so codes
-; below space are not drawable. The glyph itself is stamped by FUN_0004ce87.
+; below space are not drawable. The glyph itself is stamped by glyph_stamp_fixed.
 ;
 ; Screen addressing uses the planar layout (row pitch 0x50, plane 0 at g_screen_buf).
 ; The pen is kept byte-aligned: each character advances the cursor by one byte (8
@@ -23,7 +23,7 @@
 ; Globals: 0x10abc font pixel data base, 0x5368 g_screen_buf, 0x105 render-mode flags.
 ; The build uses draw_text_fixed.c (db-transcription); this is the readable companion.
 ;
-; Note: the glyph blit FUN_0004ce87 writes 12 rows, while a newline here advances the
+; Note: the glyph blit glyph_stamp_fixed writes 12 rows, while a newline here advances the
 ; line start by only 0x280 (8 planar rows); the exact intended line spacing is not
 ; fully pinned down by this routine alone.
 ;
@@ -65,7 +65,7 @@ next_char:                                       ;            <- (0x4ce30) main 
         shl     edx, 6                           ; c1e206     -- * 64 (bytes per glyph cell)
         add     edx, dword ptr [ebp - 0x10]      ; 0355f0     -- + glyph base -> glyph pixels
         mov     edi, dword ptr [ebp - 8]         ; 8b7df8     -- edi = cursor screen address
-        call    0x4ce87                          ; e838000000  -- FUN_0004ce87: stamp the glyph (4 planes)
+        call    0x4ce87                          ; e838000000  -- glyph_stamp_fixed: stamp the glyph (4 planes)
         inc     dword ptr [ebp - 8]              ; ff45f8     -- cursor += 1 byte (8 pixels)
 advance:                                         ;            <- (0x4ce52)
         dec     word ptr [ebp + 0x18]            ; 66ff4d18   -- one fewer of the max character count

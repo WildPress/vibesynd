@@ -10,7 +10,7 @@
 ; Args (cdecl):
 ;   [ebp+8]   = skippable flag (nonzero -> a keypress may abort playback)
 ;   [ebp+0xc] = mode flag; stored in 0xbdf4 and consulted by the palette step
-;   [ebp+0x10]= per-frame callback context, passed to FUN_000391a8 every frame
+;   [ebp+0x10]= per-frame callback context, passed to run_seq_commands every frame
 ;
 ; Key globals:
 ;   0xbdf2  keep-playing / replay counter (word; 0 = stop)
@@ -25,7 +25,7 @@
 ;   0x5368  g_screen_buf     decoded frame, blitted to VGA 0xa0000 (320x200 = 0x3e80 dwords)
 ;   0x10b3f abort-allowed flag  [inferred]
 ; Calls: FUN_0003a598 (open file), FUN_0003a7c4 (read bytes), flic_parse_header (parse FLC
-;   header), FUN_000391a8 (per-frame callback), flic_decode_frame (decode frame), flic_load_palette
+;   header), run_seq_commands (per-frame callback), flic_decode_frame (decode frame), flic_load_palette
 ;   (apply palette), FUN_0003a19a (post-frame present/pace hook), FUN_0003a89d (close file).
 ; BIOS/DOS: INT 21h AH=2Ch (get time), INT 10h AH=12h BL=36h (video refresh enable).
 
@@ -88,7 +88,7 @@ chk_frame:
         add     ax, 1
         mov     word ptr [0xbde4], ax
         push    dword ptr [ebp + 0x10]       ; per-frame callback context
-        call    0x391a8                      ; -> FUN_000391a8: per-frame callback
+        call    0x391a8                      ; -> run_seq_commands: per-frame callback
         add     esp, 4
         call    0x39e42                      ; -> flic_decode_frame: decode this frame's sub-chunks
         cmp     dword ptr [0xbdf8], 0        ; should we present the frame?

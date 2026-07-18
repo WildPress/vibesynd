@@ -9,7 +9,7 @@
 ;
 ; Args:     [esp+4] = voice index (0..15).
 ; Globals:  0xbd7a  g_voice_active[16]  per-voice active flag (xchg'd to 0 here)
-;           0xbd3a  g_voice_handle[16]  per-voice handle (-1 = none), released via FUN_000396d5
+;           0xbd3a  g_voice_handle[16]  per-voice handle (-1 = none), released via free_seq_slot
 ; Tail-call: sound_dispatch_trampoline with command 0x68 (stop) if the voice was active.
 
 stop_voice:
@@ -27,7 +27,7 @@ stop_voice:
         cmp     edx, -1                      ; a live handle?
         je      stop_driver                  ;   no handle -> skip release
         push    edx
-        call    0x396d5                      ; -> FUN_000396d5: release/free the voice handle
+        call    0x396d5                      ; -> free_seq_slot: release/free the voice handle
         add     esp, 4
 stop_driver:
         mov     eax, 0x68                    ; command 0x68 = stop

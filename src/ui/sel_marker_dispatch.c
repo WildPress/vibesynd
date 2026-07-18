@@ -11,7 +11,7 @@
  * g_marker_phase_a/g_marker_phase_b are cyclic phase counters (0..0x18 / 0..0xf).  The four inline
  * neighbour expressions (g_map_cursor_x+-1, g_map_cursor_y+-1) are each reused across two corner
  * cases -> Watcom CSE-hoists them into the switch preamble (ecx=y+1/esi=x+1/edx=x-1/
- * ebx=y-1, AFTER the dec/cmp/ja range check).  NE/N/E share one FUN_00045e61 call
+ * ebx=y-1, AFTER the dec/cmp/ja range check).  NE/N/E share one iso_block_dispatch call
  * tail (identical args) via -oneatx cross-jump; SW joins only the final push+call.
  * Cousin: src/clamp_point_box.c.
  *
@@ -30,8 +30,8 @@
 extern unsigned short g_map_cursor_x, g_map_cursor_y;
 extern short g_1be32, g_1be34, g_1be36, g_1be38;
 extern int g_marker_phase_a, g_marker_phase_b;
-extern int FUN_00045f8a();
-extern int FUN_00045e61();
+extern int iso_block_dispatch2();
+extern int iso_block_dispatch();
 extern void fill_minimap_grid(void);
 
 void sel_marker_dispatch(short sel)
@@ -45,7 +45,7 @@ void sel_marker_dispatch(short sel)
         g_map_cursor_x = g_map_cursor_x + 1; g_map_cursor_y = g_map_cursor_y + 1;
         if (g_marker_phase_a == 0x18) { g_marker_phase_a = 0; kA = 0x18; }
         else { g_marker_phase_a = g_marker_phase_a + 1; kA = g_marker_phase_a - 1; }
-        FUN_00045f8a((short)(g_map_cursor_x + 0x18), (short)(g_map_cursor_y + 0x18), 0x10, g_marker_phase_b, kA);
+        iso_block_dispatch2((short)(g_map_cursor_x + 0x18), (short)(g_map_cursor_y + 0x18), 0x10, g_marker_phase_b, kA);
         fill_minimap_grid();
         return;
     case 4: /* NW */
@@ -53,7 +53,7 @@ void sel_marker_dispatch(short sel)
         if ((short)g_map_cursor_y <= g_1be34) goto edge_W;
         g_map_cursor_x = g_map_cursor_x - 1; g_map_cursor_y = g_map_cursor_y - 1;
         if (g_marker_phase_a == 0) g_marker_phase_a = 0x18; else g_marker_phase_a = g_marker_phase_a - 1;
-        FUN_00045f8a((short)g_map_cursor_x, (short)g_map_cursor_y, 0x10, g_marker_phase_b, g_marker_phase_a);
+        iso_block_dispatch2((short)g_map_cursor_x, (short)g_map_cursor_y, 0x10, g_marker_phase_b, g_marker_phase_a);
         fill_minimap_grid();
         return;
     case 2: /* NE */
@@ -62,22 +62,22 @@ void sel_marker_dispatch(short sel)
         g_map_cursor_x = g_map_cursor_x + 1; g_map_cursor_y = g_map_cursor_y - 1;
         if (g_marker_phase_b == 0xf) { g_marker_phase_b = 0; kB = 0xf; }
         else { kB = g_marker_phase_b; g_marker_phase_b = g_marker_phase_b + 1; }
-        FUN_00045e61((short)(g_map_cursor_x + 0xf), (short)(g_map_cursor_y - 0xf), 0x19, kB, g_marker_phase_a);
+        iso_block_dispatch((short)(g_map_cursor_x + 0xf), (short)(g_map_cursor_y - 0xf), 0x19, kB, g_marker_phase_a);
         break;
     case 1: /* SW */
         if ((short)g_map_cursor_x <= g_1be32) goto edge_S;
         if ((short)g_map_cursor_y >= g_1be38) goto edge_W;
         g_map_cursor_x = g_map_cursor_x - 1; g_map_cursor_y = g_map_cursor_y + 1;
         if (g_marker_phase_b == 0) g_marker_phase_b = 0xf; else g_marker_phase_b = g_marker_phase_b - 1;
-        FUN_00045e61((short)g_map_cursor_x, (short)g_map_cursor_y, 0x19, g_marker_phase_b, g_marker_phase_a);
+        iso_block_dispatch((short)g_map_cursor_x, (short)g_map_cursor_y, 0x19, g_marker_phase_b, g_marker_phase_a);
         break;
     case 5: edge_W: /* W */
         if ((short)g_map_cursor_x <= g_1be32) break;
         g_map_cursor_x = g_map_cursor_x - 2;
         if (g_marker_phase_a == 0) g_marker_phase_a = 0x18; else g_marker_phase_a = g_marker_phase_a - 1;
         if (g_marker_phase_b == 0) g_marker_phase_b = 0xf; else g_marker_phase_b = g_marker_phase_b - 1;
-        FUN_00045e61((short)g_map_cursor_x, (short)g_map_cursor_y, 0x19, g_marker_phase_b, g_marker_phase_a);
-        FUN_00045f8a((short)g_map_cursor_x, (short)g_map_cursor_y, 0x10, g_marker_phase_b, g_marker_phase_a);
+        iso_block_dispatch((short)g_map_cursor_x, (short)g_map_cursor_y, 0x19, g_marker_phase_b, g_marker_phase_a);
+        iso_block_dispatch2((short)g_map_cursor_x, (short)g_map_cursor_y, 0x10, g_marker_phase_b, g_marker_phase_a);
         fill_minimap_grid();
         return;
     case 6: edge_N: /* N */
@@ -86,8 +86,8 @@ void sel_marker_dispatch(short sel)
         if (g_marker_phase_a == 0) g_marker_phase_a = 0x18; else g_marker_phase_a = g_marker_phase_a - 1;
         if (g_marker_phase_b == 0xf) { g_marker_phase_b = 0; kB = 0xf; }
         else { kB = g_marker_phase_b; g_marker_phase_b = g_marker_phase_b + 1; }
-        FUN_00045f8a((short)g_map_cursor_x, (short)g_map_cursor_y, 0x10, g_marker_phase_b, g_marker_phase_a);
-        FUN_00045e61((short)(g_map_cursor_x + 0xf), (short)(g_map_cursor_y - 0xf), 0x19, kB, g_marker_phase_a);
+        iso_block_dispatch2((short)g_map_cursor_x, (short)g_map_cursor_y, 0x10, g_marker_phase_b, g_marker_phase_a);
+        iso_block_dispatch((short)(g_map_cursor_x + 0xf), (short)(g_map_cursor_y - 0xf), 0x19, kB, g_marker_phase_a);
         break;
     case 9: edge_S: /* S */
         if ((short)g_map_cursor_y >= g_1be38) break;
@@ -95,8 +95,8 @@ void sel_marker_dispatch(short sel)
         if (g_marker_phase_a == 0x18) { g_marker_phase_a = 0; kA = 0x18; }
         else { g_marker_phase_a = g_marker_phase_a + 1; kA = g_marker_phase_a - 1; }
         if (g_marker_phase_b == 0) g_marker_phase_b = 0xf; else g_marker_phase_b = g_marker_phase_b - 1;
-        FUN_00045f8a((short)(g_map_cursor_x + 0x18), (short)(g_map_cursor_y + 0x18), 0x10, g_marker_phase_b, kA);
-        FUN_00045e61((short)g_map_cursor_x, (short)g_map_cursor_y, 0x19, g_marker_phase_b, g_marker_phase_a);
+        iso_block_dispatch2((short)(g_map_cursor_x + 0x18), (short)(g_map_cursor_y + 0x18), 0x10, g_marker_phase_b, kA);
+        iso_block_dispatch((short)g_map_cursor_x, (short)g_map_cursor_y, 0x19, g_marker_phase_b, g_marker_phase_a);
         fill_minimap_grid();
         return;
     case 10: edge_E: /* E */
@@ -106,8 +106,8 @@ void sel_marker_dispatch(short sel)
         else { g_marker_phase_a = g_marker_phase_a + 1; kA = g_marker_phase_a - 1; }
         if (g_marker_phase_b == 0xf) { g_marker_phase_b = 0; kB = 0xf; }
         else { kB = g_marker_phase_b; g_marker_phase_b = g_marker_phase_b + 1; }
-        FUN_00045f8a((short)(g_map_cursor_x + 0x18), (short)(g_map_cursor_y + 0x18), 0x10, g_marker_phase_b, kA);
-        FUN_00045e61((short)(g_map_cursor_x + 0xf), (short)(g_map_cursor_y - 0xf), 0x19, kB, g_marker_phase_a);
+        iso_block_dispatch2((short)(g_map_cursor_x + 0x18), (short)(g_map_cursor_y + 0x18), 0x10, g_marker_phase_b, kA);
+        iso_block_dispatch((short)(g_map_cursor_x + 0xf), (short)(g_map_cursor_y - 0xf), 0x19, kB, g_marker_phase_a);
         break;
     }
     fill_minimap_grid();

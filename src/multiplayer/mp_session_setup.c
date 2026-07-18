@@ -65,7 +65,7 @@ extern int  submit_command(unsigned char __far *p, char *name);
 extern int  xfer_buf_req_b1(unsigned char __far *p, char *name);
 extern int  netbios_op91(unsigned char __far *p, char *name, unsigned short async, char rto, char sto);
 extern int  netbios_op90(unsigned char __far *p, char *name, unsigned short async, char rto, char sto);
-extern short FUN_00028628(unsigned char __far *p);
+extern short xfer_buf_req35(unsigned char __far *p);
 
 extern char *strcpy(char *dst, const char *src);
 extern unsigned strlen(const char *s);
@@ -137,7 +137,7 @@ found:
         r = netbios_op90(g_conn[g_cur_player], nbuf, 0, 0, 0);
         if (r != 0) continue;
         printf(g_3740, i);
-        FUN_00028628(g_conn[i]);
+        xfer_buf_req35(g_conn[i]);
         _fstrcpy((char __far *)(g_conn[i] + 0xa), (char __far *)(g_conn[g_cur_player] + 0xa));
         g_conn[i][2] = g_conn[g_cur_player][2];
         connected++;

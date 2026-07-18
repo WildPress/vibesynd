@@ -7,14 +7,14 @@
 /* @ 0x1b798 (183B): sibling of 0x1b858. Read the 8-byte record at
    g_rec8_table + param_1*8; if its byte field +4 is set, record_max(field,0x7f).
    Then walk the g_rec5_table pool list (5-ushort records [val,x,y,arg,next]); for
-   every node with val+g_5314 > g_5314, emit FUN_0004a66b((short)(x+param_2),
+   every node with val+g_5314 > g_5314, emit draw_sprite_surf((short)(x+param_2),
    (short)(y+param_3), val+g_5314, arg). Follow next until p <= g_rec5_table.
    Stack-call (-4s). */
 extern unsigned char  *g_rec8_table;
 extern unsigned short *g_rec5_table;
 extern unsigned int    g_5314;
 extern void record_max(unsigned char, unsigned char);
-extern void FUN_0004a66b(int, int, unsigned int, unsigned int);
+extern void draw_sprite_surf(int, int, unsigned int, unsigned int);
 
 void FUN_0001b798(unsigned short param_1, short param_2, short param_3)
 {
@@ -28,7 +28,7 @@ void FUN_0001b798(unsigned short param_1, short param_2, short param_3)
     if (g_rec5_table < p)
     do {
         if (*p + g_5314 > g_5314)
-            FUN_0004a66b((short)(p[1] + param_2), (short)(p[2] + param_3),
+            draw_sprite_surf((short)(p[1] + param_2), (short)(p[2] + param_3),
                          *p + g_5314, p[3]);
         p = g_rec5_table + (unsigned)p[4] * 5;
     } while (g_rec5_table < p);
