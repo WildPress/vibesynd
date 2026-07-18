@@ -58,7 +58,7 @@ extern unsigned char __far *g_conn[]; /* connection records (far ptrs) @ 0x10644
 extern void FUN_000498ef(int);
 extern void FUN_0003b2b5(char *s);
 extern void FUN_0003b326(char *buf);
-extern long FUN_0003a526(char *s);
+extern long atol(char *s);
 extern void FUN_0003ad66(char *fmt, ...);
 extern void FUN_0003a4fa(char *buf, char *fmt, ...);
 extern int  submit_command(unsigned char __far *p, char *name);
@@ -88,7 +88,7 @@ int mp_session_setup(void)
 readloop:
     FUN_0003b2b5(g_36b8);
     FUN_0003b326(rbuf);
-    g_num_players = (short)FUN_0003a526(rbuf);
+    g_num_players = (short)atol(rbuf);
     if (g_num_players == 0) goto readloop;
     if (g_num_players > 8) goto readloop;
     if (g_num_players == 1) return -3;

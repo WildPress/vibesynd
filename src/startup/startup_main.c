@@ -25,7 +25,7 @@ struct s12 { long a, b, c; };
 
 extern void int386(int inter, void *in, void *out);   /* int386 */
 extern void FUN_0003af38(void *s);
-extern long FUN_0003a526(char *s);                          /* atol */
+extern long atol(char *s);                          /* atol */
 extern int  parse_hex_arg(char *s);                          /* hex parse */
 extern void init_call5(void);
 extern void FUN_0003ad89(int code);
@@ -114,7 +114,7 @@ void startup_main(short argc, char **argv)
             switch (c) {
             case 'C':
             case 'c':
-                g_language = (unsigned char)FUN_0003a526(argv[i] + 2);
+                g_language = (unsigned char)atol(argv[i] + 2);
                 if (g_language >= 3)
                     g_language = 0;
                 break;
@@ -124,7 +124,7 @@ void startup_main(short argc, char **argv)
                 break;
             case 'P':
             case 'p':
-                g_10b53 = (unsigned char)FUN_0003a526(argv[i] + 2);
+                g_10b53 = (unsigned char)atol(argv[i] + 2);
                 if (g_10b53 > 0x10)
                     g_10b53 = 0x10;
                 break;
@@ -135,9 +135,9 @@ void startup_main(short argc, char **argv)
             case 'I':
             case 'i':
                 if (argv[i][2] == 'i' && argv[i][3] == 'r' && argv[i][4] == 'q')
-                    g_4d94 = (unsigned short)FUN_0003a526(argv[i] + 5);
+                    g_4d94 = (unsigned short)atol(argv[i] + 5);
                 if (argv[i][2] == 'd' && argv[i][3] == 'm' && argv[i][4] == 'a')
-                    g_4d96 = (unsigned short)FUN_0003a526(argv[i] + 5);
+                    g_4d96 = (unsigned short)atol(argv[i] + 5);
                 if (argv[i][2] == 'i' && argv[i][3] == 'o')
                     g_4d98 = (unsigned short)parse_hex_arg(argv[i] + 4);
                 break;

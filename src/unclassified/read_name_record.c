@@ -8,7 +8,7 @@ extern void FUN_0003a4fa(char *buf, char *fmt, char *s, int n);
 extern int cond_3call(char *path, int mode);
 extern void file_read_n(int fd, void *buf, int n);
 extern void FUN_00018878(int fd);
-extern void FUN_0003a8d7(char *dst, char *src);
+extern void strcpy(char *dst, char *src);
 extern char g_3cf0[];
 extern char g_b970[];
 extern unsigned char g_language;
@@ -27,6 +27,6 @@ void read_name_record(char *out, int n)
         FUN_00018878(fd);
     }
     if (*out == 0)
-        FUN_0003a8d7(out, g_4720[g_language]);
+        strcpy(out, g_4720[g_language]);
     out[0x13] = 0;
 }

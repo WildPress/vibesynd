@@ -9,7 +9,7 @@
 extern unsigned int g_3eec;
 extern int file_open_read_close(int size);
 extern int FUN_0001aa74(int h);
-extern int FUN_0003a579(int size, int mode);
+extern int open(int size, int mode);
 extern void FUN_0004aa59(int h);
 extern int FUN_0003a7c4(int a, int b, int c);
 extern void FUN_0004b859(int h);
@@ -34,7 +34,7 @@ int alloc_init_with_errcode(int size, int p2)
         g_3eec = 2;
         return 0;
     }
-    h3 = FUN_0003a579(size, 0x200);
+    h3 = open(size, 0x200);
     if (h3 == -1) {
         FUN_0004aa59(h2);
         g_3eec = 3;

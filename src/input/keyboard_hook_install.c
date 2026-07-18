@@ -7,8 +7,8 @@
  */
 extern char g_e284[];
 extern void (__interrupt __far *g_df0e)(void);
-extern void (__interrupt __far *FUN_0003b239(int intno))(void);
-extern void FUN_0003b273(int vec, void (__interrupt __far *fn)(void));
+extern void (__interrupt __far *d_getvec(int intno))(void);
+extern void d_setvec(int vec, void (__interrupt __far *fn)(void));
 extern void __interrupt __far FUN_00017cb0(void);
 
 void keyboard_hook_install(void)
@@ -18,6 +18,6 @@ void keyboard_hook_install(void)
     do {
         g_e284[i++] = 0;
     } while (i < 0x80);
-    g_df0e = FUN_0003b239(9);
-    FUN_0003b273(9, FUN_00017cb0);
+    g_df0e = d_getvec(9);
+    d_setvec(9, FUN_00017cb0);
 }

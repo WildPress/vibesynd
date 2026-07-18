@@ -52,7 +52,7 @@ extern short g_10b58;
 extern char **g_map_cols;
 extern unsigned char *g_tile_flags;
 
-extern int FUN_0003aed8(int x);
+extern int labs(int x);
 extern unsigned char FUN_0004d221(int dx, int dy);
 extern short snap_direction(int cur, int step);
 extern void recompute_state_code(unsigned char *p);
@@ -66,8 +66,8 @@ void vehicle_drive_step(unsigned char *p1, unsigned char *p2)
     int z;
 
     if (p2[0x19] == 5 || p2[0x19] == 6) {
-        int dxa = FUN_0003aed8((*(short *)(p1 + 0x2e) >> 8) - (g_aim_x >> 8));
-        int dya = FUN_0003aed8((*(short *)(p1 + 0x30) >> 8) - (g_aim_y >> 8));
+        int dxa = labs((*(short *)(p1 + 0x2e) >> 8) - (g_aim_x >> 8));
+        int dya = labs((*(short *)(p1 + 0x30) >> 8) - (g_aim_y >> 8));
         unsigned short steps;
 
         if ((short)dxa > (short)dya) {

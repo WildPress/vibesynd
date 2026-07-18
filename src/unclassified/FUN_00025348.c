@@ -8,15 +8,15 @@
  * the 0x25358 code that follows. Every other byte matches masked. This is Watcom's
  * code-alignment fill, which the default recipe never emits mid-function (only -ol emits
  * loop-alignment NOPs, and that also unrolls) -> code-alignment wall, not source-reachable
- * with the fixed recipe. Logic: call 0x28cc8; then FUN_0003b273(9, g_df0e, g_df12), whose
+ * with the fixed recipe. Logic: call 0x28cc8; then d_setvec(9, g_df0e, g_df12), whose
  * dispatch tail mirrors the matched 0x252d8 (df08/df0c -> df0e/df12, arg 8 -> 9). */
 extern void build_two_buffers(void);
-extern void FUN_0003b273(int a, int b, unsigned short c);
+extern void d_setvec(int a, int b, unsigned short c);
 extern int g_df0e;
 extern unsigned short g_df12;
 
 void FUN_00025348(void)
 {
     build_two_buffers();
-    FUN_0003b273(9, g_df0e, g_df12);
+    d_setvec(9, g_df0e, g_df12);
 }

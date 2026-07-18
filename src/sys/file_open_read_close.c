@@ -1,6 +1,6 @@
 /* file_open_read_close @ 0x180f8 - file open+read+close wrapper; sets g_3eec error code. */
 extern unsigned int g_3eec;
-extern int FUN_0003a579(char *name, int mode);
+extern int open(char *name, int mode);
 extern unsigned int FUN_0003ab1a(int fd);
 extern void FUN_0003a89d(int fd);
 
@@ -12,7 +12,7 @@ unsigned int file_open_read_close(char *name)
     unsigned int result;
 
     g_3eec = 0;
-    fd = FUN_0003a579(name, 0x200);
+    fd = open(name, 0x200);
     if (fd == -1) {
         g_3eec = 3;
         return 0xffffffff;

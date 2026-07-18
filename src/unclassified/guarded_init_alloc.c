@@ -28,9 +28,9 @@ extern int  FUN_00039625(void *p);
 extern void timer_rate_critsec(int a, int b);
 extern void FUN_00039747(int a);
 
-extern void __far *FUN_0003b239(unsigned n);
-extern void FUN_0003b22d(int a, int b);
-extern void FUN_0003b273(int a, void __far *p);
+extern void __far *d_getvec(unsigned n);
+extern void outp(int a, int b);
+extern void d_setvec(int a, void __far *p);
 
 extern void __far *g_df08;   /* off @0xdf08, seg @0xdf0c */
 
@@ -44,10 +44,10 @@ void guarded_init_alloc(void)
             return;
         }
     } else {
-        g_df08 = FUN_0003b239(8);
-        FUN_0003b22d(0x43, 0x36);
-        FUN_0003b22d(0x40, 0);
-        FUN_0003b22d(0x40, 0x40);
-        FUN_0003b273(8, (void __far *)FUN_00017a90);
+        g_df08 = d_getvec(8);
+        outp(0x43, 0x36);
+        outp(0x40, 0);
+        outp(0x40, 0x40);
+        d_setvec(8, (void __far *)FUN_00017a90);
     }
 }

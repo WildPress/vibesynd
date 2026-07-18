@@ -3,9 +3,9 @@
  * return off+len. Else: seek(h,off,0) @0x3a93b, read(h,dst,len) @0x3a7c4,
  * return 0x3a97c(h) (tell). Recipe: -4s -oneatx -zp8 -s -zq (+intrinsic).
  */
-extern int FUN_0003a93b(char *h, unsigned off, int whence);
+extern int lseek(char *h, unsigned off, int whence);
 extern int FUN_0003a7c4(char *h, void *dst, unsigned len);
-extern int FUN_0003a97c(char *h);
+extern int tell(char *h);
 
 void *memcpy(void *dst, const void *src, unsigned len);
 #pragma intrinsic(memcpy)
@@ -19,7 +19,7 @@ int buffered_read(char *h, unsigned off, int flags, void *dst, unsigned len)
         memcpy(dst, h + off, len);
         return off + len;
     }
-    FUN_0003a93b(h, off, 0);
+    lseek(h, off, 0);
     FUN_0003a7c4(h, dst, len);
-    return FUN_0003a97c(h);
+    return tell(h);
 }

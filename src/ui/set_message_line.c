@@ -7,7 +7,7 @@
 extern char *g_b4c0[];
 extern int g_506c;
 extern int g_5064;
-extern void FUN_0003a8d7(char *dst, char *src);
+extern void strcpy(char *dst, char *src);
 extern char g_bdfc[];
 extern volatile unsigned char g_10b3f;
 extern volatile unsigned char g_5591;
@@ -23,7 +23,7 @@ void set_message_line(int i)
 {
     g_506c = 1;
     g_5064 = 0;
-    FUN_0003a8d7(g_bdfc, g_b4c0[i]);
+    strcpy(g_bdfc, g_b4c0[i]);
     g_10b3f = 0;
     if (g_5591 != 0) {
         FUN_0004987e(g_10aa0);

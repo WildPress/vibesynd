@@ -1,10 +1,10 @@
 /* C runtime: fopen mode-string parser @ 0x3b739 (CLIB3S). Decodes r/w/a/+/b/t to stream flag bits (tolower, 0xc289 default-mode); regs-first prologue -> full db-transcription.
    Body db-transcribed (frameless wrapper; modify[] suppresses the wrapper frame).
    External calls are real masked relocs; abs data refs are literal bytes. */
-extern void FUN_0003da37();
+extern void tolower();
 extern void FUN_0003c46d();
 extern void __db_0003b739_0(void);
-#pragma aux __db_0003b739_0 = "db 83" "db 86" "db 85" "db 137" "db 229" "db 139" "db 117" "db 16" "db 15" "db 182" "db 6" "db 80" "db 49" "db 219" "call FUN_0003da37" "db 131" "db 196" "db 4" "db 136" "db 193" "db 60" "db 114" "db 116" "db 26" "db 60" "db 119" "db 116" "db 22" parm [] modify exact [eax ebx ecx edx esi edi];
+#pragma aux __db_0003b739_0 = "db 83" "db 86" "db 85" "db 137" "db 229" "db 139" "db 117" "db 16" "db 15" "db 182" "db 6" "db 80" "db 49" "db 219" "call tolower" "db 131" "db 196" "db 4" "db 136" "db 193" "db 60" "db 114" "db 116" "db 26" "db 60" "db 119" "db 116" "db 22" parm [] modify exact [eax ebx ecx edx esi edi];
 extern void __db_0003b739_1(void);
 #pragma aux __db_0003b739_1 = "db 60" "db 97" "db 116" "db 18" "call FUN_0003c46d" "db 199" "db 0" "db 9" "db 0" "db 0" "db 0" "db 49" "db 192" "db 233" "db 117" "db 0" "db 0" "db 0" "db 137" "db 216" "db 12" "db 3" "db 128" "db 126" "db 1" "db 43" "db 117" "db 32" parm [] modify exact [eax ebx ecx edx esi edi];
 extern void __db_0003b739_2(void);

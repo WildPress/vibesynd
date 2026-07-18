@@ -9,7 +9,7 @@
  */
 extern int g_a240;
 
-extern int FUN_0003a579(char *name, int mode);   /* open */
+extern int open(char *name, int mode);   /* open */
 extern int FUN_0003a89d(int fd);                 /* close */
 extern int FUN_0003a9c8(void *p, int n);
 extern int buffered_read(int h, unsigned off, int flags, void *dst, unsigned len);
@@ -34,7 +34,7 @@ int container_total_size(char *name, int flags)
     if (flags & 1) {
         fd = (int)name;
     } else {
-        fd = FUN_0003a579(name, 0x200);
+        fd = open(name, 0x200);
         if (fd == -1)
             return 0;
     }

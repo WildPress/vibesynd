@@ -1,4 +1,4 @@
-char *FUN_0003e7f7(const char *s, int c)
+char *strchr(const char *s, int c)
 {
     int ch = c;
 

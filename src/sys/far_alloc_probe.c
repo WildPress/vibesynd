@@ -14,14 +14,14 @@
    tail-merge wall (here Watcom reuses/shares, target duplicates) -- block-layout fuzzer may
    close it. -ot/-os diverge far earlier (0x19, they drop the far-ptr CSE). */
 
-extern void __far *FUN_0003b239(unsigned n);
+extern void __far *d_getvec(unsigned n);
 extern short submit_ncb(unsigned char __far *p);
 
 extern unsigned char __far *g_5056;   /* far ptr: off @0x5056, sel @0x505a */
 
 int far_alloc_probe(void)
 {
-    void __far *blk = FUN_0003b239(0x5c);
+    void __far *blk = d_getvec(0x5c);
     if (blk == 0)
         return -1;
     g_5056[0] = 0x7f;

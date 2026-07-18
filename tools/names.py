@@ -127,6 +127,18 @@ LABELS = {
     "0002de18": "launch_move_setup",     "0002ee18": "find_target_for_agent",
     "00035c88": "read_name_record",      "00036168": "guarded_sound_call",
     "00036d18": "flag_hp_adjust",        "000377e8": "pool_table_lookup",
+    # cont.29 -- Watcom C runtime library fns, identified by tools/libname.py (byte match vs
+    # CLIB3S.LIB module). One name per library module (highest coverage); helpers stay FUN_.
+    "0003a526": "atol",       "0003dfcf": "cenvarg",   "0003db36": "chktty",
+    "0003b239": "d_getvec",   "0003b273": "d_setvec",  "0003b9ee": "fclose",
+    "0003d3e4": "fgetc",      "0003b972": "fopen",     "0003b539": "fread",
+    "0003da03": "ftell",      "0003d894": "ioalloc",   "0003c44d": "isatty",
+    "0003aed8": "labs",       "0003a93b": "lseek",     "0003dcb5": "ltoa",
+    "0003e361": "makepath",   "0003a579": "open",      "0003b22d": "outp",
+    "0003be40": "prtf",       "0003d935": "qread",     "0003cbf9": "spawnve",
+    "0003e7f7": "strchr",     "0003a8d7": "strcpy",    "0003aef9": "stricmp",
+    "0003aea6": "strncmp",    "0003deee": "strnicmp",  "0003a97c": "tell",
+    "0003da37": "tolower",    "0003dce5": "toupper",   "0003e590": "unlink",
 }
 
 

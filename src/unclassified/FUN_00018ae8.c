@@ -23,10 +23,10 @@
    Splits into an x-major and a y-major half, each walking from the smaller
    endpoint of the major axis with the classic 2*minor error accumulator
    (d = 2*minor - major, incE = 2*minor, incNE = 2*(minor - major)), stepping
-   the minor coord by +/-step. Calls labs (FUN_0003aed8) for the deltas.
+   the minor coord by +/-step. Calls labs (labs) for the deltas.
    Recipe: -4s -oneatx -zp8 -s -zq. */
 extern unsigned char g_105;
-long FUN_0003aed8(long x);
+long labs(long x);
 void FUN_00040236(int x, int y, int c);
 
 void FUN_00018ae8(short x1, short y1, short x2, short y2, unsigned char c)
@@ -56,10 +56,10 @@ void FUN_00018ae8(short x1, short y1, short x2, short y2, unsigned char c)
         step = 2;
     x2i = x2;
     x1i = x1;
-    dx = FUN_0003aed8(x2i - x1i);
+    dx = labs(x2i - x1i);
     y2i = y2;
     y1i = y1;
-    dy = FUN_0003aed8(y2i - y1i);
+    dy = labs(y2i - y1i);
     if (dx >= dy) {
         incE = dy * 2;
         d = dy * 2 - dx;

@@ -18,7 +18,7 @@
  */
 extern int g_a244;
 
-extern int FUN_0003a579(char *name, int mode);            /* open */
+extern int open(char *name, int mode);            /* open */
 extern void FUN_0003a89d(int fd);                         /* close */
 extern int FUN_0003a9c8(void *p, int n);
 extern void *FUN_0003aa74(unsigned n);                    /* malloc */
@@ -67,7 +67,7 @@ void *container_load(char *name, int flags, void *out)
     if (flags & 1) {
         fd = (int)name;
     } else {
-        fd = FUN_0003a579(name, 0x200);
+        fd = open(name, 0x200);
         if (fd == -1)
             return (void *)0;
     }
