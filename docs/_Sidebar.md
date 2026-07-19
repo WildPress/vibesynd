@@ -25,6 +25,7 @@
 - [How the game works](game-systems)
 - [How the game draws (blitters)](blitter)
 - [Sound and cutscenes](sound-and-cutscenes)
+- [Resources and data files](resources-and-data-files)
 - [The object model](object-model)
 
 **Log**
