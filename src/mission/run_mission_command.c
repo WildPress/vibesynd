@@ -1,7 +1,8 @@
 /* run_mission_command @ 0x23158 -- TRUE SIZE 5280 (0x14A0), 0x23158-0x245f7.
  *
- * PARKED (cont.26). Compiles; JUMP-TABLE matches EXACTLY (59 dword entries,
- * cases 0x00-0x3a). Recipe -4s -oneatx -zp8 -s -zq. Best masked score ~60%
+ * PARKED (cont.27). Compiles; JUMP-TABLE matches EXACTLY (59 dword entries,
+ * cases 0x00-0x3a). Recipe -4s -oneatx -zp8 -s -zq. EDIT-DIST 1817 (was 1878;
+ * len ours 5458 vs target 5280). Best masked score ~60%
  * (3165/5280 order-preserving bytes; positional is drift-inflated). Every case
  * body is decoded and structurally correct; the residue is the SAME register-
  * role tie-break the two smaller siblings that consume this 0x417 template are
@@ -16,16 +17,26 @@
  * no drift). LEVERS THAT LANDED: op1 loop counter `unsigned short` (target
  * narrows the counter with `mov ax,bx` -- cut +29B drift to +5B); the node
  * agent selector is `(signed char)tpl[0xb6]` NOT `(char)` (Watcom char is
- * unsigned -> byte load; target uses movsx). BYTE-CLOSE (reg-role residue
+ * unsigned -> byte load; target uses movsx). NEW (cont.27, -61B total):
+ * (1) g_10b2e is `unsigned short` not `short` -- op01 single-player branch
+ * loads it zero-extended `xor eax,eax; mov ax,[10b2e]` exactly like g_e553,
+ * NOT `movsx` (-6B). (2) the op10/op30 scatter scalar `a` (=lcg_rand(0xff)) is
+ * `unsigned short` not `int` -- target spills it to a WORD slot and reloads it
+ * word/byte-wise; narrowing realigned the whole scatter loop body (-55B).
+ * TRIED+REVERTED: `short x1,y1` adds the target's `cwde` but the truncating
+ * word stores inflate length with no net edit-dist gain (distance-neutral).
+ * BYTE-CLOSE (reg-role residue
  * only): op01/21, op02/22, op03..op0f, op18/38..op2f, op14/34, op19/39,
- * op0b/2b, op11/31, op16/36, op12/32, op13/33, op17/37. WEAKEST (structural,
- * not byte-verified): op10 and op30 -- the RNG projectile-scatter bodies
- * (record_max seed, lcg_rand rand, FUN_00037ff8 tracer, two find_free_slot_15e70
- * spawns per shot using g_dir_dy sin / g_dir_dx cos scatter). Their interleaved
- * e568-call arg overlap and heavy [esp+N] slot reuse are not slot-exact; being
- * mis-sized they drift the tail (op11..op17). NEXT PASS: this is a genuine
- * allocator wall (park), but op10/op30 could be tightened to the target's slot
- * layout to de-drift the tail (+~450B of the score).
+ * op0b/2b, op11/31, op16/36, op12/32, op13/33, op17/37. op10/op30 -- the RNG
+ * projectile-scatter bodies (record_max seed, lcg_rand rand, FUN_00037ff8
+ * tracer, two find_free_slot_15e70 spawns per shot using g_dir_dy sin /
+ * g_dir_dx cos scatter) -- are now STRUCTURALLY ALIGNED with the target loop
+ * (same call order, same word/byte `a` handling); the residue is stack-slot
+ * index numbering plus ONE extra dword spill of `a` that the target avoids
+ * (ours keeps a 32-bit copy alongside the word home). That extra slot is why
+ * the frame is 0x38 vs 0x34. NEXT PASS: killing that redundant `a` spill would
+ * drop the frame to 0x34 and renumber the op10/op30 slots to match; it is an
+ * allocator artifact, not obviously source-reachable.
  *
  * Per-record mission/orders command interpreter. Executes one queued command
  * for record `idx`, then clears the opcode byte (consume). 59-entry jump table
@@ -46,7 +57,7 @@ extern unsigned char g_pool_a[];
 extern unsigned char g_entity_pool[];
 extern short g_num_players;
 extern short g_cur_player;
-extern short g_10b2e;
+extern unsigned short g_10b2e;
 extern unsigned short g_e553;
 extern unsigned char g_player_owner[];
 extern unsigned char g_in_mission;
@@ -510,7 +521,8 @@ void run_mission_command(unsigned int idx)
 
     case 0x10: {
         unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
-        int nid, k, n, i, a;
+        int nid, k, n, i;
+        unsigned short a;
         unsigned char *n2;
         if (node[0xb] & 1)
             goto consume;
@@ -566,7 +578,8 @@ void run_mission_command(unsigned int idx)
         unsigned char *p;
         for (p = g_pool_a + tpl[0xb5] * 0x5c;
              p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
-            int nid, k, n, i, a;
+            int nid, k, n, i;
+            unsigned short a;
             unsigned char *n2;
             if (!(p[0x1d] & 4) || (p[0xb] & 1))
                 continue;

@@ -7,14 +7,20 @@
    finds a blocking entity — if it's p2, return p2 (hit), any other -> 0.
    Runs `steps` steps, else returns 0.
 
-   PARKED (~85%, first diff 0x8): the PARAM-PROMOTION wall (see 0x35d08), both
-   directions at once. Target promotes p1 -> EBP for the whole fn but keeps
-   dist memory-homed (scratch ECX CSE for the cmp+div, slot reload for the loop
-   bound); ours refuses to promote p1 (explicit copy lands in EDI + spills,
-   register hint worse) yet promotes dist -> ESI. Mid-section and loop body
-   align modulo the cascading register encodings. int-dist + (short) casts give
-   the target's 32-bit div-by-0x80 idiom; the q==p2 branch layout and the
-   sub+cwde arg forms are correct. */
+   NEAR-MATCH, EDIT-DIST 53 (was 148), first diff 0x3c. The whole setup region
+   0x0..0xd4 (~212 bytes: prologue, d1 dist test, div-by-0x80, dir1/d2/dir2, loop
+   entry) is now BYTE-PERFECT. Key fixes were adopting the sibling los_trace's
+   exact idioms: `unsigned short i` loop counter, an `int t` temp for the
+   div-by-0x80, x/y/z assigned in that order, and — critically — putting the
+   counter init in the for-statement (`for (i = 0; ...)`) not a separate early
+   `i = 0;`. That flips the allocator into promoting p1 -> EBP and homing the
+   running coords in registers (x=ESI, y=EBX, z=EDI) with i memory-homed at
+   [esp], exactly like the target. Remaining 53 is pure loop-body instruction
+   scheduling (0x126..): which scratch register each half-tile step materializes
+   in (target x-step lands in EDX -> `add edx,esi; mov esi,edx`; ours keeps it
+   in-place `add esi,edx`, 2 bytes shorter) plus the interleave of the i inc/store
+   against the shifts. Not source-reachable — the codegen-tie floor. Tried:
+   update reorder y/x/z (worse, 55), `x = step + x` spelling (inert). */
 extern short g_dir_dx[];
 extern short g_dir_dy[];
 extern int sum_of_squares_call(int a, int b);
@@ -25,22 +31,27 @@ extern unsigned char *find_blocking_entity(unsigned char *p, int x, int y, int z
 
 unsigned char *los_trace_far(unsigned char *p1, unsigned char *p2, int dist)
 {
-    int i;
-    unsigned char dir2;
-    unsigned char dir1;
-    short x, y, z;
     int d1, d2;
     unsigned char *q;
+    short x;
+    short y;
+    short z;
+    unsigned short i;
+    unsigned char dir1;
+    unsigned char dir2;
 
     d1 = sum_of_squares_call((short)(*(short *)(p2 + 4) - *(short *)(p1 + 4)),
                       (short)(*(short *)(p2 + 6) - *(short *)(p1 + 6)));
     if ((short)d1 >= (short)dist)
         return 0;
-    dist = (short)dist / 0x80;
-    if ((short)dist < 1)
-        return 0;
-    y = *(short *)(p1 + 6);
+    {
+        int t = (short)dist / 0x80;
+        dist = t;
+        if ((short)t < 1)
+            return 0;
+    }
     x = *(short *)(p1 + 4);
+    y = *(short *)(p1 + 6);
     z = *(short *)(p1 + 8);
     dir1 = vec_to_angle((short)(*(short *)(p2 + 4) - x),
                         (short)(*(short *)(p2 + 6) - y));

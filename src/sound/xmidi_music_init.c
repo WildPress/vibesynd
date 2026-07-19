@@ -10,15 +10,28 @@
    requests (FUN_39b87 -> bank/patch = w/256, w%256) from the sample file via
    FUN_38c28 + FUN_39b91. fclose @0x3b99e. Returns 1 ok / 0 fail.
 
-   PARKED near-miss, 713/741 (28 bytes short). Same wall family as the parked
-   sibling 0x35d08: (1) frame 0x78 vs ours 0x74 — the target promotes a param
-   into a callee-saved reg early (`mov edi,[esp+0x98]` at entry) and carries one
-   extra 4-byte local; ours defers the load; (2) the guard `return 0` tails —
-   the target duplicates the short `xor eax; jmp/pops; ret` inline per site with
-   a shared final tail (`jnz +7; xor eax; jmp end`), where ours tail-MERGES them
-   into one far block (`jz rel32`), accounting for most of the 28-byte deficit.
-   Param auto-promotion + return-tail-merge are allocator/cross-jumper internal
-   (documented walls, cont.21/22); not source-reachable here. */
+   NEAR-MISS, ours 698B vs target 741B, EDIT-DIST=334 (was 335).
+
+   ONE section made byte-exact: the 13-byte "DATA/SAMPLE." copy. The target emits
+   it UNROLLED (`movsd;movsd;movsd;movsb` = a5 a5 a5 a4, interleaved with the
+   strcat arg-pushes). `memcpy(buf,0x3d10,13)` under `#pragma intrinsic` compiled
+   instead to a `rep movs` loop (mov ecx,13; shr ecx,2; rep movsd; and cl,3; rep
+   movsb) -- the WRONG shape. Copying via an aggregate assignment
+   (`*(struct blk13*)buf = *(struct blk13*)0x3d10`) reproduces the target's exact
+   unrolled movs; the original clearly used an array/struct copy, not memcpy. The
+   aggregate metric barely moves (the register cascade + shorter length re-align
+   downstream) but the section itself now matches.
+
+   REMAINING walls (allocator/cross-jumper internal, confirmed not source-
+   reachable): (1) frame 0x78 vs ours 0x74 -- the target SPILLS param `c` to a
+   local stack slot [esp+0x74] and keeps `hdr` in EBP, whereas ours enregisters
+   `c` in EBP and `hdr` in EBX; that one extra 4-byte spill shifts every [esp+N]
+   downstream. Forcing the spill via a copy local (`q=c`) or reordering the
+   drv/res/hdr declarations did NOT move it. (2) The guard `return 0` tails --
+   the target duplicates the full `xor eax; add esp,0x78; pops; ret` inline per
+   site; ours reuses eax==0 from the failing test and tail-MERGES to the shared
+   success exit (`je end`), 28 bytes shorter. Same source (early `return 0;`) --
+   the cross-jumper decision is not source-controllable. */
 extern int alloc_init_with_errcode(int name, int flag);
 extern int container_load(int buf, int kind, int flag);
 extern void FUN_0003ab59(void *buf);
@@ -44,6 +57,8 @@ extern int g_seq_state[8];
 
 void *memcpy(void *dst, const void *src, unsigned len);
 #pragma intrinsic(memcpy)
+
+struct blk13 { char b[13]; };
 
 int xmidi_music_init(int a1, int a2, unsigned short a, unsigned short b, unsigned short c)
 {
@@ -88,7 +103,7 @@ int xmidi_music_init(int a1, int a2, unsigned short a, unsigned short b, unsigne
     mem = alloc_init_with_errcode(a1, 0);
     if (mem == 0)
         return 0;
-    memcpy(buf, (char *)0x3d10, 13);
+    *(struct blk13 *)buf = *(struct blk13 *)0x3d10;
     FUN_0003a900(buf, hdr + 8);
     w = FUN_00039b73(g_seq_ctx);
     if (w != 0)

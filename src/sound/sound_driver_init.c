@@ -16,7 +16,15 @@
    (worse), assignment-in-condition; nothing suppresses the promotion. (2) ours
    tail-MERGES the two plain `return 0` guards into one far block (jz rel32)
    where the target duplicates the 7-byte xor+pops+ret inline per site. Same
-   scheduling/allocator family as the register-role walls. */
+   scheduling/allocator family as the register-role walls.
+   NEW (this session): marking a+c `volatile` DOES pin them memory-homed exactly
+   like target (kills wall #1's promotion), and dropping bb to use `b` directly
+   then leaves EXACTLY ONE param enregistered from entry -- the target shape. But
+   our codegen puts that lone enregistered param in EBX, target puts it in ESI
+   (8b 5c 24 18 vs 8b 74 24 18); the ebx/esi reg-field diff propagates to every
+   b-use and, with wall #2 still present, nets dist 128 > the 126 baseline. The
+   lone-var ESI-vs-EBX preference and the return-0 coalescing are both Watcom
+   version/opt ties, not source-reachable. Baseline (bb+no-volatile) kept @126. */
 extern int alloc_init_with_errcode(int size, int flag);
 extern int container_load(int buf, int kind, int flag);
 extern void FUN_0003ab59(int buf);

@@ -5,26 +5,25 @@
  * and any of bits 0/2 set (halved vertical-res video modes). After the loop a
  * final 8-point pass fires when x == y (the diagonal octant seam).
  *
- * PARKED at 589B vs 585B (-oneatx). Bytes 0x00-0x115 (entry, guard, all 8
- * loop plot calls) are instruction-identical modulo the frame size (ours
- * 0x20 vs 0x1c => every local disp8 is +4). Register-role tie-break wall,
- * one root: after call 8 the target reloads d into ESI (mov esi,[d]) leaving
- * EAX free for step inside the else, so new-y (EDX) stores BEFORE d and both
- * branch tails cross-jump onto one shared `mov [d],ebx` (if-branch = bare
- * jmp). Ours reloads d into EAX, serialises step through EAX after it, flips
- * the else store order ([d] then [y]) and loses the merge (+4B duplicated
- * store). Downstream of the same pick: loop-bottom x reload EAX->ECX, the
- * x==y compare y reload ECX->EDI, the whole block-2 callee-saved rotation
- * (cy EDI->EBP, cx ESI->EDI, y EBP->ESI) and a 4th spill-temp slot in block 2
- * (target reuses the dead cy-y slot for cx+x) = the frame delta. Entry-only
- * residue: ours hoists d's 3 into EDI first and zeroes x via EDX; target
- * zeroes EDI for x then reuses EDI for 3 (size-neutral).
- * Tried: statement permutations of x/y/d init (byte-inert), else via named
- * old-y short temp (temp steals a slot, wrecks layout), int dword-alias
- * `*(int *)&d` reload (frame shrinks to 0x1c but d lands in EBX, d's entry
- * store goes word, slots re-rank), for-header loop (+2B), -or (loop shape
- * diverges, 572B), -ot (much worse). 10 compiles.
- * Recipe: -4s -oneatx -zp8 -s -zq (parked) */
+ * NEAR-MATCH, 592B vs 585B, EDIT-DIST 88 (was 165 with `int step`).
+ * KEY FIX: `step` must be `short`, not `int`. That single change collapses
+ * the frame from 0x20 to 0x1c (target size), aligns every local disp8 and the
+ * whole entry/guard/8-plot body (bytes 0x00-0x2c now identical), and drops the
+ * distance 165 -> 88. Block 2 (the x==y diagonal pass) is now byte-identical
+ * to target except one ECX-vs-EDX naming tie on the y reload (3B).
+ * Remaining gap = register-allocation ties around the d<0 decision, one root:
+ * target loads d into a callee-saved reg at the test (`mov esi,[d]; test
+ * si,si`) and reuses it in BOTH branches, no reloads. Ours tests d in memory
+ * (`cmp word[d],0`) then RELOADS d in each branch (+1 insn / +7B: the whole
+ * length delta). From that pick flow the downstream naming ties (else y EDI->
+ * ECX, loop-bottom x EAX->EDI, block-2 y ECX->EDX) and the entry residue
+ * (target zeroes EDI for x then reuses EDI for the constant 3; ours zeroes
+ * ESI). Store order (new-y before d) and the shared `mov [d],ebx` merge both
+ * MATCH now. Tried (all >= 88): `int od=d` hoist (116, int sign-extend re-ranks
+ * slots), `short od=d` hoist (byte-inert, compiler folds it), init reorder
+ * y/d/x (99), else with saved old-y (byte-trick, no help). The mem-cmp-vs-
+ * register-load-of-d decision is a Watcom codegen tie not reachable from C.
+ * Recipe: -4s -oneatx -zp8 -s -zq */
 extern unsigned char g_105;
 extern void plot_point(int x, int y, int c);   /* plot pixel */
 
@@ -33,7 +32,7 @@ void draw_circle(short cx, short cy, short r, unsigned char color)
     short x;
     short y;
     short d;
-    int step;
+    short step;
 
     step = 1;
     if (!(g_105 & 2) && (g_105 & 5))

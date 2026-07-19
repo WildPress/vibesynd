@@ -9,13 +9,19 @@
    velocity pair from g_dir_dx/g_dir_dy[0x10], period 0xd48, misc bytes) and clamps
    g_1be34 to >= 0x12.
 
-   PARKED at ~96% (415/415 length, byte-identical through 0xfc): (1) ours sinks the
-   `mov [g_5324],eax` store below the three dh byte-zero stores (target keeps it
-   right after add eax,6; both source orders produce the same sink); (2) the tail
-   record-blast's byte-const register POOL differs � target assigns cl=0x10,
-   al=0x14, ah=1, ours cl/ch/al � statement reorder to the target's emission order
-   didn't flip it; 4000 cpermute variants no match. Scheduler/const-pool wall,
-   same family as 0x264a8's entry batching. */
+   IMPROVED to dist 137 (raw; almost all residual is masked-reloc noise). Two of the
+   prior walls are now SOLVED and the whole body matches target byte-for-byte except a
+   single 7-byte region at 0xff:
+   (1) STORE-SINK fixed: marking g_5324 `volatile` pins `mov [g_5324],eax` right after
+       `add eax,6` (target order) instead of sinking it below the three dh byte stores.
+   (2) CONST-POOL fixed: reordering the tail byte-blast so the two 0x10 stores are
+       adjacent (g_1bc77,g_1bc78 first) and hoisting g_1bc74=0xd48 between the 0x14 and
+       the 1 makes the allocator emit cl=0x10, al=0x14, edx=0xd48, ah=1 exactly like
+       target (was cl/ch/al). Tail from 0x122 onward is now identical.
+   Residual (first diff 0xff): target squeezes `xor dh,dh` into the add->store latency
+   gap (add eax,6 / xor dh,dh / store eax / byte stores); ours emits store then xor.
+   Pure scheduler-fill tie -- volatile pins the store but our codegen won't insert the
+   fill; source reorders / shared-zero-local / byte-volatile don't move it. */
 extern int g_535c, g_5314, g_5318, g_5330, g_531c, g_5320, g_5334;
 extern int g_10ac8;
 extern unsigned char g_radar_detail;
@@ -26,7 +32,7 @@ extern unsigned short g_10b2e;
 extern int g_5378;
 extern int g_screen_buf;
 extern int g_5308;
-extern int g_5324;
+extern volatile int g_5324;
 extern unsigned char g_10b3f, g_10b3e, g_10b50;
 extern short g_dir_dx[];
 extern short g_dir_dy[];
@@ -74,10 +80,10 @@ void mission_map_init(void)
     find_free_pool_slots();
     zero_even_bytes();
     g_1bc77 = 0x10;
-    g_1bc76 = 0x14;
-    g_1bc79 = 1;
     g_1bc78 = 0x10;
+    g_1bc76 = 0x14;
     g_1bc74 = 0xd48;
+    g_1bc79 = 1;
     g_1bc70 = g_dir_dx[0x10] * 0x10 >> 8;
     g_1bc7a = 0x28;
     g_1bc72 = g_dir_dy[0x10] * 0x10 >> 8;

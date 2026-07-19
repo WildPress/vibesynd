@@ -7,16 +7,23 @@
  * vec_to_angle(0,dy). Returns the chosen direction (dir unchanged if nothing
  * passes). Recipe: -4s -oneatx -zp8 -s -zq
  *
- * PARKED near-miss, 577/590 (13 bytes short). Semantics byte-correct; two
- * register/layout walls: (1) the `short d` subtraction homes in AX in the
- * target (`SUB EAX,EDX; CWDE`) but DX in ours (`MOVSX EAX,DX`); (2) CROSS-JUMP
- * ASYMMETRY on the `return dir` tails — the target SHARES block-1's return-dir
- * with the function's final `xor eax; mov al,bl` tail (`xor eax; jmp end`) yet
- * INLINES block-2's identical return-dir, from the SAME `return dir;` source.
- * Ours merges BOTH into one shared tail, 13 bytes shorter. Watcom's single-pass
- * cross-jumper makes physically-driven merge decisions not reachable from C
- * (cf. the cont.22 cross-jump law: exit-form controls merging, but here the two
- * blocks need OPPOSITE decisions). Weapons-cluster poor-exact-match class.
+ * NEAR-MATCH, 573/590, EDIT-DIST 198 (was 206). FIX: the tile-delta compare
+ * is written global-on-the-minuend-side, `g_10b54 >> 8 != g_shot_x >> 8` (and
+ * the horizontal `g_10b56 >> 8 != g_shot_y >> 8`). This parks g_10b54 in EAX so
+ * `d = (g_10b54>>8)-(g_shot_x>>8)` becomes `SUB EAX,EDX; CWDE` matching target,
+ * instead of the old `SUB EDX,EAX; MOVSX EAX,DX` (+2B). Register CONTENTS of the
+ * load block now match (g_shot_x=EDX, g_10b54=EAX); only the load ORDER and the
+ * `cmp` operand order stay swapped (a fwd-lookahead alloc tie, not C-reachable).
+ * Two residual walls remain: (1) the dir+-0x40 returns: target masks to
+ * (unsigned char) via `xor ah,ah` (so dir=0 gives 0x00C0), but writing that cast
+ * makes OUR Watcom cross-jump-MERGE the four byte-identical return blocks that
+ * target keeps INLINED -> worse (221). The current (unsigned short)(t+-0x40)
+ * form avoids the bad merge at the cost of the missing byte-mask; it scores
+ * better, so it stays. (2) CROSS-JUMP ASYMMETRY on the `return dir` tails: target
+ * shares block-1's return-dir with the final tail yet inlines block-2's identical
+ * one; ours merges both. Both walls are Watcom single-pass cross-jump decisions
+ * (exit-form driven) not reachable from C. Weapons-cluster poor-exact-match class.
+ * Recipe: -4s -oneatx -zp8 -s -zq
  */
 extern short g_10b54;
 extern short g_10b56;
@@ -32,7 +39,7 @@ unsigned short FUN_00034608(unsigned char dir)
     volatile unsigned short nd1;
 
     if (dir == 0 || dir == 0x80) {
-        if (g_shot_x >> 8 != g_10b54 >> 8) {
+        if (g_10b54 >> 8 != g_shot_x >> 8) {
             short d = (g_10b54 >> 8) - (g_shot_x >> 8);
             nd1 = vec_to_angle(d, 0);
             if ((short)compass_tile_probe(g_shot_x, g_shot_y, g_shot_level, (unsigned char)nd1) != 0)
@@ -49,7 +56,7 @@ unsigned short FUN_00034608(unsigned char dir)
             return (unsigned short)(t + 0x40);
         }
     } else if (dir == 0xc0 || dir == 0x40) {
-        if (g_shot_y >> 8 != g_10b56 >> 8) {
+        if (g_10b56 >> 8 != g_shot_y >> 8) {
             short d = (g_10b56 >> 8) - (g_shot_y >> 8);
             nd2 = vec_to_angle(0, d);
             if ((short)compass_tile_probe(g_shot_x, g_shot_y, g_shot_level, (unsigned char)nd2) != 0)

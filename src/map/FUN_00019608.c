@@ -5,30 +5,52 @@
  * person/vehicle in view, then the selected-agent pulse ring and the animated
  * mission-objective markers.
  *
- * Signature: FUN_00019608(unsigned char *agent, short zoom)
- *   agent = the pool-A node the view is centred on (its world x/y at +4/+6);
- *   zoom  = pixels-per-tile scale.
+ * PROPOSED NAME: draw_tactical_map(agent, zoom)  -- the full-screen radar/overview.
  *
- * PARKED (decode-only) -- multiply walled, byte-parity is not reachable:
- *  1. g_map_cols column-table lookup sits in the register-triangle wall (base load /
- *     lea index-scale / tile deref ordering) that parks 0x2d5b8 / 0x28ec8.
- *  2. Heavy signed fixed-point: ~14 IDIV / cwd-shl-sbb-sar div-by-256 and
- *     div-by-zoom chains whose accumulator/remainder register ties are the
- *     encoding tie-break wall.
- *  3. A ~0x600-byte local blip buffer (256 six-byte records {x:u16, y:u16,
- *     char:u8, colour:u8}) laid out at the BOTTOM of the 0x644 frame, below ~20
- *     spilled locals. Portable C cannot reproduce that exact stack layout, and
- *     every [ESP+disp] in the function keys off it.
- *  4. Three co-located jump tables (Watcom emits them in .text before the code):
+ * Signature: FUN_00019608(unsigned char *agent, unsigned short zoom)
+ *   agent = the pool-A node the view is centred on (its world x/y at +4/+6);
+ *   zoom  = pixels-per-tile scale (read zero-extended: unsigned short).
+ *
+ * STATUS: distance 2356 -> 2032 (edit-dist), 32% -> ~41% match. Structure is
+ * faithful and top-to-bottom aligned; residue is a codegen-tie floor (below).
+ *
+ * Key source fixes that realigned it (all faithful, not byte-tricks):
+ *  - span / tileX0 / tileY0 / row / col / row2 / col2 are `short`. That stops
+ *    Watcom hoisting the `tileY0+span+1` / `tileX0+span+1` loop bounds into stack
+ *    temps: the target RECOMPUTES the bound every iteration from 16-bit reloads
+ *    (movsx WORD). This alone dropped the frame from 0x688 to ~0x650 (target
+ *    0x644) and realigned both nested loops.
+ *  - zoom is `unsigned short`: the target loads it zero-extended (xor r,r / mov
+ *    r16) then divides signed (idiv) -- exactly the unsigned-short->int promotion.
+ *  - subX / subY are `short` (target reloads them movsx WORD).
+ *  - The three sel_x/sel_y/sel_r = -1 initialisers hoisted to the top (target
+ *    emits them first, sharing a single edx=-1).
+ *  - Phase-1 terrain: the (x,y,w,h) args to FUN_0003fb40 are written inline in
+ *    each switch case, NOT via shared sx/sy temps -- the target recomputes them
+ *    per case (each case is a separate jump-table block, no cross-block CSE).
+ *  - Phase-2: tsx/tsy folded directly into blipX/blipY (no separate temps).
+ *  - Phase-1 index: row term written first, col term second, matching the
+ *    target's evaluation order.
+ *
+ * REMAINING GAP (codegen ties, not source-reachable):
+ *  1. Register allocation: the target keeps `count` in EDI and `zoom` in ECX;
+ *     ours lands `count` in EBX and `zoom` in EBX. `count` in EBX vs EDI changes
+ *     the SIB/disp of every blip[count*6+n] store across the large phase-2 type-1
+ *     colour block -- the single biggest residual. Not controllable from C.
+ *  2. g_map_cols triangle: Watcom strength-reduces `col<<8` into a stack induction
+ *     variable (extra slots, frame 0x650 vs 0x644); the target recomputes it from
+ *     `col` each iteration. Same 9.5 codegen, opposite decision.
+ *  3. Heavy signed fixed-point: ~14 IDIV / cwd-shl-sbb-sar div-by-256 and
+ *     div-by-zoom chains whose accumulator/remainder register ties differ.
+ *  4. Three co-located jump tables Watcom emits in .text BEFORE the function proper
+ *     in the original (tables at 0x19564, code at 0x19608); our build folds ~0x40
+ *     bytes of table into the head of the symbol, a fixed structural mismatch:
  *       - table1 @ 0x19564, 16 entries, index g_tile_flags[tile]  (terrain shape)
  *       - table2 @ 0x195a4,  6 entries, index node[0x18]     (blip by type)
  *       - table3 @ 0x195bc, 17 entries, index objective type  (HUD markers)
  *     (lefix rule: literal L in `jmp CS:[eax*4+L]` -> manifest L+0xd748.)
- * Compiles (-4s -oneatx -zp8 -s -zq); ours 3279B vs target 3474B, first diff at
- * 0x3c -- in the prologue fixed-point projection (the div-by-256 / div-by-zoom
- * IDIV chains): ours emits a `lea` (8d) where the target has an accumulator
- * form (24). All three jump tables split/masked cleanly. Structure faithful;
- * residue is the g_map_cols triangle + IDIV ties + the ~0x600-byte stack blip array.
+ * Compiles (-4s -oneatx -zp8 -s -zq); ours 3240B vs target 3474B. First diff at
+ * 0x3c is inside that co-located jump-table head, not a logic divergence.
  *
  * ---- Algorithm ----
  * Prologue projects the camera: the view is a (128/zoom + 2) square of tiles
@@ -81,21 +103,21 @@ extern void draw_circle(int x, int y, int r, int colour);        /* draw ring  *
 extern int  sum_of_squares_call(int a, int b);                 /* marker anim length  */
 extern void record_max(int a, int b);                 /* off-screen indicator*/
 
-void FUN_00019608(unsigned char *agent, short zoom)
+void FUN_00019608(unsigned char *agent, unsigned short zoom)
 {
     unsigned char blip[0x600];      /* 256 x {u16 x, u16 y, u8 char, u8 col}  */
-    int span   = 0x80 / zoom;       /* half-extent of the visible tile square */
+    int sel_x = -1, sel_y = -1, sel_r = -1;   /* followed agent's blip / mark  */
+    short span   = 0x80 / zoom;     /* half-extent of the visible tile square */
     int half   = 0x8000 / (zoom * 2);
     int camx   = *(short *)(agent + 4) - half;
     int camy   = *(short *)(agent + 6) - half;
     int scale  = 0x100 / zoom;
-    int subX   = ((unsigned char)camx) / scale;   /* sub-tile scroll x        */
-    int subY   = ((unsigned char)camy) / scale;   /* sub-tile scroll y        */
-    int tileX0 = (short)camx / 0x100;             /* top-left visible tile     */
-    int tileY0 = (short)camy / 0x100;
+    short subX = ((unsigned char)camx) / scale;   /* sub-tile scroll x        */
+    short subY = ((unsigned char)camy) / scale;   /* sub-tile scroll y        */
+    short tileX0 = (short)camx / 0x100;           /* top-left visible tile     */
+    short tileY0 = (short)camy / 0x100;
     int count  = 0;                 /* blips appended to the buffer            */
-    int sel_x = -1, sel_y = -1, sel_r = -1;   /* followed agent's blip / mark  */
-    int row, col, row2, col2;
+    short row, col, row2, col2;
     char **base;
     char **slot;
 
@@ -104,13 +126,13 @@ void FUN_00019608(unsigned char *agent, short zoom)
         if (row >= 0x60) break;
         if (row < 0) continue;
         for (col = tileX0; col <= tileX0 + span + 1; col++) {
-            int shape, index, sx, sy;
+            int shape, index;
             unsigned char tile;
             if (col >= 0x80) break;
             if (col < 0) continue;
 
-            index = ((short)((col << 8) & 0xff00) / 0x100)
-                  + (((short)((row << 8) % 0x6000) / 0x100) << 7);
+            index = (((short)((row << 8) % 0x6000) / 0x100) << 7)
+                  + ((short)((col << 8) & 0xff00) / 0x100);
             base = g_map_cols;
             slot = base + index;
             tile = *(unsigned char *)((int)*slot);   /* ground tile byte */
@@ -118,20 +140,22 @@ void FUN_00019608(unsigned char *agent, short zoom)
             if (shape > 0xf)
                 continue;
 
-            sx = (col - tileX0) * zoom - subX;
-            sy = (row - tileY0) * zoom - subY;
             switch (shape) {
             case 1: case 2: case 3: case 4: case 0xd:
-                FUN_0003fb40(sx, sy, zoom, zoom, 0xf);
+                FUN_0003fb40((col - tileX0) * zoom - subX,
+                             (row - tileY0) * zoom - subY, zoom, zoom, 0xf);
                 break;
             case 5: case 0xe:
-                FUN_0003fb40(sx, sy, zoom, zoom, 7);
+                FUN_0003fb40((col - tileX0) * zoom - subX,
+                             (row - tileY0) * zoom - subY, zoom, zoom, 7);
                 break;
             case 6: case 7: case 8: case 9: case 0xb: case 0xf:
-                FUN_0003fb40(sx, sy, zoom, zoom, 0xa);
+                FUN_0003fb40((col - tileX0) * zoom - subX,
+                             (row - tileY0) * zoom - subY, zoom, zoom, 0xa);
                 break;
             case 0xa:
-                FUN_0003fb40(sx, sy, zoom, zoom, 0);
+                FUN_0003fb40((col - tileX0) * zoom - subX,
+                             (row - tileY0) * zoom - subY, zoom, zoom, 0);
                 break;
             default:            /* 0, 0xc: nothing */
                 break;
@@ -157,7 +181,6 @@ void FUN_00019608(unsigned char *agent, short zoom)
             do {
                 unsigned char *node = g_entity_pool + id;
                 int radius, blipX, blipY, type;
-                int tsx, tsy;
 
                 if (node[0xb] & 1)
                     goto next_node;                       /* hidden */
@@ -170,10 +193,10 @@ void FUN_00019608(unsigned char *agent, short zoom)
                 radius = zoom / 2;
                 if (radius < 1)
                     radius = 1;
-                tsx = (col2 - tileX0) * zoom - subX;
-                tsy = (row2 - tileY0) * zoom - subY;
-                blipX = tsx + (*(unsigned char *)(node + 4) * zoom) / 0x100;
-                blipY = tsy + (*(unsigned char *)(node + 6) * zoom) / 0x100;
+                blipX = (col2 - tileX0) * zoom - subX
+                      + (*(unsigned char *)(node + 4) * zoom) / 0x100;
+                blipY = (row2 - tileY0) * zoom - subY
+                      + (*(unsigned char *)(node + 6) * zoom) / 0x100;
                 type = node[0x18];
                 if (type > 5)
                     goto next_node;

@@ -1,64 +1,69 @@
-/* @ 0x26778 (544 bytes): dashed Bresenham line drawer, plotting every 2nd pixel
-   from (x1,y1) to (x2,y2) via the pixel-plot callee plot_point(x,y,color).
-   Color alternates between c1 and c2 on bit 2 of the ushort pattern counter a7
-   (a7 is decremented per step on shallow lines, incremented on steep ones, so
-   4-pixel dashes of each color). Classic two-branch integer Bresenham: shallow
-   (|dx| >= |dy|) walks x in +/-2 steps stepping y by +/-2 on error overflow;
-   steep mirrors with x/y swapped. Coordinates are treated as unsigned shorts.
+/* @ 0x26778 (544 bytes): render_dashed_line -- dashed Bresenham line drawer,
+   plotting every 2nd pixel from (x1,y1) to (x2,y2) via the pixel-plot callee
+   plot_point(x,y,color). Color alternates between c1 and c2 on bit 2 of the
+   ushort pattern counter a7 (a7 decremented per step on shallow lines,
+   incremented on steep ones, so 4-pixel dashes of each color). Classic
+   two-branch integer Bresenham: shallow (|dx| >= |dy|) walks x in +/-2 steps
+   stepping y by +/-2 on error overflow; steep mirrors with x/y swapped.
+   Coordinates are treated as unsigned shorts. Proposed name: render_dashed_line.
 
-   PARKED near-miss 529B vs 544B target (NOT matched), best 358 differing
-   instruction lines over 9 compiles; structure is block-for-block 1:1 (frame
-   sub esp,0x20 matches, both loops rotate correctly, dec/inc word [a7-slot],
-   ternary color select, all four sub-cases + shared epilogue). KEY WINS:
-   - `int two = 2;` named local is load-bearing: it homes the constant 2 in EBP
-     (target `mov ebp,2`, `add esi,ebp` loop increments, and the step negation
-     reading the CSE via `mov ecx,ebp; neg ecx`), demotes stepa/stepb to stack
-     slots, and grows the frame to the target's 8 slots. Without it the steps
-     registerize into EBP and the +/-2 constant-folds.
-   - ushort x1,y1 params + int x2,y2: deranks x1/y1 from scratch promotion so
-     x2/y2 get cached in registers like the target (all-int params promoted
-     x1/y1 instead).
-   - step written arm-duplicated (`if (c) { s = two; s = -s; } else { s = two; }`)
-     reproduces the target's store-2-then-store-neg shape in the negative arm.
-   REMAINING WALL: the scratch-promotion register pool. Ours caches x2->EDX,
-   y2->EAX with the (ushort) zext temps in EBX; target caches x2->ECX, y2->EDX
-   keeping EAX for the zext temps. That one seed renames nearly every register
-   downstream (dx/dy homes, cmp cx/dx orientations, slot-assignment scramble for
-   the 8 locals), which is why the LCS byte score (221/544) looks worse than the
-   structural closeness. Tried: named int copies (land EDX,EAX regardless of decl
-   order/position), py-only copy (EAX), ushort copies (worse). If the pool seed
-   can be flipped (permuter statement reorder?), expect most of the body to snap
-   in; slot order then needs decl-order juggling (reverse-decl mapping held in
-   attempt 2 but is perturbed by copy decls). */
+   NEAR-MATCH, EDIT-DIST 139 (was 157), 529B vs 544B target (NOT matched).
+   Structure is block-for-block 1:1 (frame sub esp,0x20 matches, both loops
+   rotate correctly, dec/inc word [a7-slot], ternary color select, all four
+   sub-cases + shared epilogue). KEY WINS (this session, on top of the earlier
+   baseline):
+   - Computing dy BEFORE dx (source-faithful reorder of two independent abs
+     legs) flips y2 into EDX to match the target (was y2->EAX); -12 dist.
+   - Reversing the local declaration order pulls the 8 spill slots toward the
+     target's layout (e.g. stepa now homes at [esp+0x1c] like the target); -6.
+   EARLIER WINS (retained):
+   - `int two = 2;` named local homes the constant 2 in EBP (target `mov ebp,2`,
+     `add esi,ebp` loop increments, `mov ecx,ebp; neg ecx` step negation),
+     demotes stepa/stepb to slots, grows the frame to the target's 8 slots.
+   - ushort x1,y1 params + int x2,y2 derank x1/y1 from scratch promotion so
+     x2/y2 cache in registers.
+   - step written arm-duplicated (`if (c){s=two; s=-s;} else {s=two;}`)
+     reproduces the store-2-then-store-neg shape.
+   REMAINING WALL: the scratch-promotion register pool (ECX vs EBX). Target
+   caches x2->ECX with the (ushort) zext temps in EAX; ours puts x2->EAX and
+   pushes the zext temps into the callee-saved EBX -- ours never draws ECX into
+   this pool. That one seed renames nearly every downstream register byte and
+   also swaps dx/dy (dy-first gives dy=ESI/dx=EDI, target dx=ESI/dy=EDI), which
+   is why the byte score lags the structural 1:1 closeness. The two orderings
+   are coupled: dx-first fixes dx/dy but breaks the y2 param seed; dy-first
+   fixes y2 but swaps dx/dy -- neither reaches ECX. Tried this session: int
+   x1/y1 (worse, 194), dx-first + reversed decls (151), `dy<=dx` compare (inert),
+   several decl permutations (end1/end2 swap 153, inc-pair swaps inert). Not
+   source-reachable through these levers -- allocator-internal ECX-pool floor. */
 
 extern void plot_point(int x, int y, int c);
 
 void FUN_00026778(unsigned short x1, unsigned short y1, int x2, int y2,
                   unsigned char c1, unsigned char c2, unsigned short a7)
 {
-    int stepa;
-    int stepb;
-    int inc1a;
-    int inc2a;
-    int inc1b;
-    int inc2b;
-    int end1;
-    int end2;
-    int i;
-    int j;
-    int two;
-    int err;
-    int dx;
     int dy;
+    int dx;
+    int err;
+    int two;
+    int j;
+    int i;
+    int end2;
+    int end1;
+    int inc2b;
+    int inc1b;
+    int inc2a;
+    int inc1a;
+    int stepb;
+    int stepa;
 
     two = 2;
-    dx = (unsigned short)x2 - x1;
-    if (dx < 0) {
-        dx = -dx;
-    }
     dy = (unsigned short)y2 - y1;
     if (dy < 0) {
         dy = -dy;
+    }
+    dx = (unsigned short)x2 - x1;
+    if (dx < 0) {
+        dx = -dx;
     }
     if (dx >= dy) {
         inc2a = dy * 2;

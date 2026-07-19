@@ -18,6 +18,15 @@
    frame-omission for esp-in-flux, memory-homed-param functions. TRUE SIZE
    1234B (matches manifest). Semantics below are believed correct.
 
+   BEST EDIT-DIST 357 (was 379). One real body divergence found and fixed
+   beyond the frame wall: the mouse hit-test. The target RE-READS g_mouse_x /
+   g_mouse_y from memory on every compare (`cmp WORD PTR ds:0x5392,0x174`)
+   because those coords are ISR-updated globals; ours had cached them in cx/di.
+   Marking both globals `volatile` makes our two hit-test blocks re-read per
+   compare and matches the target's structure (-22). Residual per-block deltas
+   (first compare cached in a reg, and interleaved measure_draw_text arg-push
+   scheduling) are frame/register-pressure artifacts, not source-reachable.
+
    mission/agent detail panel drawer. param1 = record index into the parallel
    10-byte g_syndicate_recs table and 19-byte g_b072 table. Centres a title (width via
    0x36648, centred x = 0xb8 + (0x118-w)/2), draws several localized label/value
@@ -30,8 +39,8 @@ extern unsigned char g_b072[];
 extern unsigned char g_syndicate_recs[];
 extern unsigned char g_player_recs[];
 extern unsigned short g_cur_player;
-extern unsigned short g_mouse_x;
-extern unsigned short g_mouse_y;
+extern volatile unsigned short g_mouse_x;
+extern volatile unsigned short g_mouse_y;
 extern char *g_41a4[];
 extern char *g_469c[];
 extern char *g_46b4[];

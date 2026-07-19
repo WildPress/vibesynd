@@ -9,7 +9,7 @@
    TAB is rewritten to a space in the buffer. Returns 0 on overflow (out set), 1
    otherwise.
 
-   PARKED near-miss 517B vs 523B target (NOT matched), ~434/523 aligned bytes,
+   PARKED near-miss 517B vs 523B target (NOT matched), EDIT-DIST 108 (was 109),
    instruction-for-instruction structural 1:1 (176 vs 177 instrs). KEY WINS kept in
    this file (each was load-bearing, found over 16 compiles):
    - x,y MUST be `unsigned short` locals (not int): this activates Watcom's
@@ -22,6 +22,9 @@
    - fp/op MUST be named local copies of font/out (register-resident param copy
      lever); box params x0..h must stay int (ushort params flip the rhs load order).
    - decl order y-then-x fixes the slot layout (y=[esp+4], x=[esp+8], y2=[esp]).
+   - INIT order must ALSO be y=y0 THEN x=x0 (not x-then-y): emits the y-store
+     (slot+4) before the x-store (slot+8) matching target's entry, -1 edit-dist
+     (109->108). Swapping the guard1/guard2 add operand order still regresses.
    - draw_sprite_rle_buf declared with ushort x,y params (produces the mov ax,dx;
      and eax,0xffff arg push).
    - if/else both-arms-r=1 tail reproduces the DEAD `test ebp,ebp` (jcc-to-next
@@ -61,8 +64,8 @@ char draw_wrapped_text(char *s, int x0, int y0, int w, int h,
     unsigned char *fp = font;
     char **op = out;
 
-    x = x0;
     y = y0;
+    x = x0;
     while (*s != 0 && *s != 0x7c) {
         ww = measure_text_width(s, fp, a7, a9);
         if ((unsigned short)ww + x > (unsigned short)x0 + (unsigned short)w) {

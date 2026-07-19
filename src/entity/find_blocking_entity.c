@@ -1,17 +1,34 @@
-/* PARKED near-miss @ 0x11d68 -- LCS 1962/2881 bytes, ours 3112B vs 2881B,
-   recipe -4s -oneatx -zp8 -s -zq. TRUE SIZE 2881 (0xb41) -- manifest says 337
-   (do not trust it; report only). Both jump tables emit correctly (6-entry
-   type table + 43-entry subtype table = 49 leading obj fixups; compare code
-   tail after 196B tables + pad; tools_diff_fn2.py does this with the true
-   size). Structure, both loops, chain walk, all 9 case bodies, table shapes
-   and case membership verified against a full objdump of the region
-   (0x11e44..0x12833 hidden bytes recovered -- Ghidra's carving there is
-   garbled but it IS code).
+/* PARKED near-miss @ 0x11d68 -- EDIT-DIST 1125 (ours 3323B vs target 2881B,
+   ~66% by _probe.sh); recipe -4s -oneatx -zp8 -s -zq. TRUE SIZE 2881 (0xb41)
+   -- manifest says 337 (do not trust it; report only). Both jump tables emit
+   correctly (6-entry type table + 43-entry subtype table = 49 leading obj
+   fixups; compare code tail after 196B tables + pad; tools_diff_fn2.py does
+   this with the true size). Structure, both loops, chain walk, all 9 case
+   bodies, table shapes and case membership verified against a full objdump of
+   the region (0x11e44..0x12833 hidden bytes recovered -- Ghidra's carving
+   there is garbled but it IS code).
+
+   METRIC NOTE: earlier sessions tuned for LCS (best LCS 1962/2881 at
+   edit-dist ~1299, ours 3308B, `short rx`). THIS session tunes for _probe.sh
+   EDIT-DIST: `volatile short rx` is now applied and cuts 1299 -> 1125. It
+   fixes wall (1) (EDI home flips to xx, matching the target -- see below) at
+   the cost of a yy/ryy ESI<->ECX reshuffle. That reshuffle raises LCS-loss
+   but LOWERS edit-distance (the EDI fix realigns register bytes across every
+   body; the reshuffle is just ~40 symmetric register-field substitutions).
+   Net -174 edit-dist. Confirmed better than: volatile rx+ryy (1280), dropping
+   the redundant case-1 node[0xb]&1 retest (1131), reordering the case-1 cmp
+   (1141), hoisting one body's rx/2 to tip the tie non-volatile (1179).
    WALLS (0x128b8 sibling family, coupled one-bit allocation choices):
-   (1) EDI home: target xx->EDI with rx slot-read per use; ours rx->EDI /
-       xx slot-read. volatile rx flips it BUT flips yy/ryy ECX<->ESI homes
-       (~700 LCS bytes worse); ushort+cast derank is inert. volatile z IS
-       load-bearing (keeps z un-homed and yy->ESI/ryy->ECX correct).
+   (1) EDI home: target xx->EDI with rx slot-read per use. xx and rx tie at
+       19 reads each (6 direct bodies compute rx/2 TWICE, matching xx's two
+       uses; target recomputes, does not hoist), so EDI is a genuine codegen
+       tie our compile lost to rx and the target won for xx. RESOLVED for the
+       edit-dist metric with `volatile short rx` (forces rx to memory -> xx
+       wins EDI). Side effect: yy/ryy swap ESI<->ECX vs target (volatile
+       removes rx from the interference graph, recoloring the siblings); a
+       non-volatile tie-break that keeps yy=ESI/ryy=ECX was not found (tipping
+       via a hoisted rx/2 diverges that body and nets worse). volatile z IS
+       still load-bearing (keeps z un-homed).
    (2) frame 0x8c vs 0x84 and the ~33 spill-slot assignment order (sibling
        note: slot choice tracks neither declaration nor init order).
    (3) minor: chain-head node[0xb]&1 test CSEs into mov ah/test ah vs two
@@ -62,7 +79,7 @@ extern unsigned char g_entity_pool[];
 extern unsigned char g_pool_a[];
 
 unsigned char *find_blocking_entity(unsigned char *a1, short xx, short yy, volatile short z,
-                            short rx, short ryy, short rz)
+                            volatile short rx, short ryy, short rz)
 {
     int gx;
     int gy;
