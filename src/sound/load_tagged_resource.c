@@ -5,11 +5,16 @@
    the length at the head and reads the remaining length-2 bytes after it. Returns the
    blob, or 0 if the file is null, the record is absent, or p1[0xc]&0x20 is set.
 
-   PARKED near-miss (202/206, a single 4-byte transpose). Logic + all 14 relocations
-   match exactly; the sole diff is that the original holds p2 in esi and p3 in edi, while
-   9.5b assigns them the opposite callee-saved registers in the match loop. A clean
-   register tie-break: not moved by cpermute (2500), by &&-vs-continue restructuring, or
-   by five flag variants. Register-role family. */
+   CLOSED by a per-function FLAG lever (not a source change). Under the bulk recipe
+   -4s -oneatx the original held p2 in esi / p3 in edi and 9.5b assigned the opposite
+   callee-saved pair -- a register tie-break that no source spelling moved. Dropping the
+   single optimisation letter 'a' (relax-alias) from the -o bundle flips that colouring:
+   compiled with -oneatx MINUS 'a' the whole function is reloc-aware byte-identical.
+   Recipe: -4s -oentx -zp8 -s -zq
+   (verified: RELOC-AWARE match YES; the 14 relocations mask as before. 'a' relaxes the
+   aliasing model, so removing it makes 9.5b treat the fread-written globals g_11e34/
+   g_11e35 more conservatively, which is what seats p2=esi / p3=edi to match the original.
+   The full extended flag grid finds NO other combo that matches, and packing is inert.) */
 extern int rewind(void *h);
 extern int fread(void *dst, int size, int count, void *h);
 extern int fseek(void *h, int off, int whence);

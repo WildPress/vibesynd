@@ -1567,5 +1567,9 @@
  "int386x": {
   "addr": "0003b3e6",
   "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "load_tagged_resource": {
+  "addr": "00038c28",
+  "flags": "-4s -oentx -zp8 -s -zq"
  }
 }
