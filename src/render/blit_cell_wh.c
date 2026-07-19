@@ -16,7 +16,13 @@
    while ours builds the product in EAX then loads param_7 separately; and the target
    loads param_2 into CL first (masking later with `and ecx,0xff`) where ours zeroes ECX
    then loads. These are the eax<->edx accumulator and param_2 load-order ties; no source
-   spelling reproduces them. Codegen tie floor. */
+   spelling reproduces them.
+
+   FLAG improvement (2026-07-20 sweep): dropping the relax-alias letter 'a' from the
+   bundle -- recipe -4s -onetx -zp8 -s -zq -- lowers the residual 34->27 with no length
+   change (the param_7 fold half comes back). Still NOT a match: the param_2 load-order /
+   accumulator half remains a Watcom-minor-version codegen tie no flag or source reaches.
+   Recorded as this function's parked recipe (closest known near-miss). */
 extern unsigned char *g_screen_buf;
 extern unsigned char g_blip_colours[];
 void blit_cell_wh(unsigned char param_1, unsigned char param_2, unsigned short param_3,

@@ -1571,5 +1571,9 @@
  "load_tagged_resource": {
   "addr": "00038c28",
   "flags": "-4s -oentx -zp8 -s -zq"
+ },
+ "blit_cell_wh": {
+  "addr": "00015e38",
+  "flags": "-4s -onetx -zp8 -s -zq"
  }
 }
