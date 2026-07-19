@@ -17,6 +17,7 @@
 - [Relocations & OMF](relocations-and-omf)
 - [Compiler flags](compiler-flags)
 - [Register allocation](register-allocation)
+- [Watcom codegen ties](codegen-ties)
 - [Game vs library](game-vs-library)
 
 **The game**
