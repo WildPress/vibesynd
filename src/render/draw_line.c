@@ -1,5 +1,5 @@
-/* PARKED near-miss @ 0x18ae8 -- 516/524 bytes (aligned-common ~485/524 after
-   fixup masking), first diff 0x6f, whole CFG/branch layout byte-correct.
+/* PARKED near-miss @ 0x18ae8 -- 516/524 bytes, EDIT-DIST=68, first diff 0x6f,
+   whole CFG/branch layout byte-correct.
 
    WALL 1 (primary, 8-byte size deficit): the target materialises 2*minor as a
    7-byte scaled-index LEA with zero disp32 (8d047500000000 lea eax,[esi*2+0]
@@ -10,12 +10,17 @@
    CSE'd) all fail -- the symbol forms do NOT fold sym+idx*2 into one lea,
    they emit mov edx,sym; lea ebx,[eax*2+0]; add and restructure the entry.
    Same family as the push imm8-vs-imm32 peephole wall (0x16678).
-   WALL 2: the incE/incNE/incE2/incNE2 spill quartet sits in a 3-cycle
-   (ours incNE->0x14, incNE2->0x10, incE2->0x1c vs target 0x1c/0x14/0x10;
-   incE->0x18 correct). Decl-order changes move these slots NON-locally
-   (swapping two decls swaps a different pair); 3 permutations tried.
-   All other slots (y1i/x2i/y2i/x1i, end/end2, ystep/xstep) were steered to
-   target via decl order -- here decl order is NOT byte-inert, unlike 0x338d8.
+   WALL 2 (PARTLY CRACKED, 70->68): the incE/incNE/incE2/incNE2 spill quartet.
+   Brute-forced ALL 24 decl-order permutations of the quartet; best is 68,
+   reached by declaring them incE2/incNE2/incE/incNE (= target slot-ascending
+   order). That fixes incE->0x18 AND incNE2->0x14; the residual is a single
+   cross-branch swap -- ours incNE->0x10/incE2->0x1c vs target incNE->0x1c/
+   incE2->0x10 (x-major's incNE and y-major's incE2 exchange the 0x10<->0x1c
+   homes; target gives the LATER-in-code y-major var the LOW slot). No quartet
+   permutation drops below 68 -- the branch-to-slot mapping is not reachable by
+   quartet decl order (would need block-swap of the two major halves, which
+   breaks the byte-correct CFG). All other slots (y1i/x2i/y2i/x1i, end/end2,
+   ystep/xstep) steered to target via decl order.
 
    Semantics: Bresenham line draw from (x1,y1) to (x2,y2) in colour c, plotting
    each point via plot_point(x, y, c). Step size comes from the mode byte
@@ -41,10 +46,10 @@ void draw_line(short x1, short y1, short x2, short y2, unsigned char c)
     int d;
     int p;
     int q;
-    int incNE;
+    int incE2;
     int incNE2;
     int incE;
-    int incE2;
+    int incNE;
     int end;
     int end2;
     int xstep;

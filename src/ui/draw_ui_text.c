@@ -1,19 +1,29 @@
-/* @ 0x36698: PARKED near-miss 295/362 (aligned bytes, -4s -oneatx -zp8 -s -zq).
-   Remaining walls (all §3 families): (1) spill-slot order — target has i at
-   [esp+0], c at [esp+4]; ours always swaps them under the for(;;)/goto loop
-   form that reproduces the target's test-at-top layout. A real
-   `for (i=0; s[i]; ++i)` header DOES give i slot 0 (structured-loop-var rank)
-   but then -oneatx converts to jump-to-test layout (entry jmp to a bottom
-   test) which the target does not have — the two requirements co-vary in
-   opposite directions. (2) underline block register-role: target homes
-   y2=(short)(a4+y-2) in EDX and the glyph-index chain in ESI (one-step
-   `movzx esi,[c]`); ours picks y2->ESI, chain->EDX (xor+mov byte widen, lea
-   -0x20 fold) whatever the operand spelling. (3) the 4a6c8 y-arg widen comes
-   out and-form (mov ax,dx; and eax,0xffff) vs target xor-form; full-width-temp
-   lever did NOT flip it here. Everything else matches, incl. the y+=a4
-   half-widen (y param must be `unsigned short`: dword slot loads with dirty
-   upper), the deferred c store (test s[i] in the guards, assign c after the
-   newline branch), saved-buffer in EBP, and both font-index computations.
+/* @ 0x36698: near-miss, EDIT-DIST 37 / 362 bytes (down from 83), -4s -oneatx
+   -zp8 -s -zq. Two structural levers cracked the old "spill-slot" and
+   "underline register-role" walls the previous park thought were ties:
+
+   (1) Spill-slot order (target i@[esp+0], j@[esp+4]) is NOT fixed under the
+   goto/test-at-top loop by itself — but adding the extra byte local `y2` (used
+   for glyph[5]) plus keeping `ypos` as a live local shifts Watcom's temp
+   ranking so i lands in slot 0 exactly like the target. `y2` must be
+   `unsigned char` (a `short` y2 forces a spurious `xor ax,ax` widen); and the
+   glyph-block `ypos` local must stay (inlining it drops the temp and the slot
+   swap returns). The `for(;;)` form still converts to jump-to-test, so the
+   goto/test-at-top shape is kept.
+   (2) Underline register-role (target y2->EDX via movsx, glyph chain->ESI via
+   `movzx esi,[c]`) flips to match once `y2` is `unsigned char`. The width/a7
+   and glyph-advance sub-roles matched after re-spelling the additions in the
+   compiler's own evaluation order: `(font[..]+xpos)+a7`, `glyph[4]+a7`, and
+   `(a5+j)*6` (a5 first) — all commutative, all byte-for-byte closer.
+
+   Remaining gap (~all reloc-shifted jumps + one real idiom): the 4a6c8 y-arg
+   widen is still and-form (mov ax,dx; and eax,0xffff, +3 bytes) vs target
+   xor-form (xor eax,eax; mov ax,dx); the value has genuinely-dirty upper bits
+   (y param dword-slot load) so both must mask — pure instruction-selection
+   tie, resisted every ypos re-spelling. Plus two same-length register-idiom
+   ties (glyph-index a5/j EAX<->EDX, space-branch a5 ESI vs EDX). Everything
+   else matches, incl. the y+=a4 half-widen (y must be `unsigned short`), the
+   deferred j store, saved-buffer in EBP, and both font-index computations.
 
    The UI text drawer. Walks the NUL-terminated string s one byte at
    a time (byte index i). '\n' resets the pen x to the x param and advances y by
@@ -35,13 +45,14 @@ void draw_ui_text(char *s, unsigned short x, unsigned short y, unsigned char a4,
                   unsigned short a5, unsigned char *tbl, signed char a7,
                   signed char a8, unsigned char a9, unsigned char a10)
 {
-    unsigned char i;
     unsigned char j;
+    unsigned char i;
     unsigned short xpos;
     unsigned int ypos;
     unsigned char *saved;
     unsigned char *font;
     unsigned char *glyph;
+    unsigned char y2;
 
     font = tbl;
     xpos = x;
@@ -58,7 +69,7 @@ top:
         j = s[i];
         if (a9 != 0) {
             draw_line((short)xpos, (short)(a4 + y - 2),
-                         (short)(a7 + (font[(a5 + (unsigned)j - 0x20) * 6 + 4] + xpos)),
+                         (short)((font[(a5 + (unsigned)j - 0x20) * 6 + 4] + xpos) + a7),
                          (short)(a4 + y - 2), a9);
         }
         if (j == 0)
@@ -69,10 +80,11 @@ top:
                 saved = g_screen_buf;
                 g_screen_buf = g_back_buf;
             }
-            glyph = font + (j + a5) * 6;
-            ypos = (unsigned short)(y + 0xc - glyph[5]);
+            glyph = font + (a5 + j) * 6;
+            y2 = glyph[5];
+            ypos = (unsigned short)(y + 0xc - y2);
             draw_sprite_rle_buf(xpos, ypos, glyph);
-            xpos += a7 + glyph[4];
+            xpos += glyph[4] + a7;
             if (a10)
                 g_screen_buf = saved;
         } else {

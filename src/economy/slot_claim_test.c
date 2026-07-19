@@ -7,17 +7,25 @@
    any of self's claimed records j<0x32 links to p (link-1==p among its 8 links).
    Returns 0 if owner(p)==self with a live claim, or after the full j scan.
 
-   PARKED at 314/297 (structure correct, tails duplicate correctly). PROVEN HERE:
-   single-exit + goto form is REQUIRED � multi-return C with per-return restores
-   splits `save` across ESI/EDI (+push edi). Residual walls: (1) entry scheduler
-   batches cl/g_539a/si loads and loads g_539a into AH instead of the target's
-   direct `cmp byte [mem],0`; (2) the (unsigned short) cast widens via half-clear
-   `xor dh,dh` where target re-clears full EDX (dropping the cast promotes save
-   to a 32-bit copy instead � worse); (3) -oneatx hoists the loop's -1 into CH
-   (`add al,ch`) where target has `dec al`; named-local v didn't break the hoist.
-   cpermute 4000 variants: no match. */
-extern unsigned char g_539a;
-extern unsigned short g_cur_player;
+   EDIT-DIST 51 / 297 bytes (down from 73). Single-exit + goto form is REQUIRED:
+   multi-return C with per-return restores splits `save` across ESI/EDI (+push
+   edi). Two of the three old walls were cracked here:
+   - g_539a and g_cur_player marked `volatile`: g_539a now compiles to the
+     target's direct `cmp byte [539a],0` (was a hoisted `mov ah,[539a]; test
+     ah,ah`), and it also removed a redundant `mov edx,ebx` and tightened the
+     entry (73 -> 66).
+   - The two `ret=1` tails (row-flag block and the standalone claim==0xff block)
+     now SHARE one copy: block2's success does `goto ret1` into the middle of
+     block3's if-body, reproducing the target's forward-jump to a single
+     `mov al,1; store; ret`. This restructuring also made the loop's `-1`
+     compile to `dec al` (the old -oneatx CH-hoist vanished) (66 -> 51).
+   Residual walls (same-length register-idiom ties): (1) entry scheduler loads
+   the param p (cl) before save (si) where the target loads si first; (2) the
+   (unsigned short) owner-byte widen uses half-clear `xor dh,dh` (and, in
+   block2, an extra `mov edx,ebx; xor dh,bh`) where the target re-clears full
+   EDX — dropping the cast promotes save to a 32-bit copy instead, worse. */
+extern volatile unsigned char g_539a;
+extern volatile unsigned short g_cur_player;
 extern unsigned char g_syndicate_recs[];
 extern unsigned char g_b069[];
 
@@ -41,11 +49,11 @@ char slot_claim_test(unsigned char p)
     if (g_b069[p * 19 + 8] == 1) {
         if ((unsigned short)g_syndicate_recs[p * 10 + 2] != save
             || *(unsigned short *)(g_syndicate_recs + p * 10) == 0xff) {
-            ret = 1;
-            goto done;
+            goto ret1;
         }
     }
     if (*(unsigned short *)(g_syndicate_recs + p * 10) == 0xff) {
+ret1:
         ret = 1;
         goto done;
     }

@@ -1,23 +1,28 @@
-/* PARKED NEAR-MISS (ours 314B vs target 313B, raw LCS 247/313, structure
-   instruction-for-instruction exact) -- the 0x27fc8/0x28118 EAX<->ECX
-   register-role tie-break wall, reproduced here across 10 compiles.
-   Every remaining diff is one cascade seeded at the 0x91-stamp lgs:
-   target lgs ECX + fresh `mov ebp,[esp+0x18]; add ebp,0xa; mov eax,ebp`
-   vs ours lgs EAX + `add eax,0xa; mov ebp,eax`; then mid-block byte temps
-   AL vs CL/DL, seg widen xor ecx/mov cx,gs vs xor eax, `movsx ecx,ax` vs
-   cwde after 0x27d88 (2B), busy-wait AH vs DL, report offset in EBP vs ECX,
-   and the tail xor-form vs and-form widen (+3B). Levers tried (all compile,
-   all park at the same state): (off,sel) split vs 8-byte far-ptr param
-   (byte-identical codegen); statement q vs assignment-in-arg q vs named
-   ushort/`__segment` sel local vs named far nm; noff local computed
-   before/after the stamp (flips WHICH read gets the lgs pair -- run with
-   noff-first splits the loads but mirrors roles: lgs EBP + fresh EAX);
-   named uchar st for the tail; 0x28118's pragma modify lists (adopted);
-   -or (tail-merges the async return-0 + keeps the mid lgs offset alive
-   into the call args -- worse); -3s -d2 -oneatx (EBP frame, wrong family).
-   Definitive wall evidence: 0x28558's MATCHED target emits cwde from the
-   same `if (submit_ncb(...) == -1)` spelling that emits movsx ecx,ax
-   here -- allocator state, not source-reachable. Fuzzer/cpermute may close.
+/* PARKED NEAR-MISS (ours 307B vs target 313B, EDIT-DIST 45, down from 59).
+   TAIL NOW BYTE-EXACT: the closing status-read + word+4 clear + neg reproduce
+   the target instruction-for-instruction (lgs ECX, xor eax, mov al gs:[ecx+31],
+   mov word gs:[ecx+4],0, neg eax). Two fixes closed it: (1) SHARE one far ptr
+   `p = sel :> (uchar*)off` for both the [0x31] read and the +4 clear (target
+   emits a single lgs; the old two-`sel:>off` spelling forced a second
+   mov ecx,[esp+0x18] re-read), (2) `int st` not `unsigned char st` so the
+   status widens xor-first (`xor eax,eax; mov al`) instead of the and-form
+   (`mov al; and eax,0xff`) the named byte local produced. Both are faithful
+   reconstructions, not byte-tricks.
+   Remaining gap = the 0x27fc8/0x28118 EAX<->ECX register-role tie-break wall,
+   one cascade seeded at the 0x91-stamp lgs: target lgs ECX + fresh
+   `mov ebp,[esp+0x18]; add ebp,0xa; mov eax,ebp` vs ours lgs EAX +
+   `add eax,0xa; mov ebp,eax`; then mid-block byte temps AL vs CL/DL, seg widen
+   xor ecx/mov cx,gs vs xor eax, `movsx ecx,ax` vs cwde after 0x27d88 (2B),
+   busy-wait AH vs DL, report offset in EBP vs ECX. Levers tried (all compile,
+   all park at the entry state): (off,sel) split vs 8-byte far-ptr param
+   (byte-identical); statement q vs assignment-in-arg q vs named ushort/
+   `__segment` sel local vs named far nm; noff local computed before/after the
+   stamp (noff-first splits the loads but mirrors roles: lgs EBP + fresh EAX);
+   q decl+assign before stamp (50); stamp-after-fstrcpy (59); component near-
+   offset + segment local (canonicalizes); 0x28118's pragma modify lists;
+   -or (worse, 56); -of/-4r (103). Definitive wall evidence: 0x28558's MATCHED
+   target emits cwde from the same `if (submit_ncb(...) == -1)` spelling that
+   emits movsx ecx,ax here -- allocator state, not source-reachable.
    Recipe: -4s -oneatx -zp8 -s -zq
 
    netbios_op91 @ 0x28228: NetBIOS session-op (opcode 0x91), same family as
@@ -63,8 +68,9 @@ int netbios_op91(unsigned int off, unsigned short sel, char *name,
     if ((sel :> (unsigned char *)off)[0x31] != 0)
         report_net_status(g_376c, 0x217, (sel :> (unsigned char *)off)[0x31]);
     {
-        unsigned char st = (sel :> (unsigned char *)off)[0x31];
-        *(unsigned short __far *)((sel :> (unsigned char *)off) + 4) = 0;
+        unsigned char __far *p = sel :> (unsigned char *)off;
+        int st = p[0x31];
+        *(unsigned short __far *)(p + 4) = 0;
         return -st;
     }
 }
