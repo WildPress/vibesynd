@@ -1,7 +1,7 @@
 /* 0x179f8 -- total-size scan of a container file. fd = name if flags&1
  * (memory-resident) else open(name,0x200) (fail -> 0). Read u32 table offset
  * at 0x3c, then 2 bytes at that offset into an int pre-seeded with g_a240;
- * FUN_0003a9c8(&val,0xb0) nonzero -> close+0. Read the 0xac header at the
+ * strcmp(&val,0xb0) nonzero -> close+0. Read the 0xac header at the
  * table offset; from hdr+0x40 (offset) / hdr+0x44 (count) walk count 24-byte
  * records sequentially (buffered_read returns the next position), summing each
  * record's first dword. Close unless memory-resident; return sum+0xf.
@@ -10,8 +10,8 @@
 extern int g_a240;
 
 extern int open(char *name, int mode);   /* open */
-extern int FUN_0003a89d(int fd);                 /* close */
-extern int FUN_0003a9c8(void *p, int n);
+extern int close(int fd);                 /* close */
+extern int strcmp(void *p, int n);
 extern int buffered_read(int h, unsigned off, int flags, void *dst, unsigned len);
 #pragma aux buffered_read modify [eax ecx edx ebx];
 
@@ -40,8 +40,8 @@ int container_total_size(char *name, int flags)
     }
     buffered_read(fd, 0x3c, flags, &tbl, 4);
     buffered_read(fd, tbl, flags, &val, 2);
-    if (FUN_0003a9c8(&val, 0xb0)) {
-        FUN_0003a89d(fd);
+    if (strcmp(&val, 0xb0)) {
+        close(fd);
         return 0;
     }
     buffered_read(fd, tbl, flags, buf, 0xac);
@@ -51,6 +51,6 @@ int container_total_size(char *name, int flags)
         total += *(int *)rec;
     }
     if (!(flags & 1))
-        FUN_0003a89d(fd);
+        close(fd);
     return total + 0xf;
 }

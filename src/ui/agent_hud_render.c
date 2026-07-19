@@ -31,8 +31,8 @@
  *      clamp((hp+1)*23/(g_item_max_qty[frame]+1), 23), cached in g_df76[i].
  *
  * DRAW PRIMITIVES (all in the hand-asm graphics region, args below in C order):
- *   FUN_0003feb3(x, y, w, h, color)   -- filled rectangle / bar segment.
- *   FUN_0003f575(y0, y1, x, color)    -- clipped vertical line (bar end cap).
+ *   fill_rect_buf2(x, y, w, h, color)   -- filled rectangle / bar segment.
+ *   draw_vline_buf2(y0, y1, x, color)    -- clipped vertical line (bar end cap).
  *   draw_slot_record_chain(entity, idx, x, y)   -- draw the agent's weapon/inventory icon.
  *   store_4_globals(a, b, c, d)          -- store the 4 clip-rect globals.
  *
@@ -78,8 +78,8 @@ extern unsigned short g_item_max_qty[];     /* per-frame max/quantity table */
 extern unsigned char  g_frame_enable[];     /* per-frame enable flags */
 
 extern void store_4_globals(int a, int b, int c, int d);
-extern void FUN_0003feb3(int x, int y, int w, int h, int color);
-extern void FUN_0003f575(int y0, int y1, int x, int color);
+extern void fill_rect_buf2(int x, int y, int w, int h, int color);
+extern void draw_vline_buf2(int y0, int y1, int x, int color);
 extern void draw_slot_record_chain(int p, unsigned short idx, int x, int y);
 
 #define HUD_X(i) (*(unsigned short *)(g_hud_panel + (i) * 0x12))
@@ -98,15 +98,15 @@ extern void draw_slot_record_chain(int p, unsigned short idx, int x, int y);
         hi  = (int)(unsigned char)p[(FMID) + 1] * 55 / 255;                           \
         if (g_df48[i * 0xb + (CB)] != lo || g_df48[i * 0xb + (CB) + 1] != mid ||      \
             g_df48[i * 0xb + (CB) + 2] != hi) {                                       \
-            FUN_0003feb3(HUD_X(i) + 4, HUD_Y(i) + (YOFF), 0x37, 0xa, 0);              \
+            fill_rect_buf2(HUD_X(i) + 4, HUD_Y(i) + (YOFF), 0x37, 0xa, 0);              \
             if ((mid < hi && hi > lo) || (mid > hi && hi < lo)) {                     \
-                FUN_0003feb3(HUD_X(i) + 4 + mid, HUD_Y(i) + (YOFF), lo - mid, 0xa, (C1)); \
-                FUN_0003feb3(HUD_X(i) + 4 + mid, HUD_Y(i) + (YOFF), lo - mid, 0xa, (C2)); \
+                fill_rect_buf2(HUD_X(i) + 4 + mid, HUD_Y(i) + (YOFF), lo - mid, 0xa, (C1)); \
+                fill_rect_buf2(HUD_X(i) + 4 + mid, HUD_Y(i) + (YOFF), lo - mid, 0xa, (C2)); \
             } else {                                                                  \
-                FUN_0003feb3(HUD_X(i) + 4 + mid, HUD_Y(i) + (YOFF), lo - mid, 0xa, (C2)); \
-                FUN_0003feb3(HUD_X(i) + 4 + mid, HUD_Y(i) + (YOFF), hi - mid, 0xa, (C1)); \
+                fill_rect_buf2(HUD_X(i) + 4 + mid, HUD_Y(i) + (YOFF), lo - mid, 0xa, (C2)); \
+                fill_rect_buf2(HUD_X(i) + 4 + mid, HUD_Y(i) + (YOFF), hi - mid, 0xa, (C1)); \
             }                                                                         \
-            FUN_0003f575(HUD_Y(i) + (YOFF), HUD_Y(i) + (YOFF) + 9, HUD_X(i) + 4, 0xc);\
+            draw_vline_buf2(HUD_Y(i) + (YOFF), HUD_Y(i) + (YOFF) + 9, HUD_X(i) + 4, 0xc);\
             g_df48[i * 0xb + (CB)] = lo;                                              \
             g_df48[i * 0xb + (CB) + 1] = mid;                                         \
             g_df48[i * 0xb + (CB) + 2] = hi;                                          \
@@ -152,11 +152,11 @@ void agent_hud_render(void)
         /* vertical health bar (entity[0x14] word) */
         hi = *(short *)(p + 0x14) * 36 / 16;
         if (g_df48[i * 0xb + 9] != hi) {
-            FUN_0003feb3(HUD_X(i) + 0x34,
+            fill_rect_buf2(HUD_X(i) + 0x34,
                          HUD_Y(i) + 6 + (0x24 - (int)g_df48[i * 0xb + 9]),
                          6, g_df48[i * 0xb + 9], 0);
             if (hi > 0) {
-                FUN_0003feb3(HUD_X(i) + 0x34, HUD_Y(i) + 6 + (0x24 - hi), 6, hi, 0xc);
+                fill_rect_buf2(HUD_X(i) + 0x34, HUD_Y(i) + 6 + (0x24 - hi), 6, hi, 0xc);
                 g_df48[i * 0xb + 9] = (unsigned char)hi;
             }
         }
@@ -190,11 +190,11 @@ void agent_hud_render(void)
                 prev = g_df76[i];
                 if (prev != val) {
                     if (prev > 0)
-                        FUN_0003feb3(*(unsigned short *)(g_auxbar_panel + i * 0x12) + 4,
+                        fill_rect_buf2(*(unsigned short *)(g_auxbar_panel + i * 0x12) + 4,
                                      *(unsigned short *)(g_auxbar_panel + i * 0x12 + 2) + 0x18,
                                      prev, 4, 8);
                     if (val > 0)
-                        FUN_0003feb3(*(unsigned short *)(g_auxbar_panel + i * 0x12) + 4,
+                        fill_rect_buf2(*(unsigned short *)(g_auxbar_panel + i * 0x12) + 4,
                                      *(unsigned short *)(g_auxbar_panel + i * 0x12 + 2) + 0x18,
                                      val, 4, 0xe);
                     g_df76[i] = (unsigned char)val;

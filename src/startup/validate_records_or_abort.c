@@ -2,8 +2,8 @@
    classify each via realloc_block_descriptor, tally errors, then report+abort if any. */
 extern int  realloc_block_descriptor(char *rec);
 extern void printf(int code, int arg);
-extern void FUN_0003ad89(int arg);
-#pragma aux FUN_0003ad89 aborts;
+extern void exit(int arg);
+#pragma aux exit aborts;
 
 void validate_records_or_abort(char *p)
 {
@@ -26,6 +26,6 @@ void validate_records_or_abort(char *p)
 
     if (cnt != 0) {
         printf(0x12c, cnt);
-        FUN_0003ad89(1);
+        exit(1);
     }
 }

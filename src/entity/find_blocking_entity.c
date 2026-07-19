@@ -48,7 +48,7 @@
    (0x11d68..0x128a8 inclusive; manifest badly undercounts at 337 -- the
    headless sweep truncated at the indirect jmp CS:[EAX*4+0x4550] @ 0x11e3c.
    That address is CODE: the old AGENTS note calling 0x11e3c a writable global
-   predates the cont.19 0x28b8-extraction finding -- the FUN_0003c46d literal
+   predates the cont.19 0x28b8-extraction finding -- the errno_ptr literal
    0x11e3c is a RUNTIME address = manifest 0xf584 in the cut-off prefix).
 
    Scans grid cells gx = (x-rx)&0xff00 .. (x+rx)&0xff00, gy likewise with ry,

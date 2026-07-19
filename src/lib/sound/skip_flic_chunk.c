@@ -2,8 +2,8 @@
 extern unsigned short g_bddc;
 extern int g_back_buf;
 extern int g_bdd0;
-extern void FUN_0003a7c4(int a, int b, int c);
+extern void read(int a, int b, int c);
 void skip_flic_chunk(void)
 {
-    FUN_0003a7c4(g_bdd0, g_back_buf, g_bddc - 6);
+    read(g_bdd0, g_back_buf, g_bddc - 6);
 }

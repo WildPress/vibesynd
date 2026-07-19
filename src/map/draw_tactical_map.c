@@ -25,7 +25,7 @@
  *  - subX / subY are `short` (target reloads them movsx WORD).
  *  - The three sel_x/sel_y/sel_r = -1 initialisers hoisted to the top (target
  *    emits them first, sharing a single edx=-1).
- *  - Phase-1 terrain: the (x,y,w,h) args to FUN_0003fb40 are written inline in
+ *  - Phase-1 terrain: the (x,y,w,h) args to fill_rect are written inline in
  *    each switch case, NOT via shared sx/sy temps -- the target recomputes them
  *    per case (each case is a separate jump-table block, no cross-block CSE).
  *  - Phase-2: tsx/tsy folded directly into blipX/blipY (no separate temps).
@@ -58,7 +58,7 @@
  *
  * Phase 1 (terrain): for every tile (row,col) in view, look up its ground tile
  * through the g_map_cols column table, map it through g_tile_flags to a terrain shape
- * 0..15, and draw that shape as a filled quad via FUN_0003fb40(x,y,w,h,colour)
+ * 0..15, and draw that shape as a filled quad via fill_rect(x,y,w,h,colour)
  * (colour 0xf / 7 / 0xa / 0 per shape class).
  *
  * Phase 2 (blips): for every tile, walk the spatial-grid entity chain
@@ -69,7 +69,7 @@
  * local buffer with a friend/foe/target colour. The followed agent's own blip
  * position is remembered (sel_x/sel_y/sel_r).
  *
- * Tail: FUN_0003f4b4 / FUN_0003f636 recentre the radar on the followed agent;
+ * Tail: draw_vline / draw_hline recentre the radar on the followed agent;
  * two passes over the blip buffer draw each blip (shadow then sprite) via the
  * matched draw_filled_shape; draw_circle draws the selected-agent pulse ring; and
  * the phase-3 loop scans 8 objective slots (0x1be3a, stride 14) and draws the
@@ -95,9 +95,9 @@ extern unsigned char g_e395;       /* show projectile/danger blips           */
 extern unsigned char g_e396;       /* target-marker colour offset            */
 extern unsigned char g_e397;       /* objective-marker colour phase          */
 
-extern void FUN_0003fb40(int x, int y, int w, int h, int colour); /* fill quad */
-extern void FUN_0003f4b4(int a, int b, int c, int d);   /* radar x recentre    */
-extern void FUN_0003f636(int a, int b, int c, int d);   /* radar y recentre    */
+extern void fill_rect(int x, int y, int w, int h, int colour); /* fill quad */
+extern void draw_vline(int a, int b, int c, int d);   /* radar x recentre    */
+extern void draw_hline(int a, int b, int c, int d);   /* radar y recentre    */
 extern void draw_filled_shape(int x, int y, int chr, int colour);      /* draw blip  */
 extern void draw_circle(int x, int y, int r, int colour);        /* draw ring  */
 extern int  sum_of_squares_call(int a, int b);                 /* marker anim length  */
@@ -142,19 +142,19 @@ void draw_tactical_map(unsigned char *agent, unsigned short zoom)
 
             switch (shape) {
             case 1: case 2: case 3: case 4: case 0xd:
-                FUN_0003fb40((col - tileX0) * zoom - subX,
+                fill_rect((col - tileX0) * zoom - subX,
                              (row - tileY0) * zoom - subY, zoom, zoom, 0xf);
                 break;
             case 5: case 0xe:
-                FUN_0003fb40((col - tileX0) * zoom - subX,
+                fill_rect((col - tileX0) * zoom - subX,
                              (row - tileY0) * zoom - subY, zoom, zoom, 7);
                 break;
             case 6: case 7: case 8: case 9: case 0xb: case 0xf:
-                FUN_0003fb40((col - tileX0) * zoom - subX,
+                fill_rect((col - tileX0) * zoom - subX,
                              (row - tileY0) * zoom - subY, zoom, zoom, 0xa);
                 break;
             case 0xa:
-                FUN_0003fb40((col - tileX0) * zoom - subX,
+                fill_rect((col - tileX0) * zoom - subX,
                              (row - tileY0) * zoom - subY, zoom, zoom, 0);
                 break;
             default:            /* 0, 0xc: nothing */
@@ -203,12 +203,12 @@ void draw_tactical_map(unsigned char *agent, unsigned short zoom)
 
                 switch (type) {
                 case 2:     /* filled square blip */
-                    FUN_0003fb40(blipX - radius / 2, blipY - radius / 2,
+                    fill_rect(blipX - radius / 2, blipY - radius / 2,
                                  radius, radius, 0xc);
                     break;
                 case 4:     /* small dot (projectile / danger) */
                     if (g_e395 != 0)
-                        FUN_0003fb40(blipX - 1, blipY - 1, 2, 2, 4);
+                        fill_rect(blipX - 1, blipY - 1, 2, 2, 4);
                     break;
                 case 1: {   /* agent blip -> buffer with friend/foe colour */
                     short tgt = *(short *)(node + 0x20);
@@ -247,7 +247,7 @@ void draw_tactical_map(unsigned char *agent, unsigned short zoom)
                                 break;
                             if (g_e395 == 0)
                                 break;
-                            FUN_0003fb40(blipX - 1, blipY - 1, 2, 2, 0xc);
+                            fill_rect(blipX - 1, blipY - 1, 2, 2, 0xc);
                         }
                     } else {
                         if ((node[0x1c] & 8) && tgt == 0) {
@@ -268,7 +268,7 @@ void draw_tactical_map(unsigned char *agent, unsigned short zoom)
                             if (tgt == -1) {
                                 if (g_e395 == 0)
                                     break;
-                                FUN_0003fb40(blipX - 1, blipY - 1, 2, 2, 0xc);
+                                fill_rect(blipX - 1, blipY - 1, 2, 2, 0xc);
                                 break;
                             }
                             *(short *)(blip + count * 6) = (short)blipX;
@@ -305,8 +305,8 @@ void draw_tactical_map(unsigned char *agent, unsigned short zoom)
     }
 
     /* ---- Tail: recentre radar, draw blips, pulse ring ---- */
-    FUN_0003f4b4(0, 0x80, sel_x, 0);
-    FUN_0003f636(0, 0x80, sel_y, 0);
+    draw_vline(0, 0x80, sel_x, 0);
+    draw_hline(0, 0x80, sel_y, 0);
 
     {
         int i;

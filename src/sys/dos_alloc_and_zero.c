@@ -12,7 +12,7 @@
 /* dos_alloc_and_zero @ 0x28728 - DPMI (int 0x31, AX=0x100) allocate DOS memory block,
    then zero-fill the block through a far pointer. Proposed name: dos_alloc_and_zero. */
 
-extern void FUN_0003aaf8(void *dst, int val, int len);   /* memset helper */
+extern void memset(void *dst, int val, int len);   /* memset helper */
 extern void int386(int a, void *msg, void *scratch);
 extern void report_net_status(int a, int b, int c);
 
@@ -25,8 +25,8 @@ unsigned int dos_alloc_and_zero(unsigned short *param_1, unsigned short param_2)
     int scratch[7];
     int local_c;
 
-    FUN_0003aaf8(msg, 0, 0x1c);
-    FUN_0003aaf8(scratch, 0, 0x1c);
+    memset(msg, 0, 0x1c);
+    memset(scratch, 0, 0x1c);
     msg[0] = 0x100;
     msg[1] = (param_2 + 0x10) / 16;
     int386(0x31, msg, scratch);

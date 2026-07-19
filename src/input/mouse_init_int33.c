@@ -25,7 +25,7 @@ extern char g_37fc[];
 extern void int386(int inum, void *inr, void *outr);   /* int386 */
 extern void segread(void *sregs);                       /* segread */
 extern void FUN_0003b3e6(int inum, void *inr, void *outr, void *sregs); /* int386x */
-extern void *FUN_0003aa74(unsigned n);                       /* malloc */
+extern void *malloc(unsigned n);                       /* malloc */
 extern void printf(char *s);                           /* error */
 extern void FUN_0001b290(void);                              /* mouse event handler */
 
@@ -55,13 +55,13 @@ int mouse_init_int33(void)
         FUN_0003b3e6(0x33, in, out, sr);
         switch (g_105) {
         case 1:
-            g_df3c = FUN_0003aa74(0x1100);
+            g_df3c = malloc(0x1100);
             break;
         case 2:
-            g_df3c = FUN_0003aa74(0x14b0);
+            g_df3c = malloc(0x14b0);
             break;
         default:
-            g_df3c = FUN_0003aa74(0x1090);
+            g_df3c = malloc(0x1090);
             break;
         }
         if (g_df3cv != 0) {

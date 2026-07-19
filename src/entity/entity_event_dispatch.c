@@ -12,7 +12,7 @@
 
 extern unsigned char g_entity_pool[];
 extern unsigned short squad_threat_test(unsigned char *node, unsigned char *entity);
-extern void FUN_0000daa8(int a, unsigned char *entity);
+extern void deliver_entity_event_if_visible(int a, unsigned char *entity);
 unsigned short entity_event_dispatch(unsigned char *p)
 {
     unsigned short f = *(unsigned short *)(p + 0xc);
@@ -28,7 +28,7 @@ unsigned short entity_event_dispatch(unsigned char *p)
                 p[0x58] = 0x1e;
                 p[0xa] |= 8;
                 *(unsigned short *)(p + 0x20) = *(unsigned short *)(p + 0x16);
-                FUN_0000daa8(0xe, p);
+                deliver_entity_event_if_visible(0xe, p);
                 return 0x2c;
             }
         }

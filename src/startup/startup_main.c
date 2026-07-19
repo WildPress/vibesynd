@@ -28,8 +28,8 @@ extern void system(void *s);
 extern long atol(char *s);                          /* atol */
 extern int  parse_hex_arg(char *s);                          /* hex parse */
 extern void init_call5(void);
-extern void FUN_0003ad89(int code);
-#pragma aux FUN_0003ad89 aborts;
+extern void exit(int code);
+#pragma aux exit aborts;
 extern void printf(char *fmt, char *s);
 extern void validate_records_or_abort(char *p);
 extern void pool_records_add(unsigned char *start, unsigned char *end, int arg3);
@@ -154,7 +154,7 @@ void startup_main(short argc, char **argv)
                 *(unsigned short *)buf = mode;
                 int386(0x10, buf, buf);
                 init_call5();
-                FUN_0003ad89(1);
+                exit(1);
                 break;
             case 'N':
             case 'n':
@@ -162,7 +162,7 @@ void startup_main(short argc, char **argv)
                 break;
             default:
                 printf(g_356c, argv[i] + 1);
-                FUN_0003ad89(1);
+                exit(1);
             }
         }
     }

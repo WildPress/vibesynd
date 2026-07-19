@@ -12,7 +12,7 @@
  * with a dead READ (mov eax,ebx) and loads esi(param_2) before ebx(param_1);
  * our isolated compile emits a dead STORE + reversed param load order. */
 
-extern void FUN_0003aaf8(void *dst, int val, int len);   /* memset */
+extern void memset(void *dst, int val, int len);   /* memset */
 extern void int386(int a, void *msg, void *scratch);
 extern void report_net_status(int a, int b, int c);
 
@@ -21,8 +21,8 @@ void dpmi_free_dos_mem(int param_1, unsigned short param_2)
     int buf[14];
 
     if (param_1 != 0 || param_2 != 0) {
-        FUN_0003aaf8(buf, 0, 0x1c);
-        FUN_0003aaf8(buf + 7, 0, 0x1c);
+        memset(buf, 0, 0x1c);
+        memset(buf + 7, 0, 0x1c);
         buf[0] = 0x101;
         buf[3] = param_1;
         buf[3] = param_1;

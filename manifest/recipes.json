@@ -1,459 +1,39 @@
 {
- "FUN_0003aa74": {
-  "addr": "0003aa74",
-  "flags": "-3s -of -oneatx -zp8 -s -zq"
- },
- "FUN_0003ab59": {
-  "addr": "0003ab59",
-  "flags": "-3s -of -oneatx -zp8 -s -zq"
- },
- "FUN_0003addb": {
-  "addr": "0003addb",
-  "flags": "-3s -of -oneatx -zp8 -s -zq"
- },
- "FUN_0003b8cd": {
-  "addr": "0003b8cd",
-  "flags": "-3s -of -oneatx -zp8 -s -zq"
- },
  "FUN_0003b8f8": {
   "addr": "0003b8f8",
-  "flags": "-3s -of -oneatx -zp8 -s -zq"
- },
- "FUN_0003c002": {
-  "addr": "0003c002",
-  "flags": "-3s -of -oneatx -zp8 -s -zq"
- },
- "FUN_0003c46d": {
-  "addr": "0003c46d",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
- "FUN_0003c473": {
-  "addr": "0003c473",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
- "FUN_0003cc26": {
-  "addr": "0003cc26",
-  "flags": "-3s -os -zp8 -s -zq"
- },
- "FUN_0003cc45": {
-  "addr": "0003cc45",
   "flags": "-3s -of -oneatx -zp8 -s -zq"
  },
  "FUN_0003cfce": {
   "addr": "0003cfce",
   "flags": "-3s -of -oneatx -zp8 -s -zq"
  },
- "FUN_0003db63": {
-  "addr": "0003db63",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
  "FUN_0003db69": {
   "addr": "0003db69",
   "flags": "-3s -of -oneatx -zp8 -s -zq"
  },
- "FUN_0003e471": {
-  "addr": "0003e471",
-  "flags": "-3s -of -oneatx -zp8 -s -zq"
- },
- "FUN_0003e48e": {
-  "addr": "0003e48e",
-  "flags": "-3s -of -oneatx -zp8 -s -zq"
- },
- "FUN_0003e4aa": {
-  "addr": "0003e4aa",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
- "FUN_0003aaf8": {
-  "addr": "0003aaf8",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003a89d": {
-  "addr": "0003a89d",
-  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
- },
- "FUN_0003a598": {
-  "addr": "0003a598",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003a7c4": {
-  "addr": "0003a7c4",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003a9c8": {
-  "addr": "0003a9c8",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003aa84": {
-  "addr": "0003aa84",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003ab8e": {
-  "addr": "0003ab8e",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003ab1a": {
-  "addr": "0003ab1a",
-  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
- },
- "FUN_0003a19a": {
-  "addr": "0003a19a",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003a033": {
-  "addr": "0003a033",
-  "flags": "-4r -oneatx -zp8 -s -zq"
- },
- "FUN_0003a10c": {
-  "addr": "0003a10c",
-  "flags": "-4r -oneatx -zp8 -s -zq"
- },
  "FUN_0003b420": {
   "addr": "0003b420",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003b594": {
-  "addr": "0003b594",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003b739": {
-  "addr": "0003b739",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003b7e8": {
-  "addr": "0003b7e8",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003b9ca": {
-  "addr": "0003b9ca",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003ba01": {
-  "addr": "0003ba01",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003a900": {
-  "addr": "0003a900",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003ab69": {
-  "addr": "0003ab69",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003ad89": {
-  "addr": "0003ad89",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003adf0": {
-  "addr": "0003adf0",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003d079": {
-  "addr": "0003d079",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003d0bc": {
-  "addr": "0003d0bc",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003d16f": {
-  "addr": "0003d16f",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003d24a": {
-  "addr": "0003d24a",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003d2c3": {
-  "addr": "0003d2c3",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003d36b": {
-  "addr": "0003d36b",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003d40f": {
-  "addr": "0003d40f",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003d4bc": {
-  "addr": "0003d4bc",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003e143": {
-  "addr": "0003e143",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003d966": {
-  "addr": "0003d966",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003dc1b": {
-  "addr": "0003dc1b",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003db9e": {
-  "addr": "0003db9e",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003e513": {
-  "addr": "0003e513",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003df3c": {
-  "addr": "0003df3c",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003e1af": {
-  "addr": "0003e1af",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003b1d3": {
-  "addr": "0003b1d3",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003b2aa": {
-  "addr": "0003b2aa",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003dd97": {
-  "addr": "0003dd97",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003f2b7": {
-  "addr": "0003f2b7",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003dae1": {
-  "addr": "0003dae1",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003ee21": {
-  "addr": "0003ee21",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003ea6b": {
-  "addr": "0003ea6b",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003f575": {
-  "addr": "0003f575",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003b2b5": {
-  "addr": "0003b2b5",
   "flags": "-3s -oneatx -zp8 -s -zq"
  },
  "FUN_0003b3e6": {
   "addr": "0003b3e6",
   "flags": "-3s -oneatx -zp8 -s -zq"
  },
- "FUN_0003eda6": {
-  "addr": "0003eda6",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003b1f6": {
-  "addr": "0003b1f6",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003d4f3": {
-  "addr": "0003d4f3",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003e6ab": {
-  "addr": "0003e6ab",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003e27a": {
-  "addr": "0003e27a",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
  "FUN_0004cd18": {
   "addr": "0004cd18",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003dfe8": {
-  "addr": "0003dfe8",
   "flags": "-3s -oneatx -zp8 -s -zq"
  },
  "FUN_0004a639": {
   "addr": "0004a639",
   "flags": "-3s -oneatx -zp8 -s -zq"
  },
- "FUN_0003dea0": {
-  "addr": "0003dea0",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003e2bb": {
-  "addr": "0003e2bb",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003e4f8": {
-  "addr": "0003e4f8",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003b326": {
-  "addr": "0003b326",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003df89": {
-  "addr": "0003df89",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003e5b4": {
-  "addr": "0003e5b4",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003f0f1": {
-  "addr": "0003f0f1",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003e816": {
-  "addr": "0003e816",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003e4c0": {
-  "addr": "0003e4c0",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003da4c": {
-  "addr": "0003da4c",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
  "FUN_0003e381": {
   "addr": "0003e381",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003f4b4": {
-  "addr": "0003f4b4",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003d90b": {
-  "addr": "0003d90b",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0004a8d1": {
-  "addr": "0004a8d1",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003dc68": {
-  "addr": "0003dc68",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003e698": {
-  "addr": "0003e698",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003dcfa": {
-  "addr": "0003dcfa",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003ba80": {
-  "addr": "0003ba80",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003bb1e": {
-  "addr": "0003bb1e",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003bd37": {
-  "addr": "0003bd37",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003be93": {
-  "addr": "0003be93",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003bebc": {
-  "addr": "0003bebc",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003bee3": {
-  "addr": "0003bee3",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003bf36": {
-  "addr": "0003bf36",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003dbeb": {
-  "addr": "0003dbeb",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003c019": {
-  "addr": "0003c019",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003c772": {
-  "addr": "0003c772",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003c816": {
-  "addr": "0003c816",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003ca18": {
-  "addr": "0003ca18",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003ca4f": {
-  "addr": "0003ca4f",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003cabb": {
-  "addr": "0003cabb",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003cacb": {
-  "addr": "0003cacb",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003cade": {
-  "addr": "0003cade",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003cafb": {
-  "addr": "0003cafb",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003cb24": {
-  "addr": "0003cb24",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003cba4": {
-  "addr": "0003cba4",
   "flags": "-3s -oneatx -zp8 -s -zq"
  },
  "FUN_0003cc74": {
   "addr": "0003cc74",
   "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003f636": {
-  "addr": "0003f636",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003f8bb": {
-  "addr": "0003f8bb",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003fb40": {
-  "addr": "0003fb40",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003feb3": {
-  "addr": "0003feb3",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003c4b9": {
-  "addr": "0003c4b9",
-  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
- },
- "FUN_0003c529": {
-  "addr": "0003c529",
-  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
- },
- "FUN_0003c57b": {
-  "addr": "0003c57b",
-  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
  },
  "FUN_0003c644": {
   "addr": "0003c644",
@@ -462,10 +42,6 @@
  "FUN_0003b99e": {
   "addr": "0003b99e",
   "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003c491": {
-  "addr": "0003c491",
-  "flags": "-3s -of -oneatx -zp8 -s -zq"
  },
  "thunk_FUN_0003b1f6": {
   "addr": "0003b1d1",
@@ -1567,5 +1143,429 @@
  "snd_cmd_ab": {
   "addr": "00039bc3",
   "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "rle_blit_word": {
+  "addr": "0003a033",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "rle_blit_byte": {
+  "addr": "0003a10c",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "frame_throttle": {
+  "addr": "0003a19a",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "sopen": {
+  "addr": "0003a598",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "read": {
+  "addr": "0003a7c4",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "close": {
+  "addr": "0003a89d",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "strcat_word": {
+  "addr": "0003a900",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "strcmp": {
+  "addr": "0003a9c8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "malloc": {
+  "addr": "0003aa74",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "nmalloc": {
+  "addr": "0003aa84",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "memset": {
+  "addr": "0003aaf8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "filelength": {
+  "addr": "0003ab1a",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "free": {
+  "addr": "0003ab59",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "nfree": {
+  "addr": "0003ab69",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "write": {
+  "addr": "0003ab8e",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "exit": {
+  "addr": "0003ad89",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "open_rw_creat_trunc": {
+  "addr": "0003addb",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "setmode": {
+  "addr": "0003adf0",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "write_msg_and_exit": {
+  "addr": "0003b1d3",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "_exit": {
+  "addr": "0003b1f6",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "inp": {
+  "addr": "0003b2aa",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fputc_nl": {
+  "addr": "0003b2b5",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fgets_console": {
+  "addr": "0003b326",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fseek": {
+  "addr": "0003b594",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "parse_open_mode": {
+  "addr": "0003b739",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fopen_core": {
+  "addr": "0003b7e8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fsopen": {
+  "addr": "0003b8cd",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "fclose_free": {
+  "addr": "0003b9ca",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "build_temp_filename": {
+  "addr": "0003ba01",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "close_stream": {
+  "addr": "0003ba80",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "doprnt": {
+  "addr": "0003bb1e",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "parse_conv_spec": {
+  "addr": "0003bd37",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "far_strnlen": {
+  "addr": "0003be93",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "far_wcsnlen": {
+  "addr": "0003bebc",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "format_hex_field": {
+  "addr": "0003bee3",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "format_fixed_frac": {
+  "addr": "0003bf36",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "prtf_out_call": {
+  "addr": "0003c002",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "prtf_conversion": {
+  "addr": "0003c019",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "errno_ptr": {
+  "addr": "0003c46d",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "doserrno_ptr": {
+  "addr": "0003c473",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "dosret_map_err": {
+  "addr": "0003c491",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "set_doserr": {
+  "addr": "0003c4b9",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "fd_to_stream": {
+  "addr": "0003c529",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "fd_handle_store": {
+  "addr": "0003c57b",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "dpmi_dos_alloc_paras": {
+  "addr": "0003c772",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "heap_grow": {
+  "addr": "0003c816",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "memset_align_head": {
+  "addr": "0003ca18",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "memset_dwords": {
+  "addr": "0003ca4f",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "stack_avail": {
+  "addr": "0003cabb",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "stk_check_thunk": {
+  "addr": "0003cacb",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "stack_limit_check": {
+  "addr": "0003cade",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "stack_overflow": {
+  "addr": "0003cafb",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "stream_reopen": {
+  "addr": "0003cb24",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "getenv": {
+  "addr": "0003cba4",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "spawn_load_check": {
+  "addr": "0003cc26",
+  "flags": "-3s -os -zp8 -s -zq"
+ },
+ "spawn_exec": {
+  "addr": "0003cc45",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "run_fini_routines": {
+  "addr": "0003d079",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "build_argv": {
+  "addr": "0003d0bc",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "parse_cmdline": {
+  "addr": "0003d16f",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fputs": {
+  "addr": "0003d24a",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fputc": {
+  "addr": "0003d2c3",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "getc": {
+  "addr": "0003d36b",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fill_buffer": {
+  "addr": "0003d40f",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "int386x": {
+  "addr": "0003d4bc",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "intr_call_core": {
+  "addr": "0003d4f3",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "memcpy": {
+  "addr": "0003d90b",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "flush_stream": {
+  "addr": "0003d966",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "alloc_stream": {
+  "addr": "0003da4c",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "free_stream": {
+  "addr": "0003dae1",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "get_tmp_seed": {
+  "addr": "0003db63",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "utoa": {
+  "addr": "0003db9e",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "itoa": {
+  "addr": "0003dbeb",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "strlen": {
+  "addr": "0003dc1b",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "ultoa": {
+  "addr": "0003dc68",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "os_getmem": {
+  "addr": "0003dcfa",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "brk": {
+  "addr": "0003dd97",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fcloseall": {
+  "addr": "0003dea0",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "dos_findfirst": {
+  "addr": "0003df3c",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "copy_finddata_from_dta": {
+  "addr": "0003df89",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "build_exec_block": {
+  "addr": "0003dfe8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "build_cmdtail": {
+  "addr": "0003e143",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "dos_exec": {
+  "addr": "0003e1af",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "copy_path_component": {
+  "addr": "0003e27a",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "splitpath2": {
+  "addr": "0003e2bb",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "spawn_with_env": {
+  "addr": "0003e471",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "exec_with_env": {
+  "addr": "0003e48e",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "set_heap_alloc_flag": {
+  "addr": "0003e4aa",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "flushall": {
+  "addr": "0003e4c0",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "getche": {
+  "addr": "0003e4f8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "qwrite": {
+  "addr": "0003e513",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "setenvp": {
+  "addr": "0003e5b4",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "check_dos_carry": {
+  "addr": "0003e698",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "spawn_search_path": {
+  "addr": "0003e6ab",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "restore_cursor_bg": {
+  "addr": "0003e816",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "save_cursor_bg": {
+  "addr": "0003ea6b",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_mouse_pointer": {
+  "addr": "0003eda6",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "end_cursor_draw": {
+  "addr": "0003ee21",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "save_sprite_bg": {
+  "addr": "0003f0f1",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "restore_sprite_bg": {
+  "addr": "0003f2b7",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_vline": {
+  "addr": "0003f4b4",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_vline_buf2": {
+  "addr": "0003f575",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_hline": {
+  "addr": "0003f636",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_hline_buf2": {
+  "addr": "0003f8bb",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fill_rect": {
+  "addr": "0003fb40",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fill_rect_buf2": {
+  "addr": "0003feb3",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "blit_cursor_sprite": {
+  "addr": "0004a8d1",
+  "flags": "-3s -oneatx -zp8 -s -zq"
  }
 }

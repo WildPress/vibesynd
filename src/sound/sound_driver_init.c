@@ -27,7 +27,7 @@
    version/opt ties, not source-reachable. Baseline (bb+no-volatile) kept @126. */
 extern int alloc_init_with_errcode(int size, int flag);
 extern int container_load(int buf, int kind, int flag);
-extern void FUN_0003ab59(int buf);
+extern void free(int buf);
 extern void init_voice_tables(void);
 extern int register_driver(int res);
 extern void unload_all_drivers(int arg);
@@ -48,7 +48,7 @@ int sound_driver_init(unsigned short a, unsigned short b, unsigned short c)
         return 0;
     if ((g_11df4 = container_load(g_11df0, 5, 0)) == 0)
         return 0;
-    FUN_0003ab59(g_11df0);
+    free(g_11df0);
     init_voice_tables();
     g_snd_driver = register_driver(g_11df4);
     if (g_snd_driver == -1) {

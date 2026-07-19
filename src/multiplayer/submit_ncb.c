@@ -26,7 +26,7 @@
    selector via `&p`, or an int offset) either re-fuses byte-identically or
    spills p to memory and loses the ESI cache entirely. Genuine allocator tie;
    fuzzer/cpermute may close it. Recipe: -4s -oneatx -zp8 -s -zq */
-extern void FUN_0003aaf8(void *dst, int val, int len);
+extern void memset(void *dst, int val, int len);
 extern void segread(void *sregs);
 extern void FUN_0003b3e6(int inum, void *inr, void *outr, void *sregs);
 extern void report_net_status(char *s, int line, int code);
@@ -43,15 +43,15 @@ int submit_ncb(unsigned char __far *p)
     unsigned char *o = (unsigned char *)p;
 
     (sel :> o)[0x31] = 0;
-    FUN_0003aaf8(rm, 0, 0x32);
+    memset(rm, 0, 0x32);
     seg = *(unsigned short __far *)((sel :> o) + 0x40);
     *(int *)(rm + 0x10) = (int)o;
     *(int *)(rm + 0x20) = 0x100;
     *(unsigned short *)(rm + 0x24) = seg;
     *(unsigned short *)(rm + 0x26) = seg;
-    FUN_0003aaf8(in, 0, 0x1c);
-    FUN_0003aaf8(out, 0, 0x1c);
-    FUN_0003aaf8(sr, 0, 0xc);
+    memset(in, 0, 0x1c);
+    memset(out, 0, 0x1c);
+    memset(sr, 0, 0xc);
     segread(sr);
     in[5] = (int)rm;
     in[0] = 0x300;

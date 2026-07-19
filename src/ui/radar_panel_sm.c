@@ -22,7 +22,7 @@
  *         OFS = 0x242+8*(type-1) for 1..0xc, 0x2b2 for 0xd/e/f, 0x2ba for
  *         0x10, 0x2c2 for 0x11/12/13; type 0xc also centers string
  *         tbl_4b10[type-1][g_language] into field 0x10584; then if g_frame_enable[type]
- *         draw gauge FUN_0003fb40(x+4, y+0x18, 0x17, 4, 0xc). Always:
+ *         draw gauge fill_rect(x+4, y+0x18, 0x17, 4, 0xc). Always:
  *         center tbl_4b10[type-1][g_language] into 0x10584; g_5324 = g_5308 +
  *         6*state; return.
  *  5/6 -> g_5324 = g_5308 + 6*state; fall out.
@@ -89,7 +89,7 @@ extern unsigned char *los_trace(unsigned char *a, unsigned char *rec, short p);
 extern unsigned char *los_trace_far(unsigned char *p1, unsigned char *p2, int dist);
 extern int chain_length(unsigned char *p);
 extern void render_draw_list(unsigned short a, short x, short y);
-extern int FUN_0003fb40();
+extern int fill_rect();
 extern void center_string_16(int a, int b);
 
 void radar_panel_sm(void)
@@ -228,7 +228,7 @@ void radar_panel_sm(void)
                 break;
             }
             if (g_frame_enable[e[0x19]] != 0)
-                FUN_0003fb40((unsigned short)g_auxbar_panel[n * 9] + 4,
+                fill_rect((unsigned short)g_auxbar_panel[n * 9] + 4,
                              (unsigned short)g_auxbar_panel[n * 9 + 1] + 0x18, 0x17, 4, 0xc);
         }
         center_string_16(0x10584, tbl_4b10[e[0x19] - 1][g_language]);

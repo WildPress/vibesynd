@@ -1,8 +1,8 @@
-/* @ 0x3c479 -- framed CLIB helper: if(b) return FUN_0003c491(a,b); else b. */
-extern int FUN_0003c491(int a, int b);
+/* @ 0x3c479 -- framed CLIB helper: if(b) return dosret_map_err(a,b); else b. */
+extern int dosret_map_err(int a, int b);
 int dosret(int a, int b)
 {
     if (b != 0)
-        return FUN_0003c491(a, b);
+        return dosret_map_err(a, b);
     return b;
 }

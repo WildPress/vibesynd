@@ -34,7 +34,7 @@
    the cross-jumper decision is not source-controllable. */
 extern int alloc_init_with_errcode(int name, int flag);
 extern int container_load(int buf, int kind, int flag);
-extern void FUN_0003ab59(void *buf);
+extern void free(void *buf);
 extern int register_driver(int res);
 extern unsigned char *voice_get_driver_obj(int handle);
 extern int snd_cmd_65(int handle, int c, int a, int b, int d);
@@ -45,8 +45,8 @@ extern unsigned short snd_cmd_99(int handle);
 extern void snd_cmd_9a(int handle, void *p, int n);
 extern unsigned short snd_cmd_9b(int handle, int seq);
 extern void snd_cmd_9c(int handle, int bank, int patch, void *p);
-extern void *FUN_0003aa74(unsigned n);
-extern void FUN_0003a900(char *dst, unsigned char *src);
+extern void *malloc(unsigned n);
+extern void strcat_word(char *dst, unsigned char *src);
 extern void *FUN_0003b8f8(char *name, char *mode);
 extern void FUN_0003b99e(void *f);
 extern void *load_tagged_resource(void *f, int bank, int patch);
@@ -83,7 +83,7 @@ int xmidi_music_init(int a1, int a2, unsigned short a, unsigned short b, unsigne
     res = container_load(drv, 5, 0);
     if (res == 0)
         return 0;
-    FUN_0003ab59((void *)drv);
+    free((void *)drv);
     g_seq_ctx = register_driver(res);
     if (g_seq_ctx == -1)
         return 0;
@@ -104,15 +104,15 @@ int xmidi_music_init(int a1, int a2, unsigned short a, unsigned short b, unsigne
     if (mem == 0)
         return 0;
     *(struct blk13 *)buf = *(struct blk13 *)0x3d10;
-    FUN_0003a900(buf, hdr + 8);
+    strcat_word(buf, hdr + 8);
     w = snd_cmd_99(g_seq_ctx);
     if (w != 0)
-        snd_cmd_9a(g_seq_ctx, FUN_0003aa74(w), w);
+        snd_cmd_9a(g_seq_ctx, malloc(w), w);
     file = FUN_0003b8f8(buf, (char *)0x3d20);
     for (i = 0; i < 8; i++) {
-        slots[i] = FUN_0003aa74(size);
+        slots[i] = malloc(size);
         if ((g_seq_state[i] = snd_cmd_97(g_seq_ctx, mem, i, slots[i], 0)) == -1) {
-            FUN_0003ab59(slots[i]);
+            free(slots[i]);
             break;
         }
         while ((w = snd_cmd_9b(g_seq_ctx, g_seq_state[i])) != 0xffff) {
@@ -122,7 +122,7 @@ int xmidi_music_init(int a1, int a2, unsigned short a, unsigned short b, unsigne
             if (p == 0)
                 return 0;
             snd_cmd_9c(g_seq_ctx, (unsigned short)q, (unsigned short)(wv % 256), p);
-            FUN_0003ab59(p);
+            free(p);
         }
     }
     if (file != 0)

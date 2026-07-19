@@ -5,7 +5,7 @@
  * open(name,0x200) unless flags&1 (memory-resident, fd=name). Compute total
  * size via container_total_size; if flags&4, malloc that size into 'out' (fail->close+0)
  * then memset it. Read u32 table offset at 0x3c, 2-byte version-ish word at tbl
- * seeded with g_a244; FUN_0003a9c8(&val,0xb0) nonzero -> close+0. Read the 0xac
+ * seeded with g_a244; strcmp(&val,0xb0) nonzero -> close+0. Read the 0xac
  * header at tbl. Phase 1: walk hdr[0x44] segment records (24B each from
  * tbl+hdr[0x40]); for each, walk rec[0x10] chunk entries (8B each from
  * tbl+hdr[0x48]), 16-aligning the first chunk when rec[8]&3, copying
@@ -19,10 +19,10 @@
 extern int g_a244;
 
 extern int open(char *name, int mode);            /* open */
-extern void FUN_0003a89d(int fd);                         /* close */
-extern int FUN_0003a9c8(void *p, int n);
-extern void *FUN_0003aa74(unsigned n);                    /* malloc */
-extern void FUN_0003aaf8(void *dst, int val, int len);    /* memset */
+extern void close(int fd);                         /* close */
+extern int strcmp(void *p, int n);
+extern void *malloc(unsigned n);                    /* malloc */
+extern void memset(void *dst, int val, int len);    /* memset */
 extern int buffered_read(int h, unsigned off, int flags, void *dst, unsigned len);
 extern int container_total_size(char *name, int flags);
 #pragma aux buffered_read modify [eax ecx edx ebx];
@@ -73,19 +73,19 @@ void *container_load(char *name, int flags, void *out)
     }
     uv = container_total_size(name, flags);
     if (flags & 4) {
-        out = FUN_0003aa74(uv);
+        out = malloc(uv);
         if (out == (void *)0) {
             if ((flags & 1) == 0)
-                FUN_0003a89d(fd);
+                close(fd);
             return (void *)0;
         }
     }
-    FUN_0003aaf8(out, 0, uv);
+    memset(out, 0, uv);
     buffered_read(fd, 0x3c, flags, &tbl, 4);
     buffered_read(fd, tbl, flags, &val, 2);
-    if (FUN_0003a9c8(&val, 0xb0)) {
+    if (strcmp(&val, 0xb0)) {
         if ((flags & 1) == 0)
-            FUN_0003a89d(fd);
+            close(fd);
         return (void *)0;
     }
     buffered_read(fd, tbl, flags, hdr, 0xac);
@@ -140,17 +140,17 @@ void *container_load(char *name, int flags, void *out)
                     pos = buffered_read(fd, pos, flags, b10, 1);
                     if ((b18[0] & 7) == 0) {
                         if ((flags & 1) == 0)
-                            FUN_0003a89d(fd);
+                            close(fd);
                         return (void *)0;
                     }
                     if ((b10[0] & 4) && (b10[0] & 0x20) == 0) {
                         if ((flags & 1) == 0)
-                            FUN_0003a89d(fd);
+                            close(fd);
                         return (void *)0;
                     }
                     if (b18[0] & 0x20) {
                         if ((flags & 1) == 0)
-                            FUN_0003a89d(fd);
+                            close(fd);
                         return (void *)0;
                     }
                     pos = buffered_read(fd, pos, flags, b1c, 2);
@@ -169,6 +169,6 @@ void *container_load(char *name, int flags, void *out)
         } while (r34 < *(unsigned int *)(hdr + 0x14));
     }
     if ((flags & 1) == 0)
-        FUN_0003a89d(fd);
+        close(fd);
     return out;
 }

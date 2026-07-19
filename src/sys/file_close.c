@@ -9,9 +9,9 @@
  * Frameless, stack calling (-5s). Forwards its arg to another function.
  * First non-leaf match -> exercises relocation-aware diffing.
  */
-extern void FUN_0003a89d(int);
+extern void close(int);
 
 void file_close(int a)
 {
-    FUN_0003a89d(a);
+    close(a);
 }

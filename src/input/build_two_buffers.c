@@ -1,8 +1,8 @@
 /* frameless @ 0x28cc8: build two local buffers, zero a word in one, call
    int386(0x33, b, a); then if global g_df3c is set, call
-   FUN_0003ab59(g_df3c). */
+   free(g_df3c). */
 extern int int386(int a, void *b, void *c);
-extern void FUN_0003ab59(int x);
+extern void free(int x);
 extern int g_df3c;
 void build_two_buffers(void)
 {
@@ -11,5 +11,5 @@ void build_two_buffers(void)
     *(short *)b = 0;
     int386(0x33, b, a);
     if (g_df3c != 0)
-        FUN_0003ab59(g_df3c);
+        free(g_df3c);
 }

@@ -4,7 +4,7 @@
  * return 0x3a97c(h) (tell). Recipe: -4s -oneatx -zp8 -s -zq (+intrinsic).
  */
 extern int lseek(char *h, unsigned off, int whence);
-extern int FUN_0003a7c4(char *h, void *dst, unsigned len);
+extern int read(char *h, void *dst, unsigned len);
 extern int tell(char *h);
 
 void *memcpy(void *dst, const void *src, unsigned len);
@@ -20,6 +20,6 @@ int buffered_read(char *h, unsigned off, int flags, void *dst, unsigned len)
         return off + len;
     }
     lseek(h, off, 0);
-    FUN_0003a7c4(h, dst, len);
+    read(h, dst, len);
     return tell(h);
 }

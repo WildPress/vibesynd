@@ -12,8 +12,8 @@
    by five flag variants. Register-role family. */
 extern int rewind(void *h);
 extern int FUN_0003b420(void *dst, int size, int count, void *h);
-extern int FUN_0003b594(void *h, int off, int whence);
-extern void *FUN_0003aa74(int size);
+extern int fseek(void *h, int off, int whence);
+extern void *malloc(int size);
 extern signed char g_11e34;
 extern signed char g_11e35;
 extern int g_11e36;
@@ -35,9 +35,9 @@ void *load_tagged_resource(unsigned char *p1, unsigned short p2, unsigned short 
             continue;
         break;
     }
-    FUN_0003b594(p1, g_11e36, 0);
+    fseek(p1, g_11e36, 0);
     FUN_0003b420(&g_11e3a, 2, 1, p1);
-    blob = FUN_0003aa74(g_11e3a);
+    blob = malloc(g_11e3a);
     *(unsigned short *)blob = g_11e3a;
     FUN_0003b420(blob + 2, g_11e3a - 2, 1, p1);
     if (p1[0xc] & 0x20)

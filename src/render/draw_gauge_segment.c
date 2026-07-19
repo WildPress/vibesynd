@@ -1,7 +1,7 @@
 /* frameless @ 0x1ff98: draw a gauge/bar segment. Params: x,y (u16 screen coords),
    a (total/divisor), b (current value). Clamp b to [0,a]; percentage v = b*0x18/a
-   (0..0x18), with a==0 giving 0x18. Then call FUN_0003fb40(x+4, y+0x16, v, 6, 0xc). */
-extern int FUN_0003fb40();
+   (0..0x18), with a==0 giving 0x18. Then call fill_rect(x+4, y+0x16, v, 6, 0xc). */
+extern int fill_rect();
 
 void draw_gauge_segment(unsigned short x, unsigned short y, short a, short b)
 {
@@ -18,5 +18,5 @@ void draw_gauge_segment(unsigned short x, unsigned short y, short a, short b)
     } else {
         v = b * 0x18 / a;
     }
-    FUN_0003fb40(x + 4, y + 0x16, (unsigned short)v, 6, 0xc);
+    fill_rect(x + 4, y + 0x16, (unsigned short)v, 6, 0xc);
 }

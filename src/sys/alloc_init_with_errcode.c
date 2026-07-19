@@ -11,7 +11,7 @@ extern int file_open_read_close(int size);
 extern int FUN_0001aa74(int h);
 extern int open(int size, int mode);
 extern void FUN_0004aa59(int h);
-extern int FUN_0003a7c4(int a, int b, int c);
+extern int read(int a, int b, int c);
 extern void FUN_0004b859(int h);
 extern void FUN_0003c89d(int h);
 
@@ -40,7 +40,7 @@ int alloc_init_with_errcode(int size, int p2)
         g_3eec = 3;
         return 0;
     }
-    r = FUN_0003a7c4(h3, h2, h1);
+    r = read(h3, h2, h1);
     if (r != h1) {
         FUN_0004b859(h2);
         g_3eec = 5;

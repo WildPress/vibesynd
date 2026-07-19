@@ -56,8 +56,8 @@ extern char g_372c[], g_3740[], g_375c[], g_3684[];
 extern unsigned char __far *g_conn[]; /* connection records (far ptrs) @ 0x10644 */
 
 extern void set_video_mode(int);
-extern void FUN_0003b2b5(char *s);
-extern void FUN_0003b326(char *buf);
+extern void fputc_nl(char *s);
+extern void fgets_console(char *buf);
 extern long atol(char *s);
 extern void printf(char *fmt, ...);
 extern void sprintf(char *buf, char *fmt, ...);
@@ -86,8 +86,8 @@ int mp_session_setup(void)
     g_input_echo = 1;
     set_video_mode(0x12);
 readloop:
-    FUN_0003b2b5(g_36b8);
-    FUN_0003b326(rbuf);
+    fputc_nl(g_36b8);
+    fgets_console(rbuf);
     g_num_players = (short)atol(rbuf);
     if (g_num_players == 0) goto readloop;
     if (g_num_players > 8) goto readloop;

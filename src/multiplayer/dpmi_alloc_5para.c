@@ -32,7 +32,7 @@
    0x289a8(g_376c, 0x1c7, -2) and return far NULL. Cousin of 0x28728.
    Recipe: -4s -oneatx -zp8 -s -zq */
 
-extern void FUN_0003aaf8(void *dst, int val, int len);   /* memset helper */
+extern void memset(void *dst, int val, int len);   /* memset helper */
 extern void int386(int a, void *inr, void *outr);  /* int386 */
 extern void report_net_status(char *s, int line, int code);
 extern char g_376c[];
@@ -48,8 +48,8 @@ unsigned char __far *dpmi_alloc_5para(void)
     unsigned char __far *r;
     __segment sel;
 
-    FUN_0003aaf8(in, 0, 0x1c);
-    FUN_0003aaf8(out, 0, 0x1c);
+    memset(in, 0, 0x1c);
+    memset(out, 0, 0x1c);
     in[0] = 0x100;
     in[1] = 5;
     int386(0x31, in, out);
