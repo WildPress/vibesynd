@@ -1,8 +1,16 @@
-/* PARKED near-miss (NOT matched, 154/167) -- spatial-grid proximity scan. Structure 100%
-   correct (offsets, signedness, -0x80 check, JBE health test, CMP DI,6, return width). Two
-   §3 ties remain: (1) prologue param-load/init scheduling permutation ~10B at 0x04; (2) the
-   grid-idx sign-extend `CWDE; MOV EDX,EAX` (target) vs `MOVSX EDX,AX` (ours), same encoding-tie
-   class as 0x34088. Near-twins 0x33b88/0x33c38/0x33cf8 share this template and this wall. */
+/* PARKED near-miss (NOT matched, 154/167 bytes, EDIT-DIST 17) -- spatial-grid proximity scan.
+   NOTE: a STALE DUPLICATE src/entity/FUN_00033db8.c (wrong branch logic -- `!= 0x80` and
+   `!= 0`, giving JE where the target has JNE/JBE, dist 48) used to shadow this file: the
+   build's `find src -name FUN_00033db8.c | head -1` picked entity/ alphabetically before
+   map/. Removed the entity duplicate so THIS correct version compiles (48 -> 17).
+   Structure 100% correct (offsets, signedness, ==0x80 check, JBE health test, CMP DI,6,
+   return width). Two §3 ties remain: (1) prologue param-load/init scheduling permutation
+   ~10B at 0x04 (target loads esi[param_2] then ecx[param_3] then `sub esi`,`xor edi`; ours
+   loads ecx first and `xor edi` before `sub esi`); (2) the grid-idx sign-extend
+   `CWDE; MOV EDX,EAX` (target) vs `MOVSX EDX,AX` (ours), same encoding-tie class as 0x34088.
+   Swapping the OR operands, a `short` row-part temp, and split loop-init were all tried:
+   regress or byte-identical. Near-twins 0x33b88/0x33c38/0x33cf8 share this template/wall.
+   Proposed name: find_grid_entity_facing_0x80 (mirror of FUN_00033b88, which faces 0xc0). */
 /* frameless @ 0x33db8: spatial-grid proximity scan. Walk 6 grid rows starting at
    (param_2 - 0x100), stepping +0x100 per row. For each row build the 128x128
    grid-cell index from the high bits of iVar3 (>>1) and of param_1 (>>8), and walk

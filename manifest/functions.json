@@ -233,7 +233,7 @@
     {"addr": "00037a48", "name": "detach_chain_3a", "size": 64, "calls": 1, "data_refs": 1, "incoming": 0, "status": "matched", "match_pct": 100.0, "src": "src/entity/detach_chain_3a.c"},
     {"addr": "00037ad8", "name": "best_weapon_select", "size": 470, "calls": 0, "data_refs": 3, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/mission/best_weapon_select.c"},
     {"addr": "00037d08", "name": "best_weapon_select_typed", "size": 752, "calls": 0, "data_refs": 2, "incoming": 0, "status": "matched", "match_pct": 100.0, "src": "src/mission/best_weapon_select_typed.c"},
-    {"addr": "00038c28", "name": "FUN_00038c28", "size": 206, "calls": 4, "data_refs": 9, "incoming": 1, "status": "unmatched", "match_pct": 0.0, "src": "src/unclassified/FUN_00038c28.c"},
+    {"addr": "00038c28", "name": "FUN_00038c28", "size": 206, "calls": 4, "data_refs": 9, "incoming": 1, "status": "unmatched", "match_pct": 0.0, "src": "src/sound/FUN_00038c28.c"},
     {"addr": "00038cf8", "name": "xmidi_music_init", "size": 741, "calls": 18, "data_refs": 43, "incoming": 1, "status": "unmatched", "match_pct": 0.0, "src": "src/sound/xmidi_music_init.c"},
     {"addr": "00038fe8", "name": "sound_channel_select", "size": 154, "calls": 2, "data_refs": 11, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/sound/sound_channel_select.c"},
     {"addr": "00039088", "name": "FUN_00039088", "size": 65, "calls": 1, "data_refs": 5, "incoming": 0, "status": "matched", "match_pct": 100.0, "src": "src/lib/sound/FUN_00039088.c"},

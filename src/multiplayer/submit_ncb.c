@@ -6,13 +6,26 @@
    in.edi=&rm. Carry set -> report 0x289a8(g_376c, 0x195, -3), return -1; else 0.
    Callers: 0x284a8 (matched), 0x27fc8, 0x28118.
 
-   PARKED at 234/230 (everything beyond the entry aligns modulo the GS forms):
-   PARAM-PROMOTION wall, selector flavour. Target homes the far param's selector
-   half in ESI (`mov esi,[esp+0x88]` + `mov gs,si` re-arms, push esi); ours
-   always re-loads GS from the param slot (`mov gs,[esp+0x8c]`, 7B vs 3B). Tried:
-   far-ptr param direct, named far local copy, (off, ushort sel) split params,
-   __segment param, ushort local copy � all copy-propagate back to slot loads.
-   Same profitability rule as 0x35d08/0x2e808, opposite direction. */
+   IMPROVED to 226/230, EDIT-DIST 70 (was 234/230, dist 74). NEW LEVER that the
+   parked notes below said failed: split p INTERNALLY (not the signature) into a
+   `__segment sel = (__segment)p` + near `unsigned char *o = (unsigned char *)p`,
+   assigned ONCE, and do every far access as `(sel :> o)...`. That homes the
+   selector in ESI across the two calls exactly like the target (push esi + the
+   2-byte `mov gs,esi` re-arms), killing the parked version's 7-byte
+   `mov gs,[slot]` reloads. Note the offset must stay a near ptr and the read
+   must keep `__far` (`*(unsigned short __far *)((sel :> o) + 0x40)`), else the
+   selector spills to memory / the second gs re-arm is dropped.
+
+   REMAINING GAP (dist 70): the FIRST load. Target reads the two halves as
+   separate scalars -- `mov esi,[esp+0x88]` (selector) + `mov ebx,[esp+0x84]`
+   (offset) + `mov gs,esi` -- whereas ours fuses them into one
+   `lgs eax,[esp+0x84]` (Watcom recognises `sel :> o` == the whole param p and
+   loads the far pointer in a single op), then `mov esi,gs` to stash the selector
+   for the later re-arm. 4 bytes shorter; the shift cascades through the frame.
+   The lgs-vs-split-scalar choice is a codegen tie: forcing the split (read the
+   selector via `&p`, or an int offset) either re-fuses byte-identically or
+   spills p to memory and loses the ESI cache entirely. Genuine allocator tie;
+   fuzzer/cpermute may close it. Recipe: -4s -oneatx -zp8 -s -zq */
 extern void FUN_0003aaf8(void *dst, int val, int len);
 extern void segread(void *sregs);
 extern void FUN_0003b3e6(int inum, void *inr, void *outr, void *sregs);
@@ -26,13 +39,13 @@ int submit_ncb(unsigned char __far *p)
     int in[7];
     int sr[3];
     unsigned short seg;
-    unsigned char __far *q;
+    __segment sel = (__segment)p;
+    unsigned char *o = (unsigned char *)p;
 
-    q = p;
-    q[0x31] = 0;
+    (sel :> o)[0x31] = 0;
     FUN_0003aaf8(rm, 0, 0x32);
-    seg = *(unsigned short __far *)(q + 0x40);
-    *(int *)(rm + 0x10) = (int)q;
+    seg = *(unsigned short __far *)((sel :> o) + 0x40);
+    *(int *)(rm + 0x10) = (int)o;
     *(int *)(rm + 0x20) = 0x100;
     *(unsigned short *)(rm + 0x24) = seg;
     *(unsigned short *)(rm + 0x26) = seg;

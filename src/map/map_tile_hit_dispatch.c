@@ -1,19 +1,29 @@
-/* PARKED near-miss (NOT matched) -- 311B vs target 310B; TRUE size 310 (manifest
+/* PARKED near-miss (NOT matched) -- EDIT-DIST 77 (was 87), TRUE size 310 (manifest
  * says 150, undercounted: carve stops at the jmp CS:[...] -- code runs to the
  * ret at 0x33fad). Entry block, tile lookup tail, switch, and ALL EIGHT case
- * bodies are byte-identical; the residue is one block at obj 0x31..0x54:
- * row homed EDI vs target ECX (3 x 1-byte reg digits) and the slot formation
- * order -- ours `lea eax,[eax*4]; mov ecx,[g_map_cols](6B); movsx edi,z` vs target
- * `movsx edi,z; lea ecx,[eax*4]; mov eax,[g_map_cols](A1,5B)` (the +1 byte).
- * LEVERS THAT WORKED (kept): (1) ONE int local xs holds the 0x6000 modulo
- * divisor AND then x -- the call-crossing web forces ESI, giving the target's
- * be/f7fe divisor and clean `push esi` case bodies (with int-param helper
- * protos; short protos re-derive via movsx eax,cx); (2) volatile on the
- * g_map_cols pointer decl keeps its load out of the far-hoist slot. WALL: the
- * row->ECX / scaled->lea-ECX / base->A1-EAX triangle is allocator-internal;
- * int-cast slot spellings (scaled + (int)g_map_cols) flip lea to ECX but break
- * the tile staging (xor edx/mov dl) and re-home xs -- same register-role
- * family as the parked twins FUN_00033b88/FUN_00033db8 (playbook 3).
+ * bodies are byte-identical. The residue is now HALF of the slot-formation
+ * register triangle plus one perturbed divisor:
+ *   - FIXED (this pass): `int zz = z;` hoists z into EDI ahead of the row home,
+ *     so `row` now lands in ECX (target's `mov ecx,eax` at obj 0x30) instead of
+ *     EDI, and the movsx-z / row-shift order now matches target. That removed
+ *     the 3 row reg-digit diffs and re-ordered the z load correctly (-10 dist).
+ *   - SIDE COST of zz: with z live in EDI across the whole body the allocator
+ *     colours the 0x6000 modulo divisor into ECX (b9/f7f9) instead of target's
+ *     ESI (be/f7fe) -- 2 bytes. The old xs-holds-0x6000-then-x trick no longer
+ *     forces ESI once z occupies EDI; x still lands in ESI for the push-esi
+ *     case bodies, so only the divisor slips.
+ *   - STILL WRONG: the slot load -- ours `lea eax,[eax*4]; mov ecx,[g_map_cols]
+ *     (8b0d,6B)` vs target `lea ecx,[eax*4]; mov eax,[g_map_cols](A1,5B)`. This
+ *     is the +1 body byte (311 vs 310) that alone blocks the jump-table-aware
+ *     match. It is the base->A1-EAX / scaled->lea-ECX half of the triangle:
+ *     Watcom will only evacuate the scaled index out of EAX (freeing EAX for the
+ *     1-byte A1 pointer load) as one coupled decision with row->ECX, and we can
+ *     reach the row half but not the slot half. WALL: allocator-internal.
+ * TRIED and reverted this pass: operand swap (no change); int-address slot
+ * `*(int*)((int)g_map_cols + index*4)` folds to `add ecx,[mem]` (86, worse);
+ * `g_map_cols[index]` array spelling (identical 77); materialising the pointer
+ * in a `char **gmc` local (83, worse); dropping volatile (103, worse). LEVERS
+ * KEPT: volatile on g_map_cols; the xs int-local for x->ESI; `int zz = z`.
  *
  * @ 0x33e78 (jump-table dispatcher, 6-entry table at manifest 0x33e60, jmp
  * literal 0x26718). Map-tile hit dispatcher: same map/tile lookup as
@@ -47,12 +57,14 @@ unsigned short map_tile_hit_dispatch(short x, short y, short z)
     int index;
     unsigned char tile;
 
+    int zz;
     xs = 0x6000;
     row = (y % xs) / 256;
+    zz = z;
     xs = x;
     col = (xs & 0xff00) / 256;
     index = col + row * 128;
-    tile = *(unsigned char *)((z - 1) / 128 + (int)*(g_map_cols + index));
+    tile = *(unsigned char *)((zz - 1) / 128 + (int)*(g_map_cols + index));
     switch (g_tile_flags[tile]) {
     case 6:
         return FUN_00033b88(xs, y, z);
