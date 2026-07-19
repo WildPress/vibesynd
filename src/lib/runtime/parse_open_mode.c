@@ -1,4 +1,4 @@
-/* C runtime: fopen mode-string parser @ 0x3b739 (CLIB3S). Decodes r/w/a/+/b/t to stream flag bits (tolower, 0xc289 default-mode); regs-first prologue -> full db-transcription.
+/* C runtime: freopen mode-string parser @ 0x3b739 (CLIB3S). Decodes r/w/a/+/b/t to stream flag bits (tolower, 0xc289 default-mode); regs-first prologue -> full db-transcription.
    Body db-transcribed (frameless wrapper; modify[] suppresses the wrapper frame).
    External calls are real masked relocs; abs data refs are literal bytes. */
 extern void tolower();

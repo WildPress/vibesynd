@@ -1,20 +1,4 @@
 {
- "FUN_0003b8f8": {
-  "addr": "0003b8f8",
-  "flags": "-3s -of -oneatx -zp8 -s -zq"
- },
- "FUN_0003cfce": {
-  "addr": "0003cfce",
-  "flags": "-3s -of -oneatx -zp8 -s -zq"
- },
- "FUN_0003db69": {
-  "addr": "0003db69",
-  "flags": "-3s -of -oneatx -zp8 -s -zq"
- },
- "FUN_0003b420": {
-  "addr": "0003b420",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
  "FUN_0003b3e6": {
   "addr": "0003b3e6",
   "flags": "-3s -oneatx -zp8 -s -zq"
@@ -27,20 +11,8 @@
   "addr": "0004a639",
   "flags": "-3s -oneatx -zp8 -s -zq"
  },
- "FUN_0003e381": {
-  "addr": "0003e381",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003cc74": {
-  "addr": "0003cc74",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
  "FUN_0003c644": {
   "addr": "0003c644",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "FUN_0003b99e": {
-  "addr": "0003b99e",
   "flags": "-3s -oneatx -zp8 -s -zq"
  },
  "thunk_FUN_0003b1f6": {
@@ -596,22 +568,6 @@
   "addr": "0003b273",
   "flags": "-3s -of -oneatx -zp8 -s -zq"
  },
- "fclose": {
-  "addr": "0003b9ee",
-  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
- },
- "fgetc": {
-  "addr": "0003d3e4",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "fopen": {
-  "addr": "0003b972",
-  "flags": "-3s -of -oneatx -zp8 -s -zq"
- },
- "fread": {
-  "addr": "0003b539",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
  "ftell": {
   "addr": "0003da03",
   "flags": "-3s -oneatx -zp8 -s -zq"
@@ -635,10 +591,6 @@
  "ltoa": {
   "addr": "0003dcb5",
   "flags": "-3s -oneatx -zp8 -s -zq"
- },
- "makepath": {
-  "addr": "0003e361",
-  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
  },
  "open": {
   "addr": "0003a579",
@@ -1566,6 +1518,54 @@
  },
  "blit_cursor_sprite": {
   "addr": "0004a8d1",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "nibble_to_hex": {
+  "addr": "0003b9ee",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "freopen": {
+  "addr": "0003b972",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "canon_path_sep": {
+  "addr": "0003e361",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "remove": {
+  "addr": "0003db69",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "spawn_exec_core": {
+  "addr": "0003cc74",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "exec_shell_forward": {
+  "addr": "0003cfce",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "fopen": {
+  "addr": "0003b8f8",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "fclose": {
+  "addr": "0003b99e",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "makepath": {
+  "addr": "0003e381",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "__filbuf": {
+  "addr": "0003d3e4",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fgetc": {
+  "addr": "0003b539",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fread": {
+  "addr": "0003b420",
   "flags": "-3s -oneatx -zp8 -s -zq"
  }
 }

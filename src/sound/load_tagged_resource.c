@@ -11,7 +11,7 @@
    register tie-break: not moved by cpermute (2500), by &&-vs-continue restructuring, or
    by five flag variants. Register-role family. */
 extern int rewind(void *h);
-extern int FUN_0003b420(void *dst, int size, int count, void *h);
+extern int fread(void *dst, int size, int count, void *h);
 extern int fseek(void *h, int off, int whence);
 extern void *malloc(int size);
 extern signed char g_11e34;
@@ -26,7 +26,7 @@ void *load_tagged_resource(unsigned char *p1, unsigned short p2, unsigned short 
         return 0;
     rewind(p1);
     for (;;) {
-        FUN_0003b420(&g_11e34, 6, 1, p1);
+        fread(&g_11e34, 6, 1, p1);
         if (g_11e35 == -1)
             return 0;
         if (g_11e35 != p2)
@@ -36,10 +36,10 @@ void *load_tagged_resource(unsigned char *p1, unsigned short p2, unsigned short 
         break;
     }
     fseek(p1, g_11e36, 0);
-    FUN_0003b420(&g_11e3a, 2, 1, p1);
+    fread(&g_11e3a, 2, 1, p1);
     blob = malloc(g_11e3a);
     *(unsigned short *)blob = g_11e3a;
-    FUN_0003b420(blob + 2, g_11e3a - 2, 1, p1);
+    fread(blob + 2, g_11e3a - 2, 1, p1);
     if (p1[0xc] & 0x20)
         return 0;
     return blob;

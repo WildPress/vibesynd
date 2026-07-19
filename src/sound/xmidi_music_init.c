@@ -5,10 +5,10 @@
    b is a register local copy bb (EDI at entry, default writes DI).
    FUN_399b3 probes, FUN_399bd commits. Then loads the music image (a1),
    builds "DATA/SAMPLE." + hdr suffix (+8), optional global timbre cache
-   (FUN_39b73/39b7d), fopen(buf,"rb") @0x3b8f8, registers 8 sequences
+   (FUN_39b73/39b7d), freopen(buf,"rb") @0x3b8f8, registers 8 sequences
    (FUN_39b5f -> g_seq_state[i]) with per-seq state allocs, and services timbre
    requests (FUN_39b87 -> bank/patch = w/256, w%256) from the sample file via
-   FUN_38c28 + FUN_39b91. fclose @0x3b99e. Returns 1 ok / 0 fail.
+   FUN_38c28 + FUN_39b91. nibble_to_hex @0x3b99e. Returns 1 ok / 0 fail.
 
    NEAR-MISS, ours 698B vs target 741B, EDIT-DIST=334 (was 335).
 
@@ -47,8 +47,8 @@ extern unsigned short snd_cmd_9b(int handle, int seq);
 extern void snd_cmd_9c(int handle, int bank, int patch, void *p);
 extern void *malloc(unsigned n);
 extern void strcat_word(char *dst, unsigned char *src);
-extern void *FUN_0003b8f8(char *name, char *mode);
-extern void FUN_0003b99e(void *f);
+extern void *fopen(char *name, char *mode);
+extern void fclose(void *f);
 extern void *load_tagged_resource(void *f, int bank, int patch);
 
 extern unsigned short g_11e30;
@@ -108,7 +108,7 @@ int xmidi_music_init(int a1, int a2, unsigned short a, unsigned short b, unsigne
     w = snd_cmd_99(g_seq_ctx);
     if (w != 0)
         snd_cmd_9a(g_seq_ctx, malloc(w), w);
-    file = FUN_0003b8f8(buf, (char *)0x3d20);
+    file = fopen(buf, (char *)0x3d20);
     for (i = 0; i < 8; i++) {
         slots[i] = malloc(size);
         if ((g_seq_state[i] = snd_cmd_97(g_seq_ctx, mem, i, slots[i], 0)) == -1) {
@@ -126,6 +126,6 @@ int xmidi_music_init(int a1, int a2, unsigned short a, unsigned short b, unsigne
         }
     }
     if (file != 0)
-        FUN_0003b99e(file);
+        fclose(file);
     return 1;
 }

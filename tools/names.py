@@ -304,11 +304,11 @@ LABELS = {
     # cont.29 -- Watcom C runtime library fns, identified by tools/libname.py (byte match vs
     # CLIB3S.LIB module). One name per library module (highest coverage); helpers stay FUN_.
     "0003a526": "atol",       "0003dfcf": "cenvarg",   "0003db36": "chktty",
-    "0003b239": "d_getvec",   "0003b273": "d_setvec",  "0003b9ee": "fclose",
-    "0003d3e4": "fgetc",      "0003b972": "fopen",     "0003b539": "fread",
+    "0003b239": "d_getvec",   "0003b273": "d_setvec",  "0003b9ee": "nibble_to_hex",
+    "0003d3e4": "__filbuf",   "0003b972": "freopen",   "0003b539": "fgetc",
     "0003da03": "ftell",      "0003d894": "ioalloc",   "0003c44d": "isatty",
     "0003aed8": "labs",       "0003a93b": "lseek",     "0003dcb5": "ltoa",
-    "0003e361": "makepath",   "0003a579": "open",      "0003b22d": "outp",
+    "0003e361": "canon_path_sep", "0003a579": "open",  "0003b22d": "outp",
     "0003be40": "prtf",       "0003d935": "qread",     "0003cbf9": "spawnve",
     "0003e7f7": "strchr",     "0003a8d7": "strcpy",    "0003aef9": "stricmp",
     "0003aea6": "strncmp",    "0003deee": "strnicmp",  "0003a97c": "tell",
@@ -317,6 +317,16 @@ LABELS = {
     # header/signature (printf/system/rewind/getstream headers; sprintf/dosret by usage).
     "0003ad66": "printf",     "0003af38": "system",    "0003b407": "rewind",
     "0003a4fa": "sprintf",    "0003c479": "dosret",    "0003b90d": "getstream",
+    # cont.30 -- CLIB disambiguation: the earlier libname pass put several names on the wrong
+    # sibling (each pair confirmed by db-byte disasm + caller x-ref). freopen/nibble_to_hex/
+    # canon_path_sep/__filbuf above are the corrected holders; the real fopen/fclose/makepath/
+    # fgetc/fread sit here. 0x3d3e4 was mis-called fgetc but is __filbuf (the getc-underflow
+    # refill), so the real text-mode fgetc frees to 0x3b539 and the real fread to 0x3b420.
+    # remove is C remove()-over-unlink; the two spawn_* are the low-level spawn engine (NOT
+    # system/sprintf -- those two were already correct).
+    "0003b8f8": "fopen",      "0003b99e": "fclose",    "0003e381": "makepath",
+    "0003b420": "fread",      "0003db69": "remove",    "0003cc74": "spawn_exec_core",
+    "0003cfce": "exec_shell_forward",
     # cont.29 -- hand-asm graphics blitters (fully commented in their .asm companions)
     "00040236": "plot_point",     "0004d199": "fill_bytes",
     "0004d0b4": "blit_block",     "0004a734": "draw_sprite_rle",

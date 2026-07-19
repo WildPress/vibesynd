@@ -1,10 +1,14 @@
-/* C runtime helper @ 0x3e361 (CLIB3S): path-separator normalize (mislabeled makepath). */
-char makepath(char c, char *p)
-{
-    if (c == 92 || c == 47) {
-        if (*p == 0)
-            *p = c;
-        c = *p;
-    }
-    return c;
-}
+/* @ 0x3e381 (240B) -- db-transcription (hand-asm/library). */
+
+extern void __db_FUN_0003e381_0(void);
+#pragma aux __db_FUN_0003e381_0 = "db 83" "db 86" "db 87" "db 85" "db 137" "db 229" "db 131" "db 236" "db 4" "db 139" "db 93" "db 20" "db 139" "db 69" "db 24" "db 139" "db 125" "db 28" "db 139" "db 117" "db 36" "db 198" "db 69" "db 252" "db 0" "db 133" "db 192" "db 116" "db 14" "db 128" "db 56" "db 0" "db 116" "db 9" "db 138" "db 0" "db 136" "db 3" "db 67" "db 198" "db 3" "db 58" "db 67" "db 198" "db 3" "db 0" "db 133" "db 255" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_0003e381_1(void);
+#pragma aux __db_FUN_0003e381_1 = "db 116" "db 56" "db 128" "db 63" "db 0" "db 116" "db 51" "db 141" "db 69" "db 252" "db 80" "db 15" "db 182" "db 7" "db 80" "db 71" "db 232" "db 155" "db 255" "db 255" "db 255" "db 131" "db 196" "db 8" "db 136" "db 3" "db 67" "db 128" "db 63" "db 0" "db 117" "db 231" "db 128" "db 125" "db 252" "db 0" "db 117" "db 4" "db 198" "db 69" "db 252" "db 92" "db 138" "db 67" "db 255" "db 58" "db 69" "db 252" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_0003e381_2(void);
+#pragma aux __db_FUN_0003e381_2 = "db 117" "db 3" "db 75" "db 235" "db 5" "db 138" "db 69" "db 252" "db 136" "db 3" "db 128" "db 125" "db 252" "db 0" "db 117" "db 4" "db 198" "db 69" "db 252" "db 92" "db 141" "db 123" "db 1" "db 131" "db 125" "db 32" "db 0" "db 116" "db 68" "db 141" "db 69" "db 252" "db 80" "db 139" "db 69" "db 32" "db 15" "db 182" "db 0" "db 80" "db 232" "db 83" "db 255" "db 255" "db 255" "db 131" "db 196" "db 8" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_0003e381_3(void);
+#pragma aux __db_FUN_0003e381_3 = "db 58" "db 69" "db 252" "db 116" "db 9" "db 138" "db 3" "db 58" "db 69" "db 252" "db 117" "db 2" "db 137" "db 251" "db 139" "db 69" "db 32" "db 128" "db 56" "db 0" "db 116" "db 36" "db 141" "db 69" "db 252" "db 80" "db 139" "db 69" "db 32" "db 15" "db 182" "db 0" "db 80" "db 255" "db 69" "db 32" "db 232" "db 39" "db 255" "db 255" "db 255" "db 131" "db 196" "db 8" "db 136" "db 3" "db 67" "db 235" modify exact [eax ebx ecx edx esi edi ebp];
+extern void __db_FUN_0003e381_4(void);
+#pragma aux __db_FUN_0003e381_4 = "db 221" "db 138" "db 3" "db 58" "db 69" "db 252" "db 117" "db 2" "db 137" "db 251" "db 133" "db 246" "db 116" "db 26" "db 128" "db 62" "db 0" "db 116" "db 21" "db 128" "db 62" "db 46" "db 116" "db 4" "db 198" "db 3" "db 46" "db 67" "db 128" "db 62" "db 0" "db 116" "db 7" "db 138" "db 6" "db 70" "db 136" "db 3" "db 235" "db 243" "db 198" "db 3" "db 0" "db 201" "db 95" "db 94" "db 91" modify exact [eax ebx ecx edx esi edi ebp];
+#pragma aux makepath modify [eax ebx ecx edx esi edi ebp];
+void makepath(void) { __db_FUN_0003e381_0(); __db_FUN_0003e381_1(); __db_FUN_0003e381_2(); __db_FUN_0003e381_3(); __db_FUN_0003e381_4(); }
