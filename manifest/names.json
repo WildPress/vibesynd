@@ -3,28 +3,28 @@
   "addr": "00011d68",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "PARKED near-miss @ 0x11d68 -- LCS 1962/2881 bytes, ours 3112B vs 2881B, recipe -4s -oneatx -zp8 -s -zq. TRUE SIZE 2881 (0xb41) -- manifest says 337 (do not trust it; report only). Both jump tables emi",
+  "desc": "PARKED near-miss @ 0x11d68, LCS 1962/2881 bytes, ours 3112B vs 2881B, recipe -4s -oneatx -zp8 -s -zq. TRUE SIZE 2881 (0xb41), manifest says 337 (do not trust it, report only). Both jump tables emit co",
   "runs_in_intro": false
  },
  "FUN_000128b8": {
   "addr": "000128b8",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "PARKED near-miss @ 0x128b8 -- 317/353 bytes, first diff 0x1a, size match 353/353, all fixup sites aligned. Register-role wall (see below). Semantics: find a live ped (pool-A type 1) near (x,y,z). Scan",
+  "desc": "PARKED near-miss @ 0x128b8, 317/353 bytes, first diff 0x1a, size match 353/353, all fixup sites aligned. Register-role wall (see below). Semantics: find a live ped (pool-A type 1) near (x,y,z). Scans ",
   "runs_in_intro": false
  },
  "FUN_00012ae8": {
   "addr": "00012ae8",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "PARKED near-miss @ 0x12ae8 -- 392/443 bytes, first diff 0x5f, size match 443/443, all fixup sites aligned. Register-role/spill-slot wall, same family as sibling 0x128b8. Semantics: find an overlapping",
+  "desc": "PARKED near-miss @ 0x12ae8, 392/443 bytes, first diff 0x5f, size match 443/443, all fixup sites aligned. Register-role/spill-slot wall, same family as sibling 0x128b8. Semantics: find an overlapping r",
   "runs_in_intro": false
  },
  "FUN_00012ca8": {
   "addr": "00012ca8",
   "label": "",
   "subsystem": "startup",
-  "desc": "0x12ca8 -- session init. Clears bit 4 of byte +6 in each of 0x80 records of * 0xf bytes at 0x1beb2 (compiler-unrolled x4 -- write the PLAIN loop, -oneatx unrolls small do-whiles x4 by itself and DOUBL",
+  "desc": "0x12ca8, session init. Clears bit 4 of byte +6 in each of 0x80 records of * 0xf bytes at 0x1beb2 (compiler-unrolled x4, write the PLAIN loop, -oneatx unrolls small do-whiles x4 by itself and DOUBLES a",
   "runs_in_intro": false
  },
  "build_equip_row": {
@@ -45,7 +45,7 @@
   "addr": "000139a8",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "0x139a8 -- kill-credit eligibility test. n's cause flags at +0x1c pick a * rule bit in b[1]: &4 -> b[1]&1; &2 -> owner p = ((n - g_pool_a)/0x5c)/8, if * player-rec flag (g_player_flags[p*0x417] & 2) t",
+  "desc": "0x139a8, kill-credit eligibility test. n's cause flags at +0x1c pick a * rule bit in b[1]: &4 -> b[1]&1, &2 -> owner p = ((n - g_pool_a)/0x5c)/8, if * player-rec flag (g_player_flags[p*0x417] & 2) the",
   "runs_in_intro": false
  },
  "forward_if_flag": {
@@ -80,7 +80,7 @@
   "addr": "00014078",
   "label": "",
   "subsystem": "multiplayer",
-  "desc": "0x14078 -- net-sync message builder. First time (s[5]==0): send type 4 with * the node id (ptr at s+0x10 minus pool base 0x810e), mark s[5]=1. Otherwise * probe 0x2e808(s->obj, s->node, (short)(g_a6c2",
+  "desc": "0x14078, net-sync message builder. First time (s[5]==0): send type 4 with * the node id (ptr at s+0x10 minus pool base 0x810e), mark s[5]=1. Otherwise * probe 0x2e808(s->obj, s->node, (short)(g_a6c2[o",
   "runs_in_intro": false
  },
  "eligibility_test": {
@@ -101,14 +101,14 @@
   "addr": "000149e8",
   "label": "",
   "subsystem": "mission",
-  "desc": "MATCHED (pending manifest size fix) @ 0x149e8 -- jump-table dispatcher, * 10-entry table at 0x149c0 (jmp CS:[ebx*4+0x7278] -> manifest 0x7278+0xd748; * table sits directly BEFORE the function, NOT at ",
+  "desc": "MATCHED (pending manifest size fix) @ 0x149e8, jump-table dispatcher, * 10-entry table at 0x149c0 (jmp CS:[ebx*4+0x7278] -> manifest 0x7278+0xd748, * table sits directly BEFORE the function, NOT at 0x",
   "runs_in_intro": false
  },
  "FUN_00014c58": {
   "addr": "00014c58",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "sum of squares then call. * mov eax,[esp+4]; mov edx,[esp+8]; imul eax,eax; imul edx,edx; add eax,edx; * push eax; call 0x4d393; add esp,4; ret -> return g(a*a + b*b)",
+  "desc": "sum of squares then call. * mov eax,[esp+4], mov edx,[esp+8], imul eax,eax, imul edx,edx, add eax,edx, * push eax, call 0x4d393, add esp,4, ret -> return g(a*a + b*b)",
   "runs_in_intro": false
  },
  "scan_pool_4": {
@@ -122,14 +122,14 @@
   "addr": "00015d98",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "call three functions, tail-call the fourth. * call 0x3eda6; call 0x355d8; call 0x3ee21; jmp 0x35538",
+  "desc": "call three functions, tail-call the fourth. * call 0x3eda6, call 0x355d8, call 0x3ee21, jmp 0x35538",
   "runs_in_intro": false
  },
  "FUN_00015e08": {
   "addr": "00015e08",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "0x15e08 -- 5-arg constant forwarder into FUN_00015ee8. * xor eax,eax; mov al,[esp+4] = unsigned char param widened. * Push order: a, 0x96, 0x264, 0x16, 0x118 -> args (0x118,0x16,0x264,0x96,a). * Recip",
+  "desc": "0x15e08, 5-arg constant forwarder into FUN_00015ee8. * xor eax,eax, mov al,[esp+4] = unsigned char param widened. * Push order: a, 0x96, 0x264, 0x16, 0x118 -> args (0x118,0x16,0x264,0x96,a). * Recipe:",
   "runs_in_intro": false
  },
  "blit_cell_wh": {
@@ -150,7 +150,7 @@
   "addr": "00016318",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "NEAR-MISS @ 0x16318 -- 280/287 masked (was ~242/287); PARKED on ONE window: * entry order. Target loads g_cur_player into SI BEFORE the param byte * (mov ch,[esp+0x10]); ours always emits the param lo",
+  "desc": "NEAR-MISS @ 0x16318, 280/287 masked (was ~242/287), PARKED on ONE window: * entry order. Target loads g_cur_player into SI BEFORE the param byte * (mov ch,[esp+0x10]), ours always emits the param load",
   "runs_in_intro": false
  },
  "FUN_00016438": {
@@ -164,7 +164,7 @@
   "addr": "000164c8",
   "label": "",
   "subsystem": "economy",
-  "desc": "0x164c8 -- per-player target (re)assignment sweep. For each player slot i<8: * resets g_e13c[i]=0xff, skips self (g_cur_player); x=FUN_165f8(i) rates the slot * (0x32 aborts the whole sweep, 0 skips);",
+  "desc": "0x164c8, per-player target (re)assignment sweep. For each player slot i<8: * resets g_e13c[i]=0xff, skips self (g_cur_player), x=FUN_165f8(i) rates the slot * (0x32 aborts the whole sweep, 0 skips), p",
   "runs_in_intro": false
  },
  "count_syndicate_recs": {
@@ -185,7 +185,7 @@
   "addr": "00016678",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "framed @ 0x16678. TRUE extent 0x16678-0x16735 = 190B (0xbe); manifest size 64 is UNDER-COUNTED (Ghidra bounds stop at 0x166b7, mid-body, before the RET at 0x16735). Reads the current record g_player_b",
+  "desc": "framed @ 0x16678. TRUE extent 0x16678-0x16735 = 190B (0xbe), manifest size 64 is UNDER-COUNTED (Ghidra bounds stop at 0x166b7, mid-body, before the RET at 0x16735). Reads the current record g_player_b",
   "runs_in_intro": false
  },
  "buffered_read": {
@@ -269,7 +269,7 @@
   "addr": "00018878",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "Decomp target: stack-calling forwarding wrapper. original @ 0x00018878 (14 bytes) * * 8b 54 24 04 mov edx,[esp+4] ; arg * 52 push edx * e8 <rel32> call 0x0003a89d ; <-- relocation (masked when diffing",
+  "desc": "Decomp target: stack-calling forwarding wrapper. original @ 0x00018878 (14 bytes) * * 8b 54 24 04 mov edx,[esp+4] , arg * 52 push edx * e8 <rel32> call 0x0003a89d , <-- relocation (masked when diffing",
   "runs_in_intro": true
  },
  "file_read_n": {
@@ -290,7 +290,7 @@
   "addr": "000188e8",
   "label": "",
   "subsystem": "sys",
-  "desc": "0x188e8 -- load+unpack a file. open(path,0x200) @0x18828; if fd != -1: * read(fd, buf, size_from_header(path) @0x18958 [RNC detector, banked]), * unpack @0x3a1ec(buf,buf), on negative result error(0x1",
+  "desc": "0x188e8, load+unpack a file. open(path,0x200) @0x18828, if fd != -1: * read(fd, buf, size_from_header(path) @0x18958 [RNC detector, banked]), * unpack @0x3a1ec(buf,buf), on negative result error(0x14c",
   "runs_in_intro": false
  },
  "open_detect_rnc_header": {
@@ -311,14 +311,14 @@
   "addr": "00018ae8",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "PARKED near-miss @ 0x18ae8 -- 516/524 bytes (aligned-common ~485/524 after fixup masking), first diff 0x6f, whole CFG/branch layout byte-correct. WALL 1 (primary, 8-byte size deficit): the target mate",
+  "desc": "PARKED near-miss @ 0x18ae8, 516/524 bytes (aligned-common ~485/524 after fixup masking), first diff 0x6f, whole CFG/branch layout byte-correct. WALL 1 (primary, 8-byte size deficit): the target materi",
   "runs_in_intro": false
  },
  "FUN_00018d18": {
   "addr": "00018d18",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "FUN_00018d18 (1523B) -- inline jump-table switch dispatcher. NEAR-MISS / WALL. * * STRUCTURE (fully reverse-engineered from the disasm; jump-table verification is * now available and the leading [tabl",
+  "desc": "FUN_00018d18 (1523B), inline jump-table switch dispatcher. NEAR-MISS / WALL. * * STRUCTURE (fully reverse-engineered from the disasm, jump-table verification is * now available and the leading [table]",
   "runs_in_intro": false
  },
  "draw_circle": {
@@ -332,7 +332,7 @@
   "addr": "00019608",
   "label": "",
   "subsystem": "map",
-  "desc": "FUN_00019608 @ 0x19608 -- TRUE SIZE 3474 (0x19608..0x1a399). * * The tactical-map / radar renderer. Draws the full-screen overview map centred * on the currently-followed agent: terrain tiles, then a ",
+  "desc": "FUN_00019608 @ 0x19608, TRUE SIZE 3474 (0x19608..0x1a399). * * The tactical-map / radar renderer. Draws the full-screen overview map centred * on the currently-followed agent: terrain tiles, then a co",
   "runs_in_intro": false
  },
  "dispatch_jt45": {
@@ -360,21 +360,21 @@
   "addr": "0001b798",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "PARKED near-miss (NOT matched) -- draw-list walk over the g_rec5_table pool. Register-allocation/CSE wall (~133-150/183-165): the target double-loads g_rec5_table into a 2nd callee-saved reg (spilling",
+  "desc": "PARKED near-miss (NOT matched), draw-list walk over the g_rec5_table pool. Register-allocation/CSE wall (~133-150/183-165): the target double-loads g_rec5_table into a 2nd callee-saved reg (spilling E",
   "runs_in_intro": false
  },
  "FUN_0001b858": {
   "addr": "0001b858",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "PARKED near-miss (NOT matched) @ 0x1b858 (165B) -- draw-list walk over the g_rec5_table pool. Sibling of 0x1b798. Logic verified instruction-exact (the whole FUN_0004a63a call region is byte-identical",
+  "desc": "PARKED near-miss (NOT matched) @ 0x1b858 (165B), draw-list walk over the g_rec5_table pool. Sibling of 0x1b798. Logic verified instruction-exact (the whole FUN_0004a63a call region is byte-identical m",
   "runs_in_intro": false
  },
  "FUN_0001b908": {
   "addr": "0001b908",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "0x1b908 -- walk the 10-byte record chain for slot `idx` (head index in the * 8-byte table at g_rec8_table, records at g_rec5_table, next-link at +8), and for each * record schedule FUN_0004a63a(x+rec[",
+  "desc": "0x1b908, walk the 10-byte record chain for slot `idx` (head index in the * 8-byte table at g_rec8_table, records at g_rec5_table, next-link at +8), and for each * record schedule FUN_0004a63a(x+rec[2]",
   "runs_in_intro": false
  },
  "clamp_point_box": {
@@ -416,7 +416,7 @@
   "addr": "00020018",
   "label": "",
   "subsystem": "ui",
-  "desc": "PARKED near-miss @ 0x20018 -- 307/314 bytes, sizes 307 vs 314, recipe -4s -oneatx -zp8 -s -zq. All structure, immediates, guards, both pool loops, switch tree, and epilogue shapes correct; residue is ",
+  "desc": "PARKED near-miss @ 0x20018, 307/314 bytes, sizes 307 vs 314, recipe -4s -oneatx -zp8 -s -zq. All structure, immediates, guards, both pool loops, switch tree, and epilogue shapes correct, residue is ON",
   "runs_in_intro": false
  },
  "FUN_00020158": {
@@ -500,14 +500,14 @@
   "addr": "00021e18",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "FUN_00021e18 @ 0x21e18 (TRUE SIZE 1440 = 0x21e18..0x223b7 incl., ends at RET; * matches the manifest 1440. This was a SEPARATE function the headless sweep had * merged into 0x21658; own prologue push ",
+  "desc": "FUN_00021e18 @ 0x21e18 (TRUE SIZE 1440 = 0x21e18..0x223b7 incl., ends at RET, * matches the manifest 1440. This was a SEPARATE function the headless sweep had * merged into 0x21658, own prologue push ",
   "runs_in_intro": false
  },
  "FUN_000223c8": {
   "addr": "000223c8",
   "label": "",
   "subsystem": "economy",
-  "desc": "FUN_000223c8 @ 0x223c8 (724B true size; manifest 686 excludes the 38B of * jump-table case bodies hidden behind the CS:[eax*4+0x14c70] dispatch). * PARKED ~694/724 (-4s -oneatx -zp8 -s -zq; verify wit",
+  "desc": "FUN_000223c8 @ 0x223c8 (724B true size, manifest 686 excludes the 38B of * jump-table case bodies hidden behind the CS:[eax*4+0x14c70] dispatch). * PARKED ~694/724 (-4s -oneatx -zp8 -s -zq, verify wit",
   "runs_in_intro": false
  },
  "init_record_if_alloc": {
@@ -528,7 +528,7 @@
   "addr": "00022768",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "frameless @ 0x22768: PARKED near-miss (register allocation). Logic is correct; with four live pointers (three results + the scan cursor) Watcom assigns EBX/ ESI to pool A vs C the opposite way round, ",
+  "desc": "frameless @ 0x22768: PARKED near-miss (register allocation). Logic is correct, with four live pointers (three results + the scan cursor) Watcom assigns EBX/ ESI to pool A vs C the opposite way round, ",
   "runs_in_intro": false
  },
  "mission_map_init": {
@@ -563,14 +563,14 @@
   "addr": "00023038",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "WALL (jump-table dispatch) @ 0x23038 -- function CODE is byte-EXACT, tool can't confirm. * * The reconstructed function body compiles to the target's bytes verbatim (masked): * target 42B window == ou",
+  "desc": "WALL (jump-table dispatch) @ 0x23038, function CODE is byte-EXACT, tool can't confirm. * * The reconstructed function body compiles to the target's bytes verbatim (masked): * target 42B window == ours",
   "runs_in_intro": false
  },
  "FUN_00023158": {
   "addr": "00023158",
   "label": "",
   "subsystem": "mission",
-  "desc": "FUN_00023158 @ 0x23158 -- TRUE SIZE 5280 (0x14A0), 0x23158-0x245f7. * * PARKED (cont.26). Compiles; JUMP-TABLE matches EXACTLY (59 dword entries, * cases 0x00-0x3a). Recipe -4s -oneatx -zp8 -s -zq. Be",
+  "desc": "FUN_00023158 @ 0x23158, TRUE SIZE 5280 (0x14A0), 0x23158-0x245f7. * * PARKED (cont.26). Compiles, JUMP-TABLE matches EXACTLY (59 dword entries, * cases 0x00-0x3a). Recipe -4s -oneatx -zp8 -s -zq. Best",
   "runs_in_intro": false
  },
  "parse_hex_arg": {
@@ -619,7 +619,7 @@
   "addr": "00025348",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "NEAR-MISS @ 0x25348 -- instruction stream byte-IDENTICAL (masked); only an alignment pad differs. * * target 43B: e8<28cc8> 8d80 00000000 8d52 00 8bdb 31c0 66a1<df12> 50 8b15<df0e> 52 6a09 e8<b273> 83",
+  "desc": "NEAR-MISS @ 0x25348, instruction stream byte-IDENTICAL (masked), only an alignment pad differs. * * target 43B: e8<28cc8> 8d80 00000000 8d52 00 8bdb 31c0 66a1<df12> 50 8b15<df0e> 52 6a09 e8<b273> 83c4",
   "runs_in_intro": false
  },
  "add_c_stride6": {
@@ -682,7 +682,7 @@
   "addr": "000269b8",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "forward arg to a callee, then clear a field. * mov edx,[esp+4]; push edx; call 0x26da8; add esp,4; * mov eax,[esp+4]; mov byte[eax+0x18],0; ret",
+  "desc": "forward arg to a callee, then clear a field. * mov edx,[esp+4], push edx, call 0x26da8, add esp,4, * mov eax,[esp+4], mov byte[eax+0x18],0, ret",
   "runs_in_intro": false
  },
  "advance_linked_index": {
@@ -710,7 +710,7 @@
   "addr": "00026ba8",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "short-arg forwarder @ 0x00026ba8 (21B): * movsx eax,[esp+8]; push eax; movsx eax,[esp+8]; push eax; call 0x4d221; add esp,8; ret * Forwards two sign-extended short params to a 2-int function. Stack ca",
+  "desc": "short-arg forwarder @ 0x00026ba8 (21B): * movsx eax,[esp+8], push eax, movsx eax,[esp+8], push eax, call 0x4d221, add esp,8, ret * Forwards two sign-extended short params to a 2-int function. Stack ca",
   "runs_in_intro": false
  },
  "FUN_00026bc8": {
@@ -738,7 +738,7 @@
   "addr": "00026e18",
   "label": "",
   "subsystem": "entity",
-  "desc": "MATCHED @ 0x26e18 (130/130 reloc-aware, -4s -oneatx -zp8 -s -zq). Head-insert of pool object p into spatial-grid cell g_grid_heads[idx], idx built from the high bytes of coords a,b; maintains the doub",
+  "desc": "MATCHED @ 0x26e18 (130/130 reloc-aware, -4s -oneatx -zp8 -s -zq). Head-insert of pool object p into spatial-grid cell g_grid_heads[idx], idx built from the high bytes of coords a,b, maintains the doub",
   "runs_in_intro": false
  },
  "mp_record_sync": {
@@ -759,7 +759,7 @@
   "addr": "000279f8",
   "label": "",
   "subsystem": "multiplayer",
-  "desc": "0x279f8 -- scan the far-pointer slot table at 0x10644 (6-byte far ptrs, * lgs stride *6). For each slot i < g_num_players: if p[2] and p[0x31]!=0xff, and * the slot isn't already marked in g_df30 and ",
+  "desc": "0x279f8, scan the far-pointer slot table at 0x10644 (6-byte far ptrs, * lgs stride *6). For each slot i < g_num_players: if p[2] and p[0x31]!=0xff, and * the slot isn't already marked in g_df30 and is",
   "runs_in_intro": false
  },
  "submit_ncb": {
@@ -836,35 +836,35 @@
   "addr": "00028628",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "MATCHED (reloc-aware, 135/135) @ 0x28628 -- recipe -4s -oneatx -zp8 -s -zq. * The old 132/135 uchar-widen-form park (xor-form vs and-form on the report * arg) fell to the cont.21 inline-vs-named ident",
+  "desc": "MATCHED (reloc-aware, 135/135) @ 0x28628, recipe -4s -oneatx -zp8 -s -zq. * The old 132/135 uchar-widen-form park (xor-form vs and-form on the report * arg) fell to the cont.21 inline-vs-named identit",
   "runs_in_intro": false
  },
  "FUN_00028728": {
   "addr": "00028728",
   "label": "",
   "subsystem": "sys",
-  "desc": "PARKED near-miss (NOT matched, ~165/187) -- DPMI int 0x31 AX=0x100 DOS-memory alloc then far-pointer zero-fill. Instruction-exact incl. the inlined _fmemset (far rep stosw). Register- role wall: local",
+  "desc": "PARKED near-miss (NOT matched, ~165/187), DPMI int 0x31 AX=0x100 DOS-memory alloc then far-pointer zero-fill. Instruction-exact incl. the inlined _fmemset (far rep stosw). Register- role wall: local_1",
   "runs_in_intro": false
  },
  "FUN_000287e8": {
   "addr": "000287e8",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "PARKED near-miss (NOT matched, 103/130) -- guard + build two stack msg buffers + dispatch. Single int buf[14] reproduces the exact stack layout. WHOLE-TU register-alloc wall: the target promotes param",
+  "desc": "PARKED near-miss (NOT matched, 103/130), guard + build two stack msg buffers + dispatch. Single int buf[14] reproduces the exact stack layout. WHOLE-TU register-alloc wall: the target promotes param_1",
   "runs_in_intro": false
  },
  "FUN_00028878": {
   "addr": "00028878",
   "label": "",
   "subsystem": "multiplayer",
-  "desc": "frameless @ 0x28878: chunked dispatch. Call xfer_buf_req94(p1,p2,p3,chunk) for param_4/g_df38 whole chunks of g_df38 (16-bit global divisor), advancing p3 by g_df38 each time; stop early if a call ret",
+  "desc": "frameless @ 0x28878: chunked dispatch. Call xfer_buf_req94(p1,p2,p3,chunk) for param_4/g_df38 whole chunks of g_df38 (16-bit global divisor), advancing p3 by g_df38 each time, stop early if a call ret",
   "runs_in_intro": false
  },
  "FUN_000288f8": {
   "addr": "000288f8",
   "label": "",
   "subsystem": "multiplayer",
-  "desc": "PARKED near-miss (NOT matched, ~140/140 len, first diff 0x13) -- chunked-dispatch loop, sibling of matched 0x28878. Structure byte-exact (short callee return + goto-out shared epilogue gave 140/140). ",
+  "desc": "PARKED near-miss (NOT matched, ~140/140 len, first diff 0x13), chunked-dispatch loop, sibling of matched 0x28878. Structure byte-exact (short callee return + goto-out shared epilogue gave 140/140). Wa",
   "runs_in_intro": false
  },
  "FUN_000289a8": {
@@ -892,14 +892,14 @@
   "addr": "00028d08",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "0x28d08 -- probe four adjacent zones. Each enabled flag (short params * a2..a5) fires the fixup callee @0xffc8 with (b, x, y, z-0x100, w, h, 0x100, * 0x200): N (x+0x100, y+0x240, 0x80x0x100), E (x+0x2",
+  "desc": "0x28d08, probe four adjacent zones. Each enabled flag (short params * a2..a5) fires the fixup callee @0xffc8 with (b, x, y, z-0x100, w, h, 0x100, * 0x200): N (x+0x100, y+0x240, 0x80x0x100), E (x+0x240",
   "runs_in_intro": false
  },
  "FUN_00028ec8": {
   "addr": "00028ec8",
   "label": "",
   "subsystem": "map",
-  "desc": "MATCHED 218/218 (reloc-aware) -- the cont. 22 retry closed the old * cache-vs-fold wall in ONE compile with the 0x2fca8/0x33fb8 lever set: * named int accumulator (`idx = row<<7; idx += col;` -- homes",
+  "desc": "MATCHED 218/218 (reloc-aware), the cont. 22 retry closed the old * cache-vs-fold wall in ONE compile with the 0x2fca8/0x33fb8 lever set: * named int accumulator (`idx = row<<7, idx += col,`, homes idx",
   "runs_in_intro": false
  },
  "center_string_16": {
@@ -955,14 +955,14 @@
   "addr": "0002bbe8",
   "label": "",
   "subsystem": "anim",
-  "desc": "NEAR-MISS @ 0x2bbe8 -- 160 vs 159 code bytes; JUMP TABLE FULLY RECOVERED via * tools/lefix.py (the payoff of the fixed parser). 5-entry dispatcher at * obj1:+0x1e480: word +0 -> case 1/2/3 add 1/2/3, ",
+  "desc": "NEAR-MISS @ 0x2bbe8, 160 vs 159 code bytes, JUMP TABLE FULLY RECOVERED via * tools/lefix.py (the payoff of the fixed parser). 5-entry dispatcher at * obj1:+0x1e480: word +0 -> case 1/2/3 add 1/2/3, ca",
   "runs_in_intro": false
  },
  "FUN_0002bca8": {
   "addr": "0002bca8",
   "label": "",
   "subsystem": "mission",
-  "desc": "inline jump-table switch dispatcher @ 0x2bca8 (550B) -- command-list interpreter. * * Signature: 4 stack params (Ghidra's 1-param __cdecl is phantom): * FUN(unsigned char *p /[ESP+0x10]->EBX/, int sel",
+  "desc": "inline jump-table switch dispatcher @ 0x2bca8 (550B), command-list interpreter. * * Signature: 4 stack params (Ghidra's 1-param __cdecl is phantom): * FUN(unsigned char *p /[ESP+0x10]->EBX/, int sel /",
   "runs_in_intro": false
  },
  "command_list_interp": {
@@ -976,7 +976,7 @@
   "addr": "0002c218",
   "label": "",
   "subsystem": "mission",
-  "desc": "inline jump-table switch dispatcher @ 0x2c218 (592B) -- command-list interpreter. * Sibling of FUN_0002bca8 (same shape; register roles swapped: sel->EDI, * result->ESI). Extra `if(result==0)` clause ",
+  "desc": "inline jump-table switch dispatcher @ 0x2c218 (592B), command-list interpreter. * Sibling of FUN_0002bca8 (same shape, register roles swapped: sel->EDI, * result->ESI). Extra `if(result==0)` clause in",
   "runs_in_intro": false
  },
  "copy_5fields_8recs": {
@@ -1004,14 +1004,14 @@
   "addr": "0002cf28",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "PARKED near-miss (NOT matched) -- 240/262 with EXACT length 262 (TRUE size; * manifest says 184, undercounted: code runs 0x2cf28..0x2d02d). All relocs, * the whole entry/slot/ped block, both helper-ca",
+  "desc": "PARKED near-miss (NOT matched), 240/262 with EXACT length 262 (TRUE size, * manifest says 184, undercounted: code runs 0x2cf28..0x2d02d). All relocs, * the whole entry/slot/ped block, both helper-call",
   "runs_in_intro": false
  },
  "FUN_0002d038": {
   "addr": "0002d038",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "PARKED near-miss (NOT matched, fuzzer 117/144, 8000 variants) -- branchy state machine on param_2. Structure correct; register-role wall. Agent + max-worker cpermute both plateau.",
+  "desc": "PARKED near-miss (NOT matched, fuzzer 117/144, 8000 variants), branchy state machine on param_2. Structure correct, register-role wall. Agent + max-worker cpermute both plateau.",
   "runs_in_intro": false
  },
  "rate_byte_drift": {
@@ -1025,7 +1025,7 @@
   "addr": "0002d228",
   "label": "",
   "subsystem": "anim",
-  "desc": "0x2d228 -- animation tick. Increments the frame counter b[0x53] (wraps &7 * while b[0x49] < 10); if the stage word w14 is 0..0xf and flag 2 set on * +0x1c, advances w14 when the counter hits the caden",
+  "desc": "0x2d228, animation tick. Increments the frame counter b[0x53] (wraps &7 * while b[0x49] < 10), if the stage word w14 is 0..0xf and flag 2 set on * +0x1c, advances w14 when the counter hits the cadence",
   "runs_in_intro": false
  },
  "combat_aim_update": {
@@ -1053,7 +1053,7 @@
   "addr": "0002d5b8",
   "label": "",
   "subsystem": "map",
-  "desc": "NEAR-MISS @ 0x2d5b8 -- cont.21 re-attack closed MOST of the old wall: code * tail now 259/259 length (was 264), entry + guards + switch + calls + tail all * byte-identical after: g_map_cols declared a",
+  "desc": "NEAR-MISS @ 0x2d5b8, cont.21 re-attack closed MOST of the old wall: code * tail now 259/259 length (was 264), entry + guards + switch + calls + tail all * byte-identical after: g_map_cols declared as ",
   "runs_in_intro": false
  },
  "aim_step": {
@@ -1109,7 +1109,7 @@
   "addr": "0002d9e8",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "MATCHED @ 0x2d9e8 (853/853, reloc-aware) -- recipe -4s -oneatx -zp8 -s -zq. * Levers that closed it: (1) decl order nb-BEFORE-ca steers ca into ECX / * nb into EBX (ca-first gave ca=EBX and rotated th",
+  "desc": "MATCHED @ 0x2d9e8 (853/853, reloc-aware), recipe -4s -oneatx -zp8 -s -zq. * Levers that closed it: (1) decl order nb-BEFORE-ca steers ca into ECX / * nb into EBX (ca-first gave ca=EBX and rotated the ",
   "runs_in_intro": false
  },
  "entity_event_dispatch": {
@@ -1123,7 +1123,7 @@
   "addr": "0002de18",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "0x2de18 -- launch setup. Rounds facing to a quadrant (d = ((dir+0x20)>>6<<6) * - 0x40), then tries up to 4 quadrants clockwise until the step probe 0x2d6c8 * (matched twin) accepts. Sets speed p[0x59]",
+  "desc": "0x2de18, launch setup. Rounds facing to a quadrant (d = ((dir+0x20)>>6<<6) * - 0x40), then tries up to 4 quadrants clockwise until the step probe 0x2d6c8 * (matched twin) accepts. Sets speed p[0x59]=4",
   "runs_in_intro": false
  },
  "FUN_0002def8": {
@@ -1137,7 +1137,7 @@
   "addr": "0002e408",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "NEAR-MISS @ 0x2e408 -- 231/240 (was 222/240); PARKED on the last x-product * register-role tie-break. cont.21 levers that CLOSED ground: (1) goto-fail * merge -- `goto fail;` from the quadrant guard i",
+  "desc": "NEAR-MISS @ 0x2e408, 231/240 (was 222/240), PARKED on the last x-product * register-role tie-break. cont.21 levers that CLOSED ground: (1) goto-fail * merge, `goto fail,` from the quadrant guard into ",
   "runs_in_intro": false
  },
  "find_projectile_step": {
@@ -1172,14 +1172,14 @@
   "addr": "0002ed28",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "NEAR-MISS @ 0x2ed28 -- PARKED on a register-role rotation wall, improved * cont.21: `unsigned int c` (full-width temp lever) closed the widen-form gap * (and-form `mov bl;and ebx,0xff` -> target's xor",
+  "desc": "NEAR-MISS @ 0x2ed28, PARKED on a register-role rotation wall, improved * cont.21: `unsigned int c` (full-width temp lever) closed the widen-form gap * (and-form `mov bl,and ebx,0xff` -> target's xor-f",
   "runs_in_intro": false
  },
  "FUN_0002ee18": {
   "addr": "0002ee18",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "MATCHED @ 0x2ee18 (163/163, reloc-aware) -- recipe -4s -oneatx -zp8 -s -zq. * Find a valid target for agent a: scans pool-A records (0x5c bytes at g_pool_a, * end g_10ae0), skipping the 8-record squad",
+  "desc": "MATCHED @ 0x2ee18 (163/163, reloc-aware), recipe -4s -oneatx -zp8 -s -zq. * Find a valid target for agent a: scans pool-A records (0x5c bytes at g_pool_a, * end g_10ae0), skipping the 8-record squad t",
   "runs_in_intro": false
  },
  "entity_aim_helper": {
@@ -1207,21 +1207,21 @@
   "addr": "00030508",
   "label": "",
   "subsystem": "combat",
-  "desc": "0x30508 -- entity update (pool obj in ebx). Sets flag 2 on +0xb; computes * calls 0x26ad8((ushort)((e568((ushort)hp) + 2)/2 + hp), (ushort)dir) -- the * nested call inside arg1 makes Watcom push arg2 ",
+  "desc": "0x30508, entity update (pool obj in ebx). Sets flag 2 on +0xb, computes * calls 0x26ad8((ushort)((e568((ushort)hp) + 2)/2 + hp), (ushort)dir), the * nested call inside arg1 makes Watcom push arg2 earl",
   "runs_in_intro": false
  },
  "FUN_00030708": {
   "addr": "00030708",
   "label": "",
   "subsystem": "combat",
-  "desc": "step an entity then adjust its HP word (+0x14) and * flags word (+0xa) by a code derived from flags (+0x1d,+0x3c). * call 0x269d8(p); if((short)==0) return; * code<2 -> HP=-1; ==2 -> HP-=8; ==3 -> HP-",
+  "desc": "step an entity then adjust its HP word (+0x14) and * flags word (+0xa) by a code derived from flags (+0x1d,+0x3c). * call 0x269d8(p), if((short)==0) return, * code<2 -> HP=-1, ==2 -> HP-=8, ==3 -> HP-",
   "runs_in_intro": false
  },
  "FUN_00030868": {
   "addr": "00030868",
   "label": "",
   "subsystem": "combat",
-  "desc": "frameless @ 0x30868: (re)acquire + engage target for pool-A entity `node`. Clears node[0x54], d = FUN_2d808(node,0x64) (kept in DI). Clears node[0x46]; if the target link node[0x44] is set: p2 = its p",
+  "desc": "frameless @ 0x30868: (re)acquire + engage target for pool-A entity `node`. Clears node[0x54], d = FUN_2d808(node,0x64) (kept in DI). Clears node[0x46], if the target link node[0x44] is set: p2 = its p",
   "runs_in_intro": false
  },
  "lookup_base_record": {
@@ -1249,7 +1249,7 @@
   "addr": "00033b88",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "PARKED near-miss (NOT matched) -- exact-size 171/171, all 3 relocs aligned, and the entire tail from obj offset 0x37 (byte 55) to the end is byte-IDENTICAL. The whole divergence is the leading 49-byte",
+  "desc": "PARKED near-miss (NOT matched), exact-size 171/171, all 3 relocs aligned, and the entire tail from obj offset 0x37 (byte 55) to the end is byte-IDENTICAL. The whole divergence is the leading 49-byte p",
   "runs_in_intro": false
  },
  "grid_hit_x": {
@@ -1270,21 +1270,21 @@
   "addr": "00033db8",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "PARKED near-miss (NOT matched, 154/167) -- spatial-grid proximity scan. Structure 100% correct (offsets, signedness, -0x80 check, JBE health test, CMP DI,6, return width). Two \u00a73 ties remain: (1) prol",
+  "desc": "PARKED near-miss (NOT matched, 154/167), spatial-grid proximity scan. Structure 100% correct (offsets, signedness, -0x80 check, JBE health test, CMP DI,6, return width). Two \u00a73 ties remain: (1) prolog",
   "runs_in_intro": false
  },
  "FUN_00033e78": {
   "addr": "00033e78",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "PARKED near-miss (NOT matched) -- 311B vs target 310B; TRUE size 310 (manifest * says 150, undercounted: carve stops at the jmp CS:[...] -- code runs to the * ret at 0x33fad). Entry block, tile lookup",
+  "desc": "PARKED near-miss (NOT matched), 311B vs target 310B, TRUE size 310 (manifest * says 150, undercounted: carve stops at the jmp CS:[...], code runs to the * ret at 0x33fad). Entry block, tile lookup tai",
   "runs_in_intro": false
  },
  "FUN_00033fb8": {
   "addr": "00033fb8",
   "label": "",
   "subsystem": "map",
-  "desc": "MATCHED 137/137 (reloc-aware) -- frameless map-passability check @ 0x33fb8. * Levers that closed the old g_map_cols register wall (cont. 22): pointer-variable * decl `char **g_map_cols`; `base = g_map",
+  "desc": "MATCHED 137/137 (reloc-aware), frameless map-passability check @ 0x33fb8. * Levers that closed the old g_map_cols register wall (cont. 22): pointer-variable * decl `char **g_map_cols`, `base = g_map_c",
   "runs_in_intro": false
  },
  "snap_direction": {
@@ -1305,7 +1305,7 @@
   "addr": "00034118",
   "label": "",
   "subsystem": "combat",
-  "desc": "frameless @ 0x34118: from src->[0x1c] (id into object pool g_entity_pool), take the node's byte[0x54]; if it exceeds threshold thr, store (byte-0x54 - thr) into dst[0x54], else store 0. Was parked as ",
+  "desc": "frameless @ 0x34118: from src->[0x1c] (id into object pool g_entity_pool), take the node's byte[0x54], if it exceeds threshold thr, store (byte-0x54 - thr) into dst[0x54], else store 0. Was parked as ",
   "runs_in_intro": false
  },
  "clamp_dec_field54": {
@@ -1319,7 +1319,7 @@
   "addr": "00034198",
   "label": "",
   "subsystem": "combat",
-  "desc": "0x34198 -- march a shot along its direction for `count` steps, running * collision on the first 3 steps and then applying damage to `p` based on * whether/where a wall/turn was hit. * * setup: dir = p",
+  "desc": "0x34198, march a shot along its direction for `count` steps, running * collision on the first 3 steps and then applying damage to `p` based on * whether/where a wall/turn was hit. * * setup: dir = p2[",
   "runs_in_intro": false
  },
  "compass_tile_probe": {
@@ -1333,7 +1333,7 @@
   "addr": "00034608",
   "label": "",
   "subsystem": "combat",
-  "desc": "0x34608 -- pick a passable direction for the current projectile/scan point. * If dir is vertical (0 / 0x80) and the point's x tile differs from the target * x tile (g_10b54), first try the direction F",
+  "desc": "0x34608, pick a passable direction for the current projectile/scan point. * If dir is vertical (0 / 0x80) and the point's x tile differs from the target * x tile (g_10b54), first try the direction FUN",
   "runs_in_intro": false
  },
  "vehicle_drive_step": {
@@ -1375,21 +1375,21 @@
   "addr": "00035638",
   "label": "",
   "subsystem": "ui",
-  "desc": "0x35638 -- message-line setter. Sets g_506c=1/g_5064=0, strcpy(g_bdfc, * g_b4c0[i]), clears g_10b3f; if g_5591 set, calls 0x4987e(g_10aa0) and clears * it; calls 0x39ca0(0,0,g_b958); then the two scre",
+  "desc": "0x35638, message-line setter. Sets g_506c=1/g_5064=0, strcpy(g_bdfc, * g_b4c0[i]), clears g_10b3f, if g_5591 set, calls 0x4987e(g_10aa0) and clears * it, calls 0x39ca0(0,0,g_b958), then the two screen",
   "runs_in_intro": false
  },
  "FUN_00035b68": {
   "addr": "00035b68",
   "label": "",
   "subsystem": "economy",
-  "desc": "0x35b68 -- save game. Taxes the player's cash (dword at g_player_recs + p*0x417) * by 10% when above 30000 (unsigned mul/div, RMW -=); builds the path with * sprintf(buf, fmt 0x3cf0, str 0xb970, n) li",
+  "desc": "0x35b68, save game. Taxes the player's cash (dword at g_player_recs + p*0x417) * by 10% when above 30000 (unsigned mul/div, RMW -=), builds the path with * sprintf(buf, fmt 0x3cf0, str 0xb970, n) like",
   "runs_in_intro": false
  },
  "FUN_00035c88": {
   "addr": "00035c88",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "0x35c88 -- read a 0x14-byte name record. Builds a path with sprintf(buf, * fmt@0x3cf0, str@0xb970, n), opens it (0x18828, mode 0x202); if fd > 0 reads * 0x14 bytes into out and closes. If out is still",
+  "desc": "0x35c88, read a 0x14-byte name record. Builds a path with sprintf(buf, * fmt@0x3cf0, str@0xb970, n), opens it (0x18828, mode 0x202), if fd > 0 reads * 0x14 bytes into out and closes. If out is still e",
   "runs_in_intro": false
  },
  "sound_driver_init": {
@@ -1431,7 +1431,7 @@
   "addr": "00036168",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "if (g_sound_enabled) FUN_000395b6(0); * * The body compiles to a bare guarded call, but the target wraps it in a dead * push ebx / pop ebx: this function must preserve EBX for its own caller * (callee",
+  "desc": "if (g_sound_enabled) FUN_000395b6(0), * * The body compiles to a bare guarded call, but the target wraps it in a dead * push ebx / pop ebx: this function must preserve EBX for its own caller * (callee",
   "runs_in_intro": false
  },
  "center_draw_string": {
@@ -1487,14 +1487,14 @@
   "addr": "00036698",
   "label": "",
   "subsystem": "ui",
-  "desc": "@ 0x36698: PARKED near-miss 295/362 (aligned bytes, -4s -oneatx -zp8 -s -zq). Remaining walls (all \u00a73 families): (1) spill-slot order \u2014 target has i at [esp+0], c at [esp+4]; ours always swaps them un",
+  "desc": "@ 0x36698: PARKED near-miss 295/362 (aligned bytes, -4s -oneatx -zp8 -s -zq). Remaining walls (all \u00a73 families): (1) spill-slot order, target has i at [esp+0], c at [esp+4], ours always swaps them und",
   "runs_in_intro": false
  },
  "FUN_00036808": {
   "addr": "00036808",
   "label": "",
   "subsystem": "ui",
-  "desc": "@ 0x36808: PARKED near-miss (987B target, -4s -oneatx -zp8 -s -zq). Structure is byte-faithful; the whole divergence cascades from a single \u00a73 register-role tie: `cur` (param5, ESI in target) and `len",
+  "desc": "@ 0x36808: PARKED near-miss (987B target, -4s -oneatx -zp8 -s -zq). Structure is byte-faithful, the whole divergence cascades from a single \u00a73 register-role tie: `cur` (param5, ESI in target) and `len",
   "runs_in_intro": false
  },
  "walk_chain_1c": {
@@ -1522,7 +1522,7 @@
   "addr": "00037658",
   "label": "",
   "subsystem": "entity",
-  "desc": "FUN_00037658 @ 0x37658 (leaf) - link param_1 into param_2's chain. * Chain nodes live in the g_entity_pool pool; next-link is node[0x1c]. * Returns 0 only when the chain is already full (>6); other pa",
+  "desc": "FUN_00037658 @ 0x37658 (leaf) - link param_1 into param_2's chain. * Chain nodes live in the g_entity_pool pool, next-link is node[0x1c]. * Returns 0 only when the chain is already full (>6), other pa",
   "runs_in_intro": false
  },
  "chain_sum_3a": {
@@ -1557,7 +1557,7 @@
   "addr": "000377e8",
   "label": "",
   "subsystem": "unclassified",
-  "desc": "Translation unit @ 0x377e8 -- two sibling pool accessors that SHARE a return-0 stub. * * 0x377e8 and 0x37818 are near-identical two-level table lookups (bounds check, then * return g_table[node[0x19]]",
+  "desc": "Translation unit @ 0x377e8, two sibling pool accessors that SHARE a return-0 stub. * * 0x377e8 and 0x37818 are near-identical two-level table lookups (bounds check, then * return g_table[node[0x19]] e",
   "runs_in_intro": false
  },
  "FUN_00037818": {
@@ -1571,7 +1571,7 @@
   "addr": "00037878",
   "label": "",
   "subsystem": "entity",
-  "desc": "FUN_00037878 @ 0x37878 (leaf) - unlink param_1 from its pool chain. * Chain nodes live in the g_entity_pool pool; node = g_entity_pool + param_1[0x44]. * prev id = node[0x1e], next id = node[0x1c], sc",
+  "desc": "FUN_00037878 @ 0x37878 (leaf) - unlink param_1 from its pool chain. * Chain nodes live in the g_entity_pool pool, node = g_entity_pool + param_1[0x44]. * prev id = node[0x1e], next id = node[0x1c], sc",
   "runs_in_intro": false
  },
  "drop_carried_items": {
@@ -1627,14 +1627,14 @@
   "addr": "00039088",
   "label": "",
   "subsystem": "lib",
-  "desc": "FUN_00039088 (stack/cdecl, -4s). Globals-only guard + dispatch. * disasm: if (g_music_enabled && g_10b4d && (signed char)g_cur_seq >= 0) * FUN_00039bc3(g_seq_ctx, g_seq_state[g_cur_seq]); g_cur_seq = ",
+  "desc": "FUN_00039088 (stack/cdecl, -4s). Globals-only guard + dispatch. * disasm: if (g_music_enabled && g_10b4d && (signed char)g_cur_seq >= 0) * FUN_00039bc3(g_seq_ctx, g_seq_state[g_cur_seq]), g_cur_seq = ",
   "runs_in_intro": false
  },
  "FUN_00039188": {
   "addr": "00039188",
   "label": "",
   "subsystem": "lib",
-  "desc": "if (g_music_enabled) FUN_000395b6(0x3d24); * Dead callee-save wall (sibling of 0x36168): the target wraps the guarded call in a * dead push ebx/pop ebx because 0x395b6 is declared to clobber ebx (aux ",
+  "desc": "if (g_music_enabled) FUN_000395b6(0x3d24), * Dead callee-save wall (sibling of 0x36168): the target wraps the guarded call in a * dead push ebx/pop ebx because 0x395b6 is declared to clobber ebx (aux ",
   "runs_in_intro": false
  },
  "FUN_000391a8": {
@@ -1676,7 +1676,7 @@
   "addr": "0003942f",
   "label": "",
   "subsystem": "lib",
-  "desc": "FUN_0003942f -- SKIP-ASM-IDIOM (restore timer ISR, 56B). * disasm: pushfd; cli; g_bcee = -1; * INT 21h / AH=25h : set interrupt vector 8 back to the saved handler * (offset g_bce6, segment g_bcea via ",
+  "desc": "FUN_0003942f, SKIP-ASM-IDIOM (restore timer ISR, 56B). * disasm: pushfd, cli, g_bcee = -1, * INT 21h / AH=25h : set interrupt vector 8 back to the saved handler * (offset g_bce6, segment g_bcea via mo",
   "runs_in_intro": false
  },
  "reprogram_pit_ch0": {
@@ -1711,7 +1711,7 @@
   "addr": "000395b6",
   "label": "",
   "subsystem": "lib",
-  "desc": "FUN_000395b6 -- SKIP-ASM-IDIOM (per-voice service loop, 111B). * disasm: framed; pushfd; cli; * for (i=0; i<0x10; i++) if (g_bcfa[i]) { * if (g_bd3a[i] != -1) FUN_000396d5(g_bd3a[i]); * FUN_00039a82(i",
+  "desc": "FUN_000395b6, SKIP-ASM-IDIOM (per-voice service loop, 111B). * disasm: framed, pushfd, cli, * for (i=0, i<0x10, i++) if (g_bcfa[i]) { * if (g_bd3a[i] != -1) FUN_000396d5(g_bd3a[i]), * FUN_00039a82(i, ",
   "runs_in_intro": false
  },
  "FUN_00039625": {
@@ -1732,7 +1732,7 @@
   "addr": "00039722",
   "label": "",
   "subsystem": "lib",
-  "desc": "interrupt-critical-section teardown. Disasm (authoritative): push esi; push edi pushfd; cli ; save EFLAGS, disable interrupts mov esi,0xf .loop: push esi; call 0x396d5; add esp,4; dec esi; jge .loop ;",
+  "desc": "interrupt-critical-section teardown. Disasm (authoritative): push esi, push edi pushfd, cli , save EFLAGS, disable interrupts mov esi,0xf .loop: push esi, call 0x396d5, add esp,4, dec esi, jge .loop ,",
   "runs_in_intro": false
  },
  "FUN_00039747": {
@@ -1795,7 +1795,7 @@
   "addr": "000399b3",
   "label": "",
   "subsystem": "lib",
-  "desc": "dispatch stub @ 000399b3 (10B): mov eax,0x65; jmp sound_dispatch_trampoline (tail call)",
+  "desc": "dispatch stub @ 000399b3 (10B): mov eax,0x65, jmp sound_dispatch_trampoline (tail call)",
   "runs_in_intro": true
  },
  "FUN_000399bd": {
@@ -1809,91 +1809,91 @@
   "addr": "00039a82",
   "label": "",
   "subsystem": "lib",
-  "desc": "FUN_00039a82 -- SKIP-ASM-IDIOM (voice-stop trampoline, 61B). * disasm: mov ebx,esp; mov ebx,[ebx+4]; if ((unsigned)ebx >= 0x10) ret; * ebx <<= 2; edx=0; xchg [ebx+g_bd7a],edx; ; atomically clear activ",
+  "desc": "FUN_00039a82, SKIP-ASM-IDIOM (voice-stop trampoline, 61B). * disasm: mov ebx,esp, mov ebx,[ebx+4], if ((unsigned)ebx >= 0x10) ret, * ebx <<= 2, edx=0, xchg [ebx+g_bd7a],edx, , atomically clear active ",
   "runs_in_intro": false
  },
  "FUN_00039ae7": {
   "addr": "00039ae7",
   "label": "",
   "subsystem": "lib",
-  "desc": "dispatch stub @ 00039ae7 (10B): mov eax,0x7b; jmp sound_dispatch_trampoline (tail call)",
+  "desc": "dispatch stub @ 00039ae7 (10B): mov eax,0x7b, jmp sound_dispatch_trampoline (tail call)",
   "runs_in_intro": false
  },
  "FUN_00039af1": {
   "addr": "00039af1",
   "label": "",
   "subsystem": "lib",
-  "desc": "dispatch stub @ 00039af1 (10B): mov eax,0x85; jmp sound_dispatch_trampoline (tail call)",
+  "desc": "dispatch stub @ 00039af1 (10B): mov eax,0x85, jmp sound_dispatch_trampoline (tail call)",
   "runs_in_intro": true
  },
  "FUN_00039afb": {
   "addr": "00039afb",
   "label": "",
   "subsystem": "lib",
-  "desc": "dispatch stub @ 00039afb (10B): mov eax,0x7c; jmp sound_dispatch_trampoline (tail call)",
+  "desc": "dispatch stub @ 00039afb (10B): mov eax,0x7c, jmp sound_dispatch_trampoline (tail call)",
   "runs_in_intro": false
  },
  "FUN_00039b05": {
   "addr": "00039b05",
   "label": "",
   "subsystem": "lib",
-  "desc": "dispatch stub @ 00039b05 (10B): mov eax,0x7d; jmp sound_dispatch_trampoline (tail call)",
+  "desc": "dispatch stub @ 00039b05 (10B): mov eax,0x7d, jmp sound_dispatch_trampoline (tail call)",
   "runs_in_intro": false
  },
  "FUN_00039b55": {
   "addr": "00039b55",
   "label": "",
   "subsystem": "lib",
-  "desc": "dispatch stub @ 00039b55 (10B): mov eax,0x96; jmp sound_dispatch_trampoline (tail call)",
+  "desc": "dispatch stub @ 00039b55 (10B): mov eax,0x96, jmp sound_dispatch_trampoline (tail call)",
   "runs_in_intro": true
  },
  "FUN_00039b5f": {
   "addr": "00039b5f",
   "label": "",
   "subsystem": "lib",
-  "desc": "dispatch stub @ 00039b5f (10B): mov eax,0x97; jmp sound_dispatch_trampoline (tail call)",
+  "desc": "dispatch stub @ 00039b5f (10B): mov eax,0x97, jmp sound_dispatch_trampoline (tail call)",
   "runs_in_intro": true
  },
  "FUN_00039b73": {
   "addr": "00039b73",
   "label": "",
   "subsystem": "lib",
-  "desc": "dispatch stub @ 00039b73 (10B): mov eax,0x99; jmp sound_dispatch_trampoline (tail call)",
+  "desc": "dispatch stub @ 00039b73 (10B): mov eax,0x99, jmp sound_dispatch_trampoline (tail call)",
   "runs_in_intro": true
  },
  "FUN_00039b7d": {
   "addr": "00039b7d",
   "label": "",
   "subsystem": "lib",
-  "desc": "dispatch stub @ 00039b7d (10B): mov eax,0x9a; jmp sound_dispatch_trampoline (tail call)",
+  "desc": "dispatch stub @ 00039b7d (10B): mov eax,0x9a, jmp sound_dispatch_trampoline (tail call)",
   "runs_in_intro": true
  },
  "FUN_00039b87": {
   "addr": "00039b87",
   "label": "",
   "subsystem": "lib",
-  "desc": "dispatch stub @ 00039b87 (10B): mov eax,0x9b; jmp sound_dispatch_trampoline (tail call)",
+  "desc": "dispatch stub @ 00039b87 (10B): mov eax,0x9b, jmp sound_dispatch_trampoline (tail call)",
   "runs_in_intro": true
  },
  "FUN_00039b91": {
   "addr": "00039b91",
   "label": "",
   "subsystem": "lib",
-  "desc": "dispatch stub @ 00039b91 (10B): mov eax,0x9c; jmp sound_dispatch_trampoline (tail call)",
+  "desc": "dispatch stub @ 00039b91 (10B): mov eax,0x9c, jmp sound_dispatch_trampoline (tail call)",
   "runs_in_intro": true
  },
  "FUN_00039bb9": {
   "addr": "00039bb9",
   "label": "",
   "subsystem": "lib",
-  "desc": "dispatch stub @ 00039bb9 (10B): mov eax,0xaa; jmp sound_dispatch_trampoline (tail call)",
+  "desc": "dispatch stub @ 00039bb9 (10B): mov eax,0xaa, jmp sound_dispatch_trampoline (tail call)",
   "runs_in_intro": false
  },
  "FUN_00039bc3": {
   "addr": "00039bc3",
   "label": "",
   "subsystem": "lib",
-  "desc": "dispatch stub @ 00039bc3 (10B): mov eax,0xab; jmp sound_dispatch_trampoline (tail call)",
+  "desc": "dispatch stub @ 00039bc3 (10B): mov eax,0xab, jmp sound_dispatch_trampoline (tail call)",
   "runs_in_intro": false
  },
  "FUN_00039ca0": {
@@ -1928,7 +1928,7 @@
   "addr": "00039f69",
   "label": "",
   "subsystem": "lib",
-  "desc": "frameless linear call @ 0x39f69: g(g_bdd0, g_10ab0, (u16)g_bddc - 6); g_be2e = 1 0x39xxx unit is -3 (386) AND a lighter opt than the main game: compile \"-3s\" with NO -oneatx (plain -3s -zp8 -s -zq), o",
+  "desc": "frameless linear call @ 0x39f69: g(g_bdd0, g_10ab0, (u16)g_bddc - 6), g_be2e = 1 0x39xxx unit is -3 (386) AND a lighter opt than the main game: compile \"-3s\" with NO -oneatx (plain -3s -zp8 -s -zq), o",
   "runs_in_intro": false
  },
  "FUN_00039f92": {
@@ -1942,21 +1942,21 @@
   "addr": "0003a033",
   "label": "",
   "subsystem": "lib",
-  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). RLE/sprite-stream decoder @ 0x3a033. Framed hand-asm (its own PUSH EBP; MOV EBP,ESP; ADD ESP,-0x10 prologue, LEAVE/RET epilogue). Reads the frame header",
+  "desc": "GAME hand-asm (NOT CLIB, 0% RTL fingerprint). RLE/sprite-stream decoder @ 0x3a033. Framed hand-asm (its own PUSH EBP, MOV EBP,ESP, ADD ESP,-0x10 prologue, LEAVE/RET epilogue). Reads the frame header f",
   "runs_in_intro": false
  },
  "FUN_0003a10c": {
   "addr": "0003a10c",
   "label": "",
   "subsystem": "lib",
-  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). RLE/sprite-stream decoder @ 0x3a10c. Framed hand-asm sibling of 0x3a033 (its own PUSH EBP; MOV EBP,ESP; ADD ESP,-4 prologue, LEAVE/RET epilogue), a simp",
+  "desc": "GAME hand-asm (NOT CLIB, 0% RTL fingerprint). RLE/sprite-stream decoder @ 0x3a10c. Framed hand-asm sibling of 0x3a033 (its own PUSH EBP, MOV EBP,ESP, ADD ESP,-4 prologue, LEAVE/RET epilogue), a simple",
   "runs_in_intro": false
  },
  "FUN_0003a19a": {
   "addr": "0003a19a",
   "label": "",
   "subsystem": "lib",
-  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Frame-rate throttle @ 0x3a19a. Leaf, frameless. If g_bdf8 (min interval, centiseconds) != 0, busy-waits on the DOS clock (INT 21h AH=2Ch: DH=sec, DL=1/1",
+  "desc": "GAME hand-asm (NOT CLIB, 0% RTL fingerprint). Frame-rate throttle @ 0x3a19a. Leaf, frameless. If g_bdf8 (min interval, centiseconds) != 0, busy-waits on the DOS clock (INT 21h AH=2Ch: DH=sec, DL=1/100",
   "runs_in_intro": false
  },
  "rnc_decompress": {
@@ -2019,7 +2019,7 @@
   "addr": "0003a598",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: open/sopen core @ 0x3a598 (CLIB3S). Skips leading spaces in the name, masks the share/access flags (&0x83), DOS open (AH=0x3d); on ENOENT with O_CREAT (0x40) does DOS create (AH=0x3c) honou",
+  "desc": "C runtime: open/sopen core @ 0x3a598 (CLIB3S). Skips leading spaces in the name, masks the share/access flags (&0x83), DOS open (AH=0x3d), on ENOENT with O_CREAT (0x40) does DOS create (AH=0x3c) honou",
   "runs_in_intro": true
  },
  "FUN_0003a7c4": {
@@ -2033,35 +2033,35 @@
   "addr": "0003a89d",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: close @ 0x3a89d (CLIB3S, Watcom 9.5). DOS close (AH=0x3E, BX=handle). int 21h; fold carry into the sign bit (rcl eax,1; ror eax,1); on success call the handle-release helper FUN_0003c57b(ha",
+  "desc": "C runtime: close @ 0x3a89d (CLIB3S, Watcom 9.5). DOS close (AH=0x3E, BX=handle). int 21h, fold carry into the sign bit (rcl eax,1, ror eax,1), on success call the handle-release helper FUN_0003c57b(ha",
   "runs_in_intro": true
  },
  "FUN_0003a8d7": {
   "addr": "0003a8d7",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: strcpy @ 0x3a8d7 (CLIB3S). Open Watcom strcpy.c uses #pragma aux __strcpy (hand asm, 2-byte unroll) for 386 small model. Replicated verbatim; the target encodes `add eax,2` as the EAX-accum",
+  "desc": "C runtime: strcpy @ 0x3a8d7 (CLIB3S). Open Watcom strcpy.c uses #pragma aux __strcpy (hand asm, 2-byte unroll) for 386 small model. Replicated verbatim, the target encodes `add eax,2` as the EAX-accum",
   "runs_in_intro": false
  },
  "FUN_0003a900": {
   "addr": "0003a900",
   "label": "",
   "subsystem": "lib",
-  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Word-wise string append @ 0x3a900. Custom frame (PUSH ESI/EDI/EBP; MOV EBP,ESP): dest at [EBP+0x10], src at [EBP+0x14]. Sets ES=DS, SCASB/REPNE-scans de",
+  "desc": "GAME hand-asm (NOT CLIB, 0% RTL fingerprint). Word-wise string append @ 0x3a900. Custom frame (PUSH ESI/EDI/EBP, MOV EBP,ESP): dest at [EBP+0x10], src at [EBP+0x14]. Sets ES=DS, SCASB/REPNE-scans dest",
   "runs_in_intro": true
  },
  "FUN_0003a93b": {
   "addr": "0003a93b",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: lseek @ 0x3a93b (CLIB3S). DOS seek (AH=0x42), 64-bit->32-bit result combine, error path calls the DOS-error handler. Full body via #pragma aux db bytes; the one call is a real `call FUN_000",
+  "desc": "C runtime: lseek @ 0x3a93b (CLIB3S). DOS seek (AH=0x42), 64-bit->32-bit result combine, error path calls the DOS-error handler. Full body via #pragma aux db bytes, the one call is a real `call FUN_000",
   "runs_in_intro": true
  },
  "FUN_0003a97c": {
   "addr": "0003a97c",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: tell @ 0x3a97c (CLIB3S). DOS seek-cur (AH=0x42, method 1) to read the file position; 64-bit->32-bit combine + error handler call. Sibling of lseek; full body via #pragma aux db bytes with a",
+  "desc": "C runtime: tell @ 0x3a97c (CLIB3S). DOS seek-cur (AH=0x42, method 1) to read the file position, 64-bit->32-bit combine + error handler call. Sibling of lseek, full body via #pragma aux db bytes with a",
   "runs_in_intro": true
  },
  "FUN_0003a9c8": {
@@ -2075,7 +2075,7 @@
   "addr": "0003aa74",
   "label": "",
   "subsystem": "lib",
-  "desc": "framed 1-arg forwarder @ 0x3aa74: push [ebp+8]; call 0x3aa84",
+  "desc": "framed 1-arg forwarder @ 0x3aa74: push [ebp+8], call 0x3aa84",
   "runs_in_intro": true
  },
  "FUN_0003aa84": {
@@ -2089,7 +2089,7 @@
   "addr": "0003aaf8",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: memset @ 0x3aaf8 (CLIB3S, Watcom 9.5). Hand-asm, FRAMELESS, stack-calling. Loads dst/c/len from [esp+4/8/0xc], splats byte c into all 4 bytes of EDX (mov dh,dl; shl edx,8; mov dl,dh; shl; m",
+  "desc": "C runtime: memset @ 0x3aaf8 (CLIB3S, Watcom 9.5). Hand-asm, FRAMELESS, stack-calling. Loads dst/c/len from [esp+4/8/0xc], splats byte c into all 4 bytes of EDX (mov dh,dl, shl edx,8, mov dl,dh, shl, m",
   "runs_in_intro": true
  },
  "FUN_0003ab1a": {
@@ -2103,21 +2103,21 @@
   "addr": "0003ab59",
   "label": "",
   "subsystem": "lib",
-  "desc": "framed 1-arg forwarder @ 0x3ab59: push [ebp+8]; call 0x3ab69",
+  "desc": "framed 1-arg forwarder @ 0x3ab59: push [ebp+8], call 0x3ab69",
   "runs_in_intro": true
  },
  "FUN_0003ab69": {
   "addr": "0003ab69",
   "label": "",
   "subsystem": "lib",
-  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Thin wrapper @ 0x3ab69 that forwards its 3rd stack arg ([EBP+0xc], into EAX) plus two fixed global buffer addresses (0xbfc4 in EAX -- immediately overwr",
+  "desc": "GAME hand-asm (NOT CLIB, 0% RTL fingerprint). Thin wrapper @ 0x3ab69 that forwards its 3rd stack arg ([EBP+0xc], into EAX) plus two fixed global buffer addresses (0xbfc4 in EAX, immediately overwritte",
   "runs_in_intro": true
  },
  "FUN_0003ab8e": {
   "addr": "0003ab8e",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: write (text/binary) @ 0x3ab8e (CLIB3S). Handle lookup (0x3c529); append-mode pre-seek (AH=0x42) for +0x80 handles; binary path is a single DOS write (AH=0x40), text path buffers into a stac",
+  "desc": "C runtime: write (text/binary) @ 0x3ab8e (CLIB3S). Handle lookup (0x3c529), append-mode pre-seek (AH=0x42) for +0x80 handles, binary path is a single DOS write (AH=0x40), text path buffers into a stac",
   "runs_in_intro": false
  },
  "FUN_0003ad66": {
@@ -2131,7 +2131,7 @@
   "addr": "0003ad89",
   "label": "",
   "subsystem": "lib",
-  "desc": "GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Non-returning exit trampoline @ 0x3ad89. Runs two chained indirect calls through the global function-pointer slots at [0xbff4] and [0xbff8] (atexit/flus",
+  "desc": "GAME hand-asm (NOT CLIB, 0% RTL fingerprint). Non-returning exit trampoline @ 0x3ad89. Runs two chained indirect calls through the global function-pointer slots at [0xbff4] and [0xbff8] (atexit/flush ",
   "runs_in_intro": false
  },
  "int386": {
@@ -2145,14 +2145,14 @@
   "addr": "0003addb",
   "label": "",
   "subsystem": "lib",
-  "desc": "framed forwarder @ 0x3addb: push [ebp+c]; push 0x62; push [ebp+8]; call 0x3a579",
+  "desc": "framed forwarder @ 0x3addb: push [ebp+c], push 0x62, push [ebp+8], call 0x3a579",
   "runs_in_intro": false
  },
  "FUN_0003adf0": {
   "addr": "0003adf0",
   "label": "",
   "subsystem": "lib",
-  "desc": "GAME/CLIB hand-asm (0% RTL fingerprint, library region). setmode-style stream helper @ 0x3adf0. Frame PUSH EBX/ESI/EDI/EBP; MOV EBP,ESP. Arg0 (handle, [EBP+0x14]->EBX), arg1 (requested mode, [EBP+0x18",
+  "desc": "GAME/CLIB hand-asm (0% RTL fingerprint, library region). setmode-style stream helper @ 0x3adf0. Frame PUSH EBX/ESI/EDI/EBP, MOV EBP,ESP. Arg0 (handle, [EBP+0x14]->EBX), arg1 (requested mode, [EBP+0x18",
   "runs_in_intro": false
  },
  "FUN_0003aea6": {
@@ -2215,35 +2215,35 @@
   "addr": "0003b22d",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: outp @ 0x3b22d (CLIB3S). out dx,al -- replicated via #pragma aux (value passed in 8-bit AL so it loads with mov al,[..] not movzx).",
+  "desc": "C runtime: outp @ 0x3b22d (CLIB3S). out dx,al, replicated via #pragma aux (value passed in 8-bit AL so it loads with mov al,[..] not movzx).",
   "runs_in_intro": false
  },
  "FUN_0003b239": {
   "addr": "0003b239",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: d_getvec @ 0x3b239 (CLIB3S). DOS get-interrupt-vector (AH=0x35, with a DOS-version gate on the 0xc2da flag). int21 asm replicated via #pragma aux (db bytes); the 0xc2da refs are literals ma",
+  "desc": "C runtime: d_getvec @ 0x3b239 (CLIB3S). DOS get-interrupt-vector (AH=0x35, with a DOS-version gate on the 0xc2da flag). int21 asm replicated via #pragma aux (db bytes), the 0xc2da refs are literals ma",
   "runs_in_intro": true
  },
  "FUN_0003b273": {
   "addr": "0003b273",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: d_setvec @ 0x3b273 (CLIB3S). DOS set-interrupt-vector (AH=0x25) with the DOS-version gate. Entire body (incl the [ebp+N] param loads -- the segment loads 16-bit via mov cx) emitted as #prag",
+  "desc": "C runtime: d_setvec @ 0x3b273 (CLIB3S). DOS set-interrupt-vector (AH=0x25) with the DOS-version gate. Entire body (incl the [ebp+N] param loads, the segment loads 16-bit via mov cx) emitted as #pragma",
   "runs_in_intro": true
  },
  "FUN_0003b2aa": {
   "addr": "0003b2aa",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: inp @ 0x3b2aa (CLIB3S, Watcom 9.5). Read a byte from an I/O port: framed (push ebp; mov ebp,esp), loads the port from [ebp+8] into EDX, zeroes EAX (sub eax,eax) and `in al,dx`. Sibling of o",
+  "desc": "C runtime: inp @ 0x3b2aa (CLIB3S, Watcom 9.5). Read a byte from an I/O port: framed (push ebp, mov ebp,esp), loads the port from [ebp+8] into EDX, zeroes EAX (sub eax,eax) and `in al,dx`. Sibling of o",
   "runs_in_intro": false
  },
  "FUN_0003b2b5": {
   "addr": "0003b2b5",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime helper @ 0x3b2b5 (CLIB3S region, buffered console output). Writes the character c to the console stream (FILE at 0xc09a) via the fast putc FUN_0003d24a; on success it emits a newline: if the",
+  "desc": "C runtime helper @ 0x3b2b5 (CLIB3S region, buffered console output). Writes the character c to the console stream (FILE at 0xc09a) via the fast putc FUN_0003d24a, on success it emits a newline: if the",
   "runs_in_intro": false
  },
  "FUN_0003b326": {
@@ -2271,70 +2271,70 @@
   "addr": "0003b407",
   "label": "",
   "subsystem": "lib",
-  "desc": "framed field-mask+call @ 0x3b407: p=[ebp+8]; p[0xc]&=0xcf; g(p,0,0)",
+  "desc": "framed field-mask+call @ 0x3b407: p=[ebp+8], p[0xc]&=0xcf, g(p,0,0)",
   "runs_in_intro": true
  },
  "FUN_0003b420": {
   "addr": "0003b420",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: fread @ 0x3b420 (CLIB3S). size*count buffered read (_filbuf/qread core); regs-first prologue -> full db-transcription. Body db-transcribed (frameless wrapper; modify[] suppresses the wrappe",
+  "desc": "C runtime: fread @ 0x3b420 (CLIB3S). size*count buffered read (_filbuf/qread core), regs-first prologue -> full db-transcription. Body db-transcribed (frameless wrapper, modify[] suppresses the wrappe",
   "runs_in_intro": true
  },
  "FUN_0003b539": {
   "addr": "0003b539",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: fgetc (text mode) @ 0x3b539 (CLIB3S, Watcom 9.5). Reads one character from the stream (FILE* at [ebp+0xc]): inlined getc (--_cnt; if >=0 take *_ptr++ else __filbuf FUN_0003d3e4). On a CR (0",
+  "desc": "C runtime: fgetc (text mode) @ 0x3b539 (CLIB3S, Watcom 9.5). Reads one character from the stream (FILE* at [ebp+0xc]): inlined getc (--_cnt, if >=0 take *_ptr++ else __filbuf FUN_0003d3e4). On a CR (0",
   "runs_in_intro": false
  },
  "FUN_0003b594": {
   "addr": "0003b594",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: fseek @ 0x3b594 (CLIB3S). buffered seek via lseek/tell/ftell/flush; regs-first prologue -> full db-transcription. Body db-transcribed (frameless wrapper; modify[] suppresses the wrapper fra",
+  "desc": "C runtime: fseek @ 0x3b594 (CLIB3S). buffered seek via lseek/tell/ftell/flush, regs-first prologue -> full db-transcription. Body db-transcribed (frameless wrapper, modify[] suppresses the wrapper fra",
   "runs_in_intro": true
  },
  "FUN_0003b739": {
   "addr": "0003b739",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: fopen mode-string parser @ 0x3b739 (CLIB3S). Decodes r/w/a/+/b/t to stream flag bits (tolower, 0xc289 default-mode); regs-first prologue -> full db-transcription. Body db-transcribed (frame",
+  "desc": "C runtime: fopen mode-string parser @ 0x3b739 (CLIB3S). Decodes r/w/a/+/b/t to stream flag bits (tolower, 0xc289 default-mode), regs-first prologue -> full db-transcription. Body db-transcribed (frame",
   "runs_in_intro": true
  },
  "FUN_0003b7e8": {
   "addr": "0003b7e8",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: _fopen core @ 0x3b7e8 (CLIB3S). Parse mode, open/create via 0x3a598, append-truncate via fseek, init FILE; regs-first prologue -> full db-transcription. Body db-transcribed (frameless wrapp",
+  "desc": "C runtime: _fopen core @ 0x3b7e8 (CLIB3S). Parse mode, open/create via 0x3a598, append-truncate via fseek, init FILE, regs-first prologue -> full db-transcription. Body db-transcribed (frameless wrapp",
   "runs_in_intro": true
  },
  "FUN_0003b8cd": {
   "addr": "0003b8cd",
   "label": "",
   "subsystem": "lib",
-  "desc": "framed call-then-cond-call @ 0x3b8cd: p=g1(0); if(p) p=g2(a,b,c,p); return p;",
+  "desc": "framed call-then-cond-call @ 0x3b8cd: p=g1(0), if(p) p=g2(a,b,c,p), return p,",
   "runs_in_intro": true
  },
  "FUN_0003b8f8": {
   "addr": "0003b8f8",
   "label": "",
   "subsystem": "lib",
-  "desc": "framed forwarder @ 0x3b8f8: push 0; push [ebp+c]; push [ebp+8]; call 0x3b8cd",
+  "desc": "framed forwarder @ 0x3b8f8: push 0, push [ebp+c], push [ebp+8], call 0x3b8cd",
   "runs_in_intro": true
  },
  "FUN_0003b90d": {
   "addr": "0003b90d",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: _getstream/freelist search @ 0x3b90d (CLIB3S). Walks the two FILE freelists (g_11e4c/g_11e44); regs-first prologue -> full db-transcription. Body db-transcribed (frameless wrapper; modify[]",
+  "desc": "C runtime: _getstream/freelist search @ 0x3b90d (CLIB3S). Walks the two FILE freelists (g_11e4c/g_11e44), regs-first prologue -> full db-transcription. Body db-transcribed (frameless wrapper, modify[]",
   "runs_in_intro": false
  },
  "FUN_0003b972": {
   "addr": "0003b972",
   "label": "",
   "subsystem": "lib",
-  "desc": "framed cond-call w/ field-mask @ 0x3b972: p=g1(c); if(p){ p[3]&=0x4000; g2(a,b,0,p);}",
+  "desc": "framed cond-call w/ field-mask @ 0x3b972: p=g1(c), if(p){ p[3]&=0x4000, g2(a,b,0,p),}",
   "runs_in_intro": false
  },
  "FUN_0003b99e": {
@@ -2348,21 +2348,21 @@
   "addr": "0003b9ca",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: @ 0x3b9ca (CLIB3S). r=FUN_3ba80(a,b); FUN_3dae1(a); return r; regs-first prologue -> full db-transcription. Body db-transcribed (frameless wrapper; modify[] suppresses the wrapper frame). E",
+  "desc": "C runtime: @ 0x3b9ca (CLIB3S). r=FUN_3ba80(a,b), FUN_3dae1(a), return r, regs-first prologue -> full db-transcription. Body db-transcribed (frameless wrapper, modify[] suppresses the wrapper frame). E",
   "runs_in_intro": true
  },
  "FUN_0003b9ee": {
   "addr": "0003b9ee",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime helper @ 0x3b9ee (CLIB3S): nibble -> ASCII hex digit. x+=0x30; if(x>'9') x+=0x27; (mislabeled 'fclose' by the window heuristic)",
+  "desc": "C runtime helper @ 0x3b9ee (CLIB3S): nibble -> ASCII hex digit. x+=0x30, if(x>'9') x+=0x27, (mislabeled 'fclose' by the window heuristic)",
   "runs_in_intro": false
  },
  "FUN_0003ba01": {
   "addr": "0003ba01",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: temp filename builder @ 0x3ba01 (CLIB3S). Builds t<hex>_<hex>.tmp via nibble->hex 0x3b9ee; regs-first prologue -> full db-transcription. Body db-transcribed (frameless wrapper; modify[] sup",
+  "desc": "C runtime: temp filename builder @ 0x3ba01 (CLIB3S). Builds t<hex>_<hex>.tmp via nibble->hex 0x3b9ee, regs-first prologue -> full db-transcription. Body db-transcribed (frameless wrapper, modify[] sup",
   "runs_in_intro": false
  },
  "FUN_0003ba80": {
@@ -2376,7 +2376,7 @@
   "addr": "0003bb1e",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: _doprnt @ 0x3bb1e (CLIB3S, Watcom 9.5) -- the printf/sprintf formatter core (sprintf 0x3a4fa tails into it). Walks the format string, per '%' parses the spec via 0x3bd37, fetches va_args an",
+  "desc": "C runtime: _doprnt @ 0x3bb1e (CLIB3S, Watcom 9.5), the printf/sprintf formatter core (sprintf 0x3a4fa tails into it). Walks the format string, per '%' parses the spec via 0x3bd37, fetches va_args and ",
   "runs_in_intro": false
  },
  "FUN_0003bd37": {
@@ -2397,7 +2397,7 @@
   "addr": "0003be93",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: bounded far strlen (byte) @ 0x3be93 (CLIB3S, Watcom 9.5). Counts bytes of the far string SI:[EBP+0x14] up to max [EBP+0x1c], stopping at NUL or cap; count in EAX. Frame push ebx;esi;es;ebp;",
+  "desc": "C runtime: bounded far strlen (byte) @ 0x3be93 (CLIB3S, Watcom 9.5). Counts bytes of the far string SI:[EBP+0x14] up to max [EBP+0x1c], stopping at NUL or cap, count in EAX. Frame push ebx,esi,es,ebp,",
   "runs_in_intro": false
  },
  "FUN_0003bebc": {
@@ -2425,14 +2425,14 @@
   "addr": "0003c002",
   "label": "",
   "subsystem": "lib",
-  "desc": "framed indirect forwarder @ 0x3c002: push [ebp+10]; push [ebp+c]; push [ebp+8]; call [c2e8]",
+  "desc": "framed indirect forwarder @ 0x3c002: push [ebp+10], push [ebp+c], push [ebp+8], call [c2e8]",
   "runs_in_intro": false
  },
  "FUN_0003c019": {
   "addr": "0003c019",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: printf conversion-specifier dispatcher @ 0x3c019 (CLIB3S, Watcom 9.5). The %-format engine core. Args at [ebp+0x18..0x20]; a 0x14-byte local frame and a pushed ES make its own prologue (pus",
+  "desc": "C runtime: printf conversion-specifier dispatcher @ 0x3c019 (CLIB3S, Watcom 9.5). The %-format engine core. Args at [ebp+0x18..0x20], a 0x14-byte local frame and a pushed ES make its own prologue (pus",
   "runs_in_intro": false
  },
  "strupr": {
@@ -2467,14 +2467,14 @@
   "addr": "0003c479",
   "label": "",
   "subsystem": "lib",
-  "desc": "@ 0x3c479 -- framed CLIB helper: if(b) return FUN_0003c491(a,b); else b.",
+  "desc": "@ 0x3c479, framed CLIB helper: if(b) return FUN_0003c491(a,b), else b.",
   "runs_in_intro": false
  },
  "FUN_0003c491": {
   "addr": "0003c491",
   "label": "",
   "subsystem": "lib",
-  "desc": "@ 0x3c491 -- framed CLIB helper: if(flag) p = FUN_0003c4b9(p); return p.",
+  "desc": "@ 0x3c491, framed CLIB helper: if(flag) p = FUN_0003c4b9(p), return p.",
   "runs_in_intro": true
  },
  "FUN_0003c4b9": {
@@ -2523,7 +2523,7 @@
   "addr": "0003c772",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: DPMI/DOS paragraph allocator @ 0x3c772 (CLIB3S, Watcom 9.5). Framed (push ebx/esi/edi/ebp; mov ebp,esp). Splits the byte size arg [ebp+0x14] into segment:offset, tries a DPMI \"resize memory",
+  "desc": "C runtime: DPMI/DOS paragraph allocator @ 0x3c772 (CLIB3S, Watcom 9.5). Framed (push ebx/esi/edi/ebp, mov ebp,esp). Splits the byte size arg [ebp+0x14] into segment:offset, tries a DPMI \"resize memory",
   "runs_in_intro": true
  },
  "FUN_0003c816": {
@@ -2558,7 +2558,7 @@
   "addr": "0003cabb",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: __STK stack-probe accessor @ 0x3cabb (CLIB3S, Watcom 9.5). Returns ESP - g_c2bc (the current stack depth below the stack-limit global) in EAX. Frameless hand-asm (mov eax,esp; sub eax,[0xc2",
+  "desc": "C runtime: __STK stack-probe accessor @ 0x3cabb (CLIB3S, Watcom 9.5). Returns ESP - g_c2bc (the current stack depth below the stack-limit global) in EAX. Frameless hand-asm (mov eax,esp, sub eax,[0xc2",
   "runs_in_intro": false
  },
  "FUN_0003cacb": {
@@ -2572,7 +2572,7 @@
   "addr": "0003cade",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: __STK stack-limit check core @ 0x3cade (CLIB3S, Watcom 9.5). Given a proposed new stack top in EAX: if EAX >= ESP it is fine (JNC ret); otherwise the requested depth (ESP-EAX) is compared a",
+  "desc": "C runtime: __STK stack-limit check core @ 0x3cade (CLIB3S, Watcom 9.5). Given a proposed new stack top in EAX: if EAX >= ESP it is fine (JNC ret), otherwise the requested depth (ESP-EAX) is compared a",
   "runs_in_intro": true
  },
  "FUN_0003cafb": {
@@ -2586,21 +2586,21 @@
   "addr": "0003cb24",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: stream mode/reopen helper @ 0x3cb24 (CLIB3S, Watcom 9.5). Framed (push ebx/esi/edi/ebp; mov ebp,esp; sub esp,4). Takes a FILE* at [ebp+0x14]; saves and clears its buffering-mode bits (flags",
+  "desc": "C runtime: stream mode/reopen helper @ 0x3cb24 (CLIB3S, Watcom 9.5). Framed (push ebx/esi/edi/ebp, mov ebp,esp, sub esp,4). Takes a FILE* at [ebp+0x14], saves and clears its buffering-mode bits (flags",
   "runs_in_intro": false
  },
  "FUN_0003cba4": {
   "addr": "0003cba4",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: getenv @ 0x3cba4 (CLIB3S, Watcom 9.5). Framed (push ebx/esi/edi/ebp; mov ebp,esp). Walks the environment table at g_c2f4; for the name arg at [ebp+0x14] it takes strlen (FUN_0003dc1b) once,",
+  "desc": "C runtime: getenv @ 0x3cba4 (CLIB3S, Watcom 9.5). Framed (push ebx/esi/edi/ebp, mov ebp,esp). Walks the environment table at g_c2f4, for the name arg at [ebp+0x14] it takes strlen (FUN_0003dc1b) once,",
   "runs_in_intro": true
  },
  "FUN_0003cbf9": {
   "addr": "0003cbf9",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: switch-char/cmd-prefix helper @ 0x3cbf9 (CLIB3S; heuristic mislabeled spawnve). If arg3!=0 store '/'; else DOS get-switch-char (AH=0x37); then append 'c',0. Returns buf. Pure asm (int21, no",
+  "desc": "C runtime: switch-char/cmd-prefix helper @ 0x3cbf9 (CLIB3S, heuristic mislabeled spawnve). If arg3!=0 store '/', else DOS get-switch-char (AH=0x37), then append 'c',0. Returns buf. Pure asm (int21, no",
   "runs_in_intro": true
  },
  "FUN_0003cc26": {
@@ -2614,21 +2614,21 @@
   "addr": "0003cc45",
   "label": "",
   "subsystem": "lib",
-  "desc": "framed two-call @ 0x3cc45: g1(b, e, c, 0); g2(a, b, c, d, e); params a=+8 b=+c c=+10 d=+14 e=+18",
+  "desc": "framed two-call @ 0x3cc45: g1(b, e, c, 0), g2(a, b, c, d, e), params a=+8 b=+c c=+10 d=+14 e=+18",
   "runs_in_intro": true
  },
  "FUN_0003cc74": {
   "addr": "0003cc74",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: system() / spawn-command @ 0x3cc74 (CLIB3S, Watcom 9.5). Large framed hand-asm: stack-probe prologue (push 0xd8; call FUN_0003cacb), saves ebx/esi/edi + ES, ENTER 0xa4,0 then SUB EBP,0x5a f",
+  "desc": "C runtime: system() / spawn-command @ 0x3cc74 (CLIB3S, Watcom 9.5). Large framed hand-asm: stack-probe prologue (push 0xd8, call FUN_0003cacb), saves ebx/esi/edi + ES, ENTER 0xa4,0 then SUB EBP,0x5a f",
   "runs_in_intro": true
  },
  "FUN_0003cfce": {
   "addr": "0003cfce",
   "label": "",
   "subsystem": "lib",
-  "desc": "framed forwarder @ 0x3cfce: lea eax,[ebp+10]; push eax; push [ebp+c]; push [ebp+8]; call 0x3e48e",
+  "desc": "framed forwarder @ 0x3cfce: lea eax,[ebp+10], push eax, push [ebp+c], push [ebp+8], call 0x3e48e",
   "runs_in_intro": true
  },
  "FUN_0003d079": {
@@ -2719,7 +2719,7 @@
   "addr": "0003d935",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: qread @ 0x3d935 (CLIB3S). DOS read (AH=0x3f); error path calls the DOS-error handler. Full body via #pragma aux db bytes with a real call (masked reloc).",
+  "desc": "C runtime: qread @ 0x3d935 (CLIB3S). DOS read (AH=0x3f), error path calls the DOS-error handler. Full body via #pragma aux db bytes with a real call (masked reloc).",
   "runs_in_intro": true
  },
  "FUN_0003d966": {
@@ -2761,7 +2761,7 @@
   "addr": "0003db36",
   "label": "",
   "subsystem": "lib",
-  "desc": "C runtime: chktty @ 0x3db36 (CLIB3S). If the tty-checked flag (0x20) is unset and the fd is a tty (isatty), set 0x20; if no buffering-mode bits (0x7) are set, mark line-buffered (0x2).",
+  "desc": "C runtime: chktty @ 0x3db36 (CLIB3S). If the tty-checked flag (0x20) is unset and the fd is a tty (isatty), set 0x20, if no buffering-mode bits (0x7) are set, mark line-buffered (0x2).",
   "runs_in_intro": true
  },
  "FUN_0003db63": {
@@ -2775,7 +2775,7 @@
   "addr": "0003db69",
   "label": "",
   "subsystem": "lib",
-  "desc": "framed forwarder @ 0x3db69: push ebp; mov ebp,esp; push [ebp+8]; call 0x3e590; add esp,4; pop ebp; ret",
+  "desc": "framed forwarder @ 0x3db69: push ebp, mov ebp,esp, push [ebp+8], call 0x3e590, add esp,4, pop ebp, ret",
   "runs_in_intro": false
  },
  "FUN_0003db9e": {
@@ -2922,21 +2922,21 @@
   "addr": "0003e471",
   "label": "",
   "subsystem": "lib",
-  "desc": "framed forwarder @ 0x3e471: push [c2f4]; lea eax,[ebp+10]; push eax; push [ebp+c]; push [ebp+8]; call 0x3cc74",
+  "desc": "framed forwarder @ 0x3e471: push [c2f4], lea eax,[ebp+10], push eax, push [ebp+c], push [ebp+8], call 0x3cc74",
   "runs_in_intro": false
  },
  "FUN_0003e48e": {
   "addr": "0003e48e",
   "label": "",
   "subsystem": "lib",
-  "desc": "framed forwarder @ 0x3e48e: push [c2f4]; push [ebp+10]; push [ebp+c]; push [ebp+8]; call 0x3e6ab",
+  "desc": "framed forwarder @ 0x3e48e: push [c2f4], push [ebp+10], push [ebp+c], push [ebp+8], call 0x3e6ab",
   "runs_in_intro": true
  },
  "FUN_0003e4aa": {
   "addr": "0003e4aa",
   "label": "",
   "subsystem": "lib",
-  "desc": "constant setter @ 0x0003e4aa (11B): mov dword[0xc2f0],0x8000 ; ret",
+  "desc": "constant setter @ 0x0003e4aa (11B): mov dword[0xc2f0],0x8000 , ret",
   "runs_in_intro": false
  },
  "FUN_0003e4c0": {
@@ -3769,7 +3769,7 @@
   "addr": "00036188",
   "label": "",
   "subsystem": "lib",
-  "desc": "if (g_sound_enabled) FUN_00039b0f(g_snd_driver); * Dead callee-save wall (3rd sibling of 0x36168/0x39188): dead push ebx/pop ebx because * 0x39b0f is declared to clobber ebx and this fn must preserve ",
+  "desc": "if (g_sound_enabled) FUN_00039b0f(g_snd_driver), * Dead callee-save wall (3rd sibling of 0x36168/0x39188): dead push ebx/pop ebx because * 0x39b0f is declared to clobber ebx and this fn must preserve ",
   "runs_in_intro": false
  },
  "vehicle_pool_tick": {

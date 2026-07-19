@@ -43,3 +43,6 @@ run/
 /stderr.txt
 # generated sweep/triage logs (regenerable)
 dashboard/_*
+
+# extracted game assets (copyrighted, personal use only, never committed)
+extracted/
