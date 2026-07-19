@@ -1,557 +1,557 @@
 {
-"blit_cell_wh": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.7937
-},
-"FUN_00016318": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.9701
-},
-"economy_daily_tick": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.5617
-},
-"entity_state_dispatch": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.3652
-},
-"build_equip_row": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.5991
-},
-"FUN_00011d68": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.6788
-},
-"FUN_00016678": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.8276
-},
-"alloc_init_with_errcode": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.6667
-},
-"walk_records_2c": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.6341
-},
-"FUN_00019608": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.3767
-},
-"draw_circle": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.8264
-},
-"FUN_0001b798": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.6308
-},
-"FUN_0001b858": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.6071
-},
-"sel_marker_dispatch": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.1241
-},
-"FUN_00020018": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.9163
-},
-"find_rec_by_field8": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.4368
-},
-"menu_list_draw": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.5419
-},
-"menu_list_draw_b": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.443
-},
-"count_leading_nonzero": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.6944
-},
-"count_leading_nonzero_b": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.9394
-},
-"keyboard_state_machine": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.7333
-},
-"relocate_map_columns": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.6842
-},
-"vehicle_hp_stamp": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.4783
-},
-"new_campaign_reset": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.2368
-},
-"new_game_reset": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.6205
-},
-"FUN_00021e18": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.289
-},
-"FUN_000128b8": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.9741
-},
-"FUN_00012ae8": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.9236
-},
-"mission_map_init": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.9286
-},
-"FUN_00018ae8": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.8483
-},
-"FUN_00018d18": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.2111
-},
-"parse_hex_arg": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.496
-},
-"guarded_init_alloc": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.2
-},
-"dispatch_jt45": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.7261
-},
-"FUN_00023158": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.2445
-},
-"FUN_00025348": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.4
-},
-"FUN_00025d58": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.4348
-},
-"slot_claim_test": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.4574
-},
-"FUN_00026778": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.8399
-},
-"advance_linked_index": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.6286
-},
-"FUN_0001b908": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.9608
-},
-"FUN_00026bc8": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.4954
-},
-"move_entity_xyz": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.8778
-},
-"grid_unlink_object": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.8056
-},
-"mp_session_setup": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.2344
-},
-"submit_ncb": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.4638
-},
-"far_alloc_probe": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.9153
-},
-"guarded_call_2arg": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.7826
-},
-"dpmi_alloc_5para": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.9784
-},
-"submit_command": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.8636
-},
-"xfer_buf_req_b1": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.914
-},
-"netbios_op91": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.7287
-},
-"netbios_op90": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.753
-},
-"FUN_00028728": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.6389
-},
-"FUN_000287e8": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.766
-},
-"FUN_000288f8": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.704
-},
-"center_string_16": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.7126
-},
-"radar_panel_sm": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.3812
-},
-"mission_target_resolve": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.2093
-},
-"FUN_0002bbe8": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.6609
-},
-"FUN_0002bca8": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.5722
-},
-"command_list_interp": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.4942
-},
-"agent_hud_render": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.3808
-},
-"FUN_0002c218": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.5838
-},
-"FUN_0002cf28": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.4813
-},
-"FUN_0002d038": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.8
-},
-"rate_byte_drift": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.9453
-},
-"path_probe_y": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.733
-},
-"FUN_0002d5b8": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.7248
-},
-"interp_scale_a": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.7576
-},
-"anim_speed_select": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.6716
-},
-"entity_event_dispatch": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.7402
-},
-"FUN_0002def8": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.457
-},
-"FUN_0002e408": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.9886
-},
-"pool_list_dispatch": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.5057
-},
-"los_trace": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.915
-},
-"los_trace_far": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.4444
-},
-"FUN_0002ed28": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.9167
-},
-"entity_aim_helper": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.5
-},
-"vehicle_exit": {
-"verdict": "REGISTER-ROLE",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 1.0
-},
-"FUN_00030868": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.5323
-},
-"commit_funding": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.7689
-},
-"table_save_restore": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.7752
-},
-"FUN_00033b88": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.9541
-},
-"FUN_00033db8": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.6372
-},
-"FUN_00033e78": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.6909
-},
-"snap_direction": {
-"verdict": "REGISTER-ROLE",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 1.0
-},
-"shot_collision_query": {
-"verdict": "REGISTER-ROLE",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 1.0
-},
-"FUN_00034198": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.9109
-},
-"compass_tile_probe": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.5681
-},
-"FUN_00034608": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.2353
-},
-"FUN_000223c8": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.5693
-},
-"vehicle_drive_step": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.2864
-},
-"sound_driver_init": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.2193
-},
-"walk_sound_record_table": {
-"verdict": "REGISTER-ROLE",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 1.0
-},
-"FUN_00035f78": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.5758
-},
-"FUN_000363d8": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.8927
-},
-"measure_text_width": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.8158
-},
-"text_width_kern": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.9412
-},
-"FUN_00036698": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.7456
-},
-"FUN_00036808": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.6708
-},
-"FUN_00038c28": {
-"verdict": "REGISTER-ROLE",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 1.0
-},
-"FUN_00022768": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.268
-},
-"container_load": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.5138
-},
-"interp_scale_b": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.7273
-},
-"interp_scale_c": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.7463
-},
-"drop_carried_items": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.6458
-},
-"xmidi_music_init": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.2462
-},
-"oneshot_state_setter": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.2051
-},
-"z_probe_b": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.9684
-},
-"passability_4corner": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.7955
-}
+ "blit_cell_wh": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.7937
+ },
+ "research_funding_tick": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.9701
+ },
+ "economy_daily_tick": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.5617
+ },
+ "entity_state_dispatch": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.3652
+ },
+ "build_equip_row": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.5991
+ },
+ "find_blocking_entity": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.6788
+ },
+ "FUN_00016678": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.8276
+ },
+ "alloc_init_with_errcode": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.6667
+ },
+ "walk_records_2c": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.6341
+ },
+ "FUN_00019608": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.3767
+ },
+ "draw_circle": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.8264
+ },
+ "FUN_0001b798": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.6308
+ },
+ "FUN_0001b858": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.6071
+ },
+ "sel_marker_dispatch": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.1241
+ },
+ "menu_list_hit_test": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.9163
+ },
+ "find_rec_by_field8": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.4368
+ },
+ "menu_list_draw": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.5419
+ },
+ "menu_list_draw_b": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.443
+ },
+ "count_leading_nonzero": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.6944
+ },
+ "count_leading_nonzero_b": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.9394
+ },
+ "keyboard_state_machine": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.7333
+ },
+ "relocate_map_columns": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.6842
+ },
+ "vehicle_hp_stamp": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.4783
+ },
+ "new_campaign_reset": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.2368
+ },
+ "new_game_reset": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.6205
+ },
+ "store_squad_loadout": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.289
+ },
+ "find_nearby_ped": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.9741
+ },
+ "find_related_ped": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.9236
+ },
+ "mission_map_init": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.9286
+ },
+ "draw_line": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.8483
+ },
+ "draw_filled_shape": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.2111
+ },
+ "parse_hex_arg": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.496
+ },
+ "guarded_init_alloc": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.2
+ },
+ "dispatch_jt45": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.7261
+ },
+ "run_mission_command": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.2445
+ },
+ "install_int9_handler": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.4
+ },
+ "draw_agent_detail": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.4348
+ },
+ "slot_claim_test": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.4574
+ },
+ "FUN_00026778": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.8399
+ },
+ "advance_linked_index": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.6286
+ },
+ "draw_slot_record_chain": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.9608
+ },
+ "aim_step_clamp": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.4954
+ },
+ "move_entity_xyz": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.8778
+ },
+ "grid_unlink_object": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.8056
+ },
+ "mp_session_setup": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.2344
+ },
+ "submit_ncb": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.4638
+ },
+ "far_alloc_probe": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.9153
+ },
+ "guarded_call_2arg": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.7826
+ },
+ "dpmi_alloc_5para": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.9784
+ },
+ "submit_command": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.8636
+ },
+ "xfer_buf_req_b1": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.914
+ },
+ "netbios_op91": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.7287
+ },
+ "netbios_op90": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.753
+ },
+ "FUN_00028728": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.6389
+ },
+ "FUN_000287e8": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.766
+ },
+ "FUN_000288f8": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.704
+ },
+ "center_string_16": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.7126
+ },
+ "radar_panel_sm": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.3812
+ },
+ "mission_target_resolve": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.2093
+ },
+ "FUN_0002bbe8": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.6609
+ },
+ "FUN_0002bca8": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.5722
+ },
+ "command_list_interp": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.4942
+ },
+ "agent_hud_render": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.3808
+ },
+ "command_list_interp2": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.5838
+ },
+ "refresh_hud_inventory": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.4813
+ },
+ "FUN_0002d038": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.8
+ },
+ "rate_byte_drift": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.9453
+ },
+ "path_probe_y": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.733
+ },
+ "FUN_0002d5b8": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.7248
+ },
+ "interp_scale_a": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.7576
+ },
+ "anim_speed_select": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.6716
+ },
+ "entity_event_dispatch": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.7402
+ },
+ "FUN_0002def8": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.457
+ },
+ "homing_step": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.9886
+ },
+ "pool_list_dispatch": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.5057
+ },
+ "los_trace": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.915
+ },
+ "los_trace_far": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.4444
+ },
+ "record_kill_stats": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.9167
+ },
+ "entity_aim_helper": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.5
+ },
+ "vehicle_exit": {
+  "verdict": "REGISTER-ROLE",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 1.0
+ },
+ "FUN_00030868": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.5323
+ },
+ "commit_funding": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.7689
+ },
+ "table_save_restore": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.7752
+ },
+ "FUN_00033b88": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.9541
+ },
+ "FUN_00033db8": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.6372
+ },
+ "map_tile_hit_dispatch": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.6909
+ },
+ "snap_direction": {
+  "verdict": "REGISTER-ROLE",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 1.0
+ },
+ "shot_collision_query": {
+  "verdict": "REGISTER-ROLE",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 1.0
+ },
+ "FUN_00034198": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.9109
+ },
+ "compass_tile_probe": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.5681
+ },
+ "FUN_00034608": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.2353
+ },
+ "FUN_000223c8": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.5693
+ },
+ "vehicle_drive_step": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.2864
+ },
+ "sound_driver_init": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.2193
+ },
+ "walk_sound_record_table": {
+  "verdict": "REGISTER-ROLE",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 1.0
+ },
+ "play_sound_slot": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.5758
+ },
+ "draw_wrapped_text": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.8927
+ },
+ "measure_text_width": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.8158
+ },
+ "text_width_kern": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.9412
+ },
+ "draw_ui_text": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.7456
+ },
+ "text_input_widget": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.6708
+ },
+ "FUN_00038c28": {
+  "verdict": "REGISTER-ROLE",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 1.0
+ },
+ "find_free_pool_slots": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.268
+ },
+ "container_load": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.5138
+ },
+ "interp_scale_b": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.7273
+ },
+ "interp_scale_c": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.7463
+ },
+ "drop_carried_items": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.6458
+ },
+ "xmidi_music_init": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.2462
+ },
+ "oneshot_state_setter": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.2051
+ },
+ "z_probe_b": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "score": 0.9684
+ },
+ "passability_4corner": {
+  "verdict": "STRUCTURAL",
+  "flags": "-4r -oneatx -zp8 -s -zq",
+  "score": 0.7955
+ }
 }
