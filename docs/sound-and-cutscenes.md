@@ -44,7 +44,7 @@ the chip with only half its new count.
 A faster tick is no use unless the driver's own code runs on it. `install_timer_isr.asm`
 does that swap. It asks DOS for the address of the current interrupt-8 handler and saves
 it, then points interrupt 8 at the driver's own routine instead. From that moment every
-timer tick runs the driver. When the last sequence stops, `FUN_0003942f.asm` puts the
+timer tick runs the driver. When the last sequence stops, `uninstall_timer_isr`.asm` puts the
 original handler back, so the machine is left as it was found.
 
 ```mermaid
@@ -86,29 +86,29 @@ just returns zero.
 
 ### Starting and stopping
 
-The first time anything allocates a sequence (`FUN_00039625.asm`) the driver brings the
+The first time anything allocates a sequence (`alloc_seq_slot`.asm`) the driver brings the
 whole timer subsystem up: it clears the tables and installs the interrupt-8 handler. When
-the last sequence is released (`FUN_000396d5.asm`) it stops the timer and restores the old
+the last sequence is released (`free_seq_slot`.asm`) it stops the timer and restores the old
 handler. So the driver only holds the timer for as long as something is actually playing.
-`FUN_000399bd.asm` starts a voice by dispatching the play command, and `FUN_00039a82.asm`
+`start_voice`.asm` starts a voice by dispatching the play command, and `stop_voice`.asm`
 stops one by clearing its active flag and dispatching the stop command.
 
 ## Part two: the FLIC animation player
 
 The intro and the cutscenes are Autodesk FLIC animations, the `.FLC` format from Animator
 Pro. The player lives in the same module as the sound driver but has nothing to do with it.
-Its entry point is `FUN_00039ca0.asm`. It opens the file, walks through it, unpacks each
+Its entry point is `flic_play`.asm`. It opens the file, walks through it, unpacks each
 frame into an offscreen buffer, and copies that buffer to the screen.
 
 ### What a FLIC file is
 
 A FLIC file is a header followed by a run of frames. The header starts with a magic number,
 `0xAF12` for an FLC file, and carries the frame count, width, and height.
-`FUN_00039ee2.asm` reads those fields out. After the header comes one chunk per frame, each
+`flic_parse_header`.asm` reads those fields out. After the header comes one chunk per frame, each
 marked with the magic `0xF1FA`, and inside a frame are smaller sub-chunks that each describe
 part of the picture.
 
-`FUN_00039e42.asm` decodes one frame by walking its sub-chunks and dispatching on type:
+`flic_decode_frame`.asm` decodes one frame by walking its sub-chunks and dispatching on type:
 
 - **Type 4, COLOR256.** A new 256-colour palette. It flags the palette as needing a rebuild.
 - **Type 7, SS2.** A delta. It changes only the pixels that differ from the previous frame,
@@ -125,16 +125,16 @@ which matters below. The SS2 delta goes one better: between two frames most pixe
 change at all, so it records only the parts that moved.
 
 Each frame is decoded into an offscreen buffer, `g_screen_buf`. Only once the frame is
-whole does `FUN_00039ca0` copy it, all 64000 bytes of a 320x200 picture, to VGA memory at
+whole does `flic_play` copy it, all 64000 bytes of a 320x200 picture, to VGA memory at
 address `0xA0000` in one sweep. As with the game's blitters, building the frame off-screen
 first means the viewer never sees it half-drawn.
 
 ```mermaid
 flowchart LR
     FILE["FLC file on disk<br/>magic 0xAF12"] -->|read chunk| FRAME["frame chunk 0xF1FA"]
-    FRAME -->|walk sub-chunks| DEC["FUN_00039e42<br/>COLOR256 / SS2 / BRUN"]
+    FRAME -->|walk sub-chunks| DEC["`flic_decode_frame`<br/>COLOR256 / SS2 / BRUN"]
     DEC --> BUF["offscreen buffer<br/>g_screen_buf 320x200"]
-    DEC -.->|palette dirty| PAL["FUN_00039f92<br/>rebuild palette to DAC"]
+    DEC -.->|palette dirty| PAL["`flic_load_palette`<br/>rebuild palette to DAC"]
     BUF -->|rep movsd| VGA["VGA memory 0xA0000<br/>the screen"]
 ```
 
@@ -147,7 +147,7 @@ blue voltages the monitor draws. Each entry is three bytes, one each for red, gr
 blue. Change the table and every pixel using that index changes colour at once, without
 touching the picture.
 
-`FUN_00039f92.asm` rebuilds the palette when a COLOR256 chunk has marked it dirty. The
+`flic_load_palette`.asm` rebuilds the palette when a COLOR256 chunk has marked it dirty. The
 palette data in the file is itself run-length packed: a count of runs, then for each run a
 number of entries to skip and a number to copy, followed by the raw red-green-blue bytes.
 The routine walks that script to reassemble the full 768-byte table (256 colours times
@@ -165,7 +165,7 @@ writes.
 
 ### Pacing and skipping
 
-`FUN_00039ca0` reads the clock at the start of playback and paces the frames so the
+`flic_play` reads the clock at the start of playback and paces the frames so the
 animation runs at the right speed rather than as fast as the CPU can manage. If the caller
 marks the animation skippable it checks for a keypress between frames and stops early. The
 listing flags some of this input and abort state as inferred, so it appears to be the abort
@@ -177,6 +177,6 @@ and play it again, which is how a looping cutscene works.
 The named listings are the clearest way in. For the sound driver, start with
 `install_timer_isr.asm`, `reprogram_pit_ch0.asm`, and `recompute_timer_period.asm` for the
 timer, then `sound_dispatch_trampoline.asm` and `init_voice_tables.asm` for the voices. For
-the animation player, read `FUN_00039ca0.asm` top to bottom, then `FUN_00039e42.asm` for
-the frame decode and `FUN_00039f92.asm` for the palette. All of them live in
+the animation player, read `flic_play`.asm` top to bottom, then `flic_decode_frame`.asm` for
+the frame decode and `flic_load_palette`.asm` for the palette. All of them live in
 `src/lib/sound/`.

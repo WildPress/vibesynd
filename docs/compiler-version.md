@@ -230,7 +230,7 @@ plainly one source file doing one job:
 0x28368  netbios_op90      wall
 0x284a8  xfer_buf_req94    matched
 0x28558  netbios_recv95    matched
-0x28628  FUN_00028628      matched
+0x28628  `xfer_buf_req35`      matched
 ```
 
 Three of them match base 9.5 to the byte while their siblings in the same file do not. That is one

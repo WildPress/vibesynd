@@ -51,22 +51,29 @@ The loop is `main_game_loop` (`0xd928`). It has an outer part that sets a missio
 (`new_campaign_reset` 0x20fc8) and an inner part that repeats every frame until the mission
 ends. Reading the call sites out of its bytes, the inner frame does roughly this, in order:
 
-- **Tick the world.** A batch routine (`0x26998`) runs the per-frame updates back to back:
-  the entity pool tick `entity_pool_tick` (0x31858), the vehicle pool tick `vehicle_pool_tick`
-  (0x36fd8), and a handful of others (`0x26a18`, `0x380b8`, `0x1c2c8`, `0x29088`). The name in
-  our tree, `init_subsystems`, predates this tracing and undersells it: it is the world update,
-  and it is called from inside the frame, not once at startup.
-- **Advance sound and the economy.** The sound driver tick (`0x36038` / `0x39088`) and the
-  daily economy tick `economy_daily_tick` (0x15f58) run each pass.
-- **Push the palette and draw.** `upload_palette` (0x4987e) loads the current palette, then a
-  cluster of draw and UI routines (`0x1bb48`, `0x1b658`, `0x1ab98`, `0x2a828`) build the frame.
+- **Tick the world.** A batch routine (`0x26998`) runs the per-frame updates back to back.
+  These are the object model's heartbeat: one state machine per object pool. `update_agent_ai`
+  drives the people (pool A, the 45-state agent brain that acquires targets and picks a range),
+  `update_static_object_states` the map statics (pool C), `update_pickup_states` the weapons and
+  pickups (pool D), and `update_bullet_sfx_states` the bullets and effects (pool E). Each walks
+  its pool, reads a state byte off every live record, and dispatches through that pool's own jump
+  table to advance the animation and behaviour. `update_drift_vector` nudges a wandering
+  velocity alongside them. The name in our tree, `init_subsystems`, predates this tracing and
+  undersells it: it is the world update, called from inside the frame, not once at startup.
+- **Advance sound and the economy.** `schedule_priority_sound` picks the highest-priority ready
+  sound slot and plays it, `stop_current_sequence` handles music transitions, and the daily
+  economy tick `economy_daily_tick` (0x15f58) runs each pass.
+- **Push the palette and draw.** `upload_palette` (0x4987e) loads the current palette, then the
+  frame is built: `render_sorted_sprites` walks the spatial grid, projects every visible entity
+  to screen, depth-sorts the list, and draws each sprite back to front, while `draw_scanner_markers`
+  and `edge_scroll_dispatch` handle the radar overlay and edge-of-screen scrolling.
 - **Present.** The finished off-screen frame is copied to VGA memory by
   `vga_planar_present` (0x4a492).
 
 ```mermaid
 flowchart TD
     S["new_campaign_reset 0x20fc8<br/>set the mission up"] --> LOOP{"per-frame loop"}
-    LOOP --> UP["tick the world 0x26998<br/>entity + vehicle pools, sound, economy"]
+    LOOP --> UP["tick the world 0x26998<br/>per-pool state machines: update_agent_ai (A),<br/>update_static_object_states (C), update_pickup_states (D),<br/>update_bullet_sfx_states (E) + sound + economy"]
     UP --> PAL["upload_palette 0x4987e"]
     PAL --> DRAW["build the frame<br/>scene walk + blitters into g_screen_buf"]
     DRAW --> PRES["vga_planar_present 0x4a492<br/>copy off-screen buffer to VGA"]
@@ -108,6 +115,15 @@ drawn with `draw_sprite_rle`, which walks run-length-encoded sprite data and ski
 transparent runs so a sprite layers cleanly over what is behind it. Single pixels and HUD
 marks go through `plot_point`. All of them write into the off-screen buffer `g_screen_buf`,
 which `vga_planar_present` then shows.
+
+The moving objects, agents, cars, and the like, go through a second pass we have now named,
+`render_sorted_sprites`. It walks the spatial grid, projects each visible entity to a screen
+position relative to the camera, writes a twelve-byte entry per sprite into a list, depth-sorts
+that list, and then draws each sprite back to front so nearer ones cover the ones behind. So the
+map cells come from `iso_scene_walk` and the entities from `render_sorted_sprites`, both feeding
+the same blitters and the same off-screen buffer. Exactly how the two passes interleave in a
+live frame we have not tied down yet, so read that ordering as the likely shape rather than a
+confirmed one.
 
 ```mermaid
 flowchart TD
@@ -358,7 +374,7 @@ the whole rather than as an isolated puzzle.
 interpreter: executes one queued command for record `idx` (u32 param), then clears the slot.
 Entry: `ESI = 0x105d4 + idx*0xe` (14-byte command record, opcode at `record[+0xd]`).
 `EDX = 0xe49c + idx*0x417` (the 0x417-stride equip/research template row consumed by matched
-siblings `FUN_000223c8`/`build_equip_row`, and `[EDX+0xb5]` = `g_e551[idx*0x417]` = pool-A base-slot
+siblings `reequip_squad_row`/`build_equip_row`, and `[EDX+0xb5]` = `g_e551[idx*0x417]` = pool-A base-slot
 header). Every case ends `MOV byte [ESI+0xd],0` (consume), `ADD ESP,0x34`, pops, `RET`.
 
 Jump table: literal `CS:[EAX*4+0x15920]`, manifest **0x23068** (0x15920+0xd748),
@@ -380,7 +396,7 @@ Case map (case, body):
 31→24421 32→24544 33→24592 34→23c6c 35→DFLT 36→244c8 37→245dc 38→23303
 39→23b56 3a→2341e
 ```
-Sampled ops: 1/0x21 = broadcast `FUN_000223c8` (equip-template apply) + `FUN_000229f8`
+Sampled ops: 1/0x21 = broadcast `reequip_squad_row` (equip-template apply) + `FUN_000229f8`
 across players (bound `g_10b0c`), single-player uses `FUN_00029d88`, per-player flags to
 `g_e4ab`. op 3 = loop pool-A agents (0x8110 stride 0x5c, bound `(g_e551[idx*0x417]+4)`)
 calling `entity_aim_helper` (aim/step). op 8 = squad broadcast (`[+0x20]==agent-id`, then
@@ -390,7 +406,7 @@ clear `+0xa` bit3. Dominant callee `entity_aim_helper`. To match: fix size (done
 body-by-body, reusing the cont.22 cross-jump law for the recurring merged `entity_aim_helper` call
 tails.
 
-## Tactical-map / radar renderer, `FUN_00019608` @ 0x19608 (cont. 25 decode)
+## Tactical-map / radar renderer, `draw_tactical_map` @ 0x19608 (cont. 25 decode)
 
 **TRUE SIZE 3474 (0x19608–0x1a399, manifest was 1544, fixed).** Full-screen minimap/radar
 drawer, `FUN(cam_struct *p1, short zoom)`, frameless + 4 saved regs, 0x644 frame. In the

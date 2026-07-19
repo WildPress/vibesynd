@@ -54,21 +54,21 @@ uses. The `.c` file is the byte-exact build input; the `.asm` is the human-reada
 companion (see [game code vs the library](game-vs-library.md) for why these functions
 are raw bytes).
 
-- **Plot a point** — `src/lib/gfx/FUN_00040236.asm` (`plot_point`). Draws a single
+- **Plot a point** — `src/lib/gfx/`plot_point`.asm` (`plot_point`). Draws a single
   pixel with clipping, into either a 1-bit mask layer or an 8-bit buffer. The simplest
   possible case, one pixel.
-- **Fill a region** — `src/lib/gfx/FUN_0004d199.asm` (`fill_bytes`). A size-optimised
+- **Fill a region** — `src/lib/gfx/`fill_bytes`.asm` (`fill_bytes`). A size-optimised
   memset: set a run of bytes to one value, four at a time where the count allows. Used
   for clears.
-- **Copy a block** — `src/lib/gfx/FUN_0004d0b4.asm` (`blit_block`). Copies a rectangle
+- **Copy a block** — `src/lib/gfx/`blit_block`.asm` (`blit_block`). Copies a rectangle
   from one offscreen buffer to another, doing all four planes so the whole colour image
   moves. The workhorse that stamps tiles into the frame.
-- **Draw a masked sprite** — `src/lib/gfx/FUN_0004a734.asm` (`draw_sprite_rle`). Draws a
+- **Draw a masked sprite** — `src/lib/gfx/`draw_sprite_rle`.asm` (`draw_sprite_rle`). Draws a
   character or object from run-length-encoded pixel data, skipping the transparent parts
   so the sprite layers cleanly over what's behind it. This is how the agents, cars, and
   objects appear. It has a fast path for fully-visible sprites and trimmed variants for
   each screen edge.
-- **Present the frame** — `src/lib/gfx/FUN_0004a492.asm` (`vga_planar_present`). Pushes
+- **Present the frame** — `src/lib/gfx/`vga_planar_present`.asm` (`vga_planar_present`). Pushes
   the finished offscreen frame to the actual VGA display, one plane at a time through the
   Map Mask register. This is the step that makes a built frame appear on the monitor.
 

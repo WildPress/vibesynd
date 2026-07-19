@@ -267,7 +267,7 @@ flowchart TD
     D --> E["Pool E 0x15e70<br/>256 x 0x1e, sfx / bullets (kind 3)"]
 ```
 
-Pool bounds come from `FUN_00022768`. Kind immediates are stored by the spawners
+Pool bounds come from `find_free_pool_slots`. Kind immediates are stored by the spawners
 (`spawn_pool_11670`=4, `spawn_pool_15e70`=3). Kinds 1/2 (pool A) are loaded from the mission
 descriptor, never stored as immediates.
 
@@ -316,7 +316,7 @@ flowchart TD
 ### Road following
 Roads are **directional flow tiles**: 6=W, 7=E, 8=N, 9=S. `compass_tile_probe` (0x34368) returns 1
 only if the tile in a given direction carries the matching flow code. The drive step steers to stay
-on valid road tiles and looks several tiles ahead (`FUN_00034198`) for corners and traffic (via the
+on valid road tiles and looks several tiles ahead (`march_shot_damage`) for corners and traffic (via the
 cell probe `shot_collision_query` 0x34088, which returns a vehicle/ped directly ahead).
 
 ### Confirmed vs inferred
