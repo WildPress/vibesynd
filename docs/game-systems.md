@@ -252,11 +252,23 @@ currently set. Most of the handlers are named now, so we can group them by what 
 - **Animation.** `anim_frame_tick` (0x2d228) steps the frame counter at the cadence the object's
   control word asks for.
 
-One piece is still open. The exact map from state index to handler lives in that 45-entry jump
-table at 0x21244, and the table is stored with load-time relocations we have not resolved from the
-static image, so we cannot yet say "state 7 is shoot". What we can say is the set of behaviours the
-machine chooses between, which is the list above, and that the state byte is the dial that moves an
-object through them.
+That 45-entry table at 0x21244 is now resolved. The table is stored with load-time relocations,
+so its pointers are blank in the static image, but the executable's own fixup table
+(`inputs/SYNDICAT_MAIN.LE`, parsed by `tools/lefixups.py`) records exactly where each entry
+points. Reading them back gives a surprising answer: the 45 states do not fan out to 45 separate
+handlers. They collapse to just two shared case-bodies, one at 0x3135f and one at 0x315d8, sitting
+in the code just before `entity_pool_tick`. States 0 to 8, plus a scattered set (0x16 to 0x1b,
+0x1d, 0x1f, 0x20, 0x23), run the first body, a facing-and-turn-toward-the-target routine. The
+other twenty-six states run the second. The `update_agent_ai` table at 0x21774 works the same way,
+its 45 states collapse to three bodies inside `entity_pool_tick`.
+
+So the state byte is not an index into a menu of named behaviours. It selects a broad behaviour
+class, and the fine distinction between states is made by the state value itself, used as a number
+inside the shared body (in the facing arithmetic and the target checks), not by branching to
+different code per state. That is why "state 7 is shoot" was the wrong question: shoot, walk, and
+the rest are not separate table targets, they are the same body doing different things with the
+value it was handed. The behaviour list above is still the right set of things the machine does,
+it just reaches them through a couple of shared routines rather than a 45-way switch.
 
 ## The systems we expect to find
 

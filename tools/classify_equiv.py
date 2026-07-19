@@ -47,7 +47,7 @@ def main():
     with mp.Pool(w) as pool:
         for i, (name, res) in enumerate(pool.imap_unordered(classify, names), 1):
             out[name] = res
-            eq = res and res["verdict"] in EQUIV
+            eq = bool(res) and res["verdict"] in EQUIV
             n_eq += eq
             n_st += bool(res) and not eq
             tag = "EQUIVALENT" if eq else (res["verdict"] if res else "COMPILE-FAIL")
