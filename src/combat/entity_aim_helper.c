@@ -5,24 +5,30 @@
  * store +0x1b from vec_to_angle(dz,h); set +0x19=0x2b, OR bit3 into flags +0xa,
  * then call pool_accessor_44(p) and dispatch_jt45(p).
  *
- * NEAR-MISS (dist 35, was 42). RELOC-AWARE match: NO, but the entire prologue
- * (through 0x25) and the entire suffix (0x42 through the ret) now match exactly
- * under reloc masking. Two source fixes bought it:
- *   1. Reading the +0x44 link id at the point of use (the guard AND the pool index,
- *      i.e. `if (id != 0) { node = &pool[id]; ... }`) instead of caching it in a
- *      named local. The compiler CSEs the two reads to a single load, and that load
- *      now lands in DX (matching the target) instead of AX. This fixed the whole
- *      head-register cascade the old header called "id->EAX deterministic".
- *   2. Materializing self.x/self.y as short locals, which gives the target's
- *      reg-reg `mov dx,[ebx+6]; sub eax,edx` shape (was reg-mem `sub ax,[ebx+6]`)
- *      and restores the 156-byte length.
+ * NEAR-MISS (reloc-aware bytediff 14, was 22). RELOC-AWARE match: NO. Prologue
+ * (through 0x25), the dx/dy movsx+push pair (0x3a-0x41), and the whole suffix
+ * (0x42 through the ret) now match exactly under reloc masking.
  *
- * REMAINING GAP (~11 real bytes, all in 0x26-0x41): the dx/dy pair lands in the
- * swapped ESI<->EDI pair (target dx=EDI, dy=ESI; ours dx=ESI, dy=EDI), so the two
- * arg pushes read 57 56 vs 56 57 at both call sites. This swap is a stable
- * Watcom 9.5 allocator decision -- invariant to statement order (dy-first vs
- * dx-first), declaration order (dx,dy vs dy,dx), self-load order, and param
- * preloading (all tested). Not source-reachable; a register-role tie floor.
+ * PROVENANCE WIN (this session, AXIS 2): the dx/dy pair used to seat in the
+ * swapped ESI<->EDI roles (ours dx=ESI/dy=EDI vs target dx=EDI/dy=ESI), which
+ * the old header called an unreachable "register-role tie floor". TWO
+ * behaviour-preserving restructurings flip it to the target's roles:
+ *   1. Compute dx BEFORE dy (statement + self-load order), so the x param loads
+ *      first and dx is subtracted in-place in EDI (target: mov edi,[x]; sub edi,esi).
+ *   2. Swap the args of sum_of_squares_call to (dy, dx). That function is
+ *      isqrt32(a*a + b*b) (@0x14c58) -- fully symmetric, so the swap is inert to
+ *      behaviour but changes dx/dy live ranges enough to seat dx in EDI.
+ * With both, dx=EDI and dy=ESI exactly as the target; bytes 0x3a-0x41 (the two
+ * movsx + pushes) become identical.
+ *
+ * REMAINING GAP (~14 bytes, all in 0x2a-0x39): no longer a register-role swap
+ * but a pure instruction-SCHEDULING order. The target loads both params up front
+ * (mov edi,[x]; mov eax,[y]) then both self fields (self.y->EDX, self.x->ESI) then
+ * both subtracts; ours interleaves (load x, load selfs, sub dx, load y, sub dy).
+ * The scheduler's grouping decision is invariant to CPU level (-3s/-4s/-5s), the
+ * 'r' reorder toggle, every length-preserving -o bundle, and -zp1/2/4/8 (full
+ * flag sweep this session -- all give 14), and to self-load order and param
+ * preloading (tested). A scheduler tie floor. Recipe: -4s -oneatx -zp8 -s -zq.
  */
 
 extern unsigned char g_entity_pool[];
@@ -44,12 +50,12 @@ void entity_aim_helper(unsigned char *p, int x, int y, int z)
     if (*(short *)(node + 0x14) < 0)
         return;
 
-    sy = *(short *)(p + 6);
     sx = *(short *)(p + 4);
-    dy = (short)(y - sy);
+    sy = *(short *)(p + 6);
     dx = (short)(x - sx);
+    dy = (short)(y - sy);
     p[0x1a] = vec_to_angle(dx, dy);
-    h = sum_of_squares_call(dx, dy);
+    h = sum_of_squares_call(dy, dx); /* isqrt32(a*a+b*b): symmetric, swap seats dx in EDI */
     p[0x1b] = vec_to_angle((short)(z - (*(short *)(p + 8) + 0x80)), h);
     p[0x19] = 0x2b;
     p[0xa] |= 8;
