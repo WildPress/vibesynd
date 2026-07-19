@@ -63,29 +63,37 @@
  * (`mov cx,di`) to feed the `push ecx`.
  *
  * STATUS: full readable-C decode, PARKED. Structure fully recovered; scored with
- * `-4s -oneatx -zp8 -s -zq` -> obj 1394B vs TRUE 1440B (delta -46B). TWO §3 walls:
+ * `-4s -oneatx -zp8 -s -zq` -> obj 1332B vs TRUE 1440B (delta -108B), EDIT-DIST 439
+ * (~69.5% masked-byte match, up from the earlier 702 / 51%). ONE remaining §3 wall:
  *
  *   WALL 1 (compiled-out 2-arg hook -- the dominant blocker). The push/push/add-esp-8
  *   with no `call` requires an empty-body STACK-parm `#pragma aux`. Both forms crash
  *   the period wcc386 9.5b: `= parm [] [];` -> fatal (empty BUILD.LOG); `= parm
  *   caller [];` -> DOSBox hang/timeout. FP_SEG-style empty pragmas only work with
  *   REGISTER parms (which emit no push). So the idiom is unreachable from portable C
- *   with this toolchain. Accounts for the bulk of the -46B (the 5 hook byte-groups
- *   plus the funds load/store split + `mov cx,di` register pinning they induce).
+ *   with this toolchain. This is now essentially the WHOLE remaining gap: the 5 hook
+ *   byte-groups, the funds load/store split (target `mov r,[funds]; add r,imm; mov
+ *   [funds],r` vs our folded `add [funds],imm`), the per-branch `g_10afd` reload the
+ *   hook's register clobber forces (target reloads in every branch; without the hook
+ *   Watcom hoists our load+inc once before the dispatch), and the `mov cx,di` param
+ *   pinning that feeds `push ecx`. All trace to the missing hook.
  *
- *   WALL 2 (scaled-index / 2D address-association tie -- §3, same family as sibling
- *   0x223c8's scaled-index lea wall). For `g_squad_slot[rec + j*40]` the target computes
- *   `rec` first (EAX), spills it (`mov edx,eax`), rebuilds `40j` in EAX and PRE-ADDS
- *   (`add eax,edx`) -> `[eax+disp]`. Ours (addend-first spelling `j*40 + REC`, which
- *   already fixed a worse `[ecx + eax*8]` scale-8 fold) keeps both live in a
- *   `[base+index+disp]` modrm (scale 1, no pre-add) -- 1 instr shorter per site,
- *   ~13 sites. Neither `REC + j*40` (SIB scale-8, further) nor a persistent
- *   whole-index temp (would collapse the target's per-site 0x417*param recomputes,
- *   confirmed 13 recomputes on BOTH sides) reaches the target's pre-add-then-[eax]
- *   form. Pure encoder/allocator choice; not source-reachable.
+ *   The former "WALL 2" (2D address association) turned out NOT to be a wall. The
+ *   correct spelling is RECORD-FIRST: `g_squad_slot[REC + j*40]` (REC == 0x417*param).
+ *   That makes Watcom compute REC into a register and KEEP IT LIVE, reusing it for the
+ *   sibling `g_agent_slots[REC]` access one instruction later -- exactly the target's
+ *   REC-reuse cascade (target holds REC in EDX and reuses `mov al,[edx+0xe551]`; ours
+ *   holds it in ECX and reuses `mov al,[ecx+..]`). The earlier addend-first spelling
+ *   `j*40 + REC` defeated that reuse and RE-COMPUTED REC per access, which is what held
+ *   the score at 702. Switching every 2D index to REC-first dropped EDIT-DIST 702->439.
+ *   The only residue at these sites is pure encoder choice: the target pre-adds into
+ *   `[eax+disp]`, ours folds `j*40` into a scale-8 SIB `[ecx+eax*8+disp]` (1 byte
+ *   shorter/site) -- both keep REC live and recompute it per site (13 recomputes each),
+ *   so the data flow matches; only the address encoding differs. Not source-reachable
+ *   and no longer material next to WALL 1.
  *
  * The remaining first-diff at 0x14 is only the entry JNZ rel32 cascading from the
- * -46B tail, not a structural divergence.
+ * -108B tail (all WALL 1), not a structural divergence.
  */
 
 extern unsigned char g_entity_pool[];
@@ -130,7 +138,7 @@ void store_squad_loadout(unsigned short param)
 
     if (g_radar_detail == 0) {
         for (j = 0; j < 0x12; j++) {
-            slot = g_squad_slot[j * 40 + REC];
+            slot = g_squad_slot[REC + j * 40];
             if (slot != 0) {
                 node = g_pool_a + (g_agent_slots[REC] + slot - 1) * 0x5c;
                 id = (int)(node - g_entity_pool);
@@ -170,15 +178,15 @@ void store_squad_loadout(unsigned short param)
                                 *(unsigned short *)(pr + 0x20) = 0;
                                 if (*(short *)(pr + 0x14) >= 0) {
                                     for (d = 0; d < 0x12; d++) {
-                                        if (g_squad_id[d * 40 + REC] == 0xff) {
+                                        if (g_squad_id[REC + d * 40] == 0xff) {
                                             g_10afb++;
-                                            *(unsigned short *)(g_e5bc + d * 40 + REC) =
+                                            *(unsigned short *)(g_e5bc + REC + d * 40) =
                                                 *(unsigned short *)(pr + 0x3c);
-                                            *(unsigned short *)(g_e5ba + d * 40 + REC) = 0x10;
-                                            g_squad_id[d * 40 + REC] = (unsigned char)keyboard_state_machine();
+                                            *(unsigned short *)(g_e5ba + REC + d * 40) = 0x10;
+                                            g_squad_id[REC + d * 40] = (unsigned char)keyboard_state_machine();
                                             for (s = 0; s < 8; s++) {
-                                                *(unsigned short *)(g_equip_kind + d * 40 + s * 4 + REC) = 0;
-                                                *(unsigned short *)(g_equip_qty + d * 40 + s * 4 + REC) = 0;
+                                                *(unsigned short *)(g_equip_kind + REC + d * 40 + s * 4) = 0;
+                                                *(unsigned short *)(g_equip_qty + REC + d * 40 + s * 4) = 0;
                                             }
                                             break;
                                         }
@@ -193,32 +201,32 @@ void store_squad_loadout(unsigned short param)
                 /* --- (B) write template entry j from the node --- */
                 if (*(short *)(node + 0x14) < 0) {
                     /* clear entry j */
-                    *(unsigned short *)(g_e5ba + j * 40 + REC) = 0xffff;
-                    g_squad_id[j * 40 + REC] = 0xff;
-                    *(unsigned short *)(g_e5be + j * 40 + REC) = 0;
-                    *(unsigned short *)(g_e5bc + j * 40 + REC) = 0;
-                    g_squad_slot[j * 40 + REC] = 0;
+                    *(unsigned short *)(g_e5ba + REC + j * 40) = 0xffff;
+                    g_squad_id[REC + j * 40] = 0xff;
+                    *(unsigned short *)(g_e5be + REC + j * 40) = 0;
+                    *(unsigned short *)(g_e5bc + REC + j * 40) = 0;
+                    g_squad_slot[REC + j * 40] = 0;
                     for (d = 0; d < 8; d++) {
-                        *(unsigned short *)(g_equip_kind + j * 40 + d * 4 + REC) = 0;
-                        *(unsigned short *)(g_equip_qty + j * 40 + d * 4 + REC) = 0;
+                        *(unsigned short *)(g_equip_kind + REC + j * 40 + d * 4) = 0;
+                        *(unsigned short *)(g_equip_qty + REC + j * 40 + d * 4) = 0;
                     }
                 } else {
-                    *(unsigned short *)(g_e5ba + j * 40 + REC) = 0x10;
-                    *(unsigned short *)(g_e5bc + j * 40 + REC) =
+                    *(unsigned short *)(g_e5ba + REC + j * 40) = 0x10;
+                    *(unsigned short *)(g_e5bc + REC + j * 40) =
                         *(unsigned short *)(node + 0x3c);
                     if (!(g_in_mission & 8)) {
                         for (d = 0; d < 8; d++) {
-                            *(unsigned short *)(g_equip_kind + j * 40 + d * 4 + REC) = 0;
-                            *(unsigned short *)(g_equip_qty + j * 40 + d * 4 + REC) = 0;
+                            *(unsigned short *)(g_equip_kind + REC + j * 40 + d * 4) = 0;
+                            *(unsigned short *)(g_equip_qty + REC + j * 40 + d * 4) = 0;
                         }
                         chain = *(unsigned short *)(node + 0x3a);
                         for (d = 0; chain != 0; ) {
                             if (d >= 8)
                                 break;
                             it = g_entity_pool + chain;
-                            *(unsigned short *)(g_equip_qty + j * 40 + d * 4 + REC) =
+                            *(unsigned short *)(g_equip_qty + REC + j * 40 + d * 4) =
                                 *(unsigned short *)(it + 0x14);
-                            *(unsigned short *)(g_equip_kind + j * 40 + d * 4 + REC) = it[0x19];
+                            *(unsigned short *)(g_equip_kind + REC + j * 40 + d * 4) = it[0x19];
                             d++;
                             chain = *(unsigned short *)(it + 0x1c);
                         }

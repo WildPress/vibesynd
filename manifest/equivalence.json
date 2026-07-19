@@ -74,11 +74,6 @@
   "flags": "-4s -oneatx -zp8 -s -zq",
   "score": 0.9163
  },
- "find_rec_by_field8": {
-  "verdict": "STRUCTURAL",
-  "flags": "-4s -oneatx -zp8 -s -zq",
-  "score": 0.4368
- },
  "menu_list_draw": {
   "verdict": "STRUCTURAL",
   "flags": "-4s -oneatx -zp8 -s -zq",
@@ -278,11 +273,6 @@
   "verdict": "STRUCTURAL",
   "flags": "-4s -oneatx -zp8 -s -zq",
   "score": 0.704
- },
- "center_string_16": {
-  "verdict": "STRUCTURAL",
-  "flags": "-4s -oneatx -zp8 -s -zq",
-  "score": 0.7126
  },
  "radar_panel_sm": {
   "verdict": "STRUCTURAL",

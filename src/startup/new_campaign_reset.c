@@ -4,23 +4,35 @@
  * table the strategy layer owns. Called once when a new game begins. It walks
  * a handful of fixed-address record tables and stamps their starting values.
  *
- * PARKED (decode-only). This lives in the WALLED 0x417-template region: the
- * per-player template row (g_player_recs + p*0x417) and the 0x105d4 command record are
- * the same records the parked siblings run_mission_command / FUN_000223c8 /
- * build_equip_row consume, and they carry the same register-role tie-break wall
- * (the p*0x417 / si*0x1eb / di*0x1f5 imul-by-constant stride is re-materialised
- * per store from the memory-homed 16-bit counter, and the encoder's
- * accumulator/byte form choices vary per site). One long straight-line init
- * with ~6 independent nested loops -> residue is pure allocator/encoder choice.
- * Compiles (-4s -oneatx -zp8 -s -zq); ours 1320B vs target 1510B, first diff at
- * 0x6 (frame `sub esp,0x18` vs ours 0xc: the target memory-homes 3 more counter
- * spill slots). Structure/semantics faithful; the size gap + first diff are the
- * memory-homed-counter / stride-CSE + slot-order wall shared with the siblings.
+ * STATUS: reconstructed. EDIT-DIST 810 -> 636 (46% -> ~58% of 1510). The
+ * residue is the Watcom-9.5 codegen wall (register allocation, immediate-vs-
+ * register constant forms, loop-counter memory-homing and stack-slot coloring,
+ * loop-alignment NOPs) -- the logic and store layout are byte-faithful; what
+ * still differs is which register/encoding the compiler picked per site.
+ *
+ * Structural fixes that moved the needle:
+ *   1. The research (0x5788) and mod (0x7bf4) records: the target DUPLICATES the
+ *      10x24-word zeroing sub-loop into BOTH the unlimited-funds and normal
+ *      branches (not one shared loop after the if). Source now mirrors that.
+ *   2. Active weapon slot: the target evaluates lcg_rand(3) FIRST (store +3),
+ *      then ammo +1 = 0x10, then keyboard_state_machine() for the type byte +0.
+ *      Our C had keyboard first; reversed to match the call/store order.
+ *   3. Weapon-slot fields are addressed by fully-inline byte arithmetic
+ *      (g_player_recs + p*0x417 + 0x11d + j*0x28 + field) at every store rather
+ *      than through a cached `slot` pointer, so the compiler re-derives the
+ *      stride per store from the memory-homed j/p counters and folds the
+ *      region-base+field into the displacement -- matching the target's shape.
  *
  * Records use odd byte strides (0x417, 0x1eb, 0x1f5) so fields are addressed by
  * byte-pointer arithmetic + cast, written inline at each store (not through a
  * cached base pointer) -- that re-derives the stride per store from the
  * memory-homed counter, matching the target's shape.
+ *
+ * Remaining gap character: first diff at 0x6 (frame `sub esp,0x18` vs ours 0xc:
+ * the target memory-homes ~2 more counter spill slots, so p/j land at different
+ * [esp] displacements and every counter reload differs by one displacement
+ * byte); plus scattered immediate-vs-register choices for the 0x960/0x10/0x1e
+ * constants. All source-invisible allocator/encoder choices.
  *
  * GHIDRA MIS-DISASSEMBLY: two spots where Watcom emitted 6-byte
  * `lea reg,[reg+0]` alignment NOPs between an `imul` and the next store (raw
@@ -109,30 +121,31 @@ void new_campaign_reset(void)
         *(short *)(g_player_recs + p * 0x417 + 0xc) = 0;       /* g_e4a8 */
         g_player_recs[p * 0x417 + 0xb5] = (unsigned char)(p * 8);  /* g_agent_slots base slot */
 
-        /* 18 weapon/mod slots per player, 40-byte records at +0x11d */
+        /* 18 weapon/mod slots per player, 40-byte records at +0x11d.
+         * Address re-derived inline per store (p*0x417 + j*0x28), matching the
+         * target's memory-homed-counter + folded-displacement codegen. */
         for (j = 0; j < 0x12; j++) {
-            int slot = p * 0x417 + 0x11d + j * 0x28;
             if (j < 8) {                                    /* active slot */
-                g_player_recs[slot] = keyboard_state_machine();                       /* type */
-                *(short *)(g_player_recs + slot + 1) = 0x10;                 /* ammo */
-                *(short *)(g_player_recs + slot + 3) = (short)(lcg_rand(3) & 1);
+                *(short *)(g_player_recs + p * 0x417 + 0x11d + j * 0x28 + 3) = (short)(lcg_rand(3) & 1);
+                *(short *)(g_player_recs + p * 0x417 + 0x11d + j * 0x28 + 1) = 0x10;   /* ammo */
+                g_player_recs[p * 0x417 + 0x11d + j * 0x28] = keyboard_state_machine();  /* type */
             } else {                                        /* empty slot */
-                *(short *)(g_player_recs + slot + 1) = -1;
-                *(short *)(g_player_recs + slot + 3) = 0;
-                g_player_recs[slot] = 0xff;
+                *(short *)(g_player_recs + p * 0x417 + 0x11d + j * 0x28 + 1) = -1;
+                *(short *)(g_player_recs + p * 0x417 + 0x11d + j * 0x28 + 3) = 0;
+                g_player_recs[p * 0x417 + 0x11d + j * 0x28] = 0xff;
             }
             if (j < 4) {
-                g_player_recs[slot + 7] = (unsigned char)(j + 1);   /* g_squad_slot */
+                g_player_recs[p * 0x417 + 0x11d + j * 0x28 + 7] = (unsigned char)(j + 1);   /* g_squad_slot */
                 g_roster_index[j] = (unsigned char)j;
             } else {
-                g_player_recs[slot + 7] = 0;
+                g_player_recs[p * 0x417 + 0x11d + j * 0x28 + 7] = 0;
             }
             for (k = 0; k < 8; k++) {
-                *(short *)(g_player_recs + slot + 8 + k * 4) = 0;    /* g_equip_qty */
-                *(short *)(g_player_recs + slot + 0xa + k * 4) = 0;  /* g_equip_kind */
+                *(short *)(g_player_recs + p * 0x417 + 0x11d + j * 0x28 + 8 + k * 4) = 0;    /* g_equip_qty */
+                *(short *)(g_player_recs + p * 0x417 + 0x11d + j * 0x28 + 0xa + k * 4) = 0;  /* g_equip_kind */
             }
-            *(short *)(g_player_recs + slot + 0xa) = 2;             /* g_equip_kind[0] */
-            *(short *)(g_player_recs + slot + 8) = g_a73e;          /* g_equip_qty[0] */
+            *(short *)(g_player_recs + p * 0x417 + 0x11d + j * 0x28 + 0xa) = 2;              /* g_equip_kind[0] */
+            *(short *)(g_player_recs + p * 0x417 + 0x11d + j * 0x28 + 8) = g_a73e;           /* g_equip_qty[0] */
         }
     }
 
@@ -151,26 +164,34 @@ void new_campaign_reset(void)
 
     /* ---- 18 research records (0x5788, stride 0x1eb) ---- */
     for (i = 0; i < 0x12; i++) {
-        if (g_unlimited_funds)
+        if (g_unlimited_funds) {
             *(short *)(g_5788 + i * 0x1eb + 0) = 0x960;
-        else
+            for (di = 0; di < 0xa; di++)
+                for (bx = 0; bx < 0x18; bx++)
+                    *(short *)(g_5788 + i * 0x1eb + 2 + di * 0x30 + bx * 2) = 0;
+        } else {
             *(short *)(g_5788 + i * 0x1eb + 0) = g_research_src[i];
-        for (di = 0; di < 0xa; di++)
-            for (bx = 0; bx < 0x18; bx++)
-                *(short *)(g_5788 + i * 0x1eb + 2 + di * 0x30 + bx * 2) = 0;
+            for (di = 0; di < 0xa; di++)
+                for (bx = 0; bx < 0x18; bx++)
+                    *(short *)(g_5788 + i * 0x1eb + 2 + di * 0x30 + bx * 2) = 0;
+        }
     }
 
     /* ---- 20 mod/equip records (0x7bf4, stride 0x1f5) ---- */
     for (di = 0; di < 0x14; di++) {
-        if (g_unlimited_funds && g_7bf4[di * 0x1f5] == 0xfe)
-            continue;                                  /* already unavailable */
-        if (g_unlimited_funds)
+        if (g_unlimited_funds) {
+            if (g_7bf4[di * 0x1f5] == 0xfe)
+                continue;                              /* already unavailable */
             *(short *)(g_7bf4 + di * 0x1f5 + 0x11) = 0x960;   /* g_7c05 */
-        else
+            for (k = 0; k < 0xa; k++)
+                for (bx = 0; bx < 0x18; bx++)
+                    *(short *)(g_7bf4 + di * 0x1f5 + 0x13 + k * 0x30 + bx * 2) = 0;
+        } else {
             *(short *)(g_7bf4 + di * 0x1f5 + 0x11) = g_mod_src[di];
-        for (k = 0; k < 0xa; k++)
-            for (bx = 0; bx < 0x18; bx++)
-                *(short *)(g_7bf4 + di * 0x1f5 + 0x13 + k * 0x30 + bx * 2) = 0;
+            for (k = 0; k < 0xa; k++)
+                for (bx = 0; bx < 0x18; bx++)
+                    *(short *)(g_7bf4 + di * 0x1f5 + 0x13 + k * 0x30 + bx * 2) = 0;
+        }
         g_7bf4[di * 0x1f5 + 0x1f4] = g_mod_byte_src[di];             /* g_7de8 */
     }
 

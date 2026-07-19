@@ -40,10 +40,27 @@
  * field, cache offset, y position and colour pair; they are captured here by the
  * IPA() macro (expands inline, exactly as the compiler emitted them -- no call).
  *
- * STATUS: PARKED. Register-role / accumulator walls (the repeated `*55 IDIV 255`
- * chains and the two-segment redraw's stack-shuffled colour push) are not
- * source-reachable, and the wrong manifest size (2080 vs real 2387) makes
- * match_reloc length-mismatch regardless. Recipe: -4s -oneatx -zp8 -s -zq.
+ * STATUS: 77% match, EDIT-DIST 546 (was 49% / 1224). The big win was typing the
+ * loop counter `i` as `unsigned short` (was `int`): the 16-bit counter makes every
+ * `i*0xb`/`i*0x12` index recompute from `di` (mov ax,di / imul) instead of the
+ * compiler strength-reducing them into running induction pointers (esi+=0xb,
+ * ebx+=0x12). That single change realigned the whole first loop -- register roles
+ * (esi=p, edi=i, ebx=mid accumulator, ecx=i*0xb), the 16-bit `cmp di,4 / jb` loop
+ * tests, and the blink table's `cmp cx,8 / jb`. The blink loop and the entire
+ * second (aux progress-bar) pass are now byte-identical.
+ *
+ * REMAINING GAP (~546) is a Watcom-9.5 register/stack-slot tie, not source-reachable:
+ *   - Frame is 0xc vs target's 8: Watcom reserves an unused home slot for `mid`
+ *     (which actually lives in ebx), shifting every IPA/health stack temp from
+ *     offsets {0,4} to {4,8} -- ~1 byte per esp-disp across three bars + health.
+ *   - Two-segment redraw: target reloads lo/hi from their slots and recomputes
+ *     `v-mid` in the shared tail; ours CSEs `lo-mid` and spills/reuses it. Forcing
+ *     recompute (shared v/c tail, or `volatile` on lo/hi) regresses globally.
+ *   - Muzzle-flash: `st` lands in dl vs target's bl, flipping the two flag stores'
+ *     order and the const register (bh vs dl).
+ * All three resisted decl-order, health-var-reuse, volatile, and shared-tail edits.
+ * The wrong manifest size (2080 vs real 2387) still forces a length-mismatch in
+ * match_reloc regardless. Recipe: -4s -oneatx -zp8 -s -zq.
  */
 
 extern unsigned char  g_blink_tick;      /* blink tick counter */
@@ -98,7 +115,7 @@ extern void draw_slot_record_chain(int p, unsigned short idx, int x, int y);
 
 void agent_hud_render(void)
 {
-    int i;
+    unsigned short i;
     int lo, mid, hi;
     unsigned char *p;
     unsigned short id;

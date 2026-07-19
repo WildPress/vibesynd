@@ -1,18 +1,24 @@
-/* @ 0x2d468 -- twin of 0x2d5b8 (path/passability probe). 16-entry jump table at
-   manifest 0x2d428 (obj1:+0x1fce0 literal, decoded via lefix.py): blocked tile
-   set = {0,6,7,8,9,0xb,0xf} (the twin's set PLUS type 0), open = the rest.
-   Watcom jump-threads the f=1 cases straight to the fa18 arm. Differences from
-   the twin: threshold +-0x20 (not 0x40) and a flag escape -- returns 1 when
-   |g_level_step diff| <= 0x20, or when below -0x20 but p[0xb] bit1 is set.
-   Uses the cont.21 g_map_cols lever set: pointer-variable decl, slot local,
-   (int)*slot deref cast, ternary call merge, volatile g_level_step + named t.
+/* @ 0x2d468 -- twin of 0x2d5b8 (path/passability probe). EDIT-DIST 108 (was 121).
+   16-entry jump table at manifest 0x2d428 (obj1:+0x1fce0 literal, decoded via
+   lefix.py): blocked tile set = {0,6,7,8,9,0xb,0xf} (the twin's set PLUS type 0),
+   open = the rest. Watcom jump-threads the f=1 cases straight to the fa18 arm.
+   Differences from the twin: threshold +-0x20 (not 0x40) and a flag escape --
+   returns 1 when |g_level_step diff| <= 0x20, or when below -0x20 but p[0xb]
+   bit1 is set.
 
-   PARKED at the SAME ~10-byte residue as the twin 0x2d5b8 (jump-table verified
-   layout, entry/guards/switch-dispatch/calls byte-correct): slot addr via
-   `add ecx,eax` (target `lea ecx,[edx+eax]` + early movsx), tile widen and-form
-   in EAX (target xor/mov dl in EDX), plus here the t reload lands AX (target
-   DX). Named-base variant regresses (338B). If the 0x33fb8 g_map_cols retry finds
-   the missing spelling, transplant it to BOTH twins. */
+   KEY FIX this pass (same as the twin): the tile byte goes into its own
+   `unsigned char tile` local before the switch. That reschedules the g_map_cols
+   column lookup into the target's exact shape (base EDX, slot via lea ecx,[edx+eax],
+   movsx for the level after the slot), making the prologue, guards, lookup, switch
+   dispatch and calls byte-identical to target. Semantics unchanged.
+
+   REMAINING (~6 code bytes, two register-role ties, not source-reachable, shared
+   with the twin): (1) tile widen ours `mov al; and eax,0xff` (base in EDX) vs
+   target `xor edx; mov dl` (base in EAX) -- xor-clear vs and-mask tie; (2) tail
+   does `add esp` before `sub eax,esi` and reloads volatile g_level_step into AX
+   + cwde, where target subtracts first and reloads into DX + movsx eax,dx. These
+   leave ours 266 code bytes vs target 265, so the harness jump-table alignment
+   cannot latch. Same floor as twin 0x2d5b8. */
 extern char **g_map_cols;
 extern unsigned char *g_tile_flags;
 extern volatile short g_level_step;
@@ -28,8 +34,9 @@ int path_probe_y(short x, short y, int w, unsigned char *p)
     if (!(p[0x1c] & 2) && !(p[0x1d] & 8)) {
         slot = g_map_cols + ((*(short *)(p + 6) % 0x6000 / 0x100 << 7)
                         + (*(short *)(p + 4) & 0xff00) / 0x100);
-        switch (g_tile_flags[*(unsigned char *)((int)*slot
-                                           + (*(short *)(p + 8) - 1) / 0x80)]) {
+        {unsigned char tile = *(unsigned char *)((int)*slot
+                                           + (*(short *)(p + 8) - 1) / 0x80);
+        switch (g_tile_flags[tile]) {
         case 1:
         case 2:
         case 3:
@@ -49,7 +56,7 @@ int path_probe_y(short x, short y, int w, unsigned char *p)
         case 0xf:
             f = 1;
             break;
-        }
+        }}
     } else
         f = 1;
     g_level_step = (f != 0 ? FUN_LE_0000fa18(x, y, (short)w) : FUN_LE_0000fa88(x, y, (short)w)) - w;

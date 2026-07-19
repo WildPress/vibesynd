@@ -13,20 +13,29 @@
    by g_cur_player, exactly as siblings FUN_16318/16438/164c8/16678/33568.
    Recipe: -4s -oneatx -zp8 -s -zq
 
-   PARKED near-miss: ours 939B vs target 957B, difflib 0.571 (541/957),
-   structure byte-faithful. Levers that landed: per-block `int idx=g_cur_player*0x417`
-   (folds g_player_budget into disp32, killed a 1381B recompute blowup); `g_5304 > 0`
-   (JBE not JE); named `money` load; volatile edge-flags + g_cur_player + g_10b50.
-   WALL (entry-scheduler, same class as sibling 0x16318's residue): g_5304 is a
-   global register-cached in EDI across the whole fn (spill-before-call, reload-
-   after). After the FUN_33568 call our reload `mov edi,[g_5304]` schedules EARLY
-   (before the idx/money loads); the target schedules it LATE (after the money
-   load). That 2-instruction swap flips money's home register (ours ECX `8b8b`,
-   target EBP `8bab`), which rewrites nearly every modrm byte in the whole back
-   half (main + block2), collapsing the score. Also the `g_10b50=0` zero-reg is
-   DH (ours) vs AH (target) -- an encoding tie. Not source-reachable: function-
-   scope money decl, `-or` (way off, first diff 0x8), and `>` vs `!=` spellings
-   don't move the reload schedule. */
+   PARKED near-miss: ours 939B vs target 957B, EDIT-DIST=322 (~66% by
+   1-editdist/maxlen), structure byte-faithful. Levers that landed: per-block
+   `int idx=g_cur_player*0x417` (folds g_player_budget into disp32, killed a
+   1381B recompute blowup); `g_5304 > 0` (JBE not JE); named `money` load;
+   volatile edge-flags + g_10b50.
+   KEY FIX (336 -> 322): g_cur_player is a PLAIN global, not volatile. Watcom
+   still reloads it per basic block (movsx at 0xd3/0x138/0x1cc/0x2bc -- it never
+   caches a global across calls), so dropping `volatile` costs no reloads but
+   lets the g_5304 resync move LATE. g_5304 is register-cached in EDI across the
+   whole fn (spill-before-call at 0x110, reload-after). With volatile g_cur_player
+   the reload `mov edi,[g_5304]` scheduled EARLY (0x138, before idx/money); plain
+   global lets it schedule LATE (0x161, after the money load) -- matching target
+   exactly and also realigning the loop's `add esp,4` (0x1e3).
+   WALL (Watcom-9.5 codegen seed, not source-reachable): a global 3-register
+   ROTATION {ebp<-ecx<-edx<-ebp}. Ours puts money in ECX where target uses EBP
+   (main path) / EDX (block2); this forces the loop's g_player_recs temp to EBP
+   (target EDX) and the g_syndicate_money temp to EDX (target ECX, which also
+   adds a stray `mov eax,edx`). It rewrites nearly every modrm byte in the back
+   half. Confirmed global not loop-driven: block2 has zero loop pressure yet
+   shows the identical money ECX-vs-EDX rotation. Also `g_10b50=0` zero-reg is
+   DH (ours) vs AH (target) and `ret=1` reg CH/DL/AH -- encoding ties. Not moved
+   by: register hint on money, delta/need temps, function-scope money decl,
+   `-or`, `>` vs `!=`. */
 extern volatile unsigned char g_e2bf;
 extern volatile unsigned char g_e2c0;
 extern volatile unsigned char g_e2c1;
@@ -40,7 +49,7 @@ extern volatile unsigned char g_10b50;
 extern unsigned char g_radar_detail;
 extern unsigned char g_10b52;
 extern int g_10b06;
-extern volatile short g_cur_player;
+extern short g_cur_player;
 extern unsigned char g_player_budget[];
 extern unsigned char g_player_recs[];
 extern unsigned char g_3ee8;

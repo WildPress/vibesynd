@@ -1,29 +1,25 @@
-/* NEAR-MISS @ 0x2d5b8 -- cont.21 re-attack closed MOST of the old wall: code
- * tail now 259/259 length (was 264), entry + guards + switch + calls + tail all
- * byte-identical after: g_map_cols declared as POINTER VARIABLE (mov edx,[g_map_cols]
- * load, not an immediate � this alone flipped the f/w ESI/EDI roles into
- * place), slot-pointer local + (int)*slot cast (gives the in-place
- * `add eax,[ecx]` deref), ternary-merge for the fa18/fa88 result (single
- * `sub eax,esi`), volatile g_level_step + named re-read temp for the tail compares,
- * int-typed w with (short) casts at pushes. REMAINING (~10 bytes): the slot
- * address forms via `add ecx,eax` with base ECX (target `lea ecx,[edx+eax]`,
- * base EDX) with a movsx scheduled early, and the tile byte widens and-form
- * in EAX (target xor/mov dl into EDX). Named-base spelling regresses others;
- * 4000 more cpermute variants no match. Register-role family.
+/* NEAR-MISS @ 0x2d5b8 -- EDIT-DIST 107 (was 120). The whole prologue, guards,
+ * column lookup, switch dispatch and calls are now byte-identical to target.
  *
- * ORIGINAL NOTES: 259 vs 264 code bytes; JUMP TABLE FULLY RECOVERED
- * (this is the payoff of the fixed tools/lefix.py). The 16-entry dispatcher at
- * manifest 0x2d574 (obj1:+0x1fe2c) maps tile type -> {6,7,8,9,0xb,0xf}=blocked.
- * The whole body is byte-identical through the switch EXCEPT the g_map_cols column
- * lookup, which is the SAME register-role wall that parked 0x28ec8/0x33fb8:
- *   (1) target keeps &g_map_cols[idx] as a slot address and derefs in place
- *       (lea ecx,[edx+eax]; ... add eax,[ecx]); ours loads the pointer eagerly
- *       (mov ecx,[edx+eax]; add eax,ecx).
- *   (2) target reads the tile index into a PRE-CLEARED edx (xor edx; mov dl)
- *       and indexes g_tile_flags with base-in-EAX/idx-in-EDX; ours reads into AL,
- *       and eax,0xff, base-in-EDX. Classic xor-clear vs and-mask role tie-break.
- * char *col vs char **slot vs inline all converge to the eager-load/mask form.
- * Semantics 100%. TWIN 0x2d468 shares this exact idiom; decode via lefix.py.
+ * KEY FIX this pass: load the tile byte into its own `unsigned char tile` local
+ * BEFORE the switch, instead of inlining the deref inside g_tile_flags[...].
+ * That single change reschedules the column lookup into the target's exact shape:
+ * g_map_cols base into EDX, slot address via `lea ecx,[edx+eax]`, and the
+ * `movsx edx,[ebx+8]` for the level scheduled AFTER the slot is formed. This was
+ * the old "register-role wall" (base ECX + add, movsx early); the tile local
+ * crosses it cleanly. Semantics unchanged: tile is 0..255, index into g_tile_flags.
+ *
+ * REMAINING (~6 code bytes, two register-role ties, not source-reachable):
+ *   (1) tile-byte widen: ours `mov al,[eax]; and eax,0xff` with g_tile_flags in
+ *       EDX; target `xor edx,edx; mov dl,[eax]` with g_tile_flags in EAX. Classic
+ *       xor-clear vs and-mask tie. Tried int/uchar tile, base-ptr local, flag
+ *       local, address local, array-index form -- all regress or leave it.
+ *   (2) tail: target does `sub eax,esi` before `add esp,0xc` and reloads the
+ *       volatile g_level_step into DX (then movsx eax,dx); ours cleans the stack
+ *       first and reloads into AX (then cwde). Order + reload-register schedule tie.
+ * These two make ours 260 code bytes vs target 259, so the harness JUMP-TABLE
+ * alignment (code == exact tail) also can't latch yet. TWIN 0x2d468 (path_probe_y)
+ * shares this exact idiom and floor.
  *
    0x2d5b8 -- path/passability probe at (x,y,w) for object p. Unless p is
  * flagged (+0x1c bit 1 / +0x1d bit 3), looks up the tile type under p
@@ -44,15 +40,15 @@ extern int FUN_LE_0000fa88(int a, int b, int c);
 int FUN_0002d5b8(short x, short y, int w, unsigned char *p)
 {
     short f = 0;
-    int r;
     short t;
     char **slot;
 
     if (!(p[0x1c] & 2) && !(p[0x1d] & 8)) {
         slot = g_map_cols + ((*(short *)(p + 6) % 0x6000 / 0x100 << 7)
                         + (*(short *)(p + 4) & 0xff00) / 0x100);
-        switch (g_tile_flags[*(unsigned char *)((int)*slot
-                                           + (*(short *)(p + 8) - 1) / 0x80)]) {
+        {unsigned char tile = *(unsigned char *)((int)*slot
+                                           + (*(short *)(p + 8) - 1) / 0x80);
+        switch (g_tile_flags[tile]) {
         case 0:
         case 1:
         case 2:
@@ -72,7 +68,7 @@ int FUN_0002d5b8(short x, short y, int w, unsigned char *p)
         case 0xf:
             f = 1;
             break;
-        }
+        }}
     } else
         f = 1;
     g_level_step = (f != 0 ? FUN_LE_0000fa18(x, y, (short)w) : FUN_LE_0000fa88(x, y, (short)w)) - w;

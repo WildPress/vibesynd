@@ -1,79 +1,74 @@
-/* WALL x3 (repne-scasb strlen intrinsic + inline jump-table dispatch + 64-bit
- *          return type Watcom 9.5b cannot express) @ 0x24b08
+/* parse_hex_arg @ 0x24b08 (221 bytes) -- parse a hex-digit string into a packed
+ * nibble mask. One stack param (char *s at [ESP+0x14] after push ebx/esi/edi/ebp).
  *
- * Ground truth (disassemble_function 0x24b08). One stack param (char *s at
- * [ESP+0x14] after push ebx/esi/edi/ebp); Ghidra's __fastcall/3-param sig is
- * phantom. Returns a 64-bit mask in EDX:EAX. Structure:
- *
- *   edi = s;
- *   ecx = -1; al = 0; repne scasb; ecx = ~ecx; ecx--;     // ecx = strlen(s)
- *   if ((short)ecx == 0) return 0;                          // empty -> 0
- *   ebx = ecx - 1;                                          // index, right->left
- *   eax = 0; edx = 0;                                       // mask lo, bit position
- *   for (; (short)ebx >= 0; ebx--, edx += 4) {              // 4 bits (a nibble) per char
- *       cl = s[ebx] - 0x30;                                 // 'c' - '0'
- *       if ((unsigned char)cl > 0x16) continue;             // out of range -> skip
- *       switch (cl) {                  // JMP CS:[ecx*4 + 0x17360], 23 entries
- *         case <hit>: esi = 1; esi <<= (edx & 0xff); eax |= esi;  // set bit at position edx
- *         default:    ;                                     // (only ONE inlined case body)
+ * What it does:
+ *   len = strlen(s);                       // inlined repne-scasb intrinsic
+ *   if (len == 0) return 0;
+ *   mask = 0; bitpos = 0;
+ *   for (i = len-1; i >= 0; i--, bitpos += 4) {   // right-to-left, one nibble/char
+ *       c = s[i] - '0';                    // fold digits and 'A'..'F' into 0..0x16
+ *       switch (c) {                       // dense 23-entry jump table
+ *         case 0..9   -> v = 0..9;
+ *         case 0x11..0x16 -> v = 0xa..0xf; // 'A'..'F'
+ *         default (0xa..0x10, and c>0x16)  -> skip (':'..'@' and non-hex)
  *       }
+ *       mask |= v << bitpos;               // place nibble at its hex position
  *   }
- *   return edx:eax;
+ *   return mask;                           // in EAX (EDX holds leftover bitpos)
  *
- * WHY THIS CANNOT REACH A MASKED 'YES' (two independent, source-unreachable walls):
+ * The switch compiles to `and ecx,0xff; jmp cs:[ecx*4+0x17360]` -- exactly the
+ * target's dispatch. len/i/bitpos are 16-bit (short): the target uses test cx,cx,
+ * test bx,bx, and movsx ecx,dx for the shift count, so those widths are load-bearing.
  *
- *  1) repne-scasb strlen intrinsic (playbook Section 3, cf. 0x17998/0x299c8):
- *     the target inlines strlen as `sub ecx,ecx; dec ecx; xor eax,eax; repne
- *     scasb; not ecx; dec ecx`. Our batch compile has no <string.h> on the
- *     include path and neither -oi nor #pragma intrinsic triggers the inline
- *     for strlen; any C spelling emits a byte-compare loop instead, diverging
- *     from prologue byte ~5 onward.
- *
- *  2) inline jump-table dispatch (playbook Section 0, cf. 0x23038): the 23-entry
- *     switch table lives in a FAR segment in the shipped binary (CS:[ecx*4 +
- *     0x17360]) so the on-disk function body is clean, but Watcom co-locates the
- *     table (+ alignment pad) inside our object .text before the code. match_reloc
- *     compares the whole object text against the target window, so len(ours) can
- *     never equal len(target) even were the code byte-exact.
- *
- *  3) 64-bit return (playbook Section 3, cf. 0x39495): the mask is accumulated
- *     in EDX:EAX with a bit position (edx) that grows by 4 per char, i.e. a true
- *     64-bit result. Watcom 9.5b rejects `long long`/`__int64` (E1009/E1060), so
- *     the function's return width itself is not source-expressible. The
- *     reconstruction below narrows it to `unsigned` merely so the unit compiles.
- *
- *  MANIFEST SIZE UNDER-COUNTED: recorded size=98 truncates at the first case
- *  body; true extent is 0x24b08..0x24be4 = 221 bytes (0xdd). (headless pass
- *  stopped at the switch JMP.)
- *
- * Parked as WALL; not source-reachable. Reconstruction below is structural only.
+ * RECONSTRUCTED from a broken 99-byte stub (was 16% / dist 186). The whole code
+ * body (0x24b08..0x24be4) is now byte-identical to the target EXCEPT a stable
+ * register-naming tie: the target holds mask in EAX and bitpos in EDX (temp v in
+ * ESI), whereas our build holds mask in EDX and bitpos in ESI (temp v in EAX);
+ * no source reordering flips Watcom's colouring. Reported dist 140 is dominated by
+ * the 92-byte inline jump table (+4-byte align pad) that Watcom co-locates in our
+ * single-function object .text: in the shipped binary that table lives in a far CS
+ * pool (CS:[...+0x17360]) outside the function window, so match_reloc counts it as
+ * pure insertion. That co-location is a build-isolation artefact, not a source bug.
  */
+#include <string.h>
+
 unsigned parse_hex_arg(char *s)
 {
-    unsigned len;
-    int i;
-    unsigned mask;              /* true target: 64-bit EDX:EAX (see WALL 3) */
-    int bitpos;
+    unsigned short len;
+    short i;
+    unsigned mask;
+    short bitpos;
     unsigned char c;
+    unsigned v;
 
-    for (len = 0; s[len]; len++)          /* target: repne scasb (WALL 1) */
-        ;
-    if ((short)len == 0)
+    len = (unsigned short)strlen(s);
+    if (len == 0)
         return 0;
 
     mask = 0;
     bitpos = 0;
-    for (i = (int)len - 1; (short)i >= 0; i--, bitpos += 4) {
+    for (i = (short)(len - 1); i >= 0; i--, bitpos += 4) {
         c = (unsigned char)(s[i] - 0x30);
-        if (c > 0x16)
-            continue;
-        switch (c) {                      /* target: JMP CS:[c*4+tbl] (WALL 2) */
-        case 0:
-            mask |= (unsigned)1 << (bitpos & 0xff);
-            break;
-        default:
-            break;
+        switch (c) {
+        case 0:    v = 0;   break;
+        case 1:    v = 1;   break;
+        case 2:    v = 2;   break;
+        case 3:    v = 3;   break;
+        case 4:    v = 4;   break;
+        case 5:    v = 5;   break;
+        case 6:    v = 6;   break;
+        case 7:    v = 7;   break;
+        case 8:    v = 8;   break;
+        case 9:    v = 9;   break;
+        case 0x11: v = 0xa; break;
+        case 0x12: v = 0xb; break;
+        case 0x13: v = 0xc; break;
+        case 0x14: v = 0xd; break;
+        case 0x15: v = 0xe; break;
+        case 0x16: v = 0xf; break;
+        default:   continue;
         }
+        mask |= v << bitpos;
     }
     return mask;
 }

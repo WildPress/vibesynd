@@ -65,7 +65,7 @@
     {"addr": "0001ff98", "name": "draw_gauge_segment", "size": 113, "calls": 1, "data_refs": 4, "incoming": 0, "status": "matched", "match_pct": 100.0, "src": "src/render/draw_gauge_segment.c"},
     {"addr": "00020018", "name": "menu_list_hit_test", "size": 314, "calls": 0, "data_refs": 17, "incoming": 2, "status": "unmatched", "match_pct": 0.0, "src": "src/ui/menu_list_hit_test.c"},
     {"addr": "00020158", "name": "draw_item_detail", "size": 1028, "calls": 4, "data_refs": 40, "incoming": 0, "status": "matched", "match_pct": 100.0, "src": "src/ui/draw_item_detail.c"},
-    {"addr": "00020568", "name": "find_rec_by_field8", "size": 130, "calls": 0, "data_refs": 7, "incoming": 0, "status": "unmatched", "match_pct": 0.0, "src": "src/util/find_rec_by_field8.c"},
+    {"addr": "00020568", "name": "find_rec_by_field8", "size": 130, "calls": 0, "data_refs": 7, "incoming": 0, "status": "matched", "match_pct": 100.0, "src": "src/util/find_rec_by_field8.c"},
     {"addr": "000205f8", "name": "menu_list_draw", "size": 299, "calls": 2, "data_refs": 9, "incoming": 0, "status": "unmatched", "match_pct": 0.0, "src": "src/ui/menu_list_draw.c"},
     {"addr": "00020728", "name": "menu_list_draw_b", "size": 310, "calls": 2, "data_refs": 9, "incoming": 0, "status": "unmatched", "match_pct": 0.0, "src": "src/ui/menu_list_draw_b.c"},
     {"addr": "00020b78", "name": "count_leading_nonzero", "size": 109, "calls": 0, "data_refs": 4, "incoming": 0, "status": "unmatched", "match_pct": 0.0, "src": "src/util/count_leading_nonzero.c"},
