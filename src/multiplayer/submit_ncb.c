@@ -1,7 +1,7 @@
 /* frameless @ 0x27d88: submit a NetBIOS NCB via DPMI. Clears the mailbox status
    byte p[0x31], builds a DPMI real-mode register block (rm.ebx = offset of p,
    flags=0x100, ds/fs = the real-mode segment stored at p+0x40 by the allocator
-   0x27f08), zeroes in/out REGS + SREGS, segread(), then int386x(0x31) with
+   0x27f08), zeroes in/out REGS + SREGS, segread(), then __int386x(0x31) with
    in.eax=0x300 (simulate real-mode interrupt), in.ebx=0x5c (int 5Ch, NetBIOS),
    in.edi=&rm. Carry set -> report 0x289a8(g_376c, 0x195, -3), return -1; else 0.
    Callers: 0x284a8 (matched), 0x27fc8, 0x28118.
@@ -28,7 +28,7 @@
    fuzzer/cpermute may close it. Recipe: -4s -oneatx -zp8 -s -zq */
 extern void memset(void *dst, int val, int len);
 extern void segread(void *sregs);
-extern void FUN_0003b3e6(int inum, void *inr, void *outr, void *sregs);
+extern void int386x(int inum, void *inr, void *outr, void *sregs);
 extern void report_net_status(char *s, int line, int code);
 extern char g_376c[];
 
@@ -56,7 +56,7 @@ int submit_ncb(unsigned char __far *p)
     in[5] = (int)rm;
     in[0] = 0x300;
     in[1] = 0x5c;
-    FUN_0003b3e6(0x31, in, out, sr);
+    int386x(0x31, in, out, sr);
     if (out[6] != 0) {
         report_net_status(g_376c, 0x195, -3);
         return -1;

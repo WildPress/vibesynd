@@ -1,8 +1,14 @@
-/* @ 0x3d4bc (55B) -- db-transcription (hand-asm/library). */
-
-extern void __db_FUN_0003d4bc_0(void);
-#pragma aux __db_FUN_0003d4bc_0 = "db 85" "db 6" "db 83" "db 30" "db 82" "db 232" "db 45" "db 0" "db 0" "db 0" "db 30" "db 87" "db 139" "db 236" "db 139" "db 125" "db 8" "db 142" "db 93" "db 12" "db 137" "db 7" "db 137" "db 95" "db 4" "db 137" "db 79" "db 8" "db 137" "db 87" "db 12" "db 137" "db 119" "db 16" "db 143" "db 71" "db 20" "db 27" "db 192" "db 137" "db 71" "db 24" "db 88" "db 91" "db 91" "db 91" "db 102" "db 137" modify exact [eax ebx ecx edx esi edi ebp];
-extern void __db_FUN_0003d4bc_1(void);
-#pragma aux __db_FUN_0003d4bc_1 = "db 67" "db 6" "db 140" "db 3" "db 7" "db 93" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux int386x modify [eax ebx ecx edx esi edi ebp];
-void int386x(void) { __db_FUN_0003d4bc_0(); __db_FUN_0003d4bc_1(); }
+/* C runtime: __int386x @ 0x3b3e6 (CLIB3S, Watcom 9.5). Register-setup wrapper for a
+   software interrupt: saves ebx/esi/edi/ebp, loads the four args (inter_no, in,
+   out, sregs) into ESI/EDI/EDX/EBX, calls the core int dispatcher __int386x,
+   then returns *out (the resulting AX/EAX packed into the out-regs). This is the
+   __int386x that int386 (0x3adb2) tail-calls. Regs-first prologue (push reg before
+   the ebp frame) -> the reg-save-order wall for plain C, so it is whole-function
+   db-transcribed into a frameless wrapper; the trailing RET comes from the wrapper. */
+extern void __int386x(void);
+extern int __int386x(void);
+#pragma aux __int386x = "db 83" "db 86" "db 87" "db 85" "db 137" "db 229" "db 139" "db 117" "db 20" "db 139" "db 125" "db 24" "db 139" "db 85" "db 28" "db 139" "db 93" "db 32" "call __int386x" "db 139" "db 69" "db 28" "db 139" "db 0" "db 93" "db 95" "db 94" "db 91" parm [] value [eax] modify exact [eax ecx edx];
+int int386x(int inter_no, const void *in, void *out, void *sregs)
+{
+    return __int386x();
+}

@@ -1,7 +1,7 @@
 /* mouse_init_int33 @ 0x28b88 - mouse driver init via INT 33h.
  * set interrupt rate (ax=0x1c, bx=2), segread, reset/detect (ax=0),
  * if out.ax == 0xffff: install event handler 0x1b290 (ax=0xc, cx=0x1f,
- * edx=FP_OFF(handler), sregs.es=FP_SEG(handler)) via int386x, set rate
+ * edx=FP_OFF(handler), sregs.es=FP_SEG(handler)) via __int386x, set rate
  * again (ax=0x1c, bx=1), malloc a cursor-save buffer sized by g_105
  * (1 -> 0x1100, 2 -> 0x14b0, else 0x1090) into g_df3c, on success
  * hide cursor (ax=2) and return 1; on malloc fail report via 0x3ad66
@@ -24,7 +24,7 @@ extern void * volatile g_df3cv;   /* volatile alias, same global: forces the cmp
 extern char g_37fc[];
 extern void int386(int inum, void *inr, void *outr);   /* int386 */
 extern void segread(void *sregs);                       /* segread */
-extern void FUN_0003b3e6(int inum, void *inr, void *outr, void *sregs); /* int386x */
+extern void int386x(int inum, void *inr, void *outr, void *sregs); /* __int386x */
 extern void *malloc(unsigned n);                       /* malloc */
 extern void printf(char *s);                           /* error */
 extern void FUN_0001b290(void);                              /* mouse event handler */
@@ -49,10 +49,10 @@ int mouse_init_int33(void)
         *(unsigned short *)&in[2] = 0x1f;
         in[3] = (int)FUN_0001b290;
         *(unsigned short *)&sr[0] = FP_SEG((void __far *)FUN_0001b290);
-        FUN_0003b3e6(0x33, in, out, sr);
+        int386x(0x33, in, out, sr);
         *(unsigned short *)&in[0] = 0x1c;
         *(unsigned short *)&in[1] = 1;
-        FUN_0003b3e6(0x33, in, out, sr);
+        int386x(0x33, in, out, sr);
         switch (g_105) {
         case 1:
             g_df3c = malloc(0x1100);

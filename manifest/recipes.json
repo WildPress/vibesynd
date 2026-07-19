@@ -1,8 +1,4 @@
 {
- "FUN_0003b3e6": {
-  "addr": "0003b3e6",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
  "FUN_0004cd18": {
   "addr": "0004cd18",
   "flags": "-3s -oneatx -zp8 -s -zq"
@@ -1348,10 +1344,6 @@
   "addr": "0003d40f",
   "flags": "-3s -oneatx -zp8 -s -zq"
  },
- "int386x": {
-  "addr": "0003d4bc",
-  "flags": "-3s -oneatx -zp8 -s -zq"
- },
  "intr_call_core": {
   "addr": "0003d4f3",
   "flags": "-3s -oneatx -zp8 -s -zq"
@@ -1566,6 +1558,14 @@
  },
  "fread": {
   "addr": "0003b420",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "__int386x": {
+  "addr": "0003d4bc",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "int386x": {
+  "addr": "0003b3e6",
   "flags": "-3s -oneatx -zp8 -s -zq"
  }
 }

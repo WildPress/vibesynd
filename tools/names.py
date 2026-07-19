@@ -80,7 +80,7 @@ LABELS = {
     "0003d2c3": "fputc",
     "0003d36b": "getc",
     "0003d40f": "fill_buffer",
-    "0003d4bc": "int386x",
+    "0003d4bc": "__int386x",
     "0003d4f3": "intr_call_core",
     "0003d90b": "memcpy",
     "0003d966": "flush_stream",
@@ -327,6 +327,10 @@ LABELS = {
     "0003b8f8": "fopen",      "0003b99e": "fclose",    "0003e381": "makepath",
     "0003b420": "fread",      "0003db69": "remove",    "0003cc74": "spawn_exec_core",
     "0003cfce": "exec_shell_forward",
+    # 0x3d4bc was mislabelled int386x but is the internal __int386x core (OUT+SREGS
+    # marshaller, incoming:1 from 0x3b3e6); the public int386x is the regs-first wrapper
+    # 0x3b3e6 that int386 (0x3adb2) tail-delegates to. Helper 0x3d4f3 is intr_call_core.
+    "0003b3e6": "int386x",
     # cont.29 -- hand-asm graphics blitters (fully commented in their .asm companions)
     "00040236": "plot_point",     "0004d199": "fill_bytes",
     "0004d0b4": "blit_block",     "0004a734": "draw_sprite_rle",
