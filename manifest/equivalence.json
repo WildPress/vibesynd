@@ -314,11 +314,6 @@
   "flags": "-4s -oneatx -zp8 -s -zq",
   "score": 0.4813
  },
- "FUN_0002d038": {
-  "verdict": "STRUCTURAL",
-  "flags": "-4s -oneatx -zp8 -s -zq",
-  "score": 0.8
- },
  "rate_byte_drift": {
   "verdict": "STRUCTURAL",
   "flags": "-4s -oneatx -zp8 -s -zq",
@@ -493,11 +488,6 @@
   "verdict": "REGISTER-ROLE",
   "flags": "-4s -oneatx -zp8 -s -zq",
   "score": 1.0
- },
- "find_free_pool_slots": {
-  "verdict": "STRUCTURAL",
-  "flags": "-4r -oneatx -zp8 -s -zq",
-  "score": 0.268
  },
  "container_load": {
   "verdict": "STRUCTURAL",

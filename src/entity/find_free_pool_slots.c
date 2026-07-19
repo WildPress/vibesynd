@@ -1,7 +1,15 @@
-/* frameless @ 0x22768: PARKED near-miss (register allocation). Logic is correct;
-   with four live pointers (three results + the scan cursor) Watcom assigns EBX/
-   ESI to pool A vs C the opposite way round, and no C reshuffle we tried flips
-   it. Kept for the structure it documents.
+/* frameless @ 0x22768: MATCHED (RELOC-AWARE, masked): YES. EDIT-DIST 49 -> 43
+   (the residual 43 bytes are all masked global-address relocations).
+
+   NOT a register wall. The old note blamed an EBX/ESI role swap for pool A vs C
+   and parked it; wrong diagnosis. Two independent source knobs fixed it:
+     1) DECLARATION order c,b,a sets the callee-saved register roles Watcom picks
+        (a->EBX, c->ESI) to match the target's loop bodies and end-stores.
+     2) ASSIGNMENT order a,b,c (split from the declarations) sets the INIT
+        instruction order so a(EBX) is materialised first and c(ESI) last, with
+        the g_10b42 flag load scheduled between b and c -- exactly the target.
+   Declaration order alone got register roles right but left the two inits
+   swapped; splitting decl from assignment lands the full match.
 
    For each of three CONTIGUOUS object pools, scan from the top downward while
    slots are free (the byte at record+0x18 is the "in use" flag) and record the
@@ -18,9 +26,10 @@ extern unsigned char g_10b42;
 extern unsigned char *g_10ae0, *g_10adc, *g_10aec;
 void find_free_pool_slots(void)
 {
-    unsigned char *a = pool_b;
-    unsigned char *b = pool_c;
-    unsigned char *c = pool_end;
+    unsigned char *c, *b, *a;
+    a = pool_b;
+    b = pool_c;
+    c = pool_end;
     if (g_10b42 == 0) {
         unsigned char *e;
         for (e = pool_b - 0x5c; e >= pool_a; e -= 0x5c) {
