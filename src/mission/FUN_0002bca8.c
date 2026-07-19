@@ -1,4 +1,7 @@
-/* inline jump-table switch dispatcher @ 0x2bca8 (550B) -- command-list interpreter.
+/* inline jump-table switch dispatcher @ 0x2bca8 (target 550B; ours 590B, EDIT-DIST=148).
+ * NOTE ~34B of the 40B length gap and much of the distance is our inline jump-table
+ * emitted before the body (measurement artifact); the real code diff is tiny (walls below).
+ * command-list interpreter.
  *
  * Signature: 4 stack params (Ghidra's 1-param __cdecl is phantom):
  *   FUN(unsigned char *p /[ESP+0x10]->EBX/, int sel /[ESP+0x14]->ESI/,
@@ -18,9 +21,11 @@
  *   2. Entry: the duplicated early-return tail folds `return result` (result==0) to
  *      `xor eax,eax` where the target keeps `mov eax,edi`; and `xor edi,edi` schedules
  *      after the guard `movsx` instead of before. Net 0 length, phase-order artifact.
- *   3. Case-2 `(setY|setX)` OR loads setY before setX (target loads setX first) and the
- *      loop-tail does `movsx eax,[ebx+0x12]; add ebx` vs `add ebx; movsx eax,[ebx]` —
- *      both instruction-schedule permutations (fuzzer-reachable).
+ *   3. FIXED (150->148): case-2's OR test now spelled `(setX | setY)` (was `(setY|setX)`),
+ *      which makes Watcom load setX before setY to match the target's operand order.
+ *      Remaining: the loop-tail does `movsx eax,[ebx+0x12]; add ebx` vs target
+ *      `add ebx; movsx eax,[ebx]` -- a -ox induction/schedule fold, not source-reachable
+ *      (volatile read on the while-condition was byte-inert; fuzzer-reachable at best).
  * Levers already applied: volatile g_cursor_x/g_cursor_y (target RE-READS them each compare),
  * unsigned char setX/setY (avoids the EBP hoist), unsigned short return (duplicated
  * epilogue vs shared), swapped box-test operand orders (acc = right operand).
@@ -98,7 +103,7 @@ unsigned short FUN_0002bca8(unsigned char *p, int sel, unsigned char setX, unsig
                 result = *(signed char *)(p + 0xb);
                 goto Lnext;
             }
-            if ((setY | setX) == 0) goto C_93;
+            if ((setX | setY) == 0) goto C_93;
             {
                 int x = (unsigned short)*(unsigned short *)(p + 2) + *(signed char *)(p + 8);
                 if (g_cursor_x < x) goto C_93;

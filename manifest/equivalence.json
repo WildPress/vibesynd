@@ -359,11 +359,6 @@
   "flags": "-4s -oneatx -zp8 -s -zq",
   "score": 0.9886
  },
- "pool_list_dispatch": {
-  "verdict": "STRUCTURAL",
-  "flags": "-4r -oneatx -zp8 -s -zq",
-  "score": 0.5057
- },
  "los_trace": {
   "verdict": "STRUCTURAL",
   "flags": "-4s -oneatx -zp8 -s -zq",

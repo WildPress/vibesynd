@@ -168,7 +168,7 @@
     {"addr": "0002def8", "name": "FUN_0002def8", "size": 1284, "calls": 8, "data_refs": 85, "incoming": 0, "status": "unmatched", "match_pct": 0.0, "src": "src/combat/FUN_0002def8.c"},
     {"addr": "0002e408", "name": "homing_step", "size": 240, "calls": 2, "data_refs": 11, "incoming": 0, "status": "unmatched", "match_pct": 0.0, "src": "src/combat/homing_step.c"},
     {"addr": "0002e4f8", "name": "find_projectile_step", "size": 132, "calls": 1, "data_refs": 8, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/combat/find_projectile_step.c"},
-    {"addr": "0002e588", "name": "pool_list_dispatch", "size": 102, "calls": 2, "data_refs": 3, "incoming": 0, "status": "unmatched", "match_pct": 0.0, "src": "src/entity/pool_list_dispatch.c"},
+    {"addr": "0002e588", "name": "pool_list_dispatch", "size": 102, "calls": 2, "data_refs": 3, "incoming": 0, "status": "matched", "match_pct": 100.0, "src": "src/entity/pool_list_dispatch.c"},
     {"addr": "0002e5f8", "name": "los_trace", "size": 519, "calls": 3, "data_refs": 18, "incoming": 3, "status": "unmatched", "match_pct": 0.0, "src": "src/combat/los_trace.c"},
     {"addr": "0002e808", "name": "los_trace_far", "size": 388, "calls": 3, "data_refs": 14, "incoming": 3, "status": "unmatched", "match_pct": 0.0, "src": "src/combat/los_trace_far.c"},
     {"addr": "0002ed28", "name": "record_kill_stats", "size": 230, "calls": 0, "data_refs": 8, "incoming": 0, "status": "unmatched", "match_pct": 0.0, "src": "src/mission/record_kill_stats.c"},
