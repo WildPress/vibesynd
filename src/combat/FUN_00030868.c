@@ -1,22 +1,23 @@
-/* frameless @ 0x30868: (re)acquire + engage target for pool-A entity `node`.
+/* frameless @ 0x30868  reacquire_and_engage_target: (re)acquire + engage target for
+   pool-A entity `node`.
    Clears node[0x54], d = FUN_2d808(node,0x64) (kept in DI). Clears node[0x46];
    if the target link node[0x44] is set: p2 = its pool node; if p2 health word
-   +0x14 < 0, reselect via FUN_37ad8(node,0) — same id => FUN_2d998(node), else
+   +0x14 < 0, reselect via FUN_37ad8(node,0) -- same id => FUN_2d998(node), else
    store the new link. Then weapon range = g_a6c2[p2 type]/0x100 (ushort cast),
    g_e12e = FUN_2d7a8(node, range) << 8, and q = FUN_2ee18(node, g_e12e, d)
    scans for a valid target; on hit aim at (q+4, q+6, q+8 + 0x80) via FUN_2f608.
    Tail: FUN_269d8(node); if counter node[0x42]==0 FUN_2d998(node); decrement
    the counter; node[0x19] = FUN_2dd48(node).
 
-   PARKED at 259/261: stride-2 table-index CANONICALIZATION wall. Target indexes
-   the s16 table 0xa6c2 via `xor edx,edx; mov dl,type; add edx,edx;
-   mov dx,[edx+0xa6c2]; and edx,0xffff` (doubled index as a VALUE + disp32 +
-   named-ushort and-widen, 22B); ours always folds the doubling into SIB
-   `[eax*2+sym]` (20B) � 7 spellings tried (array index, byte-array *2, <<1,
-   x+x CSE, stride-2 struct, cross-statement int/uint/ushort offset locals,
-   compound self-add). Note the binary DOES use the SIB form for the same table
-   elsewhere (0x23158), so the original source spelled this site differently in
-   a way 9.5 no longer distinguishes for us. Everything else byte-matches. */
+   MATCH: RELOC-AWARE full match (261/261, EXACT=NO only for reloc bytes). The old
+   "stride-2 canonicalization wall" was not real. The fix: reuse ONE unsigned-int
+   accumulator (`off`) for the doubled table offset AND the loaded value. Writing the
+   ushort load back into the same variable that held the offset forces the base-address
+   form `add edx,edx; mov dx,[edx+0xa6c2]; and edx,0xffff` (the original spelling) instead
+   of the SIB `[eax*2+sym]` fold -- the offset register is reused for the result, so no
+   plain index survives for the compiler to scale. The `(int)off` cast keeps the /0x100 a
+   SIGNED int divide (sar/sbb rounding), matching the ushort->int promotion of the original
+   `w / 0x100`. */
 extern unsigned char g_entity_pool[];
 extern unsigned char g_a6c2[];
 extern short g_e12e;
@@ -33,7 +34,6 @@ void FUN_00030868(unsigned char *node)
 {
     short d;
     unsigned short t;
-    unsigned short w;
     unsigned int off;
     unsigned char *p2;
     unsigned char *q;
@@ -52,8 +52,8 @@ void FUN_00030868(unsigned char *node)
         }
         off = p2[0x19];
         off += off;
-        w = *(unsigned short *)(g_a6c2 + off);
-        g_e12e = interp_scale_a(node, (unsigned short)(w / 0x100)) << 8;
+        off = *(unsigned short *)(g_a6c2 + off);
+        g_e12e = interp_scale_a(node, (unsigned short)((int)off / 0x100)) << 8;
         q = find_target_for_agent(node, g_e12e, d);
         if (q != 0) {
             entity_aim_helper(node, *(short *)(q + 4), *(short *)(q + 6),

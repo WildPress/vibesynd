@@ -379,11 +379,6 @@
   "flags": "-4s -oneatx -zp8 -s -zq",
   "score": 1.0
  },
- "FUN_00030868": {
-  "verdict": "STRUCTURAL",
-  "flags": "-4s -oneatx -zp8 -s -zq",
-  "score": 0.5323
- },
  "commit_funding": {
   "verdict": "STRUCTURAL",
   "flags": "-4s -oneatx -zp8 -s -zq",

@@ -8,16 +8,21 @@
    blocking entity q: q must be class 1 (+0x18), q == p2 -> return q (hit),
    q == p1 -> ignore (keep marching), any other q -> return q.
 
-   PARKED near-miss, length-EXACT 519/519, first diff 0xc3. Semantics + all
-   structure byte-correct; the ONLY defect is a spill-slot pair swap: the target
-   lays the six esp locals out z@[esp+0], i@[esp+4], x@[esp+8], y@[esp+0xc],
-   dir2@[esp+0x10], dir1@[esp+0x14]; ours packs the coords into 0/8/4 and lands
-   the loop counter i at [esp+0xc], i.e. y and i are transposed. That single
-   transposition cascades into ~40 modrm-disp bytes across the marching loop.
-   TRIED (all provably inert or worse): decl orders z/i/x/y, x/y/z/i, z/x/y,
-   early `i = 0`, int-typed counter (changes frame to 0x14, breaks 16-bit cmp).
-   This is the 0x338d8 spill-slot-order wall — allocator-internal, decl-order
-   proven byte-inert here; not source-reachable, cpermute can't touch slots. */
+   NEAR-MISS, EDIT-DIST 75 (was 79), length-EXACT 519/519, first diff 0xc3.
+   Semantics + all structure byte-correct. The target lays the six esp locals
+   out z@[esp+0], i@[esp+4], x@[esp+8], y@[esp+0xc], dir2@[esp+0x10],
+   dir1@[esp+0x14]. NEW FIX (-4B): the dir pair's home slots follow DECLARATION
+   order (earlier decl -> lower slot), so declaring `dir2` before `dir1` moves
+   dir2 to 0x10 and dir1 to 0x14, matching the target exactly (was the reverse).
+   Remaining defect is the i/y transposition: ours homes y@[esp+4] and the loop
+   counter i@[esp+0xc], target has i@4/y@0xc. Unlike the dir pair, the i/y slots
+   are NOT decl-order-reachable (proven inert: reorders z/i/x/y, x/y/z/i, z/x/y
+   all leave i@0xc). The early `i = 0;` store is scheduled into the middle of the
+   first vec_to_angle push sequence, so it lands at the push-shifted 0xc and
+   claims that slot; moving the init later (separate stmt -> 98, for-init -> 101)
+   is worse; int-typed counter changes frame to 0x14 and breaks the 16-bit cmp.
+   This residue is the 0x338d8 spill-slot-order wall — allocator-internal for the
+   register-homed coords vs the memory-homed counter; not source-reachable. */
 extern unsigned char g_pool_a[];
 extern short g_dir_dx[];
 extern short g_dir_dy[];
@@ -35,8 +40,8 @@ unsigned char *los_trace(unsigned char *p1, unsigned char *p2, int dist)
     short y;
     short z;
     unsigned short i;
-    unsigned char dir1;
     unsigned char dir2;
+    unsigned char dir1;
 
     if (*(p1 + 0x1c) & 2) {
         if ((p1 - g_pool_a) / 0x5c / 8 == (p2 - g_pool_a) / 0x5c / 8)

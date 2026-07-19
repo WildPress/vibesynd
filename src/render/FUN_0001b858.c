@@ -1,14 +1,24 @@
-/* frameless @ 0x1b858: walk a linked display list and draw each visible node.
+/* frameless @ 0x1b858  render_draw_list: walk a linked display list and draw each visible node.
    Start index = g_rec8_table[p1].word0; follow the 10-byte nodes in g_rec5_table
    via the +8 next-index until the index reaches 0 (node ptr <= base). For each node
-   with a non-zero screen y (word0 + g_5314), call the sprite blit 0x4a63a with the
-   node's x/y offsets biased by the caller's origin (dx_base, dy_base).
+   whose biased screen y (word0 + g_5314) exceeds g_5314, call the sprite blit 0x4a63a
+   with the node's x/y offsets biased by the caller's origin (dx_base, dy_base).
 
-   PARKED near-miss (~153/165). Logic + unsigned guards match; the wall is whole-function
-   register allocation: the original spends a 4th callee-saved register (push ebp) to hold
-   g_5314 per iteration and assigns dx_base/dy_base to edi/esi (we get the esi/edi roles
-   swapped and keep g_5314 in eax, 3 callee-saved). base is live only before the call, so
-   no C spelling makes 9.5b promote it to a callee-saved reg. Register-role family. */
+   DUP RESOLVED: an identical stale copy at src/unclassified/FUN_0001b858.c was deleted
+   (both spellings were logically byte-equivalent; find(1) compiled the render copy first,
+   so removing the dup left the distance unchanged). This is the surviving copy.
+
+   PARKED at dist 66. Logic + unsigned guards + call-arg order all match; the gap is two
+   stacked TOOLCHAIN codegen-ties with no faithful C lever:
+     1. register count -- the original spends a 4th callee-saved reg (push ebp) to hold the
+        per-iteration g_5314 and puts dx_base/dy_base in edi/esi; we use 3 callee-saved
+        (esi/edi roles swapped, g_5314 in a volatile eax). Only 3 values cross the call, so
+        no source spelling forces the 4th push.
+     2. CSE -- the original reloads g_rec5_table on every reference (cmp reg,reg); our 9.5b
+        under -oneatx merges the two reads of the same global. Both read the identical global,
+        so no faithful spelling changes it. (`volatile` cuts to 62 but overshoots to cmp
+        reg,[mem] and mislabels a plain global; caching g_5314 before the loop cuts to 56 but
+        re-samples the global at the wrong point -- both rejected as byte-tricks.) */
 extern unsigned char *g_rec8_table;
 extern unsigned char *g_rec5_table;
 extern int g_5314;
