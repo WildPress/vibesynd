@@ -12,8 +12,8 @@ extern void sprintf(char *buf, char *fmt, char *s, int n);
 extern char g_3cf0[];
 extern char g_b970[];
 extern int cond_3call(char *path, int mode);
-extern void FUN_000188c8(int fd, void *src, int n);
-extern void FUN_00018878(int fd);
+extern void file_write(int fd, void *src, int n);
+extern void file_close(int fd);
 extern char g_syndicate_recs[];
 extern char g_7bf4[];
 extern char g_list_recs[];
@@ -31,13 +31,13 @@ void save_game(char *name, int n)
     sprintf(buf, g_3cf0, g_b970, n);
     fd = cond_3call(buf, 0x222);
     if (fd > 0) {
-        FUN_000188c8(fd, name, 0x14);
-        FUN_000188c8(fd, g_player_recs, 0x20b8);
-        FUN_000188c8(fd, g_syndicate_recs, 0x1f4);
-        FUN_000188c8(fd, g_7bf4, 0x2724);
-        FUN_000188c8(fd, g_list_recs, 0x2286);
-        FUN_000188c8(fd, g_5594, 0x1e9);
-        FUN_000188c8(fd, g_roster_index, 4);
-        FUN_00018878(fd);
+        file_write(fd, name, 0x14);
+        file_write(fd, g_player_recs, 0x20b8);
+        file_write(fd, g_syndicate_recs, 0x1f4);
+        file_write(fd, g_7bf4, 0x2724);
+        file_write(fd, g_list_recs, 0x2286);
+        file_write(fd, g_5594, 0x1e9);
+        file_write(fd, g_roster_index, 4);
+        file_close(fd);
     }
 }

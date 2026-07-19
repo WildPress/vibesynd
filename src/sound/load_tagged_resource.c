@@ -19,7 +19,7 @@ extern signed char g_11e35;
 extern int g_11e36;
 extern unsigned short g_11e3a;
 
-void *FUN_00038c28(unsigned char *p1, unsigned short p2, unsigned short p3)
+void *load_tagged_resource(unsigned char *p1, unsigned short p2, unsigned short p3)
 {
     unsigned char *blob;
     if (p1 == 0)

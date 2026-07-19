@@ -3,7 +3,7 @@
  *   mov eax,[esp+4]; mov byte[eax+0x18],0; ret
  */
 extern void grid_unlink_object(void *);
-void FUN_000269b8(char *p)
+void grid_detach_object(char *p)
 {
     grid_unlink_object(p);
     p[0x18] = 0;

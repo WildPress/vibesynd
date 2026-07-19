@@ -11,7 +11,7 @@
  */
 extern void FUN_0003a89d(int);
 
-void FUN_00018878(int a)
+void file_close(int a)
 {
     FUN_0003a89d(a);
 }

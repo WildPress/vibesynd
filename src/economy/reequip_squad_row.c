@@ -31,7 +31,7 @@ extern unsigned char g_entity_pool[];
 extern unsigned char g_pool_a[];
 extern unsigned char g_dcbc[];
 extern unsigned char g_agent_slots[];
-extern void FUN_000269b8(unsigned char *p);
+extern void grid_detach_object(unsigned char *p);
 extern int init_record_if_alloc(unsigned char *node, unsigned short kind, int cnt);
 extern void fill_bytes(unsigned char *p, int val, int n);
 
@@ -61,7 +61,7 @@ void reequip_squad_row(unsigned short row, unsigned short mode)
             while (id != 0) {
                 p = g_entity_pool + id;
                 id = *(unsigned short *)(p + 0x1c);
-                FUN_000269b8(p);
+                grid_detach_object(p);
             }
             *(unsigned short *)(node + 0x3a) = 0;
             t = *(unsigned short *)(g_agent_slots + row * 1047 + j * 40 + 0x6b);
@@ -107,9 +107,9 @@ void reequip_squad_row(unsigned short row, unsigned short mode)
                 while (id != 0) {
                     p = g_entity_pool + id;
                     id = *(unsigned short *)(p + 0x1c);
-                    FUN_000269b8(p);
+                    grid_detach_object(p);
                 }
-                FUN_000269b8(node);
+                grid_detach_object(node);
                 fill_bytes(node, 0, 0x5c);
             }
         }

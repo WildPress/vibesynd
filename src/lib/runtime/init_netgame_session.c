@@ -8,8 +8,8 @@ extern void __db_FUN_00022e38_2(void);
 #pragma aux __db_FUN_00022e38_2 = "db 1" "db 0" "db 80" "db 232" "db 56" "db 0" "db 0" "db 0" "db 131" "db 196" "db 8" "db 232" "db 80" "db 75" "db 0" "db 0" "db 15" "db 191" "db 5" "db 22" "db 11" "db 1" "db 0" "db 80" "db 49" "db 219" "db 232" "db 1" "db 68" "db 0" "db 0" "db 131" "db 196" "db 4" "db 137" "db 216" "db 91" "db 195" "db 106" "db 0" "db 48" "db 210" "db 106" "db 0" "db 136" "db 21" "db 69" "db 11" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_00022e38_3(void);
 #pragma aux __db_FUN_00022e38_3 = "db 1" "db 0" "db 232" "db 9" "db 0" "db 0" "db 0" "db 131" "db 196" "db 8" "db 137" "db 216" "db 91" "db 195" "db 139" "db 192" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_00022e38 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_00022e38(void) {
+#pragma aux init_netgame_session modify [eax ebx ecx edx esi edi ebp] aborts;
+void init_netgame_session(void) {
     __db_FUN_00022e38_0();
     __db_FUN_00022e38_1();
     __db_FUN_00022e38_2();

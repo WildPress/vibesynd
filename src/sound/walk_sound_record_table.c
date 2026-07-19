@@ -18,7 +18,7 @@
 extern unsigned char *g_objective_slots, *g_5354;
 extern int g_534c, g_snd_driver;
 extern unsigned char g_sound_enabled;
-extern void FUN_00039af1(int a, void __far *p, int c);
+extern void snd_cmd_85(int a, void __far *p, int c);
 
 void walk_sound_record_table(void)
 {
@@ -30,7 +30,7 @@ void walk_sound_record_table(void)
             v = *(int *)(p + 0x12) + g_534c;
             *(int *)(p + 0xe) = v * 0x1000;
             *(int *)(p + 0x12) = v;
-            FUN_00039af1(g_snd_driver, (void __far *)v, -1);
+            snd_cmd_85(g_snd_driver, (void __far *)v, -1);
             p += 0x20;
         } while (g_5354 > p);
     }

@@ -28,8 +28,8 @@ extern void __db_FUN_00037848_12(void);
 #pragma aux __db_FUN_00037848_12 = "db 46" "db 165" "db 2" "db 0" "db 222" "db 163" "db 2" "db 0" "db 19" "db 165" "db 2" "db 0" "db 11" "db 164" "db 2" "db 0" "db 59" "db 164" "db 2" "db 0" "db 107" "db 164" "db 2" "db 0" "db 155" "db 164" "db 2" "db 0" "db 203" "db 164" "db 2" "db 0" "db 239" "db 164" "db 2" "db 0" "db 46" "db 165" "db 2" "db 0" "db 46" "db 165" "db 2" "db 0" "db 46" "db 165" "db 2" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_00037848_13(void);
 #pragma aux __db_FUN_00037848_13 = "db 46" "db 165" "db 2" "db 0" "db 46" "db 165" "db 2" "db 0" "db 46" "db 165" "db 2" "db 0" "db 46" "db 165" "db 2" "db 0" "db 46" "db 165" "db 2" "db 0" "db 46" "db 165" "db 2" "db 0" "db 46" "db 165" "db 2" "db 0" "db 141" "db 68" "db 32" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_00037848 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_00037848(void) {
+#pragma aux subobject_node_expired modify [eax ebx ecx edx esi edi ebp] aborts;
+void subobject_node_expired(void) {
     __db_FUN_00037848_0();
     __db_FUN_00037848_1();
     __db_FUN_00037848_2();

@@ -12,6 +12,23 @@ import json, glob, os, re, struct, bisect
 # Curated semantic names (addr hex -> name), high-confidence from the reverse-engineering so far.
 # These are the functions that execute on the boot->logo->menu intro path.
 LABELS = {
+    # --- helpers/thunks named this session (final naming pass) ---
+    "00015ee8": "draw_box_outline",       "00022c58": "count_active_players",
+    "00022e38": "init_netgame_session",   "0002f538": "register_visible_entity",
+    "00036038": "schedule_priority_sound","00037848": "subobject_node_expired",
+    "00015d98": "present_frame",          "00015e08": "draw_fixed_box",
+    "00018878": "file_close",             "000188c8": "file_write",
+    "000269b8": "grid_detach_object",     "00036188": "init_sound_driver",
+    "00037818": "pool_table_lookup_a686", "00039088": "stop_current_sequence",
+    "00039188": "shutdown_music_drivers", "00039f49": "skip_flic_chunk",
+    "00039f69": "read_flic_palette",      "00038c28": "load_tagged_resource",
+    "00039b0f": "sound_cmd_thunks_7e_84", "000399b3": "snd_cmd_65",
+    "00039ae7": "snd_cmd_7b",             "00039af1": "snd_cmd_85",
+    "00039afb": "snd_cmd_7c",             "00039b05": "snd_cmd_7d",
+    "00039b55": "snd_cmd_96",             "00039b5f": "snd_cmd_97",
+    "00039b73": "snd_cmd_99",             "00039b7d": "snd_cmd_9a",
+    "00039b87": "snd_cmd_9b",             "00039b91": "snd_cmd_9c",
+    "00039bb9": "snd_cmd_aa",             "00039bc3": "snd_cmd_ab",
     # --- named this session by the documentation/naming wave (runtime + game loops) ---
     "0001c2c8": "update_bullet_sfx_states",
     "000380b8": "update_pickup_states",

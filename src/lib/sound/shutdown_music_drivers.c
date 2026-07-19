@@ -5,7 +5,7 @@
 extern unsigned char g_music_enabled;
 extern void unload_all_drivers(int);
 #pragma aux unload_all_drivers modify [ebx];
-void FUN_00039188(void)
+void shutdown_music_drivers(void)
 {
     if (g_music_enabled != 0)
         unload_all_drivers(0x3d24);

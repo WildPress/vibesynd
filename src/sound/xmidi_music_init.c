@@ -37,19 +37,19 @@ extern int container_load(int buf, int kind, int flag);
 extern void FUN_0003ab59(void *buf);
 extern int register_driver(int res);
 extern unsigned char *voice_get_driver_obj(int handle);
-extern int FUN_000399b3(int handle, int c, int a, int b, int d);
+extern int snd_cmd_65(int handle, int c, int a, int b, int d);
 extern void start_voice(int handle, int c, int a, int b, int d);
-extern int FUN_00039b55(int handle);
-extern int FUN_00039b5f(int handle, int image, unsigned seq, void *state, int ctl);
-extern unsigned short FUN_00039b73(int handle);
-extern void FUN_00039b7d(int handle, void *p, int n);
-extern unsigned short FUN_00039b87(int handle, int seq);
-extern void FUN_00039b91(int handle, int bank, int patch, void *p);
+extern int snd_cmd_96(int handle);
+extern int snd_cmd_97(int handle, int image, unsigned seq, void *state, int ctl);
+extern unsigned short snd_cmd_99(int handle);
+extern void snd_cmd_9a(int handle, void *p, int n);
+extern unsigned short snd_cmd_9b(int handle, int seq);
+extern void snd_cmd_9c(int handle, int bank, int patch, void *p);
 extern void *FUN_0003aa74(unsigned n);
 extern void FUN_0003a900(char *dst, unsigned char *src);
 extern void *FUN_0003b8f8(char *name, char *mode);
 extern void FUN_0003b99e(void *f);
-extern void *FUN_00038c28(void *f, int bank, int patch);
+extern void *load_tagged_resource(void *f, int bank, int patch);
 
 extern unsigned short g_11e30;
 extern int g_seq_ctx;
@@ -96,32 +96,32 @@ int xmidi_music_init(int a1, int a2, unsigned short a, unsigned short b, unsigne
         bb = *(unsigned short *)(hdr + 0x18);
     if (c == 0)
         c = *(unsigned short *)(hdr + 0x10);
-    if (FUN_000399b3(g_seq_ctx, c, a, bb, *(int *)(hdr + 0x1c)) == 0)
+    if (snd_cmd_65(g_seq_ctx, c, a, bb, *(int *)(hdr + 0x1c)) == 0)
         return 0;
     start_voice(g_seq_ctx, c, a, bb, *(int *)(hdr + 0x1c));
-    size = FUN_00039b55(g_seq_ctx);
+    size = snd_cmd_96(g_seq_ctx);
     mem = alloc_init_with_errcode(a1, 0);
     if (mem == 0)
         return 0;
     *(struct blk13 *)buf = *(struct blk13 *)0x3d10;
     FUN_0003a900(buf, hdr + 8);
-    w = FUN_00039b73(g_seq_ctx);
+    w = snd_cmd_99(g_seq_ctx);
     if (w != 0)
-        FUN_00039b7d(g_seq_ctx, FUN_0003aa74(w), w);
+        snd_cmd_9a(g_seq_ctx, FUN_0003aa74(w), w);
     file = FUN_0003b8f8(buf, (char *)0x3d20);
     for (i = 0; i < 8; i++) {
         slots[i] = FUN_0003aa74(size);
-        if ((g_seq_state[i] = FUN_00039b5f(g_seq_ctx, mem, i, slots[i], 0)) == -1) {
+        if ((g_seq_state[i] = snd_cmd_97(g_seq_ctx, mem, i, slots[i], 0)) == -1) {
             FUN_0003ab59(slots[i]);
             break;
         }
-        while ((w = FUN_00039b87(g_seq_ctx, g_seq_state[i])) != 0xffff) {
+        while ((w = snd_cmd_9b(g_seq_ctx, g_seq_state[i])) != 0xffff) {
             wv = w;
             q = wv / 256;
-            p = FUN_00038c28(file, (unsigned short)q, (unsigned short)(wv % 256));
+            p = load_tagged_resource(file, (unsigned short)q, (unsigned short)(wv % 256));
             if (p == 0)
                 return 0;
-            FUN_00039b91(g_seq_ctx, (unsigned short)q, (unsigned short)(wv % 256), p);
+            snd_cmd_9c(g_seq_ctx, (unsigned short)q, (unsigned short)(wv % 256), p);
             FUN_0003ab59(p);
         }
     }

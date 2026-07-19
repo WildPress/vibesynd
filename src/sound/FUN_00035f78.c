@@ -16,8 +16,8 @@ extern char g_10b4a;
 extern char g_537f;
 extern unsigned char *g_5350;
 extern int g_11dec;
-extern void FUN_00039ae7(int h, int off, unsigned seg, int len, int flag);
-extern void FUN_00039b05(int h);
+extern void snd_cmd_7b(int h, int off, unsigned seg, int len, int flag);
+extern void snd_cmd_7d(int h);
 
 extern unsigned getDS(void);
 #pragma aux getDS = "db 0x8c" "db 0xda" value [edx] modify exact [edx];
@@ -30,6 +30,6 @@ void play_sound_slot(unsigned char idx)
     if (g_537f == 0)
         return;
     rec = g_5350 + idx * 0x20;
-    FUN_00039ae7(g_11dec, *(int *)(rec + 0x12), getDS() & 0xffff, *(int *)(rec + 0xe), -1);
-    FUN_00039b05(g_11dec);
+    snd_cmd_7b(g_11dec, *(int *)(rec + 0x12), getDS() & 0xffff, *(int *)(rec + 0xe), -1);
+    snd_cmd_7d(g_11dec);
 }

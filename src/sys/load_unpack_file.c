@@ -8,7 +8,7 @@ extern int open_detect_rnc_header(char *path);
 extern void file_read_n(int fd, void *buf, int n);
 extern int rnc_decompress(void *dst, void *src);
 extern void printf(int code, char *path);
-extern void FUN_00018878(int fd);
+extern void file_close(int fd);
 
 int load_unpack_file(char *path, void *buf)
 {
@@ -18,7 +18,7 @@ int load_unpack_file(char *path, void *buf)
         file_read_n(fd, buf, open_detect_rnc_header(path));
         if (rnc_decompress(buf, buf) < 0)
             printf(0x14c, path);
-        FUN_00018878(fd);
+        file_close(fd);
     }
     return fd;
 }

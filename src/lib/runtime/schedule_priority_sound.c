@@ -14,8 +14,8 @@ extern void __db_FUN_00036038_5(void);
 #pragma aux __db_FUN_00036038_5 = "db 18" "db 80" "db 139" "db 13" "db 236" "db 29" "db 1" "db 0" "db 81" "db 232" "db 177" "db 57" "db 0" "db 0" "db 131" "db 196" "db 20" "db 139" "db 53" "db 236" "db 29" "db 1" "db 0" "db 86" "db 232" "db 192" "db 57" "db 0" "db 0" "db 139" "db 61" "db 80" "db 83" "db 0" "db 0" "db 48" "db 237" "db 131" "db 196" "db 4" "db 136" "db 44" "db 109" "db 236" "db 27" "db 1" "db 0" "db 139" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_00036038_6(void);
 #pragma aux __db_FUN_00036038_6 = "db 61" "db 80" "db 83" "db 0" "db 0" "db 93" "db 95" "db 94" "db 91" "db 195" "db 141" "db 128" "db 0" "db 0" "db 0" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_00036038 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_00036038(void) {
+#pragma aux schedule_priority_sound modify [eax ebx ecx edx esi edi ebp] aborts;
+void schedule_priority_sound(void) {
     __db_FUN_00036038_0();
     __db_FUN_00036038_1();
     __db_FUN_00036038_2();

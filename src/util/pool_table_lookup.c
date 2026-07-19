@@ -33,7 +33,7 @@ unsigned short pool_table_lookup(unsigned char *p)
 
 /* @ 0x37818: same shape against g_a686; its return-0 tail-merges into 0x377e8's stub.
    Returns unsigned short so the shared stub is byte-identical (see unit header). */
-unsigned short FUN_00037818(unsigned char *p)
+unsigned short pool_table_lookup_a686(unsigned char *p)
 {
     unsigned char *node = g_entity_pool + *(unsigned short *)(p + 0x44);
     if (node >= g_entity_pool + 0x9562)

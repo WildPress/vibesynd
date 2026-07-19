@@ -6,7 +6,7 @@ extern int g_10ab0;
 extern int g_bdd0;
 extern unsigned short g_be2e;
 extern void FUN_0003a7c4(int a, int b, int c);
-void FUN_00039f69(void)
+void read_flic_palette(void)
 {
     FUN_0003a7c4(g_bdd0, g_10ab0, g_bddc - 6);
     g_be2e = 1;

@@ -19,7 +19,7 @@
  */
 extern char **g_map_cols;
 extern short snap_direction(int cur, int step);
-extern void FUN_000269b8(unsigned char *b);
+extern void grid_detach_object(unsigned char *b);
 
 void map_row_col_index(unsigned char *b)
 {
@@ -42,5 +42,5 @@ void map_row_col_index(unsigned char *b)
     *(short *)(b + 4) = snap_direction(*(short *)(b + 4), 0x80);
     *(short *)(b + 6) = snap_direction(*(short *)(b + 6), 0x80);
     if (*(short *)(b + 8) < 0)
-        FUN_000269b8(b);
+        grid_detach_object(b);
 }

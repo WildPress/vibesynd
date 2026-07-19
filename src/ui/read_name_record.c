@@ -7,7 +7,7 @@
 extern void sprintf(char *buf, char *fmt, char *s, int n);
 extern int cond_3call(char *path, int mode);
 extern void file_read_n(int fd, void *buf, int n);
-extern void FUN_00018878(int fd);
+extern void file_close(int fd);
 extern void strcpy(char *dst, char *src);
 extern char g_3cf0[];
 extern char g_b970[];
@@ -24,7 +24,7 @@ void read_name_record(char *out, int n)
     fd = cond_3call(buf, 0x202);
     if (fd > 0) {
         file_read_n(fd, out, 0x14);
-        FUN_00018878(fd);
+        file_close(fd);
     }
     if (*out == 0)
         strcpy(out, g_4720[g_language]);

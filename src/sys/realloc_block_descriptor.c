@@ -20,7 +20,7 @@ extern void sub_and_call(int a, int b);
 extern int  global_add_and_call(int a);
 extern int  cond_3call(void *a, int b);
 extern int  open_detect_rnc_header(void *a);
-extern void FUN_00018878(int a);
+extern void file_close(int a);
 extern int  file_read_n(int a, int b, int c);
 extern void rnc_decompress(int a, int b);
 
@@ -116,17 +116,17 @@ ret_m1:
             if (*(int **)(p + 0x20) != 0)
                 **(int **)(p + 0x20) = addr + *(int *)(p + 0x24);
         } else {
-            FUN_00018878(h);
+            file_close(h);
             return -1;
         }
     }
 
     if (file_read_n(h, addr, *(int *)(p + 0x24)) != *(int *)(p + 0x24)) {
-        FUN_00018878(h);
+        file_close(h);
         rnc_decompress(**(int **)(p + 0x1c), **(int **)(p + 0x1c));
         return 1;
     }
-    FUN_00018878(h);
+    file_close(h);
     return 1;
 
 ret0:

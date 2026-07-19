@@ -32,7 +32,7 @@ extern void init_voice_tables(void);
 extern int register_driver(int res);
 extern void unload_all_drivers(int arg);
 extern int voice_get_driver_obj(int handle);
-extern int FUN_000399b3(int handle, int c, int a, int b, int d);
+extern int snd_cmd_65(int handle, int c, int a, int b, int d);
 extern void start_voice(int handle, int c, int a, int b, int d);
 extern int g_11df0;
 extern int g_11df4;
@@ -66,7 +66,7 @@ int sound_driver_init(unsigned short a, unsigned short b, unsigned short c)
         bb = *(unsigned short __far *)(g_11dfc + 0x18);
     if (c == 0)
         c = *(unsigned short __far *)(g_11dfc + 0x10);
-    if (FUN_000399b3(g_snd_driver, c, a, bb,
+    if (snd_cmd_65(g_snd_driver, c, a, bb,
                      *(int __far *)(g_11dfc + 0x1c)) == 0) {
         unload_all_drivers(0);
         return 0;

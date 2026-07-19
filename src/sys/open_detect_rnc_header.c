@@ -5,7 +5,7 @@ extern int  cond_3call(void *, int);
 extern void file_read_n(int, void *, int);
 extern int  strncmp(void *, void *, int);
 extern int  FUN_0003ab1a(int);
-extern void FUN_00018878(int);
+extern void file_close(int);
 extern void printf(int, void *);
 
 int open_detect_rnc_header(void *fn)
@@ -32,7 +32,7 @@ int open_detect_rnc_header(void *fn)
         } else {
             r = FUN_0003ab1a(h);
         }
-        FUN_00018878(h);
+        file_close(h);
     } else {
         printf(0x164, fn);
     }

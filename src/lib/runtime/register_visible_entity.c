@@ -10,8 +10,8 @@ extern void __db_FUN_0002f538_3(void);
 #pragma aux __db_FUN_0002f538_3 = "db 0" "db 32" "db 235" "db 13" "db 246" "db 67" "db 28" "db 2" "db 116" "db 7" "db 128" "db 136" "db 118" "db 6" "db 1" "db 0" "db 16" "db 141" "db 4" "db 181" "db 0" "db 0" "db 0" "db 0" "db 102" "db 131" "db 184" "db 118" "db 6" "db 1" "db 0" "db 0" "db 116" "db 14" "db 129" "db 235" "db 14" "db 129" "db 0" "db 0" "db 70" "db 102" "db 137" "db 152" "db 116" "db 6" "db 1" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_0002f538_4(void);
 #pragma aux __db_FUN_0002f538_4 = "db 137" "db 53" "db 232" "db 10" "db 1" "db 0" "db 94" "db 91" "db 195" "db 141" "db 128" "db 0" "db 0" "db 0" "db 0" "db 144" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_0002f538 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_0002f538(void) {
+#pragma aux register_visible_entity modify [eax ebx ecx edx esi edi ebp] aborts;
+void register_visible_entity(void) {
     __db_FUN_0002f538_0();
     __db_FUN_0002f538_1();
     __db_FUN_0002f538_2();

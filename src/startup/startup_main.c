@@ -43,7 +43,7 @@ extern void main_game_loop(void);
 extern void timer_setup(void);
 extern void install_int9_handler(void);
 extern void walk_records_2c(char *p);
-extern void FUN_00039188(void);
+extern void shutdown_music_drivers(void);
 extern void guarded_sound_call(void);
 
 extern char *strcpy(char *dst, const char *src);
@@ -198,7 +198,7 @@ void startup_main(short argc, char **argv)
 
     install_int9_handler();
     walk_records_2c(g_4d9c);
-    FUN_00039188();
+    shutdown_music_drivers();
     guarded_sound_call();
     noop_ret();
 
