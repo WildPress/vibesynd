@@ -9,7 +9,7 @@
  * codegen tie, same class as the parked corpus. Twin 0xfa88 (callee tile_passability_test_b) shares the residue. */
 extern unsigned tile_passability_test(int x, int y, int z);
 
-unsigned FUN_0000fa18(short x, short y, int z)
+unsigned z_probe(short x, short y, int z)
 {
     int b = z + 0x7f;
     unsigned r = tile_passability_test(x, y, (short)b);

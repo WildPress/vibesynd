@@ -505,6 +505,8 @@
     {"addr": "0004d513", "name": "hex32_to_ascii", "size": 25, "calls": 0, "data_refs": 1, "incoming": 1, "status": "matched", "match_pct": 100.0, "src": "src/lib/gfx/hex32_to_ascii.c"},
     {"addr": "0000e568", "name": "lcg_rand", "size": 50, "calls": 0, "data_refs": 0, "incoming": 0, "status": "matched", "match_pct": 100.0, "src": "src/util/lcg_rand.c"},
     {"addr": "0000dc08", "name": "oneshot_state_setter", "size": 65, "calls": 0, "data_refs": 0, "incoming": 0, "status": "unmatched", "match_pct": "", "src": "src/render/oneshot_state_setter.c"},
+    {"addr": "0000fa18", "name": "z_probe", "size": 112, "calls": 0, "data_refs": 0, "incoming": 0, "status": "unmatched", "match_pct": "", "src": "src/map/z_probe.c"},
+    {"addr": "0000fee8", "name": "copy_if_set", "size": 24, "calls": 0, "data_refs": 0, "incoming": 0, "status": "unmatched", "match_pct": "", "src": "src/render/copy_if_set.c"},
     {"addr": "0000fa88", "name": "z_probe_b", "size": 112, "calls": 0, "data_refs": 0, "incoming": 0, "status": "unmatched", "match_pct": "", "src": "src/map/z_probe_b.c"},
     {"addr": "0000f898", "name": "passability_4corner", "size": 378, "calls": 0, "data_refs": 0, "incoming": 0, "status": "unmatched", "match_pct": "", "src": "src/map/passability_4corner.c"},
     {"addr": "0000d758", "name": "update_agent_proximity_sound", "size": 449, "calls": 0, "data_refs": 0, "incoming": 0, "status": "matched", "match_pct": "", "src": "src/lib/runtime/update_agent_proximity_sound.c", "match_method": "db-transcription (unbake, verified)"},

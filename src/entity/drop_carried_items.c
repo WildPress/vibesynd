@@ -11,7 +11,7 @@
    [esp+4]); decl orders inert; 4000 cpermute variants no match. */
 extern unsigned char g_entity_pool[];
 extern int lcg_rand(int cap);
-extern int FUN_0000fa18(int x, int y, int z);
+extern int z_probe(int x, int y, int z);
 extern void move_entity_xyz(unsigned char *node, int x, int y, int z);
 
 void drop_carried_items(unsigned char *p)
@@ -46,7 +46,7 @@ void drop_carried_items(unsigned char *p)
             move_entity_xyz(node,
                          (short)((*(volatile unsigned short *)(p + 4) & 0xff00) + x),
                          (short)((*(volatile unsigned short *)(p + 6) & 0xff00) + y),
-                         (short)FUN_0000fa18(
+                         (short)z_probe(
                              (short)((*(unsigned short *)(p + 4) & 0xff00) + x),
                              (short)((*(unsigned short *)(p + 6) & 0xff00) + y),
                              *(short *)(p + 8)));
