@@ -18,7 +18,7 @@
  *  1/2 -> g_5324 = g_5308 + 6*state; return.   3 -> nothing.
  *  4   -> g_52ff=1; e = g_entity_pool + g_10b1a; if g_e398==0 and n<8: inner
  *         switch on type e[0x19] queues a draw-list node
- *         FUN_0001b858(*(ushort*)(g_frame_sprite+OFS), g_auxbar_panel[n*9], g_auxbar_panel[n*9+1]),
+ *         render_draw_list(*(ushort*)(g_frame_sprite+OFS), g_auxbar_panel[n*9], g_auxbar_panel[n*9+1]),
  *         OFS = 0x242+8*(type-1) for 1..0xc, 0x2b2 for 0xd/e/f, 0x2ba for
  *         0x10, 0x2c2 for 0x11/12/13; type 0xc also centers string
  *         tbl_4b10[type-1][g_language] into field 0x10584; then if g_frame_enable[type]
@@ -88,7 +88,7 @@ extern int g_5324;
 extern unsigned char *los_trace(unsigned char *a, unsigned char *rec, short p);
 extern unsigned char *los_trace_far(unsigned char *p1, unsigned char *p2, int dist);
 extern int chain_length(unsigned char *p);
-extern void FUN_0001b858(unsigned short a, short x, short y);
+extern void render_draw_list(unsigned short a, short x, short y);
 extern int FUN_0003fb40();
 extern void center_string_16(int a, int b);
 
@@ -160,68 +160,68 @@ void radar_panel_sm(void)
             switch (e[0x19]) {
             case 1:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_frame_sprite + 0x242), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
+                render_draw_list(*(unsigned short *)(g_frame_sprite + 0x242), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 2:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_frame_sprite + 0x24a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
+                render_draw_list(*(unsigned short *)(g_frame_sprite + 0x24a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 3:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_frame_sprite + 0x252), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
+                render_draw_list(*(unsigned short *)(g_frame_sprite + 0x252), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 4:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_frame_sprite + 0x25a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
+                render_draw_list(*(unsigned short *)(g_frame_sprite + 0x25a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 5:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_frame_sprite + 0x262), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
+                render_draw_list(*(unsigned short *)(g_frame_sprite + 0x262), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 6:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_frame_sprite + 0x26a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
+                render_draw_list(*(unsigned short *)(g_frame_sprite + 0x26a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 7:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_frame_sprite + 0x272), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
+                render_draw_list(*(unsigned short *)(g_frame_sprite + 0x272), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 8:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_frame_sprite + 0x27a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
+                render_draw_list(*(unsigned short *)(g_frame_sprite + 0x27a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 9:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_frame_sprite + 0x282), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
+                render_draw_list(*(unsigned short *)(g_frame_sprite + 0x282), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 0xa:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_frame_sprite + 0x28a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
+                render_draw_list(*(unsigned short *)(g_frame_sprite + 0x28a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 0xb:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_frame_sprite + 0x292), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
+                render_draw_list(*(unsigned short *)(g_frame_sprite + 0x292), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 0xc:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_frame_sprite + 0x29a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
+                render_draw_list(*(unsigned short *)(g_frame_sprite + 0x29a), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 center_string_16(0x10584, tbl_4b10[e[0x19] - 1][g_language]);
                 break;
             case 0xd:
             case 0xe:
             case 0xf:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_frame_sprite + 0x2b2), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
+                render_draw_list(*(unsigned short *)(g_frame_sprite + 0x2b2), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 0x10:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_frame_sprite + 0x2ba), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
+                render_draw_list(*(unsigned short *)(g_frame_sprite + 0x2ba), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 0x11:
             case 0x12:
             case 0x13:
                 m = n * 9;
-                FUN_0001b858(*(unsigned short *)(g_frame_sprite + 0x2c2), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
+                render_draw_list(*(unsigned short *)(g_frame_sprite + 0x2c2), g_auxbar_panel[m], g_auxbar_panel[m + 1]);
                 break;
             case 0:
             default:

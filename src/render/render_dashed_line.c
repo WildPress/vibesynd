@@ -38,7 +38,7 @@
 
 extern void plot_point(int x, int y, int c);
 
-void FUN_00026778(unsigned short x1, unsigned short y1, int x2, int y2,
+void render_dashed_line(unsigned short x1, unsigned short y1, int x2, int y2,
                   unsigned char c1, unsigned char c2, unsigned short a7)
 {
     int dy;

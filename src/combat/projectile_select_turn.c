@@ -30,7 +30,7 @@ extern void FUN_00026ad8(unsigned short mult, unsigned short idx);
 extern int aim_cursor_advance(int obj);
 extern void copy_bytes(void *a, void *b, unsigned int n);
 
-void FUN_0002def8(unsigned char *obj, int tgt)
+void projectile_select_turn(unsigned char *obj, int tgt)
 {
     unsigned char buf1[0x5c];
     unsigned char buf2[0x5c];

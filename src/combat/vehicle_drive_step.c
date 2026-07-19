@@ -7,7 +7,7 @@
  *    the tile (recompute_state_code), accumulate the shot vector (FUN_00026ad8) and
  *    commit the cursor (move_entity_xyz).
  *  - otherwise: publish the shot accumulators g_shot_x/g_shot_y/g_shot_level and the
- *    target coords g_10b54/56/58, run the trajectory march FUN_00034198, snap
+ *    target coords g_10b54/56/58, run the trajectory march march_shot_damage, snap
  *    the cursor to the facing (snap_direction by octant), re-pick the passable
  *    facing (FUN_00034608) when the cursor moved off the target tile, probe the
  *    blocked-tile map (g_map_cols column table -> g_tile_flags class) and drop on a block,
@@ -17,7 +17,7 @@
  * PARKED near-miss ~74-77% (963B vs 964B). SEMANTICS BYTE-CORRECT: the prologue
  * (31B) is byte-identical, the type-5/6 mode's whole call/arith sequence is
  * byte-correct bar the spill below, and the "otherwise" mode is byte-IDENTICAL
- * through offset 0x54 (the FUN_00034198 setup+call) with the g_map_cols blocked-tile
+ * through offset 0x54 (the march_shot_damage setup+call) with the g_map_cols blocked-tile
  * lookup structurally exact (in-place `add`, correct idiv/%0x6000, /256, *128,
  * /128 tile math). Multiple INDEPENDENT register-role / encoding walls (playbook
  * s3), no one of which is source-reachable:
@@ -57,7 +57,7 @@ extern unsigned char vec_to_angle(int dx, int dy);
 extern short snap_direction(int cur, int step);
 extern void recompute_state_code(unsigned char *p);
 extern void FUN_00026ad8(unsigned short mult, unsigned short idx);
-extern void FUN_00034198(unsigned char *p2, unsigned char *p, unsigned short count);
+extern void march_shot_damage(unsigned char *p2, unsigned char *p, unsigned short count);
 extern unsigned short FUN_00034608(int dir);
 extern void move_entity_xyz(unsigned char *node, int x, int y, int z);
 
@@ -113,7 +113,7 @@ void vehicle_drive_step(unsigned char *p1, unsigned char *p2)
         g_10b54 = *(short *)(p1 + 0x2e);
         g_10b56 = *(short *)(p1 + 0x30);
         g_10b58 = *(short *)(p1 + 0x32);
-        FUN_00034198(p2, p1, 6);
+        march_shot_damage(p2, p1, 6);
 
         switch (p2[0x1a]) {
         case 0x00:

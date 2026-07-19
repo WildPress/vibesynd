@@ -20,7 +20,7 @@
  * type == 0xa refresh via FUN_0002c4e8(). Then walk the carried-item chain
  * (head id at ped+0x3a, next at item+0x1c, item = g_entity_pool + id), advancing a
  * record cursor (0x5256, stride 0x12) per item, and for each item type 1..0x13
- * feed FUN_0002d038(ped, rec, item, sprite):
+ * feed entity_update_target_lock(ped, rec, item, sprite):
  *   1..0xc -> 0x4b + (t-1)*4;  0xd/0xe/0xf -> 0x83;  0x10 -> 0x87;
  *   0x11/0x12/0x13 -> 0x8b;  type 0 and >0x13 -> no call (cursor still advances).
  */
@@ -33,7 +33,7 @@ extern short g_5256[];
 
 void copy_5fields_8recs(void);
 void FUN_0002c4e8(void);
-void FUN_0002d038(unsigned char *p, short *rec, int item, short spr);
+void entity_update_target_lock(unsigned char *p, short *rec, int item, short spr);
 
 void refresh_hud_inventory(void)
 {
@@ -59,53 +59,53 @@ void refresh_hud_inventory(void)
             type = item[0x19];
             switch (type) {
             case 1:
-                FUN_0002d038(ped, rec, (int)item, 0x4b);
+                entity_update_target_lock(ped, rec, (int)item, 0x4b);
                 break;
             case 2:
-                FUN_0002d038(ped, rec, (int)item, 0x4f);
+                entity_update_target_lock(ped, rec, (int)item, 0x4f);
                 break;
             case 3:
-                FUN_0002d038(ped, rec, (int)item, 0x53);
+                entity_update_target_lock(ped, rec, (int)item, 0x53);
                 break;
             case 4:
-                FUN_0002d038(ped, rec, (int)item, 0x57);
+                entity_update_target_lock(ped, rec, (int)item, 0x57);
                 break;
             case 5:
-                FUN_0002d038(ped, rec, (int)item, 0x5b);
+                entity_update_target_lock(ped, rec, (int)item, 0x5b);
                 break;
             case 6:
-                FUN_0002d038(ped, rec, (int)item, 0x5f);
+                entity_update_target_lock(ped, rec, (int)item, 0x5f);
                 break;
             case 7:
-                FUN_0002d038(ped, rec, (int)item, 0x63);
+                entity_update_target_lock(ped, rec, (int)item, 0x63);
                 break;
             case 8:
-                FUN_0002d038(ped, rec, (int)item, 0x67);
+                entity_update_target_lock(ped, rec, (int)item, 0x67);
                 break;
             case 9:
-                FUN_0002d038(ped, rec, (int)item, 0x6b);
+                entity_update_target_lock(ped, rec, (int)item, 0x6b);
                 break;
             case 0xa:
-                FUN_0002d038(ped, rec, (int)item, 0x6f);
+                entity_update_target_lock(ped, rec, (int)item, 0x6f);
                 break;
             case 0xb:
-                FUN_0002d038(ped, rec, (int)item, 0x73);
+                entity_update_target_lock(ped, rec, (int)item, 0x73);
                 break;
             case 0xc:
-                FUN_0002d038(ped, rec, (int)item, 0x77);
+                entity_update_target_lock(ped, rec, (int)item, 0x77);
                 break;
             case 0xd:
             case 0xe:
             case 0xf:
-                FUN_0002d038(ped, rec, (int)item, 0x83);
+                entity_update_target_lock(ped, rec, (int)item, 0x83);
                 break;
             case 0x10:
-                FUN_0002d038(ped, rec, (int)item, 0x87);
+                entity_update_target_lock(ped, rec, (int)item, 0x87);
                 break;
             case 0x11:
             case 0x12:
             case 0x13:
-                FUN_0002d038(ped, rec, (int)item, 0x8b);
+                entity_update_target_lock(ped, rec, (int)item, 0x8b);
                 break;
             case 0:
             default:

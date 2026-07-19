@@ -1,5 +1,5 @@
 /* inline jump-table switch dispatcher @ 0x2bee8 -- command-list interpreter,
- * THIRD sibling of FUN_0002bca8 / command_list_interp2 (same 0x12-byte record walk,
+ * THIRD sibling of widget_list_dispatch / command_list_interp2 (same 0x12-byte record walk,
  * word[0]==-0x63 terminator, same select-cursor blocks). 5-entry jump table at
  * obj1:+0x1e788 (manifest 0x2bed0, verified via lefix.py):
  *   case 0 -> 0x2c153 (= default, empty)     case 3 -> 0x2c04a (active-check/box)

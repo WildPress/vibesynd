@@ -34,9 +34,9 @@
  * Same class as 0x2d5b8 / 0x28ec8. Recipe: -4s -oneatx -zp8 -s -zq
  */
 extern unsigned short *g_frame_sprite;
-extern void FUN_0001b798(unsigned short spr, short x, short y);
+extern void draw_object_sprite_list(unsigned short spr, short x, short y);
 
-void FUN_0002bbe8(unsigned char *p)
+void anim_tick_frame_list(unsigned char *p)
 {
     if (*(short *)p != -99) {
         do {
@@ -60,7 +60,7 @@ void FUN_0002bbe8(unsigned char *p)
                     *(unsigned short *)(p + 0xc) = g_frame_sprite[a];
                     *(unsigned short *)(p + 0xe) = a;
                 }
-                FUN_0001b798(*(unsigned short *)(p + 0xc),
+                draw_object_sprite_list(*(unsigned short *)(p + 0xc),
                              *(short *)(p + 2), *(short *)(p + 4));
             }
             p += 0x12;

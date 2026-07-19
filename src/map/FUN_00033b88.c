@@ -8,8 +8,8 @@
    re-read from [esp]) into EAX and the register operand (step, in ESI) into EDX,
    independent of source operand order; (3) mask peephole -- `and eax,0x7f00` vs the
    target's byte-wise `and ah,0x7f; xor al,al`. Same §3 register-role + prologue-
-   scheduling wall documented on the identical-template twin FUN_00033db8. */
-/* frameless @ 0x33b88: spatial-grid proximity scan (mirror of FUN_00033db8).
+   scheduling wall documented on the identical-template twin find_grid_entity_facing_0x80. */
+/* frameless @ 0x33b88: spatial-grid proximity scan (mirror of find_grid_entity_facing_0x80).
    Walk 6 grid columns starting at (param_1 - 0x100), stepping +0x100 per row.
    The row part (param_2 & 0x7f00) >> 1 is loop-invariant and hoisted into a
    local; the col part ((short)step >> 8) & 0x7f varies per row. Walk the object

@@ -9,7 +9,7 @@
    (the fill zeroed AX in place), so the target just re-masks with `xor ah,ah`; our
    compiler doesn't see the value survives and reloads scratch[3]. Both are the
    smarter-allocator floor (9.5b-class), not source-reachable. */
-/* FUN_00028728 @ 0x28728 - DPMI (int 0x31, AX=0x100) allocate DOS memory block,
+/* dos_alloc_and_zero @ 0x28728 - DPMI (int 0x31, AX=0x100) allocate DOS memory block,
    then zero-fill the block through a far pointer. Proposed name: dos_alloc_and_zero. */
 
 extern void FUN_0003aaf8(void *dst, int val, int len);   /* memset helper */
@@ -19,7 +19,7 @@ extern void report_net_status(int a, int b, int c);
 extern void __far *_fmemset(void __far *dst, int c, unsigned n);
 #pragma intrinsic(_fmemset)
 
-unsigned int FUN_00028728(unsigned short *param_1, unsigned short param_2)
+unsigned int dos_alloc_and_zero(unsigned short *param_1, unsigned short param_2)
 {
     int msg[7];
     int scratch[7];

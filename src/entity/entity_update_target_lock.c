@@ -14,7 +14,7 @@
    (+0=state, +0xa=flag byte, +0x10=stamp) toward 3, else falls back to 1. */
 extern short g_e11c;
 
-void FUN_0002d038(unsigned char *param_1, short *param_2, volatile int param_3, short param_4)
+void entity_update_target_lock(unsigned char *param_1, short *param_2, volatile int param_3, short param_4)
 {
     int s = param_3 - 0x810e;
 

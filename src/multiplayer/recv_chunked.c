@@ -27,7 +27,7 @@
    all regress. Not source-reachable; needs a register-preference permuter. */
 extern unsigned short g_df38;
 extern short netbios_recv95(int, unsigned int, unsigned int *, unsigned short);
-unsigned int FUN_000288f8(int param_1, unsigned short param_2, unsigned int *param_3, unsigned int param_4)
+unsigned int recv_chunked(int param_1, unsigned short param_2, unsigned int *param_3, unsigned int param_4)
 {
     unsigned int i;
     unsigned int s;

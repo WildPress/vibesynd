@@ -1,7 +1,7 @@
 /* PARKED near-miss (NOT matched, 154/167 bytes, EDIT-DIST 17) -- spatial-grid proximity scan.
-   NOTE: a STALE DUPLICATE src/entity/FUN_00033db8.c (wrong branch logic -- `!= 0x80` and
+   NOTE: a STALE DUPLICATE src/entity/find_grid_entity_facing_0x80.c (wrong branch logic -- `!= 0x80` and
    `!= 0`, giving JE where the target has JNE/JBE, dist 48) used to shadow this file: the
-   build's `find src -name FUN_00033db8.c | head -1` picked entity/ alphabetically before
+   build's `find src -name find_grid_entity_facing_0x80.c | head -1` picked entity/ alphabetically before
    map/. Removed the entity duplicate so THIS correct version compiles (48 -> 17).
    Structure 100% correct (offsets, signedness, ==0x80 check, JBE health test, CMP DI,6,
    return width). Two §3 ties remain: (1) prologue param-load/init scheduling permutation
@@ -22,7 +22,7 @@
 extern unsigned char g_entity_pool[];
 extern unsigned short g_grid_heads[];
 
-int FUN_00033db8(short param_1, int param_2, short param_3)
+int find_grid_entity_facing_0x80(short param_1, int param_2, short param_3)
 {
     int iVar3;
     unsigned short row;

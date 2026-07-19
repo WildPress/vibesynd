@@ -9,7 +9,7 @@
    param load + self-compare; the fuzzer found the flipping spelling). */
 extern void printf(char *fmt, ...);
 extern short xfer_chunked(int a, unsigned short b, void *buf, int len);
-extern int FUN_000288f8(int a, unsigned short b, void *buf, int len);
+extern int recv_chunked(int a, unsigned short b, void *buf, int len);
 extern short g_num_players;
 extern short g_cur_player;
 extern unsigned char g_df30[];
@@ -50,7 +50,7 @@ int mp_record_sync(int param_1)
         if (1 == g_df30[i])
       {
         printf(g_36ac);
-        while (FUN_000288f8(g_10644[i].a, g_10644[i].b, g_player_recs[i], 0x417) != 0x417)
+        while (recv_chunked(g_10644[i].a, g_10644[i].b, g_player_recs[i], 0x417) != 0x417)
         {
         }
 

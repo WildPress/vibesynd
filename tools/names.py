@@ -12,6 +12,14 @@ import json, glob, os, re, struct, bisect
 # Curated semantic names (addr hex -> name), high-confidence from the reverse-engineering so far.
 # These are the functions that execute on the boot->logo->menu intro path.
 LABELS = {
+    # --- named this session from reconstruction work (understanding recovered) ---
+    "00019608": "draw_tactical_map",       "00033db8": "find_grid_entity_facing_0x80",
+    "000288f8": "recv_chunked",            "00026778": "render_dashed_line",
+    "00028728": "dos_alloc_and_zero",      "00030868": "reacquire_and_engage_target",
+    "0002d038": "entity_update_target_lock","0002bca8": "widget_list_dispatch",
+    "00034198": "march_shot_damage",       "000223c8": "reequip_squad_row",
+    "0002bbe8": "anim_tick_frame_list",    "0001b858": "render_draw_list",
+    "0002def8": "projectile_select_turn",  "0001b798": "draw_object_sprite_list",
     "00024be8": "startup_main",            "0000d928": "main_game_loop",
     "00020fc8": "new_campaign_reset",      "00018338": "validate_records_or_abort",
     "000184b8": "realloc_block_descriptor","000180f8": "file_open_read_close",

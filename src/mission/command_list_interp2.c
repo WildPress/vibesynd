@@ -1,5 +1,5 @@
 /* inline jump-table switch dispatcher @ 0x2c218 (592B) -- command-list interpreter.
- *   Sibling of FUN_0002bca8 (same shape; register roles swapped: sel->EDI,
+ *   Sibling of widget_list_dispatch (same shape; register roles swapped: sel->EDI,
  *   result->ESI). Extra `if(result==0)` clause in case 2 and a post-switch
  *   g_df75[(signed char)p[0xb]] = 0 tail (runs when p[0xa] != 0).
  *
@@ -8,19 +8,19 @@
  *       int setX /[ESP+0x18]/, int setY /[ESP+0x1c]/)
  * Walks 0x12-byte records; word[0]==-0x63 terminates. 5-way switch on word[0].
  *
- * Recipe: -4s -oneatx -zp8 -s -zq  (see sibling FUN_0002bca8 for the -ox rationale).
+ * Recipe: -4s -oneatx -zp8 -s -zq  (see sibling widget_list_dispatch for the -ox rationale).
  *
  * NEAR-MISS (byte-faithful structure; same -ox scheduler walls as the sibling PLUS a
  * register-role wall, playbook Section 3):
  *   1. Same `mov reg,1; mov [g_sel_cursor],reg` vs immediate on the first flag=1 store, and
- *      the same entry early-return fold — identical to FUN_0002bca8.
+ *      the same entry early-return fold — identical to widget_list_dispatch.
  *   2. REGISTER-ROLE: the target colours result->ESI and sel->EDI (because result is
  *      read in case 2, giving it more uses); our compile colours sel->ESI, result->EDI
  *      (like the sibling), so every `mov dx,di`(sel) and `mov eax,esi`(result) has the
  *      other register. No declaration/first-use order I found flips the allocator.
  *
  * cont.22 RETRY (parked again 600/592 code bytes; 4 compiles, all reverted) -- three
- * more role-flip levers failed, plus see FUN_0002bca8's header for why the 0x2bee8
+ * more role-flip levers failed, plus see widget_list_dispatch's header for why the 0x2bee8
  * volatile-alias lever does not transfer to this family's `=1` stores:
  *   - `register unsigned short result`: byte-inert, no flip.
  *   - ternary double-read `result = result ? result : (unsigned short)*(signed char *)

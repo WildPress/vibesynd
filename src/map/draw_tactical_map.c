@@ -1,4 +1,4 @@
-/* FUN_00019608 @ 0x19608 -- TRUE SIZE 3474 (0x19608..0x1a399).
+/* draw_tactical_map @ 0x19608 -- TRUE SIZE 3474 (0x19608..0x1a399).
  *
  * The tactical-map / radar renderer. Draws the full-screen overview map centred
  * on the currently-followed agent: terrain tiles, then a coloured blip for every
@@ -7,7 +7,7 @@
  *
  * PROPOSED NAME: draw_tactical_map(agent, zoom)  -- the full-screen radar/overview.
  *
- * Signature: FUN_00019608(unsigned char *agent, unsigned short zoom)
+ * Signature: draw_tactical_map(unsigned char *agent, unsigned short zoom)
  *   agent = the pool-A node the view is centred on (its world x/y at +4/+6);
  *   zoom  = pixels-per-tile scale (read zero-extended: unsigned short).
  *
@@ -103,7 +103,7 @@ extern void draw_circle(int x, int y, int r, int colour);        /* draw ring  *
 extern int  sum_of_squares_call(int a, int b);                 /* marker anim length  */
 extern void record_max(int a, int b);                 /* off-screen indicator*/
 
-void FUN_00019608(unsigned char *agent, unsigned short zoom)
+void draw_tactical_map(unsigned char *agent, unsigned short zoom)
 {
     unsigned char blip[0x600];      /* 256 x {u16 x, u16 y, u8 char, u8 col}  */
     int sel_x = -1, sel_y = -1, sel_r = -1;   /* followed agent's blip / mark  */

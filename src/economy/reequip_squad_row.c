@@ -1,4 +1,4 @@
-/* FUN_000223c8 @ 0x223c8 (724B true size; manifest 686 excludes the 38B of
+/* reequip_squad_row @ 0x223c8 (724B true size; manifest 686 excludes the 38B of
  * jump-table case bodies hidden behind the CS:[eax*4+0x14c70] dispatch).
  * PARKED ~694/724 (-4s -oneatx -zp8 -s -zq; verify with truediff.py 724):
  * everything matches except the TWO node-pointer formations, where 9.5b
@@ -35,7 +35,7 @@ extern void FUN_000269b8(unsigned char *p);
 extern int init_record_if_alloc(unsigned char *node, unsigned short kind, int cnt);
 extern void fill_bytes(unsigned char *p, int val, int n);
 
-void FUN_000223c8(unsigned short row, unsigned short mode)
+void reequip_squad_row(unsigned short row, unsigned short mode)
 {
     unsigned short used[8];
     unsigned short j;

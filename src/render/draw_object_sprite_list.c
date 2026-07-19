@@ -16,7 +16,7 @@ extern unsigned int    g_5314;
 extern void record_max(unsigned char, unsigned char);
 extern void draw_sprite_surf(int, int, unsigned int, unsigned int);
 
-void FUN_0001b798(unsigned short param_1, short param_2, short param_3)
+void draw_object_sprite_list(unsigned short param_1, short param_2, short param_3)
 {
     unsigned char  *rec;
     unsigned short *p;

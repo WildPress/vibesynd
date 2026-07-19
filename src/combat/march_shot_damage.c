@@ -51,7 +51,7 @@ extern unsigned char *shot_collision_query(void);
 extern void field54_sub_threshold(unsigned char *dst, unsigned char *src, unsigned short thr);
 extern void clamp_dec_field54(unsigned char *p, unsigned short n);
 
-void FUN_00034198(unsigned char *p2, unsigned char *p, unsigned short count)
+void march_shot_damage(unsigned char *p2, unsigned char *p, unsigned short count)
 {
     unsigned char dir = p2[0x1a];
     unsigned char orig = dir;

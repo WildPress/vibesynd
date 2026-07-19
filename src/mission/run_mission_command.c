@@ -6,7 +6,7 @@
  * (3165/5280 order-preserving bytes; positional is drift-inflated). Every case
  * body is decoded and structurally correct; the residue is the SAME register-
  * role tie-break the two smaller siblings that consume this 0x417 template are
- * parked on (FUN_000223c8 694/724, build_equip_row 1090/1188): the target keeps
+ * parked on (reequip_squad_row 694/724, build_equip_row 1090/1188): the target keeps
  * tpl live in EDX from entry and reads `movsx eax,[edx+0xb6]` (0fbe82b6) in
  * some bodies, `movsx edx,[edx+0xb6]` (0fbe92b6) in others, `movsx eax,
  * [eax+0xb6]` (0fbe80b6) in others -- an allocator choice that varies PER BODY
@@ -68,7 +68,7 @@ extern short g_dir_dx[];
 extern short g_dir_dy[];
 
 extern void FUN_000229f8(int a, int b);
-extern void FUN_000223c8(unsigned short row, unsigned short mode);
+extern void reequip_squad_row(unsigned short row, unsigned short mode);
 extern void FUN_00029d88(void);
 extern void FUN_00027a88(unsigned short a);
 extern int  FUN_00023038(unsigned char *p);
@@ -94,13 +94,13 @@ void run_mission_command(unsigned int idx)
             if ((unsigned short)idx == g_cur_player) {
                 FUN_000229f8(0x26c, g_e553);
                 for (k = 0; k < g_num_players; k++)
-                    FUN_000223c8((unsigned short)k, 2);
+                    reequip_squad_row((unsigned short)k, 2);
                 for (k = 0; k < g_num_players; k++)
                     g_player_owner[(unsigned short)k * 0x417] = (unsigned char)k;
             }
         } else {
             FUN_000229f8(0x26c, g_10b2e);
-            FUN_000223c8((unsigned short)idx, 2);
+            reequip_squad_row((unsigned short)idx, 2);
         }
         if ((unsigned short)idx == g_cur_player)
             FUN_00029d88();
@@ -689,7 +689,7 @@ void run_mission_command(unsigned int idx)
     }
 
     case 0x17: case 0x37:
-        FUN_000223c8((unsigned short)idx, 2);
+        reequip_squad_row((unsigned short)idx, 2);
         break;
 
     case 0x00: case 0x15: case 0x1a: case 0x1b: case 0x1c: case 0x1d:

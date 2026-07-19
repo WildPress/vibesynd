@@ -4,7 +4,7 @@
    whose biased screen y (word0 + g_5314) exceeds g_5314, call the sprite blit 0x4a63a
    with the node's x/y offsets biased by the caller's origin (dx_base, dy_base).
 
-   DUP RESOLVED: an identical stale copy at src/unclassified/FUN_0001b858.c was deleted
+   DUP RESOLVED: an identical stale copy at src/unclassified/render_draw_list.c was deleted
    (both spellings were logically byte-equivalent; find(1) compiled the render copy first,
    so removing the dup left the distance unchanged). This is the surviving copy.
 
@@ -24,7 +24,7 @@ extern unsigned char *g_rec5_table;
 extern int g_5314;
 extern void draw_sprite_buf(int x, int y, int sy, int w);
 
-void FUN_0001b858(unsigned short p1, int dx_base, int dy_base)
+void render_draw_list(unsigned short p1, int dx_base, int dy_base)
 {
     unsigned index = *(unsigned short *)(g_rec8_table + (unsigned)p1 * 8);
     unsigned char *r = g_rec5_table + index * 10;

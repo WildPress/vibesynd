@@ -30,7 +30,7 @@ extern void entity_aim_helper(unsigned char *node, int x, int y, int z);
 extern void advance_linked_index(unsigned char *node);
 extern unsigned char entity_event_dispatch(unsigned char *node);
 
-void FUN_00030868(unsigned char *node)
+void reacquire_and_engage_target(unsigned char *node)
 {
     short d;
     unsigned short t;

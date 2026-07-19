@@ -31,7 +31,7 @@
 
    Finds k's first active pool-A slot (bit 1 of +0x1c, base 0x8110, agent
    stride 0x2e0 = 8 slots x 0x5c) -> row header code k*8+slot in g_agent_slots
-   (template row stride 0x417, cf. FUN_000223c8's docs); row word +0x356
+   (template row stride 0x417, cf. reequip_squad_row's docs); row word +0x356
    (g_e8a7) = 1; clears the 18 template entry slot-no bytes (g_squad_slot, entry
    stride 40). Marks g_c358[2k]=1 / g_c359[2k]=0. Then for each i < g_3eb5
    whose walking slot has flag 2: slot |= 0x10 at +0x1d, entry i gets
@@ -42,7 +42,7 @@
    if g_1beaf; ammo word (g_e5bc) = {0,0xaaa,0x1554,0x1ffe}[g_3eb7] via the
    jump table; and fills the 20-byte record at g_c368 + 20*(8k+i): 0xff,
    g_1beb0, k at +7, zeros, +0xc = pool-A slot ptr g_pool_a+(code+i)*0x5c,
-   +0x10 = 0. Finally FUN_000223c8(k, 0x1002) applies the row. */
+   +0x10 = 0. Finally reequip_squad_row(k, 0x1002) applies the row. */
 extern unsigned char g_pool_a[];
 extern unsigned char g_agent_slots[];
 extern unsigned char g_e8a7[];
@@ -64,7 +64,7 @@ extern unsigned char g_1beaf;
 extern unsigned char g_1beb0;
 extern unsigned char g_1beb1;
 extern unsigned char g_7c05[];
-extern void FUN_000223c8(unsigned short row, unsigned short mode);
+extern void reequip_squad_row(unsigned short row, unsigned short mode);
 
 void build_equip_row(unsigned char k)
 {
@@ -172,5 +172,5 @@ void build_equip_row(unsigned char k)
         }
         rec += 0x5c;
     }
-    FUN_000223c8((unsigned short)k, 0x1002);
+    reequip_squad_row((unsigned short)k, 0x1002);
 }

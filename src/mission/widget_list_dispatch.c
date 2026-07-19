@@ -54,7 +54,7 @@ extern unsigned short g_e114, g_sel_cursor;     /* selection cursor state words 
 extern unsigned char  g_10b3e, g_10b3f;   /* selection cursor flags */
 extern short FUN_00029988(unsigned char *p);
 
-unsigned short FUN_0002bca8(unsigned char *p, int sel, unsigned char setX, unsigned char setY)
+unsigned short widget_list_dispatch(unsigned char *p, int sel, unsigned char setX, unsigned char setY)
 {
     unsigned short result = 0;
 
