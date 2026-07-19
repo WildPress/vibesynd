@@ -10,8 +10,8 @@ extern void __db_FUN_00020ef8_3(void);
 #pragma aux __db_FUN_00020ef8_3 = "db 83" "db 0" "db 0" "db 102" "db 137" "db 21" "db 46" "db 83" "db 0" "db 0" "db 48" "db 192" "db 49" "db 210" "db 102" "db 137" "db 194" "db 49" "db 237" "db 64" "db 137" "db 44" "db 149" "db 124" "db 10" "db 1" "db 0" "db 102" "db 61" "db 8" "db 0" "db 114" "db 235" "db 104" "db 8" "db 4" "db 0" "db 0" "db 85" "db 104" "db 116" "db 6" "db 1" "db 0" "db 137" "db 45" "db 232" "db 10" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_00020ef8_4(void);
 #pragma aux __db_FUN_00020ef8_4 = "db 1" "db 0" "db 232" "db 218" "db 193" "db 2" "db 0" "db 131" "db 196" "db 12" "db 93" "db 95" "db 91" "db 195" "db 139" "db 192" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_00020ef8 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_00020ef8(void) {
+#pragma aux reset_hud_render_state modify [eax ebx ecx edx esi edi ebp] aborts;
+void reset_hud_render_state(void) {
     __db_FUN_00020ef8_0();
     __db_FUN_00020ef8_1();
     __db_FUN_00020ef8_2();

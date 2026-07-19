@@ -68,8 +68,8 @@ extern void __db_FUN_000380b8_32(void);
 #pragma aux __db_FUN_000380b8_32 = "db 34" "db 254" "db 192" "db 36" "db 3" "db 136" "db 71" "db 34" "db 139" "db 92" "db 36" "db 16" "db 102" "db 59" "db 95" "db 18" "db 116" "db 34" "db 102" "db 133" "db 219" "db 116" "db 29" "db 49" "db 192" "db 102" "db 137" "db 216" "db 141" "db 20" "db 69" "db 0" "db 0" "db 0" "db 0" "db 161" "db 72" "db 83" "db 0" "db 0" "db 102" "db 139" "db 4" "db 2" "db 102" "db 137" "db 71" "db 16" "db 102" "db 137" "db 95" "db 18" "db 139" "db 20" "db 36" "db 131" "db 194" "db 36" "db 131" "db 199" "db 36" "db 137" "db 20" "db 36" "db 129" "db 255" "db 112" "db 94" "db 1" "db 0" "db 15" "db 130" "db 216" "db 244" "db 255" "db 255" "db 131" "db 196" "db 24" "db 93" "db 95" "db 94" "db 91" "db 195" "db 0" "db 0" "db 0" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_000380b8_33(void);
 #pragma aux __db_FUN_000380b8_33 = "db 0" "db 0" "db 0" "db 0" "db 0" "db 0" "db 0" "db 0" "db 49" "db 46" "db 48" "db 48" "db 0" "db 141" "db 128" "db 0" "db 0" "db 0" "db 0" "db 141" "db 82" "db 0" "db 139" "db 219" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_000380b8 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_000380b8(void) {
+#pragma aux update_pickup_states modify [eax ebx ecx edx esi edi ebp] aborts;
+void update_pickup_states(void) {
     __db_FUN_000380b8_0();
     __db_FUN_000380b8_1();
     __db_FUN_000380b8_2();

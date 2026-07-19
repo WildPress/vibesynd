@@ -54,8 +54,8 @@ extern void __db_FUN_00029088_25(void);
 #pragma aux __db_FUN_00029088_25 = "db 255" "db 255" "db 131" "db 196" "db 4" "db 102" "db 133" "db 192" "db 116" "db 31" "db 198" "db 67" "db 25" "db 38" "db 138" "db 115" "db 26" "db 102" "db 199" "db 67" "db 20" "db 40" "db 0" "db 132" "db 246" "db 116" "db 9" "db 128" "db 254" "db 128" "db 15" "db 133" "db 71" "db 255" "db 255" "db 255" "db 190" "db 139" "db 1" "db 0" "db 0" "db 102" "db 59" "db 115" "db 18" "db 116" "db 28" "db 102" "db 133" "db 246" "db 116" "db 23" "db 49" "db 192" "db 139" "db 21" "db 72" "db 83" "db 0" "db 0" "db 102" "db 137" "db 240" "db 102" "db 139" "db 4" "db 66" "db 102" "db 137" "db 67" "db 16" "db 102" "db 137" "db 115" "db 18" "db 139" "db 13" "db 236" "db 10" "db 1" "db 0" "db 131" "db 195" "db 30" "db 57" "db 203" "db 15" "db 130" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_00029088_26(void);
 #pragma aux __db_FUN_00029088_26 = "db 33" "db 247" "db 255" "db 255" "db 93" "db 95" "db 94" "db 91" "db 195" "db 0" "db 0" "db 0" "db 0" "db 0" "db 0" "db 0" "db 83" "db 139" "db 84" "db 36" "db 8" "db 49" "db 192" "db 102" "db 139" "db 66" "db 12" "db 139" "db 29" "db 56" "db 83" "db 0" "db 0" "db 141" "db 4" "db 197" "db 0" "db 0" "db 0" "db 0" "db 1" "db 216" "db 102" "db 139" "db 64" "db 6" "db 102" "db 137" "db 66" "db 12" "db 49" "db 192" "db 102" "db 139" "db 66" "db 12" "db 141" "db 4" "db 197" "db 0" "db 0" "db 0" "db 0" "db 1" "db 216" "db 246" "db 64" "db 5" "db 1" "db 15" "db 149" "db 192" "db 48" "db 228" "db 91" "db 195" "db 141" "db 68" "db 32" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_00029088 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_00029088(void) {
+#pragma aux update_static_object_states modify [eax ebx ecx edx esi edi ebp] aborts;
+void update_static_object_states(void) {
     __db_FUN_00029088_0();
     __db_FUN_00029088_1();
     __db_FUN_00029088_2();

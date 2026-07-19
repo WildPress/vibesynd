@@ -30,7 +30,7 @@
  * map_passability_check (row = (y % 0x6000)/256, col = (x & 0xff00)/256, slot =
  * g_map_cols + col + row*128, tile byte at (z-1)/128 + *slot) but instead of a
  * passability bool it dispatches on the tile class g_tile_flags[tile]:
- *   6 -> FUN_00033b88(x,y,z)   7 -> grid_hit_x(x,y,z)
+ *   6 -> find_grid_entity_facing_0xc0(x,y,z)   7 -> grid_hit_x(x,y,z)
  *   8 -> grid_hit_y(x,y,z)   9 -> find_grid_entity_facing_0x80(x,y,z)
  *   0xb -> try all four in that order, 1 on first hit
  *   0xa / anything else -> 0
@@ -43,7 +43,7 @@
 extern char **volatile g_map_cols;
 extern unsigned char *g_tile_flags;
 
-int FUN_00033b88(int x, int y, int z);
+int find_grid_entity_facing_0xc0(int x, int y, int z);
 int grid_hit_x(int x, int y, int z);
 int grid_hit_y(int x, int y, int z);
 int find_grid_entity_facing_0x80(int x, int y, int z);
@@ -67,7 +67,7 @@ unsigned short map_tile_hit_dispatch(short x, short y, short z)
     tile = *(unsigned char *)((zz - 1) / 128 + (int)*(g_map_cols + index));
     switch (g_tile_flags[tile]) {
     case 6:
-        return FUN_00033b88(xs, y, z);
+        return find_grid_entity_facing_0xc0(xs, y, z);
     case 7:
         return grid_hit_x(xs, y, z);
     case 8:
@@ -75,7 +75,7 @@ unsigned short map_tile_hit_dispatch(short x, short y, short z)
     case 9:
         return find_grid_entity_facing_0x80(xs, y, z);
     case 0xb:
-        r = FUN_00033b88(xs, y, z);
+        r = find_grid_entity_facing_0xc0(xs, y, z);
         if (r != 0)
             return 1;
         r = grid_hit_x(xs, y, z);

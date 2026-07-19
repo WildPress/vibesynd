@@ -24,9 +24,9 @@
  * per-case target mapping lives only in the (masked) table data and doesn't affect the
  * function's own bytes.
  */
-extern int FUN_00023038(unsigned char *p);
+extern int is_even_entity_type(unsigned char *p);
 
-int FUN_00023038(unsigned char *p)
+int is_even_entity_type(unsigned char *p)
 {
     if (*(short *)(p + 0x20) != 0)
         return 0;

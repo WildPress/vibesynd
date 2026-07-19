@@ -26,7 +26,7 @@ extern unsigned short aim_step(unsigned char *obj, unsigned char dir);
 extern int max_abs(short a, short b);
 extern void find_projectile_step(unsigned char *obj, char dir);
 extern unsigned char lcg_rand(int a);
-extern void FUN_00026ad8(unsigned short mult, unsigned short idx);
+extern void advance_aim_along_dir(unsigned short mult, unsigned short idx);
 extern int aim_cursor_advance(int obj);
 extern void copy_bytes(void *a, void *b, unsigned int n);
 
@@ -185,7 +185,7 @@ fallback:
     g_aim_y = *(short *)(obj + 6);
     g_aim_level = *(short *)(obj + 8);
     obj[0x1a] = dA;
-    FUN_00026ad8(obj[0x54], dA);
+    advance_aim_along_dir(obj[0x54], dA);
     aim_cursor_advance((int)obj);
 done:
     ;

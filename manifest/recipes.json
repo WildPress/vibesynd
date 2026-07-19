@@ -19,18 +19,6 @@
   "addr": "000269b8",
   "flags": "-4s -oneatx -zp8 -s -zq"
  },
- "FUN_00026ad8": {
-  "addr": "00026ad8",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
- "FUN_00029a28": {
-  "addr": "00029a28",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
- "FUN_0002c4e8": {
-  "addr": "0002c4e8",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
  "FUN_00039088": {
   "addr": "00039088",
   "flags": "-4s -oneatx -zp8 -s -zq"
@@ -157,10 +145,6 @@
  },
  "FUN_0003e4aa": {
   "addr": "0003e4aa",
-  "flags": "-4s -oneatx -zp8 -s -zq"
- },
- "FUN_00023038": {
-  "addr": "00023038",
   "flags": "-4s -oneatx -zp8 -s -zq"
  },
  "FUN_0003aaf8": {
@@ -1566,6 +1550,22 @@
  },
  "world_tick": {
   "addr": "00026998",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "refresh_item_slots": {
+  "addr": "0002c4e8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "draw_status_labels": {
+  "addr": "00029a28",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "advance_aim_along_dir": {
+  "addr": "00026ad8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "is_even_entity_type": {
+  "addr": "00023038",
   "flags": "-4s -oneatx -zp8 -s -zq"
  }
 }

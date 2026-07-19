@@ -7,7 +7,7 @@
  *
  * Centers string arg1 into the 16-char field 0x10554 (center_string_16 =
  * center-into-16-char-field), stores arg2 word to g_537c. If byte g_radar_detail
- * set: done. If flags g_in_mission & 6: bit1 -> FUN_00029a28, bit2 (re-read
+ * set: done. If flags g_in_mission & 6: bit1 -> draw_status_labels, bit2 (re-read
  * after the call) -> draw_localized. Else scan the 8 14-byte slots at
  * 0x1be3a: first slot with dword+0 == 0 and known kind (word+4) centers
  * the per-language string tbl_44xx[g_language] into field 0x10564 and, if the
@@ -49,7 +49,7 @@ extern int tbl_4444[];
 extern int tbl_4450[];
 extern int tbl_445c[];
 extern void center_string_16(int a, int b);
-extern void FUN_00029a28(void);
+extern void draw_status_labels(void);
 extern void draw_localized(void);
 
 void mission_statusline(int a, int b)
@@ -111,7 +111,7 @@ hit:
             return;
         }
         if (g_in_mission & 2)
-            FUN_00029a28();
+            draw_status_labels();
         if (g_in_mission & 4)
             draw_localized();
     }

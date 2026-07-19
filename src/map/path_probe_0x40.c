@@ -37,7 +37,7 @@ extern volatile short g_level_step;
 extern int FUN_LE_0000fa18(int a, int b, int c);
 extern int FUN_LE_0000fa88(int a, int b, int c);
 
-int FUN_0002d5b8(short x, short y, int w, unsigned char *p)
+int path_probe_0x40(short x, short y, int w, unsigned char *p)
 {
     short f = 0;
     short t;

@@ -48,8 +48,8 @@ extern void __db_FUN_00034d48_22(void);
 #pragma aux __db_FUN_00034d48_22 = "db 80" "db 49" "db 192" "db 160" "db 13" "db 165" "db 0" "db 0" "db 139" "db 60" "db 133" "db 76" "db 72" "db 0" "db 0" "db 87" "db 232" "db 171" "db 17" "db 0" "db 0" "db 131" "db 196" "db 40" "db 232" "db 227" "db 0" "db 0" "db 0" "db 104" "db 132" "db 185" "db 0" "db 0" "db 232" "db 233" "db 46" "db 254" "db 255" "db 138" "db 29" "db 74" "db 11" "db 1" "db 0" "db 131" "db 196" "db 4" "db 132" "db 219" "db 116" "db 13" "db 104" "db 16" "db 187" "db 0" "db 0" "db 232" "db 210" "db 46" "db 254" "db 255" "db 131" "db 196" "db 4" "db 160" "db 53" "db 11" "db 1" "db 0" "db 162" "db 5" "db 1" "db 0" "db 0" "db 138" "db 68" "db 36" "db 12" "db 131" "db 196" "db 16" "db 93" "db 95" "db 94" "db 91" "db 195" "db 141" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_00034d48_23(void);
 #pragma aux __db_FUN_00034d48_23 = "db 128" "db 0" "db 0" "db 0" "db 0" "db 141" "db 82" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_00034d48 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_00034d48(void) {
+#pragma aux run_menu_sequence modify [eax ebx ecx edx esi edi ebp] aborts;
+void run_menu_sequence(void) {
     __db_FUN_00034d48_0();
     __db_FUN_00034d48_1();
     __db_FUN_00034d48_2();

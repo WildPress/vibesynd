@@ -14,8 +14,8 @@ extern void __db_FUN_00013258_5(void);
 #pragma aux __db_FUN_00013258_5 = "db 255" "db 255" "db 131" "db 196" "db 12" "db 95" "db 94" "db 91" "db 195" "db 141" "db 64" "db 0" "db 124" "db 93" "db 0" "db 0" "db 138" "db 93" "db 0" "db 0" "db 177" "db 93" "db 0" "db 0" "db 8" "db 98" "db 0" "db 0" "db 176" "db 94" "db 0" "db 0" "db 8" "db 98" "db 0" "db 0" "db 205" "db 94" "db 0" "db 0" "db 8" "db 98" "db 0" "db 0" "db 104" "db 97" "db 0" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_00013258_6(void);
 #pragma aux __db_FUN_00013258_6 = "db 60" "db 96" "db 0" "db 0" "db 51" "db 95" "db 0" "db 0" "db 143" "db 97" "db 0" "db 0" "db 210" "db 97" "db 0" "db 0" "db 116" "db 94" "db 0" "db 0" "db 116" "db 94" "db 0" "db 0" "db 116" "db 94" "db 0" "db 0" "db 146" "db 94" "db 0" "db 0" "db 116" "db 94" "db 0" "db 0" "db 116" "db 94" "db 0" "db 0" "db 116" "db 94" "db 0" "db 0" "db 116" "db 94" "db 0" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_00013258 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_00013258(void) {
+#pragma aux tick_agent_states modify [eax ebx ecx edx esi edi ebp] aborts;
+void tick_agent_states(void) {
     __db_FUN_00013258_0();
     __db_FUN_00013258_1();
     __db_FUN_00013258_2();

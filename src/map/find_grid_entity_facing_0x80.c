@@ -10,7 +10,7 @@
    `CWDE; MOV EDX,EAX` (target) vs `MOVSX EDX,AX` (ours), same encoding-tie class as 0x34088.
    Swapping the OR operands, a `short` row-part temp, and split loop-init were all tried:
    regress or byte-identical. Near-twins 0x33b88/0x33c38/0x33cf8 share this template/wall.
-   Proposed name: find_grid_entity_facing_0x80 (mirror of FUN_00033b88, which faces 0xc0). */
+   Proposed name: find_grid_entity_facing_0x80 (mirror of find_grid_entity_facing_0xc0, which faces 0xc0). */
 /* frameless @ 0x33db8: spatial-grid proximity scan. Walk 6 grid rows starting at
    (param_2 - 0x100), stepping +0x100 per row. For each row build the 128x128
    grid-cell index from the high bits of iVar3 (>>1) and of param_1 (>>8), and walk
@@ -18,7 +18,7 @@
    Return 1 for the first node that is type 2 (node[0x18]==2), on the same level as
    param_3 (high byte of node[8] == high byte of param_3), has a secondary link
    node[0x1c]!=0, faces 0x80 (node[0x1a]==0x80), and whose linked node has a nonzero
-   value byte at +0x54. Return 0 after 6 rows with no hit. Near-twin of FUN_00033b88. */
+   value byte at +0x54. Return 0 after 6 rows with no hit. Near-twin of find_grid_entity_facing_0xc0. */
 extern unsigned char g_entity_pool[];
 extern unsigned short g_grid_heads[];
 

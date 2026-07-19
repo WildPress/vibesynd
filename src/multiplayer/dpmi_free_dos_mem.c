@@ -3,7 +3,7 @@
    promotes param_1 to a callee-saved reg with a dead `mov eax,ebx` READ artifact from its module
    compilation context; isolated compile emits a dead STORE + reversed param load order. Same
    fundamental class as 0x37818 (module-context, not source-reachable). */
-/* FUN_000287e8 @ 0x287e8 - guard + build two 0x1c-byte stack msg buffers, dispatch.
+/* dpmi_free_dos_mem @ 0x287e8 - guard + build two 0x1c-byte stack msg buffers, dispatch.
  * NEAR-MISS (103/130, first diff @0x6). Single 14-int array (msg=buf[0..6],
  * scratch=buf[7..13]) reproduces the target's stack layout exactly (memset
  * offsets, adb2 pushes, final cmp[esp+34] all match). The two dead buf[3]=param_1
@@ -16,7 +16,7 @@ extern void FUN_0003aaf8(void *dst, int val, int len);   /* memset */
 extern void int386(int a, void *msg, void *scratch);
 extern void report_net_status(int a, int b, int c);
 
-void FUN_000287e8(int param_1, unsigned short param_2)
+void dpmi_free_dos_mem(int param_1, unsigned short param_2)
 {
     int buf[14];
 

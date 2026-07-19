@@ -71,7 +71,7 @@ extern void FUN_000229f8(int a, int b);
 extern void reequip_squad_row(unsigned short row, unsigned short mode);
 extern void FUN_00029d88(void);
 extern void FUN_00027a88(unsigned short a);
-extern int  FUN_00023038(unsigned char *p);
+extern int  is_even_entity_type(unsigned char *p);
 extern unsigned short best_weapon_select_typed(unsigned char *node, unsigned short dist, unsigned char type);
 extern void entity_aim_helper(unsigned char *p, int x, int y, int z);
 extern int  chain_length(unsigned char *p);
@@ -127,7 +127,7 @@ void run_mission_command(unsigned int idx)
 
     case 0x18: case 0x38: {
         unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
-        if ((unsigned short)FUN_00023038(node))
+        if ((unsigned short)is_even_entity_type(node))
             node[0x19] = 0;
         node[0x58] = 0;
         break;
@@ -135,7 +135,7 @@ void run_mission_command(unsigned int idx)
 
     case 0x03: {
         unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
-        if ((unsigned short)FUN_00023038(node))
+        if ((unsigned short)is_even_entity_type(node))
             node[0x19] = 2;
         node[0x58] = 2;
         *(unsigned short *)(node + 0x2e) = *(unsigned short *)rec;
@@ -149,7 +149,7 @@ void run_mission_command(unsigned int idx)
         for (i = 0; i < 4; i++) {
             unsigned char *node = g_pool_a + (tpl[0xb5] + i) * 0x5c;
             if (node[0x1d] & 4) {
-                if ((unsigned short)FUN_00023038(node))
+                if ((unsigned short)is_even_entity_type(node))
                     node[0x19] = 2;
                 node[0x58] = 2;
                 *(unsigned short *)(node + 0x2e) =
@@ -167,7 +167,7 @@ void run_mission_command(unsigned int idx)
         for (i = 0; i < 4; i++) {
             unsigned char *node = g_pool_a + (tpl[0xb5] + i) * 0x5c;
             if (node[0x1d] & 4) {
-                if ((unsigned short)FUN_00023038(node))
+                if ((unsigned short)is_even_entity_type(node))
                     node[0x19] = 2;
                 node[0x58] = 2;
                 *(unsigned short *)(node + 0x2e) =
@@ -184,7 +184,7 @@ void run_mission_command(unsigned int idx)
 
     case 0x04: {
         unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
-        if ((unsigned short)FUN_00023038(node))
+        if ((unsigned short)is_even_entity_type(node))
             node[0x19] = 4;
         node[0x58] = 4;
         *(unsigned short *)(node + 0x2c) = *(unsigned short *)rec;
@@ -196,7 +196,7 @@ void run_mission_command(unsigned int idx)
         for (p = g_pool_a + tpl[0xb5] * 0x5c;
              p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if (p[0x1d] & 4) {
-                if ((unsigned short)FUN_00023038(p))
+                if ((unsigned short)is_even_entity_type(p))
                     p[0x19] = 4;
                 p[0x58] = 4;
                 *(unsigned short *)(p + 0x2c) = *(unsigned short *)rec;
@@ -207,7 +207,7 @@ void run_mission_command(unsigned int idx)
 
     case 0x05: {
         unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
-        if ((unsigned short)FUN_00023038(node))
+        if ((unsigned short)is_even_entity_type(node))
             node[0x19] = 5;
         if ((short)chain_length(node) >= 8)
             node[0x58] = node[0x19];
@@ -222,7 +222,7 @@ void run_mission_command(unsigned int idx)
         for (p = g_pool_a + tpl[0xb5] * 0x5c;
              p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if (p[0x1d] & 4) {
-                if ((unsigned short)FUN_00023038(p))
+                if ((unsigned short)is_even_entity_type(p))
                     p[0x19] = 5;
                 if ((short)chain_length(p) >= 8)
                     p[0x58] = p[0x19];
@@ -272,7 +272,7 @@ void run_mission_command(unsigned int idx)
         unsigned short link = *(unsigned short *)(node + 0x44);
         if (link != 0) {
             unsigned char *carried = g_entity_pool + link;
-            if ((unsigned short)FUN_00023038(node) &&
+            if ((unsigned short)is_even_entity_type(node) &&
                 *(short *)(carried + 0x14) >= 0)
                 entity_aim_helper(node, *(short *)rec, *(short *)(rec + 2),
                              *(short *)(rec + 4));
@@ -304,7 +304,7 @@ void run_mission_command(unsigned int idx)
             if (link != 0) {
                 unsigned char *carried = g_entity_pool + link;
                 if ((node[0x1d] & 4) && *(short *)(carried + 0x14) >= 0 &&
-                    (unsigned short)FUN_00023038(node))
+                    (unsigned short)is_even_entity_type(node))
                     entity_aim_helper(node, *(short *)rec, *(short *)(rec + 2),
                                  *(short *)(rec + 4));
             }
@@ -326,7 +326,7 @@ void run_mission_command(unsigned int idx)
 
     case 0x09: {
         unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
-        if ((unsigned short)FUN_00023038(node))
+        if ((unsigned short)is_even_entity_type(node))
             node[0x19] = 5;
         node[0x58] = 6;
         *(unsigned short *)(node + 0x2c) = *(unsigned short *)rec;
@@ -339,7 +339,7 @@ void run_mission_command(unsigned int idx)
         for (p = g_pool_a + tpl[0xb5] * 0x5c;
              p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
             if (p[0x1d] & 4) {
-                if ((unsigned short)FUN_00023038(p))
+                if ((unsigned short)is_even_entity_type(p))
                     p[0x19] = 5;
                 p[0x58] = 6;
                 *(unsigned short *)(p + 0x2c) = *(unsigned short *)rec;
@@ -351,7 +351,7 @@ void run_mission_command(unsigned int idx)
 
     case 0x0a: case 0x2a: {
         unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
-        if ((unsigned short)FUN_00023038(node)) {
+        if ((unsigned short)is_even_entity_type(node)) {
             node[0x19] = 0xa;
             node[0x58] = 0xa;
             *(unsigned short *)(node + 0x44) = *(unsigned short *)rec;

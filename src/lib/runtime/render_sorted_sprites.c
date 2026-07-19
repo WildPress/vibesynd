@@ -50,8 +50,8 @@ extern void __db_FUN_0001ab98_23(void);
 #pragma aux __db_FUN_0001ab98_23 = "db 86" "db 4" "db 1" "db 195" "db 49" "db 210" "db 102" "db 137" "db 94" "db 6" "db 137" "db 216" "db 138" "db 85" "db 3" "db 1" "db 208" "db 106" "db 0" "db 152" "db 80" "db 49" "db 192" "db 102" "db 139" "db 78" "db 4" "db 138" "db 69" "db 2" "db 1" "db 200" "db 152" "db 80" "db 15" "db 191" "db 195" "db 80" "db 15" "db 191" "db 193" "db 80" "db 139" "db 68" "db 36" "db 40" "db 15" "db 191" "db 64" "db 8" "db 80" "db 3" "db 84" "db 36" "db 56" "db 193" "db 226" "db 3" "db 193" "db 231" "db 2" "db 137" "db 208" "db 41" "db 248" "db 152" "db 80" "db 139" "db 68" "db 36" "db 48" "db 15" "db 191" "db 64" "db 6" "db 1" "db 250" "db 80" "db 15" "db 191" "db 194" "db 80" "db 139" "db 68" "db 36" "db 56" "db 15" "db 191" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_0001ab98_24(void);
 #pragma aux __db_FUN_0001ab98_24 = "db 64" "db 4" "db 80" "db 232" "db 110" "db 91" "db 2" "db 0" "db 131" "db 196" "db 40" "db 131" "db 198" "db 12" "db 233" "db 118" "db 250" "db 255" "db 255" "db 131" "db 196" "db 44" "db 93" "db 95" "db 94" "db 91" "db 195" "db 141" "db 64" "db 0" "db 139" "db 201" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_0001ab98 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_0001ab98(void) {
+#pragma aux render_sorted_sprites modify [eax ebx ecx edx esi edi ebp] aborts;
+void render_sorted_sprites(void) {
     __db_FUN_0001ab98_0();
     __db_FUN_0001ab98_1();
     __db_FUN_0001ab98_2();

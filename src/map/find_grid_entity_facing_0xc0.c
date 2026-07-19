@@ -21,7 +21,7 @@
 extern unsigned char g_entity_pool[];
 extern unsigned short g_grid_heads[];
 
-int FUN_00033b88(int param_1, int param_2, short param_3)
+int find_grid_entity_facing_0xc0(int param_1, int param_2, short param_3)
 {
     int step;
     int hi;

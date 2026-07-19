@@ -32,8 +32,8 @@ extern void __db_FUN_0002a828_14(void);
 #pragma aux __db_FUN_0002a828_14 = "db 106" "db 50" "db 139" "db 60" "db 133" "db 16" "db 69" "db 0" "db 0" "db 87" "db 232" "db 23" "db 238" "db 255" "db 255" "db 131" "db 196" "db 8" "db 93" "db 95" "db 94" "db 91" "db 195" "db 49" "db 192" "db 160" "db 13" "db 165" "db 0" "db 0" "db 106" "db 50" "db 139" "db 52" "db 133" "db 28" "db 69" "db 0" "db 0" "db 86" "db 232" "db 249" "db 237" "db 255" "db 255" "db 131" "db 196" "db 8" "db 93" "db 95" "db 94" "db 91" "db 195" "db 49" "db 192" "db 160" "db 13" "db 165" "db 0" "db 0" "db 106" "db 50" "db 139" "db 12" "db 133" "db 40" "db 69" "db 0" "db 0" "db 81" "db 232" "db 219" "db 237" "db 255" "db 255" "db 131" "db 196" "db 8" "db 93" "db 95" "db 94" "db 91" "db 195" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_0002a828_15(void);
 #pragma aux __db_FUN_0002a828_15 = "db 49" "db 192" "db 160" "db 13" "db 165" "db 0" "db 0" "db 106" "db 50" "db 139" "db 28" "db 133" "db 52" "db 69" "db 0" "db 0" "db 83" "db 232" "db 189" "db 237" "db 255" "db 255" "db 131" "db 196" "db 8" "db 93" "db 95" "db 94" "db 91" "db 195" "db 49" "db 192" "db 160" "db 13" "db 165" "db 0" "db 0" "db 106" "db 50" "db 139" "db 20" "db 133" "db 64" "db 69" "db 0" "db 0" "db 82" "db 232" "db 159" "db 237" "db 255" "db 255" "db 131" "db 196" "db 8" "db 93" "db 95" "db 94" "db 91" "db 195" "db 141" "db 64" "db 0" "db 245" "db 220" "db 1" "db 0" "db 4" "db 221" "db 1" "db 0" "db 4" "db 221" "db 1" "db 0" "db 214" "db 225" "db 1" "db 0" "db 214" "db 225" "db 1" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_0002a828 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_0002a828(void) {
+#pragma aux setup_mission_view modify [eax ebx ecx edx esi edi ebp] aborts;
+void setup_mission_view(void) {
     __db_FUN_0002a828_0();
     __db_FUN_0002a828_1();
     __db_FUN_0002a828_2();

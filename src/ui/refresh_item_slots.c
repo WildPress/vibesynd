@@ -1,6 +1,6 @@
 extern unsigned short g_e11c;
 extern unsigned char g_df76[];
-void FUN_0002c4e8(void)
+void refresh_item_slots(void)
 {
     unsigned short u = 0;
     do {

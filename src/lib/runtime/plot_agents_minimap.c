@@ -26,8 +26,8 @@ extern void __db_FUN_0001b3f8_11(void);
 #pragma aux __db_FUN_0001b3f8_11 = "db 255" "db 255" "db 49" "db 192" "db 102" "db 139" "db 67" "db 8" "db 141" "db 28" "db 133" "db 0" "db 0" "db 0" "db 0" "db 1" "db 195" "db 139" "db 45" "db 64" "db 83" "db 0" "db 0" "db 1" "db 219" "db 1" "db 235" "db 131" "db 196" "db 16" "db 57" "db 235" "db 15" "db 135" "db 72" "db 255" "db 255" "db 255" "db 139" "db 92" "db 36" "db 28" "db 67" "db 137" "db 92" "db 36" "db 28" "db 102" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_0001b3f8_12(void);
 #pragma aux __db_FUN_0001b3f8_12 = "db 131" "db 251" "db 4" "db 15" "db 140" "db 103" "db 254" "db 255" "db 255" "db 131" "db 196" "db 36" "db 93" "db 95" "db 94" "db 91" "db 195" "db 141" "db 128" "db 0" "db 0" "db 0" "db 0" "db 141" "db 146" "db 0" "db 0" "db 0" "db 0" "db 141" "db 64" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_0001b3f8 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_0001b3f8(void) {
+#pragma aux plot_agents_minimap modify [eax ebx ecx edx esi edi ebp] aborts;
+void plot_agents_minimap(void) {
     __db_FUN_0001b3f8_0();
     __db_FUN_0001b3f8_1();
     __db_FUN_0001b3f8_2();

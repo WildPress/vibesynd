@@ -10,7 +10,7 @@
  * (xor ah,ah / and eax,0xffff). Recipe: -4s -oneatx -zp8 -s -zq
  */
 extern unsigned short FUN_LE_0000e568(unsigned short a);
-extern void FUN_00026ad8(unsigned short a, unsigned short b);
+extern void advance_aim_along_dir(unsigned short a, unsigned short b);
 extern void aim_cursor_advance(unsigned char *p);
 extern short g_level_step;
 extern unsigned short advance_linked_index(unsigned char *p);
@@ -20,7 +20,7 @@ extern char entity_event_dispatch(unsigned char *p);
 void entity_halve_hp(unsigned char *p)
 {
     p[0xb] |= 2;
-    FUN_00026ad8(
+    advance_aim_along_dir(
         (unsigned short)((FUN_LE_0000e568((unsigned short)p[0x54]) + 2) / 2 + p[0x54]),
         (unsigned short)p[0x1a]);
     p[0x54] = (p[0x54] + 2) / 2;

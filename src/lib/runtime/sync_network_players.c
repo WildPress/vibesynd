@@ -16,8 +16,8 @@ extern void __db_FUN_00027158_6(void);
 #pragma aux __db_FUN_00027158_6 = "db 69" "db 72" "db 6" "db 1" "db 0" "db 83" "db 139" "db 20" "db 69" "db 68" "db 6" "db 1" "db 0" "db 82" "db 232" "db 205" "db 18" "db 0" "db 0" "db 131" "db 196" "db 16" "db 102" "db 133" "db 192" "db 126" "db 193" "db 255" "db 68" "db 36" "db 20" "db 49" "db 192" "db 15" "db 191" "db 21" "db 12" "db 11" "db 1" "db 0" "db 102" "db 139" "db 68" "db 36" "db 20" "db 57" "db 208" "db 15" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_00027158_7(void);
 #pragma aux __db_FUN_00027158_7 = "db 140" "db 199" "db 254" "db 255" "db 255" "db 131" "db 196" "db 24" "db 93" "db 95" "db 94" "db 91" "db 195" "db 141" "db 64" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_00027158 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_00027158(void) {
+#pragma aux sync_network_players modify [eax ebx ecx edx esi edi ebp] aborts;
+void sync_network_players(void) {
     __db_FUN_00027158_0();
     __db_FUN_00027158_1();
     __db_FUN_00027158_2();

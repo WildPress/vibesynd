@@ -33,7 +33,7 @@ extern short g_shot_x;
 extern unsigned short vec_to_angle(int dx, int dy);
 extern int compass_tile_probe(int x, int y, int z, int dir);
 
-unsigned short FUN_00034608(unsigned char dir)
+unsigned short pick_passable_shot_dir(unsigned char dir)
 {
     volatile unsigned short nd2;
     volatile unsigned short nd1;

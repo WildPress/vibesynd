@@ -16,8 +16,8 @@ extern void __db_FUN_00022cc8_6(void);
 #pragma aux __db_FUN_00022cc8_6 = "db 119" "db 1" "db 0" "db 131" "db 196" "db 20" "db 106" "db 12" "db 15" "db 191" "db 198" "db 80" "db 104" "db 140" "db 0" "db 0" "db 0" "db 139" "db 29" "db 100" "db 83" "db 0" "db 0" "db 83" "db 141" "db 68" "db 36" "db 16" "db 80" "db 131" "db 198" "db 12" "db 232" "db 91" "db 157" "db 2" "db 0" "db 131" "db 196" "db 20" "db 71" "db 49" "db 210" "db 15" "db 191" "db 5" "db 12" "db 11" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_00022cc8_7(void);
 #pragma aux __db_FUN_00022cc8_7 = "db 1" "db 0" "db 102" "db 137" "db 250" "db 57" "db 194" "db 15" "db 140" "db 117" "db 255" "db 255" "db 255" "db 232" "db 158" "db 122" "db 255" "db 255" "db 129" "db 196" "db 0" "db 1" "db 0" "db 0" "db 95" "db 94" "db 91" "db 195" "db 141" "db 68" "db 32" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_00022cc8 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_00022cc8(void) {
+#pragma aux refresh_netgame_map modify [eax ebx ecx edx esi edi ebp] aborts;
+void refresh_netgame_map(void) {
     __db_FUN_00022cc8_0();
     __db_FUN_00022cc8_1();
     __db_FUN_00022cc8_2();

@@ -17,7 +17,7 @@
  * selected agent (g_cur_player): slot = g_agent_slots[n*0x417] + (signed char)g_agent_slots[n*0x417+1],
  * ped = g_pool_a + slot*0x5c. If ped type is 0x18/0x19, or (ped flag +0xb bit 0
  * set and g_df52[b*0xb] < 2), reset the record table via copy_5fields_8recs(); if
- * type == 0xa refresh via FUN_0002c4e8(). Then walk the carried-item chain
+ * type == 0xa refresh via refresh_item_slots(). Then walk the carried-item chain
  * (head id at ped+0x3a, next at item+0x1c, item = g_entity_pool + id), advancing a
  * record cursor (0x5256, stride 0x12) per item, and for each item type 1..0x13
  * feed entity_update_target_lock(ped, rec, item, sprite):
@@ -32,7 +32,7 @@ extern unsigned char g_entity_pool[];
 extern short g_5256[];
 
 void copy_5fields_8recs(void);
-void FUN_0002c4e8(void);
+void refresh_item_slots(void);
 void entity_update_target_lock(unsigned char *p, short *rec, int item, short spr);
 
 void refresh_hud_inventory(void)
@@ -50,7 +50,7 @@ void refresh_hud_inventory(void)
         ((ped[0xb] & 1) && g_df52[b * 0xb] < 2))
         copy_5fields_8recs();
     if (ped[0x19] == 0xa)
-        FUN_0002c4e8();
+        refresh_item_slots();
     id = *(unsigned short *)(ped + 0x3a);
     rec = g_5256;
     if (id != 0) {

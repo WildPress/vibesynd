@@ -10,8 +10,8 @@ extern void __db_FUN_00039bd7_3(void);
 #pragma aux __db_FUN_00039bd7_3 = "db 0" "db 233" "db 63" "db 246" "db 255" "db 255" "db 184" "db 190" "db 0" "db 0" "db 0" "db 233" "db 53" "db 246" "db 255" "db 255" "db 184" "db 191" "db 0" "db 0" "db 0" "db 233" "db 43" "db 246" "db 255" "db 255" "db 184" "db 192" "db 0" "db 0" "db 0" "db 233" "db 33" "db 246" "db 255" "db 255" "db 184" "db 193" "db 0" "db 0" "db 0" "db 233" "db 23" "db 246" "db 255" "db 255" "db 184" "db 194" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_00039bd7_4(void);
 #pragma aux __db_FUN_00039bd7_4 = "db 0" "db 0" "db 0" "db 233" "db 13" "db 246" "db 255" "db 255" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_00039bd7 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_00039bd7(void) {
+#pragma aux sound_cmd_thunks modify [eax ebx ecx edx esi edi ebp] aborts;
+void sound_cmd_thunks(void) {
     __db_FUN_00039bd7_0();
     __db_FUN_00039bd7_1();
     __db_FUN_00039bd7_2();

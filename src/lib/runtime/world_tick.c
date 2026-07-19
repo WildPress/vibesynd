@@ -1,13 +1,13 @@
 /* @ 0x26998 -- subsystem init call sequence. */
-extern void FUN_00026a18(void), entity_pool_tick(void), FUN_000380b8(void),
-            FUN_0001c2c8(void), FUN_00029088(void), vehicle_pool_tick(void);
+extern void update_drift_vector(void), entity_pool_tick(void), update_pickup_states(void),
+            update_bullet_sfx_states(void), update_static_object_states(void), vehicle_pool_tick(void);
 
 void world_tick(void)
 {
-    FUN_00026a18();
+    update_drift_vector();
     entity_pool_tick();
-    FUN_000380b8();
-    FUN_0001c2c8();
-    FUN_00029088();
+    update_pickup_states();
+    update_bullet_sfx_states();
+    update_static_object_states();
     vehicle_pool_tick();
 }

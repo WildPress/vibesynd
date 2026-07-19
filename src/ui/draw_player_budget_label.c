@@ -21,7 +21,7 @@ extern int g_text_pal;
 extern void fn_3a4fa();
 extern void fn_36698();
 
-void FUN_00016678(void)
+void draw_player_budget_label(void)
 {
     char buf[40];
     unsigned short idx;

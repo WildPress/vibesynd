@@ -18,8 +18,8 @@ extern void __db_FUN_0001aa08_7(void);
 #pragma aux __db_FUN_0001aa08_7 = "db 158" "db 213" "db 0" "db 0" "db 158" "db 213" "db 0" "db 0" "db 158" "db 213" "db 0" "db 0" "db 158" "db 213" "db 0" "db 0" "db 158" "db 213" "db 0" "db 0" "db 158" "db 213" "db 0" "db 0" "db 179" "db 213" "db 0" "db 0" "db 179" "db 213" "db 0" "db 0" "db 179" "db 213" "db 0" "db 0" "db 179" "db 213" "db 0" "db 0" "db 168" "db 218" "db 0" "db 0" "db 37" "db 219" "db 0" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_0001aa08_8(void);
 #pragma aux __db_FUN_0001aa08_8 = "db 1" "db 220" "db 0" "db 0" "db 147" "db 219" "db 0" "db 0" "db 1" "db 220" "db 0" "db 0" "db 141" "db 68" "db 32" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_0001aa08 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_0001aa08(void) {
+#pragma aux draw_minimap modify [eax ebx ecx edx esi edi ebp] aborts;
+void draw_minimap(void) {
     __db_FUN_0001aa08_0();
     __db_FUN_0001aa08_1();
     __db_FUN_0001aa08_2();

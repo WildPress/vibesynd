@@ -50,8 +50,8 @@ extern void __db_FUN_000254f8_23(void);
 #pragma aux __db_FUN_000254f8_23 = "db 0" "db 0" "db 0" "db 1" "db 208" "db 49" "db 210" "db 138" "db 20" "db 69" "db 158" "db 83" "db 0" "db 0" "db 137" "db 208" "db 193" "db 224" "db 5" "db 1" "db 208" "db 141" "db 4" "db 133" "db 0" "db 0" "db 0" "db 0" "db 41" "db 208" "db 141" "db 4" "db 197" "db 0" "db 0" "db 0" "db 0" "db 41" "db 208" "db 138" "db 128" "db 171" "db 228" "db 0" "db 0" "db 37" "db 255" "db 0" "db 0" "db 0" "db 139" "db 21" "db 112" "db 83" "db 0" "db 0" "db 138" "db 128" "db 106" "db 180" "db 0" "db 0" "db 48" "db 228" "db 82" "db 152" "db 80" "db 49" "db 192" "db 136" "db 216" "db 152" "db 80" "db 232" "db 202" "db 6" "db 0" "db 0" "db 139" "db 13" "db 52" "db 80" "db 0" "db 0" "db 131" "db 196" "db 12" "db 133" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_000254f8_24(void);
 #pragma aux __db_FUN_000254f8_24 = "db 201" "db 117" "db 10" "db 232" "db 248" "db 247" "db 0" "db 0" "db 232" "db 147" "db 248" "db 0" "db 0" "db 254" "db 195" "db 128" "db 251" "db 50" "db 117" "db 140" "db 199" "db 5" "db 52" "db 80" "db 0" "db 0" "db 1" "db 0" "db 0" "db 0" "db 91" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_000254f8 modify [eax ebx ecx edx esi edi ebp];
-void FUN_000254f8(void) {
+#pragma aux run_world_map_screen modify [eax ebx ecx edx esi edi ebp];
+void run_world_map_screen(void) {
     __db_FUN_000254f8_0();
     __db_FUN_000254f8_1();
     __db_FUN_000254f8_2();

@@ -26,8 +26,8 @@ extern void __db_FUN_00026a18_11(void);
 #pragma aux __db_FUN_00026a18_11 = "db 15" "db 191" "db 5" "db 42" "db 11" "db 1" "db 0" "db 193" "db 250" "db 8" "db 1" "db 208" "db 131" "db 196" "db 8" "db 102" "db 163" "db 42" "db 11" "db 1" "db 0" "db 137" "db 240" "db 94" "db 91" "db 195" "db 139" "db 68" "db 36" "db 16" "db 102" "db 139" "db 21" "db 40" "db 11" "db 1" "db 0" "db 102" "db 139" "db 29" "db 42" "db 11" "db 1" "db 0" "db 1" "db 194" "db 139" "db 68" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_00026a18_12(void);
 #pragma aux __db_FUN_00026a18_12 = "db 36" "db 20" "db 102" "db 137" "db 21" "db 40" "db 11" "db 1" "db 0" "db 1" "db 195" "db 184" "db 255" "db 255" "db 255" "db 255" "db 102" "db 137" "db 29" "db 42" "db 11" "db 1" "db 0" "db 94" "db 91" "db 195" "db 141" "db 128" "db 0" "db 0" "db 0" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_00026a18 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_00026a18(void) {
+#pragma aux update_drift_vector modify [eax ebx ecx edx esi edi ebp] aborts;
+void update_drift_vector(void) {
     __db_FUN_00026a18_0();
     __db_FUN_00026a18_1();
     __db_FUN_00026a18_2();

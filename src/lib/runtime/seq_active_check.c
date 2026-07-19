@@ -1,9 +1,9 @@
-/* @ 0x39158 -- returns (FUN_00039bd7(g_seq_ctx, g_seq_state[g_cur_seq]) == 1). */
+/* @ 0x39158 -- returns (sound_cmd_thunks(g_seq_ctx, g_seq_state[g_cur_seq]) == 1). */
 extern signed char g_cur_seq;
 extern int g_seq_state[];
 extern int g_seq_ctx;
-extern int FUN_00039bd7(int a, int b);
+extern int sound_cmd_thunks(int a, int b);
 unsigned short seq_active_check(void)
 {
-    return FUN_00039bd7(g_seq_ctx, g_seq_state[g_cur_seq]) == 1;
+    return sound_cmd_thunks(g_seq_ctx, g_seq_state[g_cur_seq]) == 1;
 }

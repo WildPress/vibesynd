@@ -46,7 +46,7 @@ extern volatile short g_shot_y;
 extern short g_shot_x;
 extern short g_dir_dx[];
 extern short g_dir_dy[];
-extern unsigned short FUN_00034608(short dir);
+extern unsigned short pick_passable_shot_dir(short dir);
 extern unsigned char *shot_collision_query(void);
 extern void field54_sub_threshold(unsigned char *dst, unsigned char *src, unsigned short thr);
 extern void clamp_dec_field54(unsigned char *p, unsigned short n);
@@ -60,7 +60,7 @@ void march_shot_damage(unsigned char *p2, unsigned char *p, unsigned short count
     unsigned char *node;
 
     for (i = 0; i < count; i++) {
-        dir = (unsigned char)FUN_00034608(dir);
+        dir = (unsigned char)pick_passable_shot_dir(dir);
         if (dir != orig && hit == -1)
             hit = i;
         g_shot_x += g_dir_dx[dir] * 0x100 >> 8;
@@ -88,7 +88,7 @@ void march_shot_damage(unsigned char *p2, unsigned char *p, unsigned short count
         }
     }
     for (; i < count; i++) {
-        dir = (unsigned char)FUN_00034608(dir);
+        dir = (unsigned char)pick_passable_shot_dir(dir);
         if (dir != orig && hit == -1)
             hit = i;
         g_shot_x += g_dir_dx[dir] * 0x100 >> 8;

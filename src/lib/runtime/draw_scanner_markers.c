@@ -14,8 +14,8 @@ extern void __db_FUN_0001b658_5(void);
 #pragma aux __db_FUN_0001b658_5 = "db 49" "db 219" "db 141" "db 128" "db 0" "db 0" "db 0" "db 0" "db 141" "db 146" "db 0" "db 0" "db 0" "db 0" "db 139" "db 192" "db 15" "db 191" "db 198" "db 15" "db 191" "db 211" "db 193" "db 224" "db 4" "db 128" "db 188" "db 2" "db 44" "db 219" "db 0" "db 0" "db 0" "db 116" "db 16" "db 15" "db 191" "db 198" "db 80" "db 15" "db 191" "db 195" "db 80" "db 232" "db 239" "db 227" "db 2" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_0001b658_6(void);
 #pragma aux __db_FUN_0001b658_6 = "db 131" "db 196" "db 8" "db 67" "db 102" "db 131" "db 251" "db 16" "db 124" "db 214" "db 70" "db 102" "db 131" "db 254" "db 25" "db 124" "db 191" "db 93" "db 95" "db 94" "db 91" "db 195" "db 141" "db 128" "db 0" "db 0" "db 0" "db 0" "db 141" "db 84" "db 34" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_0001b658 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_0001b658(void) {
+#pragma aux draw_scanner_markers modify [eax ebx ecx edx esi edi ebp] aborts;
+void draw_scanner_markers(void) {
     __db_FUN_0001b658_0();
     __db_FUN_0001b658_1();
     __db_FUN_0001b658_2();

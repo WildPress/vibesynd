@@ -30,8 +30,8 @@ extern void __db_FUN_00029fc8_13(void);
 #pragma aux __db_FUN_00029fc8_13 = "db 18" "db 208" "db 1" "db 0" "db 12" "db 205" "db 1" "db 0" "db 59" "db 205" "db 1" "db 0" "db 106" "db 205" "db 1" "db 0" "db 153" "db 205" "db 1" "db 0" "db 200" "db 205" "db 1" "db 0" "db 247" "db 205" "db 1" "db 0" "db 38" "db 206" "db 1" "db 0" "db 85" "db 206" "db 1" "db 0" "db 132" "db 206" "db 1" "db 0" "db 179" "db 206" "db 1" "db 0" "db 226" "db 206" "db 1" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
 extern void __db_FUN_00029fc8_14(void);
 #pragma aux __db_FUN_00029fc8_14 = "db 17" "db 207" "db 1" "db 0" "db 130" "db 207" "db 1" "db 0" "db 130" "db 207" "db 1" "db 0" "db 130" "db 207" "db 1" "db 0" "db 174" "db 207" "db 1" "db 0" "db 218" "db 207" "db 1" "db 0" "db 218" "db 207" "db 1" "db 0" "db 218" "db 207" "db 1" "db 0" modify exact [eax ebx ecx edx esi edi ebp];
-#pragma aux FUN_00029fc8 modify [eax ebx ecx edx esi edi ebp] aborts;
-void FUN_00029fc8(void) {
+#pragma aux update_mission_lists modify [eax ebx ecx edx esi edi ebp] aborts;
+void update_mission_lists(void) {
     __db_FUN_00029fc8_0();
     __db_FUN_00029fc8_1();
     __db_FUN_00029fc8_2();

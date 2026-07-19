@@ -4,12 +4,12 @@
  *    tile toward the shooter's target coords, pick facing via vec_to_angle,
  *    snap the off-axis coord toward centre via snap_direction, adjust the charge
  *    byte p1[0x54] by the remaining tile distance, drop the shot if it reached
- *    the tile (recompute_state_code), accumulate the shot vector (FUN_00026ad8) and
+ *    the tile (recompute_state_code), accumulate the shot vector (advance_aim_along_dir) and
  *    commit the cursor (move_entity_xyz).
  *  - otherwise: publish the shot accumulators g_shot_x/g_shot_y/g_shot_level and the
  *    target coords g_10b54/56/58, run the trajectory march march_shot_damage, snap
  *    the cursor to the facing (snap_direction by octant), re-pick the passable
- *    facing (FUN_00034608) when the cursor moved off the target tile, probe the
+ *    facing (pick_passable_shot_dir) when the cursor moved off the target tile, probe the
  *    blocked-tile map (g_map_cols column table -> g_tile_flags class) and drop on a block,
  *    then accumulate + commit as above.
  * Recipe: -4s -oneatx -zp8 -s -zq
@@ -36,9 +36,9 @@
  *   3. g_map_cols column lookup: byte-structurally identical to target AFTER the
  *      `base += index` in-place lever (gives `add edi,eax` not `lea`), residual is
  *      a consistent EDI<->ECX register-role swap of the divisor/row/base triangle
- *      -- the exact FUN_0002d5b8 / map_tile_hit_dispatch g_map_cols column register wall.
+ *      -- the exact path_probe_0x40 / map_tile_hit_dispatch g_map_cols column register wall.
  *   4. tile-class widen: target `xor edx,edx; mov dl,[eax]` vs ours `mov al;
- *      and eax,0xff` (uchar and-form vs xor-first; FUN_0002d5b8 wall).
+ *      and eax,0xff` (uchar and-form vs xor-first; path_probe_0x40 wall).
  */
 extern short g_aim_x;
 extern short g_aim_y;
@@ -56,9 +56,9 @@ extern int labs(int x);
 extern unsigned char vec_to_angle(int dx, int dy);
 extern short snap_direction(int cur, int step);
 extern void recompute_state_code(unsigned char *p);
-extern void FUN_00026ad8(unsigned short mult, unsigned short idx);
+extern void advance_aim_along_dir(unsigned short mult, unsigned short idx);
 extern void march_shot_damage(unsigned char *p2, unsigned char *p, unsigned short count);
-extern unsigned short FUN_00034608(int dir);
+extern unsigned short pick_passable_shot_dir(int dir);
 extern void move_entity_xyz(unsigned char *node, int x, int y, int z);
 
 void vehicle_drive_step(unsigned char *p1, unsigned char *p2)
@@ -104,7 +104,7 @@ void vehicle_drive_step(unsigned char *p1, unsigned char *p2)
             && g_aim_y >> 8 == *(short *)(p1 + 0x30) >> 8)
             recompute_state_code(p1);
 
-        FUN_00026ad8((unsigned short)p1[0x54], (unsigned short)p2[0x29]);
+        advance_aim_along_dir((unsigned short)p1[0x54], (unsigned short)p2[0x29]);
         z = *(short *)(p2 + 8);
     } else {
         g_shot_x = g_aim_x;
@@ -135,7 +135,7 @@ void vehicle_drive_step(unsigned char *p1, unsigned char *p2)
             g_shot_x = g_aim_x;
             g_shot_y = g_aim_y;
             g_shot_level = g_aim_level;
-            p2[0x1a] = (unsigned char)FUN_00034608(p2[0x1a]);
+            p2[0x1a] = (unsigned char)pick_passable_shot_dir(p2[0x1a]);
             *(short *)(p1 + 0x34) = g_aim_x;
             *(short *)(p1 + 0x36) = g_aim_y;
         }
@@ -157,7 +157,7 @@ void vehicle_drive_step(unsigned char *p1, unsigned char *p2)
         }
 
         if (p1[0x54] > 0)
-            FUN_00026ad8((unsigned short)p1[0x54], (unsigned short)p2[0x1a]);
+            advance_aim_along_dir((unsigned short)p1[0x54], (unsigned short)p2[0x1a]);
         z = g_aim_level;
     }
 
