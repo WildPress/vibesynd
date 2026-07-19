@@ -1,28 +1,29 @@
-/* PARKED near-miss (NOT matched, ours 183B vs target 185B, first diff 0x6f)
-   -- improved from the old 177/185 park by typing the selector as __segment.
-   That fixed old residue (b): fmemset dst offset is now a fresh `xor edi,edi`
-   (31ff), and the frame is back to 0x3c with in/out slots right (NOTE: with
-   __segment sel the arrays had to be declared out-then-in to keep in at
-   base+0 -- __segment changed Watcom's local ordering vs the ushort version).
-   ONE residue left, worth exactly the 2 missing bytes plus knock-on forms:
-   sel's home. Target homes sel ONLY in GS: direct `mov gs,[esp+0x28]`
-   (8e6c2428), spills gs itself (8c6c2438), and re-reads `mov dx,gs` (8cea)
-   twice -- hoisted above `test ecx` in the || test, and again at the fmemset
-   site before 31ff. Ours homes the value in EDX: `mov edx,[esp+0x28]` +
-   `mov gs,dx` (8b542428 8eea), dword spill 89542438, and dx is simply reused
-   at both sites (no 8cea at all). Also p/r zero regs come out swapped
-   (store gs:[esi+0x40] / return eax=ebx; target is ebx/esi) -- probably
-   downstream of the same home choice. Tried and failed to break the EDX home:
-   (__segment)out[3] and *(__segment *)(out+3) both load via edx; swapping
-   p/r declaration order is a no-op; (__segment)p casts at the use sites
-   catastrophically re-read the word through a far pointer to the stack
-   (214B). All-inline `sel :> 0` at every site (the 0x28558 lever) loses GS
-   entirely (sel -> EBX GPR, 171B); with plain ushort sel, GS survives only
-   ONE construction (old finding, still true). Next idea: find a spelling
-   whose initial load has no GPR use at all so 9.5b picks the 8e6c2428 form,
-   e.g. volatile-ish read, or force edx pressure across the region.
-   OLD residue (a) is subsumed: the hoisted-8cea shape is what the GS-only
-   home produces; it is not a separate scheduling quirk.
+/* PARKED near-miss (NOT matched, ours 183B vs target 185B, first diff 0x6f,
+   EDIT-DIST=25). Improved from the old 29 park by the declaration-order lever:
+   declaring `sel` AFTER p and r (locals order p, r, sel) fixes the p/r
+   callee-saved role swap. The whole tail now matches target byte-for-byte:
+   the offset zeros come out `xor ebx / xor esi` in target order, the store is
+   `mov gs:[ebx+0x40],ax` (66 65 89 43 40), and the return is `mov eax,esi`
+   (89 f0). Any other position for sel is worse (p s r / r s p = 42, sel-first
+   = 29); sel must be declared last.
+
+   ONE residue remains, the whole 0x70-0x8e window and exactly the 2 missing
+   bytes: sel's value home. Target homes sel ONLY in GS -- direct
+   `mov gs,[esp+0x28]` (8e6c2428), spills GS itself (8c6c2438), and re-derives
+   the integer as `mov edx,gs` (8cea) twice (once for the `|| sel!=0` test,
+   once for the fmemset ES load). Ours caches the value in EDX:
+   `mov edx,[esp+0x28]` + `mov gs,edx` (8b542428 8eea), dword spill 89542438,
+   and reuses EDX at both sites (no 8cea at all). This is a register-allocator
+   home-choice: our Watcom keeps the selector in a GPR and CSEs every re-read
+   spelling back to it. Tried on the 25 baseline, none moved it:
+   volatile-read cast *(volatile __segment*)(out+3) (25, CSE'd), a separate
+   `unsigned short sv=sel` for the test (25, CSE'd), re-reading out[3] at the
+   test site (25, CSE'd), re-reading out[3] at the fmemset site (30, worse),
+   `p != 0` far-ptr test (doubled jne, 30), volatile/plain __segment sel
+   (47/198B, forces a memory home). Earlier walls still hold: all-inline
+   `sel :> 0` loses GS (sel -> EBX GPR, 171B); ushort sel keeps GS for only one
+   construction. Genuine allocator home-selection tie: no source spelling seen
+   flips the GPR home to GS.
 
    dpmi_alloc_5para @ 0x27f08 - DPMI (int 0x31, AX=0x100) allocate a 5-paragraph
    DOS memory block, zero its first 0x42 bytes through the returned selector,
@@ -43,9 +44,9 @@ unsigned char __far *dpmi_alloc_5para(void)
 {
     int out[7];
     int in[7];
-    __segment sel;
     unsigned char __far *p;
     unsigned char __far *r;
+    __segment sel;
 
     FUN_0003aaf8(in, 0, 0x1c);
     FUN_0003aaf8(out, 0, 0x1c);
