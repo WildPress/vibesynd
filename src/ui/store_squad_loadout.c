@@ -77,6 +77,13 @@
  *   hook's register clobber forces (target reloads in every branch; without the hook
  *   Watcom hoists our load+inc once before the dispatch), and the `mov cx,di` param
  *   pinning that feeds `push ecx`. All trace to the missing hook.
+ *   (Tried and reverted: forcing the funds split from portable C with an explicit
+ *   temp `int f = *funds; f += imm; *funds = f;` DOES stop Watcom folding, but it
+ *   emits the WRONG shape -- an extra `mov edx,eax` plus swapped regs (value in EAX
+ *   `8b80`, not EDX `8b90`), because without the hook there is no `push ecx` to keep
+ *   the base pinned in EAX. Net EDIT-DIST neutral (495->494 on my masking), size
+ *   1332->1344, so it only pads the delta with non-matching bytes. The split is
+ *   genuinely hook-driven, confirming it is not source-reachable.)
  *
  *   The former "WALL 2" (2D address association) turned out NOT to be a wall. The
  *   correct spelling is RECORD-FIRST: `g_squad_slot[REC + j*40]` (REC == 0x417*param).

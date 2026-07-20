@@ -1,9 +1,9 @@
 {
-"find_related_ped": {
-"close": 0.8849,
-"target": 443,
-"ours": 443,
-"delta": 0,
+"blit_cell_wh": {
+"close": 0.1173,
+"target": 162,
+"ours": 160,
+"delta": -2,
 "jt": false
 },
 "find_nearby_ped": {
@@ -12,6 +12,20 @@
 "ours": 353,
 "delta": 0,
 "jt": false
+},
+"find_related_ped": {
+"close": 0.8849,
+"target": 443,
+"ours": 443,
+"delta": 0,
+"jt": false
+},
+"entity_state_dispatch": {
+"close": 0.288,
+"target": 1528,
+"ours": 1506,
+"delta": -22,
+"jt": true
 },
 "build_equip_row": {
 "close": 0.5067,
@@ -27,25 +41,11 @@
 "delta": 220,
 "jt": true
 },
-"blit_cell_wh": {
-"close": 0.1358,
-"target": 162,
-"ours": 160,
-"delta": -2,
-"jt": false
-},
-"entity_state_dispatch": {
-"close": 0.288,
-"target": 1528,
-"ours": 1506,
-"delta": -22,
-"jt": true
-},
-"economy_daily_tick": {
-"close": 0.6552,
-"target": 957,
-"ours": 939,
-"delta": -18,
+"draw_player_budget_label": {
+"close": 0.7421,
+"target": 190,
+"ours": 187,
+"delta": -3,
 "jt": false
 },
 "research_funding_tick": {
@@ -55,11 +55,11 @@
 "delta": 0,
 "jt": false
 },
-"draw_player_budget_label": {
-"close": 0.7421,
-"target": 190,
-"ours": 187,
-"delta": -3,
+"economy_daily_tick": {
+"close": 0.6552,
+"target": 957,
+"ours": 939,
+"delta": -18,
 "jt": false
 },
 "alloc_init_with_errcode": {
@@ -69,12 +69,18 @@
 "delta": -1,
 "jt": false
 },
-"walk_records_2c": null,
 "container_load": {
 "close": 0.2938,
 "target": 1433,
 "ours": 1448,
 "delta": 15,
+"jt": false
+},
+"walk_records_2c": {
+"close": 0.1887,
+"target": 106,
+"ours": 108,
+"delta": 2,
 "jt": false
 },
 "draw_line": {
@@ -98,12 +104,12 @@
 "delta": -28,
 "jt": true
 },
-"draw_tactical_map": {
-"close": 0.1128,
-"target": 3474,
-"ours": 3174,
-"delta": -300,
-"jt": true
+"draw_object_sprite_list": {
+"close": 0.2077,
+"target": 183,
+"ours": 168,
+"delta": -15,
+"jt": false
 },
 "dispatch_jt45": {
 "close": 0.3053,
@@ -112,12 +118,12 @@
 "delta": -67,
 "jt": true
 },
-"draw_object_sprite_list": {
-"close": 0.2077,
-"target": 183,
-"ours": 168,
-"delta": -15,
-"jt": false
+"draw_tactical_map": {
+"close": 0.1128,
+"target": 3474,
+"ours": 3174,
+"delta": -300,
+"jt": true
 },
 "render_draw_list": {
 "close": 0.1939,
@@ -197,10 +203,10 @@
 "jt": false
 },
 "new_campaign_reset": {
-"close": 0.2079,
-"target": 1510,
+"close": 0.2758,
+"target": 1675,
 "ours": 1627,
-"delta": 117,
+"delta": -48,
 "jt": false
 },
 "new_game_reset": {
@@ -208,6 +214,13 @@
 "target": 1969,
 "ours": 1948,
 "delta": -21,
+"jt": false
+},
+"mission_map_init": {
+"close": 0.9928,
+"target": 415,
+"ours": 415,
+"delta": 0,
 "jt": false
 },
 "store_squad_loadout": {
@@ -223,13 +236,6 @@
 "ours": 722,
 "delta": -2,
 "jt": true
-},
-"mission_map_init": {
-"close": 0.9928,
-"target": 415,
-"ours": 415,
-"delta": 0,
-"jt": false
 },
 "parse_hex_arg": {
 "close": 0.3846,
@@ -259,18 +265,18 @@
 "delta": -11,
 "jt": false
 },
-"draw_agent_detail": {
-"close": 0.3703,
-"target": 1234,
-"ours": 1237,
-"delta": 3,
-"jt": false
-},
 "slot_claim_test": {
 "close": 0.4882,
 "target": 297,
 "ours": 299,
 "delta": 2,
+"jt": false
+},
+"draw_agent_detail": {
+"close": 0.3703,
+"target": 1234,
+"ours": 1237,
+"delta": 3,
 "jt": false
 },
 "render_dashed_line": {
@@ -413,9 +419,27 @@
 "delta": -33,
 "jt": false
 },
-"widget_list_dispatch": null,
-"command_list_interp": null,
-"command_list_interp2": null,
+"widget_list_dispatch": {
+"close": 0.4636,
+"target": 550,
+"ours": 558,
+"delta": 8,
+"jt": true
+},
+"command_list_interp": {
+"close": 0.4621,
+"target": 792,
+"ours": 800,
+"delta": 8,
+"jt": true
+},
+"command_list_interp2": {
+"close": 0.4375,
+"target": 592,
+"ours": 600,
+"delta": 8,
+"jt": true
+},
 "refresh_hud_inventory": {
 "close": 0.916,
 "target": 262,
@@ -458,13 +482,6 @@
 "delta": -1,
 "jt": false
 },
-"interp_scale_b": {
-"close": 0.1786,
-"target": 84,
-"ours": 84,
-"delta": 0,
-"jt": false
-},
 "interp_scale_c": {
 "close": 0.1765,
 "target": 85,
@@ -472,11 +489,18 @@
 "delta": -1,
 "jt": false
 },
+"interp_scale_b": {
+"close": 0.1786,
+"target": 84,
+"ours": 84,
+"delta": 0,
+"jt": false
+},
 "anim_speed_select": {
-"close": 0.1168,
+"close": 0.5533,
 "target": 197,
-"ours": 200,
-"delta": 3,
+"ours": 199,
+"delta": 2,
 "jt": false
 },
 "entity_event_dispatch": {
@@ -486,18 +510,25 @@
 "delta": -7,
 "jt": false
 },
-"projectile_select_turn": {
-"close": 0.3629,
-"target": 1284,
-"ours": 1282,
-"delta": -2,
-"jt": false
-},
 "homing_step": {
 "close": 0.9625,
 "target": 240,
 "ours": 240,
 "delta": 0,
+"jt": false
+},
+"projectile_select_turn": {
+"close": 0.169,
+"target": 1284,
+"ours": 1279,
+"delta": -5,
+"jt": false
+},
+"record_kill_stats": {
+"close": 0.3826,
+"target": 230,
+"ours": 232,
+"delta": 2,
 "jt": false
 },
 "los_trace": {
@@ -512,13 +543,6 @@
 "target": 388,
 "ours": 386,
 "delta": -2,
-"jt": false
-},
-"record_kill_stats": {
-"close": 0.3826,
-"target": 230,
-"ours": 232,
-"delta": 2,
 "jt": false
 },
 "entity_aim_helper": {
@@ -542,13 +566,6 @@
 "delta": -2,
 "jt": false
 },
-"table_save_restore": {
-"close": 0.5191,
-"target": 418,
-"ours": 418,
-"delta": 0,
-"jt": false
-},
 "find_grid_entity_facing_0xc0": {
 "close": 0.8772,
 "target": 171,
@@ -560,6 +577,13 @@
 "close": 0.9162,
 "target": 167,
 "ours": 167,
+"delta": 0,
+"jt": false
+},
+"table_save_restore": {
+"close": 0.5191,
+"target": 418,
+"ours": 418,
 "delta": 0,
 "jt": false
 },
@@ -633,18 +657,18 @@
 "delta": 0,
 "jt": false
 },
-"draw_wrapped_text": {
-"close": 0.2256,
-"target": 523,
-"ours": 517,
-"delta": -6,
-"jt": false
-},
 "measure_text_width": {
 "close": 0.2283,
 "target": 92,
 "ours": 91,
 "delta": -1,
+"jt": false
+},
+"draw_wrapped_text": {
+"close": 0.2256,
+"target": 523,
+"ours": 517,
+"delta": -6,
 "jt": false
 },
 "text_width_kern": {
@@ -668,20 +692,6 @@
 "delta": 1,
 "jt": false
 },
-"drop_carried_items": {
-"close": 0.1546,
-"target": 304,
-"ours": 286,
-"delta": -18,
-"jt": false
-},
-"xmidi_music_init": {
-"close": 0.2294,
-"target": 741,
-"ours": 698,
-"delta": -43,
-"jt": false
-},
 "oneshot_state_setter": {
 "close": 0.4769,
 "target": 65,
@@ -696,12 +706,32 @@
 "delta": 0,
 "jt": false
 },
+"drop_carried_items": {
+"close": 0.1546,
+"target": 304,
+"ours": 286,
+"delta": -18,
+"jt": false
+},
+"xmidi_music_init": {
+"close": 0.2294,
+"target": 741,
+"ours": 698,
+"delta": -43,
+"jt": false
+},
+"z_probe_b": {
+"close": 0.8839,
+"target": 112,
+"ours": 112,
+"delta": 0,
+"jt": false
+},
 "passability_4corner": {
 "close": 0.1614,
 "target": 378,
 "ours": 374,
 "delta": -4,
 "jt": false
-},
-"z_probe_b": null
+}
 }

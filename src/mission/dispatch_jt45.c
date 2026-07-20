@@ -7,10 +7,16 @@
  * A arm2 (minus its 3-byte lea, see below), B both arms, C/D/E bodies,
  * G body, all four constant bodies, I and L 100%, N head + N arm2 100%,
  * and the tail-compare logic all byte-match (masked). Remaining diffs:
- *  1. F (cases 0x12..0x16): Watcom cross-jump MERGES our two value-identical
- *     arms into one (deletes the jnz + 2nd arm, -26B). goto-restructure,
- *     volatile, and arm-spelling swaps all failed to keep both arms. WALL:
- *     the arms are semantically equal; every spelling converges.
+ *  1. F (cases 0x12..0x16): the two arms compute an IDENTICAL value, so 9.5
+ *     value-numbering collapses the redundant branch -- it deletes the jnz AND
+ *     the whole second arm (our 52B body vs target's 100B, ~48B, the BULK of
+ *     the 67B gap). Proof it is value-collapse and not an encoding/cross-jump
+ *     tie: cases 0x18 (G) and 0x1a keep BOTH arms byte-correct because their
+ *     arms differ in value; swapping F's operand order (anim-first vs
+ *     shift-first, to try to force the target's two distinct accumulator
+ *     shapes) still collapses to one arm. goto-restructure and volatile also
+ *     fail. WALL: no C spelling keeps two equal-valued arms alive under this
+ *     toolchain; the period 9.5 build simply did not run the collapse.
  *  2. A2/N1 lea order: our lea ecx,[edx+eax] (8d0c02) == N2's, so it
  *     cross-jumps away; target A2 has its own 8d0c10 ([eax+edx]). N1 also
  *     flips to the SIB-merge shape (A1's identical spelling accumulates

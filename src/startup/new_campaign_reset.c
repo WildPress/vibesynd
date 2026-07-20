@@ -1,14 +1,35 @@
-/* new_campaign_reset @ 0x20fc8 -- TRUE SIZE 1510 (0x20fc8..0x21652).
+/* new_campaign_reset @ 0x20fc8 -- TRUE SIZE 1675 (0x20fc8..0x21652 inclusive,
+ * ends with the ret at 0x21652; next fn new_game_reset at 0x21658).
+ *
+ * WARNING -- STALE MANIFEST SIZE. manifest/functions.json records size 1510 for
+ * this function, which is WRONG. 0x20fc8 + 1510 = 0x215ae lands mid-way through
+ * the mod-record loop, so the harness (tools/match95.sh -> tools/match_reloc.py)
+ * slices the target at 1510 bytes and compares our full body against a truncated
+ * target. That truncation is the sole source of the reported "ours is +117
+ * bytes LONGER". Against the real 1675-byte target our -4s body is 1627 bytes,
+ * i.e. ~48 bytes SHORTER, and 436 instructions vs the target's 440. There is no
+ * +117 reconstruction gap. (functions.json is owned elsewhere; not edited here.)
+ *
+ * RECIPE -- use -4s (stack calling), NOT the -4r in manifest/equivalence.json.
+ * The real target passes every call argument on the stack: lcg_rand(3/7/0x14)
+ * as `push imm; call; add esp,4`, and fill_bytes as `push 0x1e9; push 0;
+ * push &g_5594; call; add esp,0xc`. -4r makes our calls register-pass and
+ * diverge at every call site; -4s reproduces the prologue (push ebx/esi/edi/ebp)
+ * and all five call sites byte-for-byte in shape.
  *
  * "Start a new campaign" -- resets every persistent per-player / per-syndicate
  * table the strategy layer owns. Called once when a new game begins. It walks
  * a handful of fixed-address record tables and stamps their starting values.
  *
- * STATUS: reconstructed. EDIT-DIST 810 -> 636 (46% -> ~58% of 1510). The
- * residue is the Watcom-9.5 codegen wall (register allocation, immediate-vs-
- * register constant forms, loop-counter memory-homing and stack-slot coloring,
- * loop-alignment NOPs) -- the logic and store layout are byte-faithful; what
- * still differs is which register/encoding the compiler picked per site.
+ * STATUS: reconstructed, and against the CORRECT 1675-byte target this is a
+ * close, tie-dominated match, not a structural gap. Under -4s the prologue and
+ * all five call sites match; the residue is the Watcom-9.5 codegen wall
+ * (register allocation, immediate-vs-register constant forms, loop-counter
+ * memory-homing and stack-slot colouring, loop-alignment NOPs). The logic and
+ * store layout are byte-faithful; what still differs is which register/encoding
+ * the compiler picked per site, and the target homes two more dword spill slots
+ * (sub esp,0x18 vs our sub esp,0x10), so it is if anything slightly bulkier
+ * than ours -- there are no extra ops to remove on our side.
  *
  * Structural fixes that moved the needle:
  *   1. The research (0x5788) and mod (0x7bf4) records: the target DUPLICATES the
@@ -28,11 +49,16 @@
  * cached base pointer) -- that re-derives the stride per store from the
  * memory-homed counter, matching the target's shape.
  *
- * Remaining gap character: first diff at 0x6 (frame `sub esp,0x18` vs ours 0xc:
- * the target memory-homes ~2 more counter spill slots, so p/j land at different
- * [esp] displacements and every counter reload differs by one displacement
- * byte); plus scattered immediate-vs-register choices for the 0x960/0x10/0x1e
- * constants. All source-invisible allocator/encoder choices.
+ * Remaining gap character (compiled -4s, against the true 1675-byte target):
+ * first diff at 0x6 -- the frame `sub esp,0x18` where ours is `sub esp,0x10`,
+ * because the target memory-homes two more counter spill slots, so p/j land at
+ * different [esp] displacements and every counter reload differs by one
+ * displacement byte. The target also addresses record fields by folding the
+ * absolute array base into a disp32 (e.g. mov [ebx+0xe5b9]) where ours keeps
+ * the base in a register and uses a small field displacement (mov [edx+0x11d]);
+ * both are relocated disp32 forms of the same address. Plus scattered
+ * immediate-vs-register choices for the 0x960/0x10/0x1e constants. All
+ * source-invisible allocator/encoder choices.
  *
  * GHIDRA MIS-DISASSEMBLY: two spots where Watcom emitted 6-byte
  * `lea reg,[reg+0]` alignment NOPs between an `imul` and the next store (raw
