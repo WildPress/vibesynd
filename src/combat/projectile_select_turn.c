@@ -11,7 +11,17 @@
  * the closest approach (distance via 0x26aa8) and the step at which it occurred. If a
  * copy lands on the target tile mid-march, pick its turn immediately (anim 0xe/0xf).
  * After 32 steps, choose the turn whose trajectory got closer sooner (128 units/step
- * tie-break). Recipe: -4s -oneatx -zp8 -s -zq */
+ * tie-break). Recipe: -4s -oneatx -zp8 -s -zq
+ * REAL GAP FOUND + FIXED: find_projectile_step's dir arg is INT, not char. With
+ * Watcom's default-unsigned char, `char dir` zero-extended the -0x40 literal to
+ * 0x000000c0 emitting `push 0xc0` (68 c0000000, imm32); the target sign-extends
+ * -0x40 as `push -0x40` (6a c0, imm8). `int dir` restores the byte-exact 6ac0.
+ * Baseline 901/1284 LCS -> 904/1284, push site now byte-identical. RESIDUE is
+ * register-allocation/scheduling ties (b1iter/b2iter/b1dist in swapped GPRs vs
+ * target's [esp+0xb8/bc/c0] + ebp; b2dist/b1dist zeroed at top via xor ebp,ebp +
+ * [esp+0xc0]; cl-vs-dh 0x80 store; the `ushort<ushort` compare emitted as a
+ * 16-bit cmp/jae here vs target's zero-extend-to-32 cmp/jge) -- all verified
+ * semantics-identical, not fixable by C spelling. */
 extern short g_5300;
 extern short g_dir_dx[];
 extern short g_dir_dy[];
@@ -24,7 +34,7 @@ extern int sum_of_squares_call(int dx, int dy);
 extern int projectile_step(unsigned char *obj, unsigned char dir);
 extern unsigned short aim_step(unsigned char *obj, unsigned char dir);
 extern int max_abs(short a, short b);
-extern void find_projectile_step(unsigned char *obj, char dir);
+extern void find_projectile_step(unsigned char *obj, int dir);
 extern unsigned char lcg_rand(int a);
 extern void advance_aim_along_dir(unsigned short mult, unsigned short idx);
 extern int aim_cursor_advance(int obj);
