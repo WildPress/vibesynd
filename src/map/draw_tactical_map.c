@@ -11,8 +11,10 @@
  *   agent = the pool-A node the view is centred on (its world x/y at +4/+6);
  *   zoom  = pixels-per-tile scale (read zero-extended: unsigned short).
  *
- * STATUS: distance 2356 -> 2032 (edit-dist), 32% -> ~41% match. Structure is
- * faithful and top-to-bottom aligned; residue is a codegen-tie floor (below).
+ * STATUS: distance 2356 -> 2032 -> 1968 (masked Levenshtein), 32% -> ~41% match.
+ * Structure is faithful and top-to-bottom aligned; residue is a codegen-tie floor
+ * (below). Latest -32: the tail blip-draw `chr` is `short` (target sign-extends it
+ * via `movsx edx,dx` before the draw_filled_shape push; see fixes list).
  *
  * Key source fixes that realigned it (all faithful, not byte-tricks):
  *  - span / tileX0 / tileY0 / row / col / row2 / col2 are `short`. That stops
@@ -31,6 +33,16 @@
  *  - Phase-2: tsx/tsy folded directly into blipX/blipY (no separate temps).
  *  - Phase-1 index: row term written first, col term second, matching the
  *    target's evaluation order.
+ *  - Tail blip-draw pass 1: `chr` is `short` (blip[i*6+4]+1). The target keeps it
+ *    16-bit and sign-extends (`movsx edx,dx`) right before pushing it to
+ *    draw_filled_shape; as `int` ours emitted a plain 32-bit `lea`, misaligning the
+ *    push block. `short` -> masked edit-distance 2000 -> 1968.
+ *    (TESTED-AND-REVERTED, faithful-but-worse: `short owner=-1` reproduces the
+ *    target's `mov edx,0xffff` at 0x19b61, and `unsigned char arg` reproduces its
+ *    `and dl,0xf; and edx,0xff` byte-widen at 0x19fe2 -- each is byte-for-byte more
+ *    faithful in isolation, but every combination that includes `owner` or pairs
+ *    `chr`+`arg` REGRESSES total edit distance via register-allocation cascade
+ *    (owner 2003, arg 1982, chr+arg 2010, owner+chr 2017). `chr` alone is the min.)
  *
  * REMAINING GAP (codegen ties, not source-reachable):
  *  1. Register allocation: the target keeps `count` in EDI and `zoom` in ECX;
@@ -49,7 +61,7 @@
  *       - table2 @ 0x195a4,  6 entries, index node[0x18]     (blip by type)
  *       - table3 @ 0x195bc, 17 entries, index objective type  (HUD markers)
  *     (lefix rule: literal L in `jmp CS:[eax*4+L]` -> manifest L+0xd748.)
- * Compiles (-4s -oneatx -zp8 -s -zq); ours 3240B vs target 3474B. First diff at
+ * Compiles (-4s -oneatx -zp8 -s -zq); ours 3238B vs target 3474B. First diff at
  * 0x3c is inside that co-located jump-table head, not a logic divergence.
  *
  * ---- Algorithm ----
@@ -311,7 +323,7 @@ void draw_tactical_map(unsigned char *agent, unsigned short zoom)
     {
         int i;
         for (i = 0; i < count; i++) {
-            int chr = blip[i * 6 + 4] + 1;
+            short chr = blip[i * 6 + 4] + 1;
             int arg = (g_e395 != 0) ? 0 : (blip[i * 6 + 5] + 8) & 0xf;
             draw_filled_shape(*(short *)(blip + i * 6), *(short *)(blip + i * 6 + 2),
                          chr, arg);
