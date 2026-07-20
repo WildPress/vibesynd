@@ -72,6 +72,42 @@ The tools for this are `tools/recipes.py`, which records the flags each match
 needs, and `tools/caltest.py`, which tries a candidate set against the whole
 baseline.
 
+## The build was module profiles, not one flag
+
+It is tempting to think the whole game was compiled in one go with a single set of
+flags. It wasn't, and it wasn't per-function either. The truth sits in between: a
+small number of profiles, one per module or library, exactly as a real makefile
+produces.
+
+We tested this directly. `tools/arch_audit.py` recompiles every matched function
+under both `-3s` (386) and `-4s` (486), holding the other flags, and records which
+one the original bytes agree with. The result across 394 functions:
+
+| bucket | count | meaning |
+| --- | --- | --- |
+| matches under both | 240 | the two arches emit identical bytes, so the arch is arbitrary here |
+| only `-4s` | 118 | 486 scheduling, and the original agrees |
+| only `-3s` | 21 | 386 scheduling, and the original agrees |
+| neither | 15 | needs an extra flag (`-of` or `-d2`) beyond arch |
+
+The 118-to-21 split is the tell. Where the arch actually changes the bytes, the
+original overwhelmingly agrees with `-4s`, so the game's own code was built for the
+486. The 21 that want `-3s` are almost all C runtime routines (`malloc`, `printf`,
+`fopen`, `strchr`, `free`), which is the Watcom library, shipped precompiled for the
+386 and linked in. The 15 that need more are almost all `snd_cmd_*` sound handlers,
+a module built with its own flags again.
+
+So there are three profiles: the game code at `-4s -oneatx`, the C runtime at `-3s`,
+and the sound module with `-of` or `-d2` on top. The binary corroborates the
+toolchain from the outside: it embeds the `DOS/4GW` extender (so flat 32-bit model)
+and the run-time banner "WATCOM C/C++32 Run-Time system (c) 1988-1993", which puts
+it in the 9.5 era.
+
+The practical rule that falls out: pin each function to its module's profile, not to
+whatever flag happened to match it first. A function whose recipe drifts from its
+module's profile is the signal to look at, because the odd flag is usually hiding a
+C bug rather than reflecting a real build choice.
+
 ## Why this discipline matters
 
 Pinning the flags does something quietly important. Once you know the flags are

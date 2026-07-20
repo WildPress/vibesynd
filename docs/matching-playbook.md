@@ -503,6 +503,19 @@ Determine the convention from the disasm: params from `[ESP+..]` → `-4s`. Para
   the clobber set, does NOT change arg passing), the original TU's header ABI. This is the ONLY
   C that yields the phantom save (any real ebx use emits loads/stores). Reloc-verified. Detector
   `tools/crackreg.py` flags pure dead-callee-save cases. `tools/crackfix.py` batch-applies it.
+  - **Live-value reseat variant (cont. 30, 0x35e68 walk_sound_record_table).** The stronger case:
+    a value is live ACROSS a call and the original callee clobbered the callee-saved reg it sat in,
+    so the caller seated it elsewhere. `#pragma aux <callee> modify [eax edx ebx ecx edi ebp]`
+    (preserve ESI only) reproduced the target's whole register colouring where no in-function edit
+    could. The declaration is correct, not a trick: a value kept live in ESI across the call proves
+    the callee preserves ESI. `tools/modify_probe.py` sweeps the lever in both directions (add-one,
+    preserve-one) per callee and flags the reliable signal, a first-diff reaching fully-equal.
+  - **This lever is now exhausted.** A full coarse-then-fine sweep of the corpus (`modify_probe.py`,
+    `--fine`) yielded exactly two matches beyond the dead-save cases (walk_sound and 0x25238
+    guarded_init_alloc) and proved no more exist. The other "promising" leads were false: adding a
+    callee-saved reg can move the first-diff later by adding a cosmetic prologue push over a deeper
+    tie (CSE double-load, register-role of non-call-spanning scratch). Trust a match candidate
+    (first-diff to fully-equal), not merely "moved later".
 - **Whole-module build for cross-function tail-merge (cont. 27, 0x37818).** A fn whose `return 0`
   has NO local stub. It jumps BACKWARD into a NEIGHBOUR's return stub (Watcom's cross-jump opt is
   intra-object). Match it by compiling both siblings in ONE translation unit (`src/*.c` with both

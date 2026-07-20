@@ -90,3 +90,21 @@ and never preserves. That save-everything shape is an assembly convention, and i
 also why we couldn't reproduce these functions from C and transcribed their raw
 bytes instead. The sound code is a third-party or in-house driver, working in the
 XMIDI format, again linked in but not from Watcom.
+
+To put a number on it: 259 functions are whole-function assembly transcriptions, the
+`db`-byte pragmas that make up `src/lib/gfx/` and `src/lib/flic/`, and all 259 match.
+The graphics library is effectively done, and done honestly, as assembly, because it
+is assembly. That is the right way to represent it, not as pretend C.
+
+Two things are worth keeping straight here, because it is easy to over-apply the
+"it's assembly" idea. First, the sound code that carries the game's logic
+(`sound_driver_init`, `xmidi_music_init`, `play_sound_slot`) is compiled C, not
+transcribed assembly. Only the lowest plumbing is hand-written. Second, the
+remaining unmatched game functions are not secretly assembly either. Their
+divergences are register-role ties, the same instruction stream with a different
+register in a slot. Hand-written assembly would not happen to land on the compiler's
+exact instruction selection, so that alignment is itself the proof they came from a
+compiler. Transcribing them as assembly would be wrong, not faithful. A few
+functions look like assembly at a glance only because they call small transcribed
+string helpers (`fstrcpy` and friends, which are Watcom's own `string.h` far-string
+inline pragmas), but the body around the call is ordinary C.
