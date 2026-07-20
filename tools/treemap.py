@@ -27,6 +27,16 @@ BG = "#0d1117"; CARD = "#0d1117"; STROKE = "#0d1117"
 INK = "#e6edf3"; MUTED = "#8b949e"
 COL = {"matched": "#2ea043", "decoded": "#ff6ac1", "equivalent": "#22d3ee", "near": "#388bfd", "parked": "#d29922", "no-c": "#545d68"}
 
+# closeness gradient for UNMATCHED functions: red (far from the target bytes) -> blue (nearly
+# there), by the reloc-aware regdiff score in equivalence.json. Matched stays green, so green
+# reads as "done", blue as "one lever away", red as "still a real reconstruction gap".
+GRAD_LO, GRAD_HI = (0xe5, 0x48, 0x4d), (0x38, 0x8b, 0xfd)   # red -> blue
+
+def grad(s):
+    s = 0.0 if s < 0 else 1.0 if s > 1 else s
+    r, g, b = (round(lo + (hi - lo) * s) for lo, hi in zip(GRAD_LO, GRAD_HI))
+    return f"#{r:02x}{g:02x}{b:02x}"
+
 
 # ---- squarified treemap (Bruls/Huizing/van Wijk; port of the `squarify` package) -------------
 def _layoutrow(sizes, x, y, dy):
@@ -113,11 +123,13 @@ def main():
     #     almost surely semantically equivalent.
     #   parked (amber)    = STRUCTURAL <0.90: a real instruction-shape difference (a source change to find).
     eqf = os.path.join(ROOT, "manifest", "equivalence.json")
-    EQUIV, NEAR = set(), set()
+    EQUIV, NEAR, SCORE = set(), set(), {}
     if os.path.exists(eqf):
         for n, v in json.load(open(eqf)).items():
             if not v:
                 continue
+            if isinstance(v.get("score"), (int, float)):
+                SCORE[n] = v["score"]
             if v.get("verdict") in ("MATCH", "PURE-ALLOC", "REGISTER-ROLE"):
                 EQUIV.add(n)
             elif v.get("verdict") == "STRUCTURAL" and (v.get("score") or 0) >= 0.90:
@@ -136,6 +148,14 @@ def main():
         if f["name"] in NEAR:
             return "near"
         return "parked"
+
+    def fillcolor(f):
+        # matched (green), decoded hand-asm (pink) and no-c (grey) keep their categorical colour;
+        # every other function is unmatched-with-C and gets the red->blue closeness gradient.
+        k = klass(f)
+        if k in ("matched", "decoded", "no-c"):
+            return COL[k]
+        return grad(SCORE.get(f["name"], 0.12))   # unscored unmatched -> treat as far (red)
 
     subs = {}
     for f in man:
@@ -173,7 +193,7 @@ def main():
         fns = sorted(fs, key=lambda f: -f["size"])
         fsz = normalize([f["size"] for f in fns], iw, fh)
         for f, (fx, fyy, fw, fhh) in zip(fns, squarify(fsz, ix, fy, iw, fh)):
-            body.append(rect(fx, fyy, fw, fhh, COL[klass(f)]))
+            body.append(rect(fx, fyy, fw, fhh, fillcolor(f)))
         body.append(rect(ix, iy, iw, ih, "none", stroke="#161b22", sw=1))   # subsystem outline
         if show_label:
             mtc = sum(1 for f in fs if klass(f) in ("matched", "decoded", "equivalent", "near"))
@@ -190,14 +210,22 @@ def main():
         text(W - PAD, 30, f"{covb:.1f}%", fill=COL["matched"], size=26, weight="bold", anchor="end"),
         text(W - PAD, 48, "of code bytes byte-exact", fill=MUTED, size=11, anchor="end"),
     ]
-    # legend (on the title row, centred — clear of the subtitle line and the right-aligned %)
-    lx = W / 2 - 300
-    for i, (k, lab, n) in enumerate([("matched", "byte-exact C", mfn), ("decoded", "decoded asm", dfn),
-                                     ("equivalent", "register-only", efn), ("near", "near-identical", nefn),
-                                     ("parked", "structural", pfn)]):
-        cx = lx + i * 120
-        hdr.append(rect(cx, 18, 11, 11, COL[k], stroke="none"))
-        hdr.append(text(cx + 16, 27, f"{lab} {n}", fill=MUTED, size=11))
+    # legend (on the title row): green matched, pink decoded asm, a red->blue closeness gradient
+    # bar for the unmatched (far -> nearly there), grey for functions with no C yet.
+    unm_c = efn + nefn + pfn
+    lx = W / 2 - 330
+    hdr.append('<defs><linearGradient id="clg" x1="0" y1="0" x2="1" y2="0">'
+               f'<stop offset="0" stop-color="{grad(0)}"/><stop offset="1" stop-color="{grad(1)}"/>'
+               '</linearGradient></defs>')
+    hdr.append(rect(lx, 18, 11, 11, COL["matched"], stroke="none"))
+    hdr.append(text(lx + 16, 27, f"matched {mfn}", fill=MUTED, size=11))
+    hdr.append(rect(lx + 108, 18, 11, 11, COL["decoded"], stroke="none"))
+    hdr.append(text(lx + 124, 27, f"decoded asm {dfn}", fill=MUTED, size=11))
+    gx = lx + 250
+    hdr.append(rect(gx, 18, 66, 11, "url(#clg)", stroke="none", rx=2))
+    hdr.append(text(gx + 72, 27, f"unmatched far&#8594;close {unm_c}", fill=MUTED, size=11))
+    hdr.append(rect(lx + 500, 18, 11, 11, COL["no-c"], stroke="none"))
+    hdr.append(text(lx + 516, 27, f"no C {nfn}", fill=MUTED, size=11))
 
     svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" '
            f'font-family="ui-monospace,Menlo,Consolas,monospace" role="img" '

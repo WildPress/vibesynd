@@ -1,9 +1,4 @@
 {
-"blit_cell_wh": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.8504
-},
 "entity_state_dispatch": {
 "verdict": "STRUCTURAL",
 "flags": "-4s -oneatx -zp8 -s -zq",
@@ -19,15 +14,20 @@
 "flags": "-4s -oneatx -zp8 -s -zq",
 "score": 0.7775
 },
-"economy_daily_tick": {
+"blit_cell_wh": {
 "verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.6065
+"flags": "-4s -onetx -zp8 -s -zq",
+"score": 0.8504
 },
 "research_funding_tick": {
 "verdict": "STRUCTURAL",
 "flags": "-4s -oneatx -zp8 -s -zq",
 "score": 0.9701
+},
+"economy_daily_tick": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.6065
 },
 "draw_player_budget_label": {
 "verdict": "STRUCTURAL",
@@ -164,7 +164,11 @@
 "flags": "-4s -oneatx -zp8 -s -zq",
 "score": 0.9339
 },
-"parse_hex_arg": null,
+"parse_hex_arg": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.757
+},
 "guarded_init_alloc": {
 "verdict": "STRUCTURAL",
 "flags": "-4s -oneatx -zp8 -s -zq",
@@ -180,15 +184,15 @@
 "flags": "-4r -oneatx -zp8 -s -zq",
 "score": 0.1775
 },
-"slot_claim_test": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.7571
-},
 "draw_agent_detail": {
 "verdict": "STRUCTURAL",
 "flags": "-4s -oneatx -zp8 -s -zq",
 "score": 0.4113
+},
+"slot_claim_test": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.7571
 },
 "render_dashed_line": {
 "verdict": "STRUCTURAL",
@@ -205,15 +209,15 @@
 "flags": "-4s -oneatx -zp8 -s -zq",
 "score": 0.4954
 },
-"grid_unlink_object": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.8056
-},
 "move_entity_xyz": {
 "verdict": "STRUCTURAL",
 "flags": "-4s -oneatx -zp8 -s -zq",
 "score": 0.9111
+},
+"grid_unlink_object": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.8056
 },
 "draw_slot_record_chain": {
 "verdict": "STRUCTURAL",
@@ -225,15 +229,15 @@
 "flags": "-4s -oneatx -zp8 -s -zq",
 "score": 0.4865
 },
-"mp_session_setup": {
-"verdict": "STRUCTURAL",
-"flags": "-4r -oneatx -zp8 -s -zq",
-"score": 0.2344
-},
 "far_alloc_probe": {
 "verdict": "STRUCTURAL",
 "flags": "-4s -oneatx -zp8 -s -zq",
 "score": 0.9153
+},
+"mp_session_setup": {
+"verdict": "STRUCTURAL",
+"flags": "-4r -oneatx -zp8 -s -zq",
+"score": 0.2344
 },
 "guarded_call_2arg": {
 "verdict": "STRUCTURAL",
@@ -300,30 +304,30 @@
 "flags": "-4s -oneatx -zp8 -s -zq",
 "score": 0.5722
 },
-"command_list_interp": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.4942
-},
 "refresh_hud_inventory": {
 "verdict": "STRUCTURAL",
 "flags": "-4s -oneatx -zp8 -s -zq",
 "score": 0.4813
 },
-"command_list_interp2": {
+"command_list_interp": {
 "verdict": "STRUCTURAL",
 "flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.5838
+"score": 0.4942
+},
+"agent_hud_render": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.5456
 },
 "rate_byte_drift": {
 "verdict": "STRUCTURAL",
 "flags": "-4s -oneatx -zp8 -s -zq",
 "score": 0.9453
 },
-"agent_hud_render": {
+"command_list_interp2": {
 "verdict": "STRUCTURAL",
 "flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.5456
+"score": 0.5838
 },
 "path_probe_y": {
 "verdict": "STRUCTURAL",
@@ -385,11 +389,6 @@
 "flags": "-4s -oneatx -zp8 -s -zq",
 "score": 0.5957
 },
-"entity_aim_helper": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.963
-},
 "vehicle_exit": {
 "verdict": "REGISTER-ROLE",
 "flags": "-4s -oneatx -zp8 -s -zq",
@@ -435,30 +434,30 @@
 "flags": "-4s -oneatx -zp8 -s -zq",
 "score": 0.9109
 },
-"pick_passable_shot_dir": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.3451
-},
 "compass_tile_probe": {
 "verdict": "STRUCTURAL",
 "flags": "-4s -oneatx -zp8 -s -zq",
 "score": 0.7113
+},
+"pick_passable_shot_dir": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.3451
 },
 "sound_driver_init": {
 "verdict": "STRUCTURAL",
 "flags": "-4r -oneatx -zp8 -s -zq",
 "score": 0.2193
 },
-"vehicle_drive_step": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.2864
-},
 "walk_sound_record_table": {
 "verdict": "REGISTER-ROLE",
 "flags": "-4s -oneatx -zp8 -s -zq",
 "score": 1.0
+},
+"vehicle_drive_step": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.2864
 },
 "play_sound_slot": {
 "verdict": "STRUCTURAL",
@@ -470,45 +469,55 @@
 "flags": "-4s -oneatx -zp8 -s -zq",
 "score": 0.8947
 },
-"draw_wrapped_text": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.8927
-},
 "text_width_kern": {
 "verdict": "STRUCTURAL",
 "flags": "-4s -oneatx -zp8 -s -zq",
 "score": 0.9552
+},
+"draw_wrapped_text": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.8927
 },
 "draw_ui_text": {
 "verdict": "STRUCTURAL",
 "flags": "-4s -oneatx -zp8 -s -zq",
 "score": 0.8559
 },
-"drop_carried_items": {
-"verdict": "STRUCTURAL",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 0.6458
-},
-"load_tagged_resource": {
-"verdict": "REGISTER-ROLE",
-"flags": "-4s -oneatx -zp8 -s -zq",
-"score": 1.0
-},
 "text_input_widget": {
 "verdict": "STRUCTURAL",
 "flags": "-4r -oneatx -zp8 -s -zq",
 "score": 0.6708
+},
+"drop_carried_items": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.6458
 },
 "xmidi_music_init": {
 "verdict": "STRUCTURAL",
 "flags": "-4r -oneatx -zp8 -s -zq",
 "score": 0.2929
 },
+"copy_if_set": {
+"verdict": "MATCH",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 1.0
+},
+"entity_aim_helper": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.9444
+},
 "oneshot_state_setter": {
 "verdict": "STRUCTURAL",
 "flags": "-4r -oneatx -zp8 -s -zq",
 "score": 0.2051
+},
+"z_probe": {
+"verdict": "STRUCTURAL",
+"flags": "-4s -oneatx -zp8 -s -zq",
+"score": 0.9684
 },
 "z_probe_b": {
 "verdict": "STRUCTURAL",
