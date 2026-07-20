@@ -1,16 +1,9 @@
 {
 "blit_cell_wh": {
-"close": 0.1173,
+"close": 0.1358,
 "target": 162,
 "ours": 160,
 "delta": -2,
-"jt": false
-},
-"find_nearby_ped": {
-"close": 0.9093,
-"target": 353,
-"ours": 353,
-"delta": 0,
 "jt": false
 },
 "find_related_ped": {
@@ -20,18 +13,25 @@
 "delta": 0,
 "jt": false
 },
-"entity_state_dispatch": {
-"close": 0.288,
-"target": 1528,
-"ours": 1506,
-"delta": -22,
-"jt": true
+"find_nearby_ped": {
+"close": 0.9093,
+"target": 353,
+"ours": 353,
+"delta": 0,
+"jt": false
 },
 "build_equip_row": {
 "close": 0.5067,
 "target": 1188,
 "ours": 1188,
 "delta": 0,
+"jt": true
+},
+"entity_state_dispatch": {
+"close": 0.288,
+"target": 1528,
+"ours": 1506,
+"delta": -22,
 "jt": true
 },
 "find_blocking_entity": {
@@ -77,10 +77,10 @@
 "jt": false
 },
 "walk_records_2c": {
-"close": 0.1887,
+"close": 0.1981,
 "target": 106,
-"ours": 108,
-"delta": 2,
+"ours": 105,
+"delta": -1,
 "jt": false
 },
 "draw_line": {
@@ -119,10 +119,10 @@
 "jt": true
 },
 "draw_tactical_map": {
-"close": 0.1128,
+"close": 0.129,
 "target": 3474,
-"ours": 3174,
-"delta": -300,
+"ours": 3316,
+"delta": -158,
 "jt": true
 },
 "render_draw_list": {
@@ -146,18 +146,18 @@
 "delta": 2,
 "jt": true
 },
-"menu_list_hit_test": {
-"close": 0.0382,
-"target": 314,
-"ours": 307,
-"delta": -7,
-"jt": false
-},
 "menu_list_draw": {
 "close": 0.2843,
 "target": 299,
 "ours": 295,
 "delta": -4,
+"jt": false
+},
+"menu_list_hit_test": {
+"close": 0.0382,
+"target": 314,
+"ours": 307,
+"delta": -7,
 "jt": false
 },
 "menu_list_draw_b": {
@@ -307,18 +307,18 @@
 "delta": -1,
 "jt": false
 },
-"mp_session_setup": {
-"close": 0.2679,
-"target": 1482,
-"ours": 1474,
-"delta": -8,
-"jt": false
-},
 "submit_ncb": {
 "close": 0.2087,
 "target": 230,
 "ours": 226,
 "delta": -4,
+"jt": false
+},
+"mp_session_setup": {
+"close": 0.2679,
+"target": 1482,
+"ours": 1474,
+"delta": -8,
 "jt": false
 },
 "far_alloc_probe": {
@@ -377,18 +377,18 @@
 "delta": 7,
 "jt": false
 },
-"dpmi_free_dos_mem": {
-"close": 0.4462,
-"target": 130,
-"ours": 131,
-"delta": 1,
-"jt": false
-},
 "recv_chunked": {
 "close": 0.3714,
 "target": 140,
 "ours": 138,
 "delta": -2,
+"jt": false
+},
+"dpmi_free_dos_mem": {
+"close": 0.4462,
+"target": 130,
+"ours": 131,
+"delta": 1,
 "jt": false
 },
 "radar_panel_sm": {
@@ -419,17 +419,17 @@
 "delta": 8,
 "jt": true
 },
-"command_list_interp": {
-"close": 0.4621,
-"target": 792,
-"ours": 800,
-"delta": 8,
-"jt": true
-},
 "command_list_interp2": {
 "close": 0.4375,
 "target": 592,
 "ours": 600,
+"delta": 8,
+"jt": true
+},
+"command_list_interp": {
+"close": 0.4621,
+"target": 792,
+"ours": 800,
 "delta": 8,
 "jt": true
 },
@@ -475,18 +475,18 @@
 "delta": -1,
 "jt": false
 },
-"interp_scale_c": {
-"close": 0.1765,
-"target": 85,
-"ours": 84,
-"delta": -1,
-"jt": false
-},
 "interp_scale_b": {
 "close": 0.1786,
 "target": 84,
 "ours": 84,
 "delta": 0,
+"jt": false
+},
+"interp_scale_c": {
+"close": 0.1765,
+"target": 85,
+"ours": 84,
+"delta": -1,
 "jt": false
 },
 "anim_speed_select": {
@@ -517,13 +517,6 @@
 "delta": -5,
 "jt": false
 },
-"record_kill_stats": {
-"close": 0.3826,
-"target": 230,
-"ours": 232,
-"delta": 2,
-"jt": false
-},
 "los_trace": {
 "close": 0.8247,
 "target": 519,
@@ -536,6 +529,13 @@
 "target": 388,
 "ours": 386,
 "delta": -2,
+"jt": false
+},
+"record_kill_stats": {
+"close": 0.3826,
+"target": 230,
+"ours": 232,
+"delta": 2,
 "jt": false
 },
 "entity_aim_helper": {
@@ -559,8 +559,15 @@
 "delta": -2,
 "jt": false
 },
+"table_save_restore": {
+"close": 0.5191,
+"target": 418,
+"ours": 418,
+"delta": 0,
+"jt": false
+},
 "find_grid_entity_facing_0xc0": {
-"close": 0.8772,
+"close": 0.8713,
 "target": 171,
 "ours": 171,
 "delta": 0,
@@ -570,13 +577,6 @@
 "close": 0.9162,
 "target": 167,
 "ours": 167,
-"delta": 0,
-"jt": false
-},
-"table_save_restore": {
-"close": 0.5191,
-"target": 418,
-"ours": 418,
 "delta": 0,
 "jt": false
 },
@@ -601,18 +601,18 @@
 "delta": 0,
 "jt": false
 },
-"march_shot_damage": {
-"close": 0.9669,
-"target": 453,
-"ours": 453,
-"delta": 0,
-"jt": false
-},
 "compass_tile_probe": {
 "close": 0.2462,
 "target": 666,
 "ours": 659,
 "delta": -7,
+"jt": false
+},
+"march_shot_damage": {
+"close": 0.9669,
+"target": 453,
+"ours": 453,
+"delta": 0,
 "jt": false
 },
 "pick_passable_shot_dir": {
@@ -650,18 +650,18 @@
 "delta": -1,
 "jt": false
 },
-"draw_wrapped_text": {
-"close": 0.2256,
-"target": 523,
-"ours": 517,
-"delta": -6,
-"jt": false
-},
 "text_width_kern": {
 "close": 0.8481,
 "target": 79,
 "ours": 79,
 "delta": 0,
+"jt": false
+},
+"draw_wrapped_text": {
+"close": 0.2256,
+"target": 523,
+"ours": 517,
+"delta": -6,
 "jt": false
 },
 "draw_ui_text": {
@@ -678,6 +678,13 @@
 "delta": 1,
 "jt": false
 },
+"drop_carried_items": {
+"close": 0.1546,
+"target": 304,
+"ours": 286,
+"delta": -18,
+"jt": false
+},
 "oneshot_state_setter": {
 "close": 0.4769,
 "target": 65,
@@ -690,13 +697,6 @@
 "target": 112,
 "ours": 112,
 "delta": 0,
-"jt": false
-},
-"drop_carried_items": {
-"close": 0.1546,
-"target": 304,
-"ours": 286,
-"delta": -18,
 "jt": false
 },
 "xmidi_music_init": {
@@ -714,10 +714,10 @@
 "jt": false
 },
 "passability_4corner": {
-"close": 0.1614,
+"close": 0.3386,
 "target": 378,
-"ours": 374,
-"delta": -4,
+"ours": 371,
+"delta": -7,
 "jt": false
 }
 }
