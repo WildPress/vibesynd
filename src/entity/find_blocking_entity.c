@@ -18,6 +18,15 @@
    Net -174 edit-dist. Confirmed better than: volatile rx+ryy (1280), dropping
    the redundant case-1 node[0xb]&1 retest (1131), reordering the case-1 cmp
    (1141), hoisting one body's rx/2 to tip the tie non-volatile (1179).
+   LENGTH vs MATCH tradeoff (2026-07-20, reloc code-only diff, table excluded):
+   volatile rx = +234B length / 2568B diff; plain `short rx` = +219B / 2625B.
+   short rx is 15B shorter but 57B worse on the match metric -> volatile kept.
+   The +234 length residue is box-test spill churn: every body reloads xi/yi
+   twice (target computes xi-hrx while xx is still fresh in EDX, before loading
+   node+4; ours loads node+4 first, clobbering EDX, forcing the reloads). This
+   is coupled to the yy/ryy recolor, not the C shape: forcing the sub early via
+   a named lo local (+290), flipping the case-1 cmp operands (+248), and a
+   volatile local copy of rx (+236) all REGRESS. Genuine plateau.
    WALLS (0x128b8 sibling family, coupled one-bit allocation choices):
    (1) EDI home: target xx->EDI with rx slot-read per use. xx and rx tie at
        19 reads each (6 direct bodies compute rx/2 TWICE, matching xx's two
