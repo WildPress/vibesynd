@@ -1,6 +1,6 @@
 /* run_mission_command @ 0x23158 -- TRUE SIZE 5280 (0x14A0), 0x23158-0x245f7.
  *
- * PARKED (cont.27). Compiles; JUMP-TABLE matches EXACTLY (59 dword entries,
+ * PARKED (cont.28). Compiles; JUMP-TABLE matches EXACTLY (59 dword entries,
  * cases 0x00-0x3a). Recipe -4s -oneatx -zp8 -s -zq. EDIT-DIST 1817 (was 1878;
  * len ours 5458 vs target 5280). Best masked score ~60%
  * (3165/5280 order-preserving bytes; positional is drift-inflated). Every case
@@ -37,6 +37,21 @@
  * the frame is 0x38 vs 0x34. NEXT PASS: killing that redundant `a` spill would
  * drop the frame to 0x34 and renumber the op10/op30 slots to match; it is an
  * allocator artifact, not obviously source-reachable.
+ *
+ * NEW (cont.28): two more op10/op30 locals narrowed, both semantics-preserving
+ * (each value is only ever used truncated/small-range): (1) `nid` (=node -
+ * g_entity_pool, stored only as (unsigned short)nid) declared `unsigned short`
+ * not `int`; (2) `k` (=(node[0x3c]&0x60)>>5, range 0-3) declared `unsigned
+ * short` not `int`. Together they freed a spill slot so `tpl` now homes to
+ * [ESP+8] EXACTLY like the target (was [ESP+0xc]), realigning every tpl reload
+ * across all single-node bodies. Code-length shortfall -62B -> -51B; measured
+ * normalized-mnemonic edit distance (tools/_rmc_seg.py Levenshtein) 518 -> 456.
+ * Frame stays 0x3c (the two op10/op30 slots the header targets remain). Re-
+ * verified: no case 0x00-0x3a is dropped or stubbed; every remaining block is a
+ * register-role / stack-slot-numbering tie, not a logic error. TRIED+REVERTED
+ * on this base (all raised edit distance): op10/op30 `n,i`/`n`/`i` unsigned
+ * short (515/527/546), scatter index `d` unsigned short (498), scalar `a` as
+ * unsigned char (509).
  *
  * Per-record mission/orders command interpreter. Executes one queued command
  * for record `idx`, then clears the opcode byte (consume). 59-entry jump table
@@ -521,7 +536,9 @@ void run_mission_command(unsigned int idx)
 
     case 0x10: {
         unsigned char *node = g_pool_a + ((signed char)tpl[0xb6] + tpl[0xb5]) * 0x5c;
-        int nid, k, n, i;
+        unsigned short nid;
+        unsigned short k;
+        int n, i;
         unsigned short a;
         unsigned char *n2;
         if (node[0xb] & 1)
@@ -578,7 +595,9 @@ void run_mission_command(unsigned int idx)
         unsigned char *p;
         for (p = g_pool_a + tpl[0xb5] * 0x5c;
              p < g_pool_a + (tpl[0xb5] + 4) * 0x5c; p += 0x5c) {
-            int nid, k, n, i;
+            unsigned short nid;
+            unsigned short k;
+            int n, i;
             unsigned short a;
             unsigned char *n2;
             if (!(p[0x1d] & 4) || (p[0xb] & 1))
