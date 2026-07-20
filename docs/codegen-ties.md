@@ -146,6 +146,24 @@ The reading is narrow but firm. Pure register renaming matches nothing in our co
 
 A tool that genuinely crossed these would need far more than a relabelling. It would need re-encoding with length fixups and an instruction-scheduling search, which is superoptimiser-class work over x86, and the six inconsistent cases hint that some targets are not reachable by transforming our output under any permutation. That is a large and uncertain research project rather than a quick win, and this session's result is best read as closing the cheap version of the idea for good while leaving the expensive version honestly open.
 
+## The compiler-flag sweep and what it proved
+
+The permuter closed the "reshape our output" idea. A separate question stayed open: are the recorded compile recipes even right? One function proved they can be wrong outright. `new_campaign_reset` was tagged `-4r` (register calling) but the real target passes arguments on the stack, so it needed `-4s`. Under `-4r` no source edit could ever match it, because the call sites were the wrong shape from the start. That is not a tie, it is a mislabelled recipe, and the fix is a flag.
+
+So `tools/flag_sweep.py` hunts the rest of that class. For every unmatched function it takes the recipe the compiler actually uses, generates a focused matrix of flag variants, compiles each with the period 9.5b toolchain, and runs the same reloc, register and slot-aware verdict as `regdiff`. The matrix covers the calling convention flip (`-4r` against `-4s`), five optimisation bundles (`-ox`, `-os`, `-ot`, `-oaxt`, and the inline modifiers `-oi`, `-oe`), the architecture model (`-3` and `-5` against the usual `-4`), and struct packing (`-zp4`, `-zp1`). That is twelve variants a function.
+
+The result is a clean negative. Across 105 functions and 1260 compiles, with no compile failures, nothing reached a match the recipe missed, and nothing even climbed the verdict rank. Baseline recipes came in at 101 structural and 4 register-role, and no variant improved on any of them.
+
+| Outcome | Count |
+| --- | --- |
+| Variant reaches a match the recipe missed | 0 |
+| Variant improves the verdict rank | 0 |
+| Recipe already the best of its matrix | 105 |
+
+Two smaller findings came out of it. The `-oh` repeated-optimisation flag is a 10.x and 11.x option that does not exist in 9.5, so that axis is not real here. And the architecture flip is a genuine dead end rather than an untested guess: every matched function in the corpus builds under `-4`, and `-3` or `-5` improved nothing among the unmatched.
+
+The reading is the same as the permuter's, now measured on the flag axis too. The recipes are right, and the residues are Watcom 9.5 codegen differences that no flag in the compiler reaches. `new_campaign_reset` was the one real recipe bug, and the sweep found no others.
+
 ## See also
 
 - [Matching decompilation](matching-decompilation) for the overall method.
