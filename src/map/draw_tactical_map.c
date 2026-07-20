@@ -11,10 +11,22 @@
  *   agent = the pool-A node the view is centred on (its world x/y at +4/+6);
  *   zoom  = pixels-per-tile scale (read zero-extended: unsigned short).
  *
- * STATUS: distance 2356 -> 2032 -> 1968 (masked Levenshtein), 32% -> ~41% match.
- * Structure is faithful and top-to-bottom aligned; residue is a codegen-tie floor
- * (below). Latest -32: the tail blip-draw `chr` is `short` (target sign-extends it
- * via `movsx edx,dx` before the draw_filled_shape push; see fixes list).
+ * STATUS: ours 3402B vs target 3474B (delta -72; was -236). The -300 code gap
+ * was a RECONSTRUCTION GAP, now closed: the Phase-3 mission-marker loop has TWO
+ * distinct drawing tails, not one shared tail. We had collapsed both branches
+ * onto a single tail; the target dispatches otype through a jump table and gives
+ * each objective class its own inlined tail (see Phase-3 fix below). That added
+ * ~164B and removed an 84-instruction target-only block; structural match ratio
+ * 0.634 -> 0.668. Residue is now a codegen-tie floor (below).
+ *
+ * Phase-3 fix (the missing ~300 bytes): switch(otype).
+ *  - Fixed-coordinate marker (otype 0x10, coords at rec+8/rec+0xa) keeps the FULL
+ *    tail: g_marker_anim = 3 on wrap, range-checked g_offscreen_obj indicator, and
+ *    the on-screen zoom*3 ring vs off-screen g_marker_anim ring split.
+ *  - Node-tracking markers (otype 1/2/3/5/0xf, id at rec+6) get a SEPARATE simpler
+ *    tail: g_marker_anim = 0 on wrap (not 3), indicator fired on g_offscreen_obj
+ *    ALONE (no range check), and only ever the g_marker_anim ring (no zoom*3 draw).
+ *  The target emits these as two full copies; ours now does too.
  *
  * Key source fixes that realigned it (all faithful, not byte-tricks):
  *  - span / tileX0 / tileY0 / row / col / row2 / col2 are `short`. That stops
@@ -45,6 +57,13 @@
  *    (owner 2003, arg 1982, chr+arg 2010, owner+chr 2017). `chr` alone is the min.)
  *
  * REMAINING GAP (codegen ties, not source-reachable):
+ *  0. fill_rect cross-jump merge: the target tail-merges its Phase-2 fill_rect
+ *     call sites -- the type-2 case pushes its 5 args then `jmp` INTO the type-4
+ *     `call fill_rect; add esp,0x14` (one physical call at 0x8f8 serves both), and
+ *     the two colour-0xc danger dots likewise share 0x898. Watcom emits only 2
+ *     physical phase-2 fill_rect calls; ours emits 4 (behaviourally identical, all
+ *     the right calls, just unmerged). -oneatx cross-jumping fired for the target
+ *     but not for our arg-setup shapes; ~16-24B, not reliably source-forced.
  *  1. Register allocation: the target keeps `count` in EDI and `zoom` in ECX;
  *     ours lands `count` in EBX and `zoom` in EBX. `count` in EBX vs EDI changes
  *     the SIB/disp of every blip[count*6+n] store across the large phase-2 type-1
@@ -61,7 +80,7 @@
  *       - table2 @ 0x195a4,  6 entries, index node[0x18]     (blip by type)
  *       - table3 @ 0x195bc, 17 entries, index objective type  (HUD markers)
  *     (lefix rule: literal L in `jmp CS:[eax*4+L]` -> manifest L+0xd748.)
- * Compiles (-4s -oneatx -zp8 -s -zq); ours 3238B vs target 3474B. First diff at
+ * Compiles (-4s -oneatx -zp8 -s -zq); ours 3402B vs target 3474B. First diff at
  * 0x3c is inside that co-located jump-table head, not a logic divergence.
  *
  * ---- Algorithm ----
@@ -348,7 +367,14 @@ void draw_tactical_map(unsigned char *agent, unsigned short zoom)
     if (g_in_mission != 1)
         return;
 
-    /* ---- Phase 3: mission-objective markers ---- */
+    /* ---- Phase 3: mission-objective markers ----
+     * switch(otype) dispatches through the 17-entry jump table.  The two live
+     * objective classes each carry their OWN drawing tail (the target does NOT
+     * share them): the fixed-coordinate marker (0x10) gets the full tail with
+     * the on-screen zoom*3 ring and the range-checked off-screen indicator; the
+     * node-tracking markers (1/2/3/5/0xf) get the simpler tail that resets the
+     * animation to 0, fires the indicator on g_offscreen_obj alone, and only ever
+     * draws the g_marker_anim ring. */
     {
         int cx;
         for (cx = 0; cx < 8; cx++) {
@@ -362,42 +388,52 @@ void draw_tactical_map(unsigned char *agent, unsigned short zoom)
             if (otype > 0x10)
                 continue;
 
-            if (otype == 0x10) {
-                /* fixed-coordinate objective (rec+8 / rec+0xa) */
+            switch (otype) {
+            case 0x10:      /* fixed-coordinate objective (rec+8 / rec+0xa) */
                 scale2 = 0x100 / zoom;
                 mx = (*(short *)(rec + 8) - *(short *)(agent + 4)) / scale2 + 0x40;
                 my = (*(short *)(rec + 0xa) - *(short *)(agent + 6)) / scale2 + 0x40;
-            } else if (otype == 1 || otype == 2 || otype == 3 ||
-                       otype == 5 || otype == 0xf) {
+
+                off = sum_of_squares_call(0x40 - mx, 0x40 - my);
+                g_marker_anim += zoom;
+                len = (off & 0xffff) + zoom * 4;
+                if (g_marker_anim > len) {
+                    g_marker_anim = 3;
+                    if (g_offscreen_obj != 0 &&
+                        !(mx >= 0 && mx < 0x80 && my >= 0 && my < 0x80))
+                        record_max(0x11, 0x7f);     /* off-screen: edge marker */
+                }
+                if (mx >= 0 && mx < 0x80 && my >= 0 && my < 0x80) {
+                    int colour = (0xe - g_e397 * 8) & 0xff;
+                    draw_circle(mx, my, zoom * 3, colour);   /* on-screen marker */
+                } else {
+                    draw_circle(mx, my, g_marker_anim, 0xc); /* off-screen ring  */
+                }
+                return;
+
+            case 1: case 2: case 3: case 5: case 0xf: {
                 /* node-tracking objective: id at rec+6 */
                 unsigned char *onode =
                     g_entity_pool + *(unsigned short *)(rec + 6);
                 scale2 = 0x100 / zoom;
                 mx = (*(short *)(onode + 4) - *(short *)(agent + 4)) / scale2 + 0x40;
                 my = (*(short *)(onode + 6) - *(short *)(agent + 6)) / scale2 + 0x40;
-            } else {
-                /* 4, 6..0xe: stop scanning */
+
+                off = sum_of_squares_call(0x40 - mx, 0x40 - my);
+                g_marker_anim += zoom;
+                len = (off & 0xffff) + zoom * 4;
+                if (g_marker_anim > len) {
+                    g_marker_anim = 0;
+                    if (g_offscreen_obj != 0)
+                        record_max(0x11, 0x7f);
+                }
+                draw_circle(mx, my, g_marker_anim, 0xc);
                 return;
             }
 
-            /* advance the shared dashed-line animation phase */
-            off = sum_of_squares_call(0x40 - mx, 0x40 - my);
-            g_marker_anim += zoom;
-            len = (off & 0xffff) + zoom * 4;
-            if (g_marker_anim > len) {
-                g_marker_anim = 3;
-                if (g_offscreen_obj != 0 &&
-                    !(mx >= 0 && mx < 0x80 && my >= 0 && my < 0x80))
-                    record_max(0x11, 0x7f);     /* off-screen: edge marker */
+            default:        /* 0, 4, 6..0xe: stop scanning */
+                return;
             }
-
-            if (mx >= 0 && mx < 0x80 && my >= 0 && my < 0x80) {
-                int colour = (0xe - g_e397 * 8) & 0xff;
-                draw_circle(mx, my, zoom * 3, colour);   /* on-screen marker */
-            } else {
-                draw_circle(mx, my, g_marker_anim, 0xc);        /* off-screen ring  */
-            }
-            return;
         }
     }
 }
