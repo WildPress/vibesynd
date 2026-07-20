@@ -1,9 +1,16 @@
 {
-"blit_cell_wh": {
-"close": 0.1358,
-"target": 162,
-"ours": 160,
-"delta": -2,
+"find_related_ped": {
+"close": 0.8849,
+"target": 443,
+"ours": 443,
+"delta": 0,
+"jt": false
+},
+"find_nearby_ped": {
+"close": 0.9093,
+"target": 353,
+"ours": 353,
+"delta": 0,
 "jt": false
 },
 "build_equip_row": {
@@ -13,18 +20,25 @@
 "delta": 0,
 "jt": true
 },
-"entity_state_dispatch": {
-"close": 0.288,
-"target": 1528,
-"ours": 1506,
-"delta": -22,
-"jt": true
-},
 "find_blocking_entity": {
 "close": 0.1086,
 "target": 2881,
 "ours": 3101,
 "delta": 220,
+"jt": true
+},
+"blit_cell_wh": {
+"close": 0.1358,
+"target": 162,
+"ours": 160,
+"delta": -2,
+"jt": false
+},
+"entity_state_dispatch": {
+"close": 0.288,
+"target": 1528,
+"ours": 1506,
+"delta": -22,
 "jt": true
 },
 "economy_daily_tick": {
@@ -34,18 +48,18 @@
 "delta": -18,
 "jt": false
 },
-"draw_player_budget_label": {
-"close": 0.7421,
-"target": 190,
-"ours": 187,
-"delta": -3,
-"jt": false
-},
 "research_funding_tick": {
 "close": 0.9756,
 "target": 287,
 "ours": 287,
 "delta": 0,
+"jt": false
+},
+"draw_player_budget_label": {
+"close": 0.7421,
+"target": 190,
+"ours": 187,
+"delta": -3,
 "jt": false
 },
 "alloc_init_with_errcode": {
@@ -56,6 +70,20 @@
 "jt": false
 },
 "walk_records_2c": null,
+"container_load": {
+"close": 0.2938,
+"target": 1433,
+"ours": 1448,
+"delta": 15,
+"jt": false
+},
+"draw_line": {
+"close": 0.2767,
+"target": 524,
+"ours": 516,
+"delta": -8,
+"jt": false
+},
 "draw_circle": {
 "close": 0.5009,
 "target": 585,
@@ -77,6 +105,13 @@
 "delta": -300,
 "jt": true
 },
+"dispatch_jt45": {
+"close": 0.3053,
+"target": 845,
+"ours": 778,
+"delta": -67,
+"jt": true
+},
 "draw_object_sprite_list": {
 "close": 0.2077,
 "target": 183,
@@ -91,13 +126,11 @@
 "delta": -21,
 "jt": false
 },
-"find_nearby_ped": null,
-"find_related_ped": null,
-"menu_list_hit_test": {
-"close": 0.0382,
-"target": 314,
-"ours": 307,
-"delta": -7,
+"draw_slot_record_chain": {
+"close": 0.8549,
+"target": 317,
+"ours": 317,
+"delta": 0,
 "jt": false
 },
 "sel_marker_dispatch": {
@@ -107,7 +140,13 @@
 "delta": 2,
 "jt": true
 },
-"container_load": null,
+"menu_list_hit_test": {
+"close": 0.0382,
+"target": 314,
+"ours": 307,
+"delta": -7,
+"jt": false
+},
 "menu_list_draw": {
 "close": 0.2843,
 "target": 299,
@@ -122,7 +161,6 @@
 "delta": -7,
 "jt": false
 },
-"draw_line": null,
 "count_leading_nonzero": {
 "close": 0.4587,
 "target": 109,
@@ -158,19 +196,18 @@
 "delta": -6,
 "jt": false
 },
-"dispatch_jt45": null,
-"new_game_reset": {
-"close": 0.5775,
-"target": 1969,
-"ours": 1948,
-"delta": -21,
-"jt": false
-},
 "new_campaign_reset": {
 "close": 0.2079,
 "target": 1510,
 "ours": 1627,
 "delta": 117,
+"jt": false
+},
+"new_game_reset": {
+"close": 0.5775,
+"target": 1969,
+"ours": 1948,
+"delta": -21,
 "jt": false
 },
 "store_squad_loadout": {
@@ -194,19 +231,26 @@
 "delta": 0,
 "jt": false
 },
-"guarded_init_alloc": {
-"close": 0.4795,
-"target": 146,
-"ours": 143,
-"delta": -3,
-"jt": false
-},
 "parse_hex_arg": {
 "close": 0.3846,
 "target": 221,
 "ours": 217,
 "delta": -4,
 "jt": true
+},
+"run_mission_command": {
+"close": 0.1966,
+"target": 5280,
+"ours": 5229,
+"delta": -51,
+"jt": true
+},
+"guarded_init_alloc": {
+"close": 0.4795,
+"target": 146,
+"ours": 143,
+"delta": -3,
+"jt": false
 },
 "install_int9_handler": {
 "close": 0.4186,
@@ -215,12 +259,12 @@
 "delta": -11,
 "jt": false
 },
-"run_mission_command": {
-"close": 0.1962,
-"target": 5280,
-"ours": 5218,
-"delta": -62,
-"jt": true
+"draw_agent_detail": {
+"close": 0.3703,
+"target": 1234,
+"ours": 1237,
+"delta": 3,
+"jt": false
 },
 "slot_claim_test": {
 "close": 0.4882,
@@ -234,13 +278,6 @@
 "target": 544,
 "ours": 529,
 "delta": -15,
-"jt": false
-},
-"draw_agent_detail": {
-"close": 0.3703,
-"target": 1234,
-"ours": 1237,
-"delta": 3,
 "jt": false
 },
 "advance_linked_index": {
@@ -285,7 +322,6 @@
 "delta": -4,
 "jt": false
 },
-"draw_slot_record_chain": null,
 "far_alloc_probe": {
 "close": 0.7234,
 "target": 94,
@@ -307,17 +343,17 @@
 "delta": -2,
 "jt": false
 },
-"xfer_buf_req_b1": {
-"close": 0.686,
-"target": 258,
-"ours": 256,
-"delta": -2,
-"jt": false
-},
 "submit_command": {
 "close": 0.638,
 "target": 326,
 "ours": 324,
+"delta": -2,
+"jt": false
+},
+"xfer_buf_req_b1": {
+"close": 0.686,
+"target": 258,
+"ours": 256,
 "delta": -2,
 "jt": false
 },
@@ -380,19 +416,19 @@
 "widget_list_dispatch": null,
 "command_list_interp": null,
 "command_list_interp2": null,
-"agent_hud_render": {
-"close": 0.421,
-"target": 2387,
-"ours": 2368,
-"delta": -19,
-"jt": false
-},
 "refresh_hud_inventory": {
 "close": 0.916,
 "target": 262,
 "ours": 262,
 "delta": 0,
 "jt": true
+},
+"agent_hud_render": {
+"close": 0.421,
+"target": 2387,
+"ours": 2368,
+"delta": -19,
+"jt": false
 },
 "rate_byte_drift": {
 "close": 0.994,
@@ -485,6 +521,13 @@
 "delta": 2,
 "jt": false
 },
+"entity_aim_helper": {
+"close": 0.9103,
+"target": 156,
+"ours": 156,
+"delta": 0,
+"jt": false
+},
 "vehicle_exit": {
 "close": 0.9905,
 "target": 211,
@@ -569,18 +612,18 @@
 "delta": -1,
 "jt": false
 },
-"walk_sound_record_table": {
-"close": 0.9029,
-"target": 103,
-"ours": 103,
-"delta": 0,
-"jt": false
-},
 "sound_driver_init": {
 "close": 0.3382,
 "target": 346,
 "ours": 338,
 "delta": -8,
+"jt": false
+},
+"walk_sound_record_table": {
+"close": 0.9029,
+"target": 103,
+"ours": 103,
+"delta": 0,
 "jt": false
 },
 "play_sound_slot": {
@@ -639,16 +682,26 @@
 "delta": -43,
 "jt": false
 },
-"copy_if_set": {
-"close": 1.0,
-"target": 24,
-"ours": 24,
+"oneshot_state_setter": {
+"close": 0.4769,
+"target": 65,
+"ours": 68,
+"delta": 3,
+"jt": false
+},
+"z_probe": {
+"close": 0.8839,
+"target": 112,
+"ours": 112,
 "delta": 0,
 "jt": false
 },
-"entity_aim_helper": null,
-"oneshot_state_setter": null,
-"z_probe": null,
-"z_probe_b": null,
-"passability_4corner": null
+"passability_4corner": {
+"close": 0.1614,
+"target": 378,
+"ours": 374,
+"delta": -4,
+"jt": false
+},
+"z_probe_b": null
 }
