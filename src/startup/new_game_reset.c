@@ -37,26 +37,39 @@
  *   flags word g_e5bc = 0x1fff, and eight {qty=g_item_max_qty[kind], kind} item slots
  *   at g_equip_qty/g_equip_kind for the fixed kind list {6,6,1,0xc,0x11,0x11,7,7}.
  *
- * STATUS: full readable-C decode, PARKED. Score vs TRUE size 1969:
- *   -4s -oneatx -zp8 -s -zq  ->  obj 1886B (delta -83B), first diff @0x2ab.
+ * STATUS: IMPROVED -83B -> -21B (obj 1886B -> 1948B vs TRUE 1969) by fixing a
+ * GENUINE reconstruction error in block F, then plateauing on register ties.
+ *   -4s -oneatx -zp8 -s -zq  ->  obj 1948B (delta -21B), first diff @0x2ab.
  * The whole probe/flag half (blocks A-D + the block-E funds write, 683 bytes)
- * is BYTE-EXACT. The three loop-carried locals had to be forced memory-homed to
- * reach the target's `sub esp,0xc` frame + slot layout: the block-E conveyor
- * counter -> [esp+4], the block-F one -> [esp], and the block-G roll -> [esp+8]
- * (the `volatile int e1,e2,roll` lever; without it -oneatx registerises them and
- * the frame/length collapse to 1770B). The residual -83B and all remaining diffs
- * sit inside the two nested fill loops and are pure MATCHING-PLAYBOOK section-3
- * register-role / accumulator-selection ties, NOT missing C:
- *   - di*491 materialise: target `xor ecx,ecx; mov cx,di; imul ecx,ebp` (index
- *     straight into the ECX accumulator) vs ours `xor eax,eax; mov ax,di;
- *     mov ecx,eax; imul ecx,ebp` (index to EAX, copied to ECX);
- *   - inner sum: target `add ecx,eax` (accumulate in ECX) vs ours
- *     `lea edx,[ecx+eax]` (result to EDX) -- accumulator-selection tie (class 2);
- *   - the stored zero: target `xor edx,esi` (reuse the known-equal SI) vs ours
- *     `xor ecx,ecx`.
- * Every C spelling + the register-role wall converge here; parked per section 3.
- * The @0x2ab diff itself is only a forward-JNZ rel32 that cascades from the -83B
- * tail, not a structural divergence.
+ * is BYTE-EXACT. The three loop-carried locals are forced memory-homed to reach
+ * the target's `sub esp,0xc` frame: the block-E conveyor counter -> [esp+4], the
+ * block-F one -> [esp], and the roll -> [esp+8] (`volatile int e1,e2,roll`).
+ *
+ * THE FIX (block F equip-template quantities): the earlier decode wrote each
+ * slot's qty as g_item_max_qty[<literal>] (g_item_max_qty[6], [1], [0xc]...).
+ * Watcom constant-folds those to short absolute loads `mov ax,ds:<abs>` (6B).
+ * The TARGET instead indexes the table at RUN TIME by the slot's KIND value:
+ * `xor r; mov r16,kind; mov r16,[r*2+g_item_max_qty]` (indexed load, 8B) -- the
+ * kind is the same value it just stored into the kind field, so qty = table[kind].
+ * Forcing this in C by reading the kind field back as an unsigned short --
+ *   g_equip_qty[..] = g_item_max_qty[*(unsigned short*)(g_equip_kind + ..)]
+ * -- makes Watcom emit the indexed load (zero-extended, matching the target's
+ * `xor/mov cx,di`) and recovered 62 of the 83 missing bytes. A plain `kind`
+ * local does NOT work: Watcom const-propagates it and folds back to the absolute
+ * form (re-verified: 1887B). The field read-back is load-bearing.
+ *
+ * RESIDUAL -21B + remaining diffs = register/addressing ties, NOT missing C:
+ *   - block F, per slot: target re-derives the slot pointer `lea edx,[eax+4*i]`
+ *     (3B x7 slots ~= the 21B) and keeps the field base (0xe5c1/0xe5c3) in the
+ *     store displacement; ours folds the +4*i INTO the displacement (field+4*i)
+ *     and keeps eax as base -- an equivalent-address allocator choice;
+ *   - index accumulator: target lands the runtime index in EDX/ECX and reuses
+ *     the register for consecutive equal kinds (6,6 / 0x11,0x11 / 7,7); ours
+ *     lands it in EAX and re-reads the field for the singleton-first kinds;
+ *   - block-E squad inner loop (diff @0x336): target `xor ecx; mov cx,di;
+ *     imul ecx,ebp` + `add ecx,eax` (accumulate + base in ECX) vs ours to EAX
+ *     then `lea edx,[ecx+eax]` -- accumulator-selection tie (class 2).
+ * The @0x2ab first diff is only a forward-JNZ rel32 cascading from the -21B tail.
  */
 
 extern short         g_cur_player;
@@ -175,22 +188,22 @@ void new_game_reset(void)
             g_squad_id[0x417 * g_cur_player + d * 40] = (unsigned char)roll;
             *(short *)(g_e5ba + 0x417 * g_cur_player + d * 40) = 0x10;
             *(short *)(g_e5bc + 0x417 * g_cur_player + d * 40) = 0x1fff;
-            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x00) = g_item_max_qty[6];
             *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x00) = 6;
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x00) = g_item_max_qty[*(unsigned short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x00)];
             *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x04) = 6;
-            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x04) = g_item_max_qty[6];
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x04) = g_item_max_qty[*(unsigned short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x04)];
             *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x08) = 1;
-            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x08) = g_item_max_qty[1];
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x08) = g_item_max_qty[*(unsigned short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x08)];
             *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x0c) = 0xc;
-            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x0c) = g_item_max_qty[0xc];
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x0c) = g_item_max_qty[*(unsigned short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x0c)];
             *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x10) = 0x11;
-            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x10) = g_item_max_qty[0x11];
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x10) = g_item_max_qty[*(unsigned short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x10)];
             *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x14) = 0x11;
-            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x14) = g_item_max_qty[0x11];
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x14) = g_item_max_qty[*(unsigned short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x14)];
             *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x18) = 7;
-            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x18) = g_item_max_qty[7];
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x18) = g_item_max_qty[*(unsigned short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x18)];
             *(short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x1c) = 7;
-            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x1c) = g_item_max_qty[7];
+            *(short *)(g_equip_qty + 0x417 * g_cur_player + d * 40 + 0x1c) = g_item_max_qty[*(unsigned short *)(g_equip_kind + 0x417 * g_cur_player + d * 40 + 0x1c)];
         }
     }
 }
