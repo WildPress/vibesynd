@@ -12,23 +12,27 @@
    labs shape as the 0x2d7a8 / 0x2d808 / 0x2d868 sibling trio (this is their
    dispatcher). Stack calling convention (-4s): params read from [ESP+0x10/0x14].
 
-   NEAR-MISS, size now exact-length-adjacent (197 target). EDIT-DIST 28 (was 74).
-   Three fixes closed most of the gap: (1) hoisting `short sel = param_2` to function
-   scope so param_2 is a single register live across BOTH branches -- this makes the
-   allocator reserve the 3rd callee-saved EDI (`push edi`) and route the slot*10000
-   multiply chain and rem through it, matching the target's obj=EBX / param_2=ESI /
-   chain=EDI roles. (2) `short sel` (not int) keeps param_2 raw in ESI (movsx at use)
-   instead of an eager sign-extend. (3) writing the overrun scale as
-   (1000 - labs(rem)) * param_2 makes the imul land param_2 as the destination,
-   reproducing the target's `mov eax,edx; movsx edx,si; imul edx,eax` and ecx divisor.
-   Residual (~28): two coupled Watcom ties. The flag test is emitted as
-   `mov dx,[obj+0x1c]; test dx` rather than the target's `test WORD[obj+0x1c]` (the
-   eager param_2 load reorders the two entry loads), and the slot*10000 LEA chain
-   accumulates in EAX before the final `lea edi,[eax+0x3e8]` rather than in EDI in
-   place. Priming EDX via the split flag-load is what gives the matching
-   `xor edx,edx; mov dx,ax` field extraction, so a memory-form flag test regresses the
-   field-extract idiom instead (confirmed by the param_2-reassign variant). Codegen
-   tie floor. */
+   NEAR-MISS, 199 bytes vs 197 target (delta +2), reloc-aware edit-dist 31.
+
+   The prior spelling hoisted `short sel = param_2` to function scope. That made
+   Watcom pre-load the flag word into DX (`mov dx,[obj+0x1c]; test dx`) and then
+   immediately re-zero DX with `xor edx,edx`, three wasted bytes the target never
+   spends -- the target tests memory directly (`test WORD[obj+0x1c],0x1002`). Moving
+   `sel` back inside the flag-set block removes the eager DX load, so ours now emits
+   the memory-form test byte-for-byte and length drops 200 -> 199. The old header
+   predicted a memory-form test would regress the `xor edx,edx; and al,0x18; xor ah,ah;
+   mov dx,ax` field extraction, but it does not: that idiom stays identical in this
+   spelling. Writing base as `slot*10000 + 1000` in one expression keeps the multiply
+   chain and rem in EDI (splitting the +1000 pushes rem into EDX and regresses).
+
+   Residual (31): register-scheduling ties, not reconstruction errors. (1) The target
+   loads param_2 into ESI before the memory test so it is live across BOTH paths, which
+   lets the flag-clear tail use `mov ax,si`; ours loads param_2 late inside the block,
+   so the tail reloads it from `[esp+0x14]`. Restoring the early ESI load requires the
+   function-scope `sel` that reintroduces the wasteful DX pre-load, so the two are
+   anti-correlated. (2) The slot*10000 LEA chain accumulates in EAX then `lea
+   edi,[eax+0x3e8]` rather than in EDI in place, and (3) the idiv divisor is ESI not
+   ECX. Same allocator-insensitive class as the 0x128b8 wall. */
 extern int chain_sum_3a(unsigned char *obj);
 extern int labs(int v);
 extern int interp_scale_c(unsigned char *obj, unsigned int v);
@@ -36,9 +40,9 @@ extern int interp_scale_c(unsigned char *obj, unsigned int v);
 int anim_speed_select(unsigned char *obj, short param_2)
 {
     int r;
-    short sel = param_2;
 
     if (*(unsigned short *)(obj + 0x1c) & 0x1002) {
+        short sel = param_2;
         int base = ((*(unsigned short *)(obj + 0x3c) & 0x18) >> 3) * 10000 + 1000;
         int rem = base - chain_sum_3a(obj);
         if (rem < 0) {
@@ -50,6 +54,6 @@ int anim_speed_select(unsigned char *obj, short param_2)
         return (short)r < 0x10 ? 0x10 : r;
     }
 
-    r = interp_scale_c(obj, (unsigned short)sel);
+    r = interp_scale_c(obj, (unsigned short)param_2);
     return (short)r < 0xc ? 0xc : r;
 }
