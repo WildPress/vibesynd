@@ -65,10 +65,19 @@ def recipe_flags(name, default):
         head = open(sp[0], encoding="utf-8", errors="replace").read()[:2500]
         m = re.search(r"Recipe:\s*(-[^\n*;]+)", head)
         if m:
-            # the Recipe: line often ends a sentence, so trim a trailing full stop / spaces --
-            # otherwise the captured flags end "-zq." (an invalid flag) and the compile silently
-            # fails. This one bug dropped ~15 fns across regdiff/classify_equiv/score_closeness.
-            return m.group(1).strip().rstrip(". ").strip()
+            # The Recipe: line usually continues into prose after the flags -- a parenthetical
+            # ("... -zq (no -x, else ...)") or a trailing sentence ("... -zq. Expected near-miss").
+            # Every wcc386 flag starts with '-', so keep only the leading run of '-'-tokens and stop
+            # at the first word that doesn't (the '(no', '(the', 'Expected', etc.); otherwise that
+            # prose is passed to the compiler as bogus flags/filenames and the compile fails.
+            # (rstrip(". ") still trims a full stop fused onto the last flag, e.g. "-zq.".)
+            flags = []
+            for tok in m.group(1).split():
+                if tok.startswith("-"):
+                    flags.append(tok)
+                else:
+                    break
+            return " ".join(flags).rstrip(". ").strip()
     return default
 
 
