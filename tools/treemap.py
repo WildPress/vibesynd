@@ -94,7 +94,7 @@ def rect(x, y, w, h, fill, stroke=STROKE, sw=1, rx=0):
     if w <= 0 or h <= 0:
         return ""
     return (f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" fill="{fill}" '
-            f'stroke="{stroke}" stroke-width="{sw}"{f" rx={rx}" if rx else ""}/>')
+            f'stroke="{stroke}" stroke-width="{sw}"{f" rx=\"{rx}\"" if rx else ""}/>')
 
 
 def text(x, y, s, fill=INK, size=11, weight="normal", anchor="start", outline=False):
