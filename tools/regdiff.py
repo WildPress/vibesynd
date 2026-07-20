@@ -65,7 +65,10 @@ def recipe_flags(name, default):
         head = open(sp[0], encoding="utf-8", errors="replace").read()[:2500]
         m = re.search(r"Recipe:\s*(-[^\n*;]+)", head)
         if m:
-            return m.group(1).strip()
+            # the Recipe: line often ends a sentence, so trim a trailing full stop / spaces --
+            # otherwise the captured flags end "-zq." (an invalid flag) and the compile silently
+            # fails. This one bug dropped ~15 fns across regdiff/classify_equiv/score_closeness.
+            return m.group(1).strip().rstrip(". ").strip()
     return default
 
 
