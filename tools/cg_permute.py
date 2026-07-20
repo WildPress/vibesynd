@@ -67,6 +67,41 @@ def target_bytes(f):
 def canon(rid):
     return CANON.get(rid)
 
+ENC_SWAPS = False   # --enc: also allow value-equivalent same-length encoding swaps (lea<->add/sub)
+
+def _enc_equiv(o, t):
+    """If our instruction o and target t are a KNOWN value-equivalent, same-length pair (an in-place
+    `lea r,[r+d]` vs `add r,d`, or `lea r,[r-d]` vs `sub r,d`), return the (our_canon, target_canon)
+    register constraint they impose, else None. Both being valid compilations of equivalent C, an
+    in-place lea and the matching add compute the same value, and any flag difference is dead (else a
+    correct compiler would not have chosen the flag-free lea), so the swap is behaviour-preserving."""
+    X = capstone.x86
+    LEA, ADD, SUB = X.X86_INS_LEA, X.X86_INS_ADD, X.X86_INS_SUB
+    def lea_v(i):                          # in-place lea r,[r + disp] (single base, no index) -> (canon, disp)
+        ops = i.operands
+        if len(ops) == 2 and ops[0].type == X.X86_OP_REG and ops[1].type == X.X86_OP_MEM:
+            m = ops[1].mem
+            d, b = canon(ops[0].reg), (canon(m.base) if m.base else None)
+            if m.index == 0 and d and b and d[0] == b[0]:
+                return d[0], m.disp
+        return None
+    def as_v(i):                           # add/sub r, imm -> (canon, effective +disp)
+        ops = i.operands
+        if len(ops) == 2 and ops[0].type == X.X86_OP_REG and ops[1].type == X.X86_OP_IMM:
+            c = canon(ops[0].reg)
+            if c:
+                return c[0], (-ops[1].imm if i.id == SUB else ops[1].imm)
+        return None
+    if o.id == LEA and t.id in (ADD, SUB):
+        lv, av = lea_v(o), as_v(t)
+        if lv and av and lv[1] == av[1]:
+            return (lv[0], av[0])
+    if o.id in (ADD, SUB) and t.id == LEA:
+        av, lv = as_v(o), lea_v(t)
+        if lv and av and lv[1] == av[1]:
+            return (av[0], lv[0])
+    return None
+
 def solve(name):
     man = json.load(open("manifest/functions.json"))["functions"]
     f = next((x for x in man if x["name"] == name), None)
@@ -97,7 +132,7 @@ def solve(name):
     if len(oi) != len(ti):
         return name, f"INSTR-COUNT-DIFF (ours {len(oi)} vs target {len(ti)}) -- scheduling/encoding, not pure register"
     fwd, rev = {}, {}   # our-canon -> target-canon  and reverse
-    diffs = 0
+    diffs = swaps = 0
     for o, t in zip(oi, ti):
         if o.address != t.address:
             return name, f"MISALIGNED at 0x{o.address:x}"
@@ -118,6 +153,14 @@ def solve(name):
                             return name, f"INCONSISTENT (fixed reg in identical insn) at 0x{o.address:x}: {rr}"
             continue
         diffs += 1
+        if ENC_SWAPS and o.size == t.size and o.id != t.id:
+            eq = _enc_equiv(o, t)
+            if eq is not None:
+                r = _constrain(fwd, rev, eq[0], eq[1])
+                if r:
+                    return name, f"INCONSISTENT (enc-swap) at 0x{o.address:x}: {r}"
+                swaps += 1
+                continue
         if o.size != t.size:
             return name, f"SIZE-DIFF at 0x{o.address:x} ({o.mnemonic} {o.size}B vs {t.mnemonic} {t.size}B) -- encoding tie, not pure register"
         if o.id != t.id:
@@ -168,7 +211,7 @@ def solve(name):
     perm = {GP_NAME[a]: GP_NAME[b] for a, b in fwd.items() if a != b}
     if not perm:
         return name, "IDENTITY (already byte-exact? -- check harness)"
-    return name, {"SOLVABLE": True, "diff_instrs": diffs, "mapping": perm}
+    return name, {"SOLVABLE": True, "diff_instrs": diffs, "enc_swaps": swaps, "mapping": perm}
 
 def _constrain(fwd, rev, a, b):
     if a in fwd and fwd[a] != b:
@@ -231,7 +274,10 @@ def apply_and_verify(name):
     return name, ("VERIFIED byte-exact via register-permute " + str(mapping)) if ok else f"MISMATCH after apply (len {len(out)} vs {len(tb)})"
 
 def main():
+    global ENC_SWAPS
     import multiprocessing as mp
+    if "--enc" in sys.argv:
+        ENC_SWAPS = True
     if "--apply" in sys.argv:
         for n in [a for a in sys.argv[1:] if not a.startswith("-")]:
             print("%-28s %s" % apply_and_verify(n), flush=True)
@@ -245,7 +291,7 @@ def main():
     with mp.Pool(w) as pool:                       # compiles are independent -> parallelise
         for name, res in pool.imap_unordered(solve, names):
             if isinstance(res, dict):
-                print(f"{name:<28} SOLVABLE  ({res['diff_instrs']} diff instrs)  map: {res['mapping']}", flush=True)
+                print(f"{name:<28} SOLVABLE  ({res['diff_instrs']} diff, {res['enc_swaps']} enc-swap)  map: {res['mapping']}", flush=True)
                 solved.append((name, res["mapping"]))
             else:
                 print(f"{name:<28} {res}", flush=True)
