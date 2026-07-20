@@ -21,6 +21,7 @@ import regdiff
 import match_reloc as M
 
 BASE = 0x10000
+FORCE_FLAGS = None   # set by --flags to override each fn's recipe (for a flag sweep)
 
 def target_bytes(f):
     addr = int(f["addr"], 16)
@@ -35,7 +36,8 @@ def score(f):
     tb = target_bytes(f)
     if not tb:
         return name, None
-    c = regdiff.compile_one(name, regdiff.recipe_flags(name, "-4s -oneatx -zp8 -s -zq"))
+    flags = FORCE_FLAGS if FORCE_FLAGS else regdiff.recipe_flags(name, "-4s -oneatx -zp8 -s -zq")
+    c = regdiff.compile_one(name, flags)
     if not c:
         return name, None
     ob, fx = c
@@ -58,9 +60,14 @@ def score(f):
                   "delta": code_len - len(tb), "jt": tl > 0}
 
 def main():
+    global FORCE_FLAGS
     man = json.load(open("manifest/functions.json"))["functions"]
     unm = [f for f in man if f.get("status") != "matched"]
     w = int(sys.argv[sys.argv.index("--workers") + 1]) if "--workers" in sys.argv else 6
+    if "--flags" in sys.argv:
+        FORCE_FLAGS = sys.argv[sys.argv.index("--flags") + 1]
+        print(f"forcing flags: {FORCE_FLAGS}", flush=True)
+    OUTF = sys.argv[sys.argv.index("--out") + 1] if "--out" in sys.argv else "manifest/closeness.json"
     out = {}
     # --fill: keep the prior closeness.json and only (re)score the entries that are missing or
     # failed (dosemu flakes ~15 under parallel load). Run it with --workers 1 to clear them.
@@ -79,7 +86,7 @@ def main():
             tag = (f"{res['close']*100:5.1f}%  d={res['delta']:+5d}  {'JT' if res['jt'] else '  '}"
                    if res else "COMPILE-FAIL")
             print(f"[{i:3}/{len(unm)}] {name:<30} {tag}", flush=True)
-    json.dump(out, open("manifest/closeness.json", "w"), indent=0)
+    json.dump(out, open(OUTF, "w"), indent=0)
     ok = [v for v in out.values() if v]
     gaps = sorted((v for v in ok if v["delta"] <= -12), key=lambda v: v["delta"])
     print(f"\nwrote manifest/closeness.json ({len(out)} fns, {len(out)-len(ok)} compile-fail)")
