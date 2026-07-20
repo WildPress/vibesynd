@@ -100,6 +100,52 @@ The tempting next thought is a tool that rewrites the compiled machine code dire
 
 But the class is not a uniform floor either, which is the honest correction to an earlier draft of this page. The per-function flag sweep and the value-provenance change are real levers that each reached a tie the source-spelling and register levers could not, and both are worth trying before parking a function. What is left after all of them is a genuinely stuck residue: pure allocator or scheduler tiebreaks between equally valid choices, resolved inside a 9.5 code generator we cannot inspect. Those are the floor. The rest is worth another look.
 
+## Building the permuter and what it proved
+
+The section above left the machine-code route as scoped and set aside. This session built its first slice and ran it over the whole unmatched corpus. The result is a firm negative: zero functions are a clean register renaming of their target. That confirms the earlier coarse triage in commit `49ad2b3` rather than overturning it, and the way the confirmation arrived is the part worth recording.
+
+The tool is `tools/cg_permute.py`, a codegen permuter whose first slice is a register-permutation solver. It compiles our C, disassembles both our output and the target with capstone as x86-32, aligns them instruction by instruction, and solves for a single consistent permutation of the eight general-purpose registers that would turn our bytes into the target's. If such a permutation exists, the function is a clean register bijection: our provably-correct C compiled to nothing more than a relabelling of the original's registers.
+
+### The bug the verifier caught
+
+The first version had a soundness bug, and it is a useful one. It skipped instructions that were already byte-identical between the two versions, on the assumption they carried no information. They do. An unchanged instruction pins every register it names to itself. Skipping them meant the solver never recorded those fixed points, so it accepted permutations that an identity constraint should have forbidden. It reported three confident bijections: `vehicle_exit`, `shot_collision_query`, and `walk_sound_record_table`.
+
+Building the applier is what exposed the bug. The applier is keystone-based. It re-assembles only the instructions that actually differ in a register field, applies the candidate permutation to those, keeps our own bytes everywhere else, and checks the result equals the target under reloc masking. Run against `vehicle_exit`, it failed. The function contains an `add eax,0` that is byte-identical in both versions, so `eax` is pinned to `eax`. A global `eax` to `edx` remap cannot hold when an instruction already keeps `eax` unchanged. The proof was false, and only the applier said so.
+
+```mermaid
+flowchart LR
+    A[Compile our C] --> B[Disassemble<br/>ours + target]
+    B --> C[Align<br/>instruction by instruction]
+    C --> D[Solve for one<br/>register permutation]
+    D -->|candidate| E[Apply: re-assemble<br/>only differing instrs]
+    E --> F[Verify == target<br/>under reloc masking]
+    F -->|mismatch| G[Reject the proof]
+```
+
+The lesson generalises past this one tool. Build the verifier or applier before trusting a solver's proof. The confident three bijections were an artefact of a missing constraint, and nothing short of re-assembling the bytes would have surfaced it.
+
+### The sound result
+
+The fix was to add identity constraints for every byte-identical instruction, so a register used unchanged is recorded as fixed. The sound re-run over the whole unmatched corpus returned zero clean register bijections. The taxonomy of why each function fails divides cleanly.
+
+```mermaid
+flowchart TD
+    A[Unmatched corpus] --> B[80 length-diff]
+    A --> C[13 instr-count-diff]
+    A --> D[6 inconsistent]
+    A --> E[1 reg-size]
+    A --> F[a few compile-fails]
+    D --> G[No permutation<br/>reconciles the register roles]
+```
+
+Most fail before the solver even reaches the register question. Eighty differ in total length and thirteen in instruction count, so there is no instruction-by-instruction alignment to permute in the first place. One differs in register size. The interesting bucket is the six inconsistent cases, where a register is used fixed in some instructions and would need remapping in others, and no single permutation reconciles the two. Those are the cases where the target places values in registers in a way that transforming our output cannot reach at all.
+
+### What this rules out
+
+The reading is narrow but firm. Pure register renaming matches nothing in our corpus. Every remaining tie also differs in encoding, scheduling, or length, which is the same downstream-cascade point the previous section made, now measured rather than argued.
+
+A tool that genuinely crossed these would need far more than a relabelling. It would need re-encoding with length fixups and an instruction-scheduling search, which is superoptimiser-class work over x86, and the six inconsistent cases hint that some targets are not reachable by transforming our output under any permutation. That is a large and uncertain research project rather than a quick win, and this session's result is best read as closing the cheap version of the idea for good while leaving the expensive version honestly open.
+
 ## See also
 
 - [Matching decompilation](matching-decompilation) for the overall method.
