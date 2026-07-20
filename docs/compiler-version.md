@@ -1,12 +1,14 @@
 # Compiler-version investigation (the wall on reaching 500/500)
 
 This page tracks a long hunt for the exact Watcom build the game was compiled with.
-Most functions match our base 9.5, but a stubborn set of near-misses (the walls) carry
-codegen tricks that only turn up in later Watcoms. The investigation bracketed the
-game's compiler between 9.5b and 10.0a and pointed at a 1994 release, 9.5c, that was
-never preserved. The final, verified conclusion reverses that: no available Watcom
-matches both the walls and the functions we already match, so the wall bytes are most
-likely driven by a specific C construct rather than a lost compiler.
+Most functions match our base 9.5, and a stubborn set of near-misses (the walls) were long
+thought to carry codegen tricks from a later or Pentium-tuned Watcom. The investigation
+bracketed the game's compiler between 9.5b and 10.0a and pointed at a 1994 release, 9.5c,
+that was thought lost. The final, verified conclusion (see "cont. 31" below) reverses all of
+that: the game is Watcom 9.5 at `-4s` (486), which we have. The `-5` Pentium arch was tested
+and refuted, 9.5a/b/c are byte-identical on the walls, and 10.0 breaks matched functions. No
+compiler is missing. The wall bytes are register-role and encoding differences inside
+identically-scheduled `-4s` code, driven by a specific C construct, not a lost binary.
 
 The versions in play, and where the game's build was thought to sit:
 
@@ -37,6 +39,36 @@ regresses), or (b) genuinely source-reachable with forms the bounded agents/perm
 i.e. NOT proven to be compiler-locked after all. Either way, the version hunt is closed: no available
 compiler is the answer. Bank the matchable functions. Treat the walls as hard-but-possibly-source-
 reachable, not as a definitively-lost-compiler blocker.
+
+## FINAL RESULT (cont. 31): the "Pentium scheduling" framing is WRONG, the game is -4s, no missing compiler
+
+Two leads were tested to the byte this session and both close the version hunt for good.
+
+**The -5 (Pentium) arch was tested directly and refuted.** The walls were long described as Pentium
+scheduling (the `add eax,imm32` accumulator form, address un-folding). If that were arch-driven, the
+game would be built `-5s` (Pentium), not `-4s` (486). It is not. Compiling the walls `-5s` makes our
+output BIGGER than the target, not closer: homing_step 240B target vs 250B under -5s (240B under -4s,
+an exact size match), los_trace 519 vs 552, march_shot_damage 453 vs 459. The clincher is
+`find_projectile_step`, which matches byte-exact under `-4s` and BREAKS under `-5s`. A function cannot
+match the arch it was not built with, so the game is `-4s`. Our 9.5 does honour `-5` (17 of 30 sampled
+functions differ between `-4s` and `-5s`), so this is a real test, not a no-op. Conclusion: the walls
+are `-4s` (486) code, same instruction count and schedule as our compiler, differing only in register
+assignment and the odd encoding choice. The Pentium label was a misread and sent the hunt chasing
+later Watcoms it never needed.
+
+**c386_e (the os2site "E" patch) was chased down and is the wrong generation.** It is a Watcom C/386
+**9.0-line** roll-up dated Feb 1993 (its README patches 16-bit `wcc`, DOS/16M, S3 SuperVGA, all
+pre-9.5). `bpatch` reports its required base binaries as `386wcgl.exe` = 290384 B and `wcc386.exe` =
+200632 B, neither of which exists in the tree (our 9.01 is a different, slimmer respin). It predates
+the Pentium and the game's 9.5 branch, so it could not produce the wall bytes even if applied.
+
+**So every branch is eliminated:** 9.0 (wrong generation), `-5`/Pentium (game is `-4s`), 9.5a/b/c
+(byte-identical to base 9.5 on the walls), 10.0 (breaks 9.5-matched functions). The compiler is
+Watcom 9.5 at `-4s -oneatx -zp8 -s -zq`, and we have exactly it. The walls are register-role and
+encoding differences inside identically-scheduled `-4s` code, which makes them source-form driven
+(the subtle-C class this project keeps cracking) or a minor allocator nuance, not a lost binary. This
+is consistent with the register-permuter finding of zero clean bijections and with every wall that
+was actually dug into turning out to be C. The version hunt is closed for real.
 
 ---
 ## (superseded) original conclusion
