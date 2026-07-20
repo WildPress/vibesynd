@@ -159,18 +159,20 @@ def _constrain(fwd, rev, a, b):
     return None
 
 def main():
+    import multiprocessing as mp
     names = [a for a in sys.argv[1:] if not a.startswith("-")]
     if "--all" in sys.argv:
         man = json.load(open("manifest/functions.json"))["functions"]
         names = [f["name"] for f in man if f.get("status") != "matched"]
+    w = int(sys.argv[sys.argv.index("--workers") + 1]) if "--workers" in sys.argv else 4
     solved = []
-    for n in names:
-        name, res = solve(n)
-        if isinstance(res, dict):
-            print(f"{name:<28} SOLVABLE  ({res['diff_instrs']} diff instrs)  map: {res['mapping']}", flush=True)
-            solved.append((name, res["mapping"]))
-        else:
-            print(f"{name:<28} {res}", flush=True)
+    with mp.Pool(w) as pool:                       # compiles are independent -> parallelise
+        for name, res in pool.imap_unordered(solve, names):
+            if isinstance(res, dict):
+                print(f"{name:<28} SOLVABLE  ({res['diff_instrs']} diff instrs)  map: {res['mapping']}", flush=True)
+                solved.append((name, res["mapping"]))
+            else:
+                print(f"{name:<28} {res}", flush=True)
     if "--all" in sys.argv:
         print(f"\n=== {len(solved)} of {len(names)} are CLEAN REGISTER BIJECTIONS (permuter-matchable) ===")
         for n, m in solved:
