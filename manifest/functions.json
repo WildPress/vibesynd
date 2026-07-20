@@ -946,8 +946,8 @@
       "calls": 6,
       "data_refs": 6,
       "incoming": 1,
-      "status": "unmatched",
-      "match_pct": 0.0,
+      "status": "matched",
+      "match_pct": 100.0,
       "src": "src/startup/guarded_init_alloc.c"
     },
     {

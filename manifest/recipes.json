@@ -1579,5 +1579,9 @@
   "walk_sound_record_table": {
     "addr": "00035e68",
     "flags": "-4s -oneatx -zp8 -s -zq"
+  },
+  "guarded_init_alloc": {
+    "addr": "00025238",
+    "flags": "-4s -oneatx -zp8 -s -zq"
   }
 }

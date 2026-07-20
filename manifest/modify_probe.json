@@ -1,0 +1,1366 @@
+{
+"walk_records_2c": {
+"baseline_fd": 7,
+"perturb_fd": 3,
+"changed": true,
+"callees": [
+"sub_and_call",
+"int386"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 7,
+"add_fds": {
+"+ebx": 7,
+"+esi": 7,
+"+edi": 7,
+"+ebp": 3,
+"keepebx": 3,
+"keepesi": 3,
+"keepedi": 3,
+"keepebp": 3
+}
+},
+"alloc_init_with_errcode": {
+"baseline_fd": 30,
+"perturb_fd": 3,
+"changed": true,
+"callees": [
+"file_open_read_close",
+"FUN_0001aa74",
+"open",
+"FUN_0004aa59",
+"read",
+"FUN_0004b859",
+"FUN_0003c89d"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 30,
+"add_fds": {
+"+ebx": 4,
+"+esi": 4,
+"+edi": 25,
+"+ebp": 30,
+"keepebx": 3,
+"keepesi": 3,
+"keepedi": 3,
+"keepebp": 3
+}
+},
+"economy_daily_tick": {
+"baseline_fd": 174,
+"perturb_fd": 6,
+"changed": true,
+"callees": [
+"commit_funding",
+"research_funding_tick",
+"syndicate_timer_pct",
+"player_target_sweep",
+"lcg_rand"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 174,
+"add_fds": {
+"+ebx": 8,
+"+esi": 8,
+"+edi": 8,
+"+ebp": 174,
+"keepebx": 6,
+"keepesi": 6,
+"keepedi": 6,
+"keepebp": 6
+}
+},
+"entity_state_dispatch": {
+"baseline_fd": 84,
+"perturb_fd": 0,
+"changed": true,
+"callees": [
+"run_mission_command",
+"lcg_rand",
+"pool_list_dispatch",
+"forward_if_flag",
+"kill_credit_eligible",
+"palette_flash3",
+"reset_flash_palette",
+"FUN_00013c98",
+"FUN_00014588",
+"walk_15byte_chain",
+"FUN_000141f8",
+"FUN_00014828",
+"apply_command_effect"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 84,
+"add_fds": {
+"+ebx": 84,
+"+esi": 84,
+"+edi": 84,
+"+ebp": 0,
+"keepebx": 0,
+"keepesi": 0,
+"keepedi": 0,
+"keepebp": 84
+}
+},
+"draw_line": {
+"baseline_fd": 111,
+"perturb_fd": 111,
+"changed": false,
+"callees": [],
+"promising": false,
+"note": "no callees"
+},
+"container_load": {
+"baseline_fd": 26,
+"perturb_fd": 9,
+"changed": true,
+"callees": [
+"open",
+"close",
+"strcmp",
+"malloc",
+"memset",
+"buffered_read",
+"container_total_size"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 26,
+"add_fds": {
+"+ebx": 26,
+"+esi": 10,
+"+edi": 26,
+"+ebp": 26,
+"keepebx": 5,
+"keepesi": 5,
+"keepedi": 5,
+"keepebp": 5
+}
+},
+"build_equip_row": {
+"baseline_fd": 16,
+"perturb_fd": 16,
+"changed": true,
+"callees": [
+"reequip_squad_row"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 16,
+"add_fds": {
+"+ebx": 16,
+"+esi": 16,
+"+edi": 16,
+"+ebp": 16,
+"keepebx": 16,
+"keepesi": 16,
+"keepedi": 16,
+"keepebp": 16
+}
+},
+"draw_object_sprite_list": {
+"baseline_fd": 3,
+"perturb_fd": 4,
+"changed": true,
+"callees": [
+"record_max",
+"draw_sprite_surf"
+],
+"promising": true,
+"best_add": "+ebp",
+"best_fd": 13,
+"add_fds": {
+"+ebx": 3,
+"+esi": 3,
+"+edi": 3,
+"+ebp": 13,
+"keepebx": 4,
+"keepesi": 4,
+"keepedi": 4,
+"keepebp": 4
+}
+},
+"draw_circle": {
+"baseline_fd": 45,
+"perturb_fd": 6,
+"changed": true,
+"callees": [
+"plot_point"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 45,
+"add_fds": {
+"+ebx": 6,
+"+esi": 6,
+"+edi": 6,
+"+ebp": 6,
+"keepebx": 6,
+"keepesi": 6,
+"keepedi": 6,
+"keepebp": 6
+}
+},
+"render_draw_list": {
+"baseline_fd": 3,
+"perturb_fd": 4,
+"changed": true,
+"callees": [
+"draw_sprite_buf"
+],
+"promising": true,
+"best_add": "+ebp",
+"best_fd": 5,
+"add_fds": {
+"+ebx": 3,
+"+esi": 3,
+"+edi": 3,
+"+ebp": 5,
+"keepebx": 4,
+"keepesi": 4,
+"keepedi": 4,
+"keepebp": 4
+}
+},
+"draw_slot_record_chain": {
+"baseline_fd": 5,
+"perturb_fd": 4,
+"changed": true,
+"callees": [
+"draw_sprite_buf"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 5,
+"add_fds": {
+"+ebx": 5,
+"+esi": 5,
+"+edi": 5,
+"+ebp": 5,
+"keepebx": 4,
+"keepesi": 4,
+"keepedi": 4,
+"keepebp": 4
+}
+},
+"sel_marker_dispatch": {
+"baseline_fd": 40,
+"perturb_fd": 40,
+"changed": true,
+"callees": [
+"iso_block_dispatch2",
+"iso_block_dispatch",
+"fill_minimap_grid"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 40,
+"add_fds": {
+"+ebx": 40,
+"+esi": 40,
+"+edi": 40,
+"+ebp": 40,
+"keepebx": 40,
+"keepesi": 40,
+"keepedi": 40,
+"keepebp": 40
+}
+},
+"draw_tactical_map": {
+"baseline_fd": 60,
+"perturb_fd": 60,
+"changed": true,
+"callees": [
+"fill_rect",
+"draw_vline",
+"draw_hline",
+"draw_filled_shape",
+"draw_circle",
+"sum_of_squares_call",
+"record_max"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 60,
+"add_fds": {
+"+ebx": 60,
+"+esi": 60,
+"+edi": 60,
+"+ebp": 60,
+"keepebx": 60,
+"keepesi": 60,
+"keepedi": 60,
+"keepebp": 60
+}
+},
+"mission_map_init": {
+"baseline_fd": 255,
+"perturb_fd": 255,
+"changed": false,
+"callees": [
+"relocate_map_columns",
+"add_c_stride6",
+"session_init",
+"vehicle_hp_stamp",
+"set_video_mode",
+"clear_vga_screen",
+"sprintf",
+"load_unpack_file",
+"clear_offscreen",
+"upload_palette",
+"find_free_pool_slots",
+"zero_even_bytes"
+],
+"promising": false
+},
+"guarded_init_alloc": {
+"baseline_fd": 0,
+"perturb_fd": 1,
+"changed": true,
+"callees": [
+"FUN_00017a70",
+"FUN_00017a90",
+"alloc_seq_slot",
+"timer_rate_critsec",
+"start_seq",
+"d_getvec",
+"outp",
+"d_setvec"
+],
+"promising": true,
+"best_add": "+ebx",
+"best_fd": null,
+"add_fds": {
+"+ebx": null
+}
+},
+"menu_list_draw": {
+"baseline_fd": 3,
+"perturb_fd": 6,
+"changed": true,
+"callees": [
+"draw_ui_text",
+"menu_list_hit_test"
+],
+"promising": true,
+"best_add": "+ebp",
+"best_fd": 54,
+"add_fds": {
+"+ebx": 3,
+"+esi": 3,
+"+edi": 3,
+"+ebp": 54,
+"keepebx": 6,
+"keepesi": 6,
+"keepedi": 6,
+"keepebp": 3
+}
+},
+"menu_list_draw_b": {
+"baseline_fd": 3,
+"perturb_fd": 6,
+"changed": true,
+"callees": [
+"draw_ui_text",
+"menu_list_hit_test"
+],
+"promising": true,
+"best_add": "+ebp",
+"best_fd": 15,
+"add_fds": {
+"+ebx": 3,
+"+esi": 3,
+"+edi": 3,
+"+ebp": 15,
+"keepebx": 6,
+"keepesi": 6,
+"keepedi": 6,
+"keepebp": 3
+}
+},
+"new_campaign_reset": {
+"baseline_fd": 6,
+"perturb_fd": 31,
+"changed": true,
+"callees": [
+"lcg_rand",
+"keyboard_state_machine",
+"fill_bytes"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 6,
+"add_fds": {
+"+ebx": 6,
+"+esi": 6,
+"+edi": 6,
+"+ebp": 6,
+"keepebx": 6,
+"keepesi": 6,
+"keepedi": 6,
+"keepebp": 6
+}
+},
+"new_game_reset": {
+"baseline_fd": 683,
+"perturb_fd": 6,
+"changed": true,
+"callees": [
+"stricmp_call",
+"keyboard_state_machine"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 683,
+"add_fds": {
+"+ebx": 683,
+"+esi": 683,
+"+edi": 683,
+"+ebp": 683,
+"keepebx": 683,
+"keepesi": 683,
+"keepedi": 683,
+"keepebp": 6
+}
+},
+"reequip_squad_row": {
+"baseline_fd": 16,
+"perturb_fd": 16,
+"changed": true,
+"callees": [
+"grid_detach_object",
+"init_record_if_alloc",
+"fill_bytes"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 16,
+"add_fds": {
+"+ebx": 16,
+"+esi": 16,
+"+edi": 16,
+"+ebp": 16,
+"keepebx": 16,
+"keepesi": 16,
+"keepedi": 16,
+"keepebp": 16
+}
+},
+"install_int9_handler": {
+"baseline_fd": 5,
+"perturb_fd": 0,
+"changed": true,
+"callees": [
+"build_two_buffers",
+"d_setvec"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 5,
+"add_fds": {
+"+ebx": 0,
+"+esi": 0,
+"+edi": 0,
+"+ebp": 0,
+"keepebx": 0,
+"keepesi": 0,
+"keepedi": 0,
+"keepebp": 0
+}
+},
+"draw_agent_detail": {
+"baseline_fd": 4,
+"perturb_fd": 0,
+"changed": true,
+"callees": [
+"text_width_kern",
+"draw_ui_text",
+"measure_draw_text",
+"sprintf",
+"stats_panel_draw",
+"slot_claim_test"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 4,
+"add_fds": {
+"+ebx": 4,
+"+esi": 4,
+"+edi": 4,
+"+ebp": 0,
+"keepebx": 0,
+"keepesi": 0,
+"keepedi": 0,
+"keepebp": 4
+}
+},
+"render_dashed_line": {
+"baseline_fd": 8,
+"perturb_fd": 6,
+"changed": true,
+"callees": [
+"plot_point"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 8,
+"add_fds": {
+"+ebx": 6,
+"+esi": 6,
+"+edi": 6,
+"+ebp": 6,
+"keepebx": 6,
+"keepesi": 6,
+"keepedi": 6,
+"keepebp": 6
+}
+},
+"aim_step_clamp": {
+"baseline_fd": 39,
+"perturb_fd": 2,
+"changed": true,
+"callees": [
+"vec_to_angle"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 39,
+"add_fds": {
+"+ebx": 22,
+"+esi": 39,
+"+edi": 2,
+"+ebp": 2,
+"keepebx": 2,
+"keepesi": 2,
+"keepedi": 2,
+"keepebp": 2
+}
+},
+"submit_ncb": {
+"baseline_fd": 5,
+"perturb_fd": 2,
+"changed": true,
+"callees": [
+"memset",
+"segread",
+"int386x",
+"report_net_status"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 5,
+"add_fds": {
+"+ebx": 2,
+"+esi": 2,
+"+edi": 2,
+"+ebp": 2,
+"keepebx": 2,
+"keepesi": 2,
+"keepedi": 2,
+"keepebp": 2
+}
+},
+"mp_session_setup": {
+"baseline_fd": 7,
+"perturb_fd": 0,
+"changed": true,
+"callees": [
+"set_video_mode",
+"fputc_nl",
+"fgets_console",
+"atol",
+"printf",
+"sprintf",
+"submit_command",
+"xfer_buf_req_b1",
+"netbios_op91",
+"netbios_op90",
+"xfer_buf_req35",
+"strcpy",
+"strlen",
+"_fstrcpy"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 7,
+"add_fds": {
+"+ebx": 6,
+"+esi": 6,
+"+edi": 6,
+"+ebp": 0,
+"keepebx": 0,
+"keepesi": 0,
+"keepedi": 0,
+"keepebp": 6
+}
+},
+"far_alloc_probe": {
+"baseline_fd": 64,
+"perturb_fd": 0,
+"changed": true,
+"callees": [
+"d_getvec",
+"submit_ncb"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 64,
+"add_fds": {
+"+ebx": 0,
+"+esi": 0,
+"+edi": 0,
+"+ebp": 0,
+"keepebx": 0,
+"keepesi": 0,
+"keepedi": 0,
+"keepebp": 0
+}
+},
+"guarded_call_2arg": {
+"baseline_fd": 0,
+"perturb_fd": 0,
+"changed": true,
+"callees": [
+"FUN_000287c8"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 0,
+"add_fds": {
+"+ebx": 0,
+"+esi": 0,
+"+edi": 0,
+"+ebp": 0,
+"keepebx": 0,
+"keepesi": 0,
+"keepedi": 0,
+"keepebp": 0
+}
+},
+"dpmi_alloc_5para": {
+"baseline_fd": 111,
+"perturb_fd": 3,
+"changed": true,
+"callees": [
+"memset",
+"int386",
+"report_net_status",
+"_fmemset"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 111,
+"add_fds": {
+"+ebx": 5,
+"+esi": 5,
+"+edi": 5,
+"+ebp": 3,
+"keepebx": 3,
+"keepesi": 3,
+"keepedi": 3,
+"keepebp": 3
+}
+},
+"submit_command": {
+"baseline_fd": 161,
+"perturb_fd": 6,
+"changed": true,
+"callees": [
+"submit_ncb",
+"printf",
+"report_net_status",
+"_fstrcpy",
+"_fstrlen",
+"_fstrcat"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 161,
+"add_fds": {
+"+ebx": 6,
+"+esi": 6,
+"+edi": 6,
+"+ebp": 4,
+"keepebx": 6,
+"keepesi": 6,
+"keepedi": 6,
+"keepebp": 6
+}
+},
+"xfer_buf_req_b1": {
+"baseline_fd": 8,
+"perturb_fd": 6,
+"changed": true,
+"callees": [
+"submit_ncb",
+"printf",
+"fstrcpy118",
+"fstrlen118",
+"fstrcat118"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 8,
+"add_fds": {
+"+ebx": 7,
+"+esi": 7,
+"+edi": 7,
+"+ebp": 6,
+"keepebx": 6,
+"keepesi": 6,
+"keepedi": 6,
+"keepebp": 7
+}
+},
+"netbios_op91": {
+"baseline_fd": 9,
+"perturb_fd": 6,
+"changed": true,
+"callees": [
+"submit_ncb",
+"report_net_status",
+"fstrcpy91",
+"fstrlen91",
+"fstrcat91"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 9,
+"add_fds": {
+"+ebx": 9,
+"+esi": 9,
+"+edi": 9,
+"+ebp": 6,
+"keepebx": 6,
+"keepesi": 6,
+"keepedi": 6,
+"keepebp": 9
+}
+},
+"netbios_op90": {
+"baseline_fd": 9,
+"perturb_fd": 6,
+"changed": true,
+"callees": [
+"submit_ncb",
+"report_net_status",
+"fstrcpy90",
+"fstrlen90",
+"fstrcat90"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 9,
+"add_fds": {
+"+ebx": 9,
+"+esi": 9,
+"+edi": 9,
+"+ebp": 6,
+"keepebx": 6,
+"keepesi": 6,
+"keepedi": 6,
+"keepebp": 9
+}
+},
+"dos_alloc_and_zero": {
+"baseline_fd": 18,
+"perturb_fd": 1,
+"changed": true,
+"callees": [
+"memset",
+"int386",
+"report_net_status",
+"_fmemset"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 18,
+"add_fds": {
+"+ebx": 1,
+"+esi": 1,
+"+edi": 9,
+"+ebp": 1,
+"keepebx": 1,
+"keepesi": 1,
+"keepedi": 1,
+"keepebp": 1
+}
+},
+"dpmi_free_dos_mem": {
+"baseline_fd": 6,
+"perturb_fd": 2,
+"changed": true,
+"callees": [
+"memset",
+"int386",
+"report_net_status"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 6,
+"add_fds": {
+"+ebx": 2,
+"+esi": 2,
+"+edi": 2,
+"+ebp": 2,
+"keepebx": 2,
+"keepesi": 2,
+"keepedi": 2,
+"keepebp": 2
+}
+},
+"refresh_hud_inventory": {
+"baseline_fd": 80,
+"perturb_fd": 80,
+"changed": false,
+"callees": [],
+"promising": false,
+"note": "no callees"
+},
+"recv_chunked": {
+"baseline_fd": 19,
+"perturb_fd": 4,
+"changed": true,
+"callees": [
+"netbios_recv95"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 19,
+"add_fds": {
+"+ebx": 5,
+"+esi": 5,
+"+edi": 5,
+"+ebp": 5,
+"keepebx": 4,
+"keepesi": 4,
+"keepedi": 4,
+"keepebp": 4
+}
+},
+"radar_panel_sm": {
+"baseline_fd": 104,
+"perturb_fd": 0,
+"changed": true,
+"callees": [
+"los_trace",
+"los_trace_far",
+"chain_length",
+"render_draw_list",
+"fill_rect",
+"center_string_16"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 104,
+"add_fds": {
+"+ebx": 104,
+"+esi": 104,
+"+edi": 104,
+"+ebp": 0,
+"keepebx": 0,
+"keepesi": 0,
+"keepedi": 0,
+"keepebp": 104
+}
+},
+"mission_target_resolve": {
+"baseline_fd": 3,
+"perturb_fd": 3,
+"changed": true,
+"callees": [
+"clamp_point_box",
+"copy_5fields_8recs",
+"interp_scale_a",
+"interp_scale_b",
+"FUN_00036be8",
+"pool_table_lookup",
+"FUN_00037608",
+"draw_targeting_reticle",
+"ped_check_a",
+"pool_resolve"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 3,
+"add_fds": {
+"+ebx": 3,
+"+esi": 3,
+"+edi": 3,
+"+ebp": 3,
+"keepebx": 3,
+"keepesi": 3,
+"keepedi": 3,
+"keepebp": 3
+}
+},
+"anim_tick_frame_list": {
+"baseline_fd": 20,
+"perturb_fd": 20,
+"changed": true,
+"callees": [
+"draw_object_sprite_list"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 20,
+"add_fds": {
+"+ebx": 20,
+"+esi": 20,
+"+edi": 20,
+"+ebp": 20,
+"keepebx": 20,
+"keepesi": 20,
+"keepedi": 20,
+"keepebp": 20
+}
+},
+"entity_event_dispatch": {
+"baseline_fd": 7,
+"perturb_fd": 1,
+"changed": true,
+"callees": [
+"squad_threat_test",
+"deliver_entity_event_if_visible"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 7,
+"add_fds": {
+"+ebx": 1,
+"+esi": 1,
+"+edi": 1,
+"+ebp": 1,
+"keepebx": 1,
+"keepesi": 1,
+"keepedi": 1,
+"keepebp": 1
+}
+},
+"agent_hud_render": {
+"baseline_fd": 149,
+"perturb_fd": 0,
+"changed": true,
+"callees": [
+"store_4_globals",
+"fill_rect_buf2",
+"draw_vline_buf2",
+"draw_slot_record_chain"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 149,
+"add_fds": {
+"+ebx": 6,
+"+esi": 6,
+"+edi": 6,
+"+ebp": 0,
+"keepebx": 0,
+"keepesi": 0,
+"keepedi": 0,
+"keepebp": 6
+}
+},
+"projectile_select_turn": {
+"baseline_fd": 35,
+"perturb_fd": 6,
+"changed": true,
+"callees": [
+"sum_of_squares_call",
+"projectile_step",
+"aim_step",
+"max_abs",
+"find_projectile_step",
+"lcg_rand",
+"advance_aim_along_dir",
+"aim_cursor_advance",
+"copy_bytes"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 35,
+"add_fds": {
+"+ebx": 6,
+"+esi": 6,
+"+edi": 6,
+"+ebp": 35,
+"keepebx": 6,
+"keepesi": 6,
+"keepedi": 6,
+"keepebp": 6
+}
+},
+"homing_step": {
+"baseline_fd": 62,
+"perturb_fd": 3,
+"changed": true,
+"callees": [
+"path_probe_y",
+"sum_of_squares_call"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 62,
+"add_fds": {
+"+ebx": 7,
+"+esi": 62,
+"+edi": 5,
+"+ebp": 3,
+"keepebx": 3,
+"keepesi": 3,
+"keepedi": 3,
+"keepebp": 3
+}
+},
+"los_trace": {
+"baseline_fd": 195,
+"perturb_fd": 6,
+"changed": true,
+"callees": [
+"sum_of_squares_call",
+"vec_to_angle",
+"passability_4corner",
+"find_blocking_entity"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 195,
+"add_fds": {
+"+ebx": 8,
+"+esi": 8,
+"+edi": 8,
+"+ebp": 11,
+"keepebx": 6,
+"keepesi": 6,
+"keepedi": 6,
+"keepebp": 6
+}
+},
+"los_trace_far": {
+"baseline_fd": 60,
+"perturb_fd": 6,
+"changed": true,
+"callees": [
+"sum_of_squares_call",
+"vec_to_angle",
+"passability_4corner",
+"find_blocking_entity"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 60,
+"add_fds": {
+"+ebx": 6,
+"+esi": 6,
+"+edi": 6,
+"+ebp": 8,
+"keepebx": 6,
+"keepesi": 6,
+"keepedi": 6,
+"keepebp": 6
+}
+},
+"entity_aim_helper": {
+"baseline_fd": 42,
+"perturb_fd": 3,
+"changed": true,
+"callees": [
+"vec_to_angle",
+"sum_of_squares_call",
+"pool_accessor_44",
+"dispatch_jt45"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 42,
+"add_fds": {
+"+ebx": 3,
+"+esi": 3,
+"+edi": 3,
+"+ebp": 3,
+"keepebx": 3,
+"keepesi": 3,
+"keepedi": 3,
+"keepebp": 3
+}
+},
+"vehicle_exit": {
+"baseline_fd": 8,
+"perturb_fd": 2,
+"changed": true,
+"callees": [
+"move_entity_xyz",
+"recompute_state_code"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 8,
+"add_fds": {
+"+ebx": 3,
+"+esi": 8,
+"+edi": 2,
+"+ebp": 2,
+"keepebx": 2,
+"keepesi": 2,
+"keepedi": 2,
+"keepebp": 2
+}
+},
+"march_shot_damage": {
+"baseline_fd": 119,
+"perturb_fd": 3,
+"changed": true,
+"callees": [
+"pick_passable_shot_dir",
+"shot_collision_query",
+"field54_sub_threshold",
+"clamp_dec_field54"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 119,
+"add_fds": {
+"+ebx": 3,
+"+esi": 3,
+"+edi": 3,
+"+ebp": 3,
+"keepebx": 3,
+"keepesi": 3,
+"keepedi": 3,
+"keepebp": 3
+}
+},
+"pick_passable_shot_dir": {
+"baseline_fd": 17,
+"perturb_fd": 1,
+"changed": true,
+"callees": [
+"vec_to_angle",
+"compass_tile_probe"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 17,
+"add_fds": {
+"+ebx": 5,
+"+esi": 1,
+"+edi": 1,
+"+ebp": 1,
+"keepebx": 1,
+"keepesi": 1,
+"keepedi": 1,
+"keepebp": 1
+}
+},
+"vehicle_drive_step": {
+"baseline_fd": 27,
+"perturb_fd": 3,
+"changed": true,
+"callees": [
+"labs",
+"vec_to_angle",
+"snap_direction",
+"recompute_state_code",
+"advance_aim_along_dir",
+"march_shot_damage",
+"pick_passable_shot_dir",
+"move_entity_xyz"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 27,
+"add_fds": {
+"+ebx": 5,
+"+esi": 5,
+"+edi": 5,
+"+ebp": 3,
+"keepebx": 3,
+"keepesi": 3,
+"keepedi": 3,
+"keepebp": 3
+}
+},
+"sound_driver_init": {
+"baseline_fd": 7,
+"perturb_fd": 4,
+"changed": true,
+"callees": [
+"alloc_init_with_errcode",
+"container_load",
+"free",
+"init_voice_tables",
+"register_driver",
+"unload_all_drivers",
+"voice_get_driver_obj",
+"snd_cmd_65",
+"start_voice"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 7,
+"add_fds": {
+"+ebx": 5,
+"+esi": 5,
+"+edi": 7,
+"+ebp": 7,
+"keepebx": 4,
+"keepesi": 4,
+"keepedi": 4,
+"keepebp": 4
+}
+},
+"play_sound_slot": {
+"baseline_fd": 36,
+"perturb_fd": 2,
+"changed": true,
+"callees": [
+"snd_cmd_7b",
+"snd_cmd_7d"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 36,
+"add_fds": {
+"+ebx": 36,
+"+esi": 36,
+"+edi": 2,
+"+ebp": 2,
+"keepebx": 2,
+"keepesi": 2,
+"keepedi": 2,
+"keepebp": 2
+}
+},
+"draw_wrapped_text": {
+"baseline_fd": 12,
+"perturb_fd": 6,
+"changed": true,
+"callees": [
+"measure_text_width",
+"draw_sprite_rle_buf"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 12,
+"add_fds": {
+"+ebx": 6,
+"+esi": 6,
+"+edi": 6,
+"+ebp": 6,
+"keepebx": 6,
+"keepesi": 6,
+"keepedi": 6,
+"keepebp": 6
+}
+},
+"draw_ui_text": {
+"baseline_fd": 37,
+"perturb_fd": 6,
+"changed": true,
+"callees": [
+"draw_line",
+"draw_sprite_rle_buf"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 37,
+"add_fds": {
+"+ebx": 6,
+"+esi": 6,
+"+edi": 6,
+"+ebp": 6,
+"keepebx": 6,
+"keepesi": 6,
+"keepedi": 6,
+"keepebp": 6
+}
+},
+"text_input_widget": {
+"baseline_fd": 8,
+"perturb_fd": 6,
+"changed": true,
+"callees": [
+"poll_key",
+"draw_ui_text",
+"draw_line"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 8,
+"add_fds": {
+"+ebx": 8,
+"+esi": 8,
+"+edi": 8,
+"+ebp": 8,
+"keepebx": 6,
+"keepesi": 6,
+"keepedi": 6,
+"keepebp": 6
+}
+},
+"drop_carried_items": {
+"baseline_fd": 7,
+"perturb_fd": 3,
+"changed": true,
+"callees": [
+"lcg_rand",
+"z_probe",
+"move_entity_xyz"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 7,
+"add_fds": {
+"+ebx": 3,
+"+esi": 3,
+"+edi": 3,
+"+ebp": 3,
+"keepebx": 3,
+"keepesi": 3,
+"keepedi": 3,
+"keepebp": 3
+}
+},
+"xmidi_music_init": {
+"baseline_fd": 6,
+"perturb_fd": 0,
+"changed": true,
+"callees": [
+"alloc_init_with_errcode",
+"container_load",
+"free",
+"register_driver",
+"voice_get_driver_obj",
+"snd_cmd_65",
+"start_voice",
+"snd_cmd_96",
+"snd_cmd_97",
+"snd_cmd_99",
+"snd_cmd_9a",
+"snd_cmd_9b",
+"snd_cmd_9c",
+"malloc",
+"strcat_word",
+"fopen",
+"fclose",
+"load_tagged_resource"
+],
+"promising": false,
+"best_add": null,
+"best_fd": 6,
+"add_fds": {
+"+ebx": 4,
+"+esi": 4,
+"+edi": 4,
+"+ebp": 0,
+"keepebx": 0,
+"keepesi": 0,
+"keepedi": 0,
+"keepebp": 4
+}
+}
+}

@@ -251,13 +251,6 @@
 "delta": -51,
 "jt": true
 },
-"guarded_init_alloc": {
-"close": 0.4795,
-"target": 146,
-"ours": 143,
-"delta": -3,
-"jt": false
-},
 "install_int9_handler": {
 "close": 0.4186,
 "target": 43,

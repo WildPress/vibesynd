@@ -171,9 +171,10 @@
     "score": 0.757
   },
   "guarded_init_alloc": {
-    "verdict": "STRUCTURAL",
+    "verdict": "MATCH",
     "flags": "-4s -oneatx -zp8 -s -zq",
-    "score": 0.2
+    "score": 0.2,
+    "note": "MATCHED 2026-07-20 via callee modify-set: #pragma aux alloc_seq_slot modify [eax ecx edx ebx] reproduces a hoisted dead-EBX callee-save the target has. Found by tools/modify_probe.py."
   },
   "install_int9_handler": {
     "verdict": "STRUCTURAL",
