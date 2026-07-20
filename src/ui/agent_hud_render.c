@@ -1,12 +1,12 @@
 /* agent_hud_render @ 0x2c578 -- AGENT STATUS-PANEL / HUD RENDERER (per-player squad).
  *
  * TRUE SIZE = 2387 bytes (0x953), body 0x2c578 - 0x2ceca (RET at 0x2ceca).
- *   The manifest records 2080 (0x820, ends 0x2cd97) -- UNDERCOUNTED. Ghidra's DB
- *   stops the function at 0x2cd97, mid-way through the second loop, because the
- *   7-byte `MOVSX EDX,[EAX+0xe552]` at 0x2cd91 desyncs its linear sweep. The code
+ *   manifest/functions.json now records 2387 (0x953) -- correct. (Ghidra's DB had
+ *   stopped the function at 0x2cd97, mid-way through the second loop, because the
+ *   7-byte `MOVSX EDX,[EAX+0xe552]` at 0x2cd91 desyncs its linear sweep; the code
  *   past 0x2cd97 is a genuine continuation: a second walk that shares the single
  *   `ADD ESP,8; POP EBP/EDI/ESI/EBX; RET` epilogue at 0x2cec3 which mirrors the
- *   `PUSH EBX/ESI/EDI/EBP; SUB ESP,8` prologue. => manifest size must be 2387.
+ *   `PUSH EBX/ESI/EDI/EBP; SUB ESP,8` prologue.)
  *
  * WHAT IT DOES
  *   1. Clears the panel region (store_4_globals(0,0,0x80,0x190) stores the clip
@@ -40,27 +40,41 @@
  * field, cache offset, y position and colour pair; they are captured here by the
  * IPA() macro (expands inline, exactly as the compiler emitted them -- no call).
  *
- * STATUS: 77% match, EDIT-DIST 546 (was 49% / 1224). The big win was typing the
- * loop counter `i` as `unsigned short` (was `int`): the 16-bit counter makes every
- * `i*0xb`/`i*0x12` index recompute from `di` (mov ax,di / imul) instead of the
- * compiler strength-reducing them into running induction pointers (esi+=0xb,
- * ebx+=0x12). That single change realigned the whole first loop -- register roles
- * (esi=p, edi=i, ebx=mid accumulator, ecx=i*0xb), the 16-bit `cmp di,4 / jb` loop
- * tests, and the blink table's `cmp cx,8 / jb`. The blink loop and the entire
- * second (aux progress-bar) pass are now byte-identical.
+ * STATUS: masked similarity 84.4% (edit-dist 571 by difflib on the reloc-masked
+ * bytes; was 71.1% / 1118). The first big win (earlier session) was typing the loop
+ * counter `i` as `unsigned short`: the 16-bit counter recomputes every `i*0xb`/`i*0x12`
+ * index from `di` (mov ax,di / imul) instead of strength-reducing into running
+ * induction pointers. Register roles (esi=p, edi=i, ebx=mid, ecx=i*0xb), the 16-bit
+ * `cmp di,4/jb` tests and the blink table's `cmp cx,8/jb` all realigned; the blink
+ * loop is byte-identical.
  *
- * REMAINING GAP (~546) is a Watcom-9.5 register/stack-slot tie, not source-reachable:
- *   - Frame is 0xc vs target's 8: Watcom reserves an unused home slot for `mid`
- *     (which actually lives in ebx), shifting every IPA/health stack temp from
- *     offsets {0,4} to {4,8} -- ~1 byte per esp-disp across three bars + health.
- *   - Two-segment redraw: target reloads lo/hi from their slots and recomputes
- *     `v-mid` in the shared tail; ours CSEs `lo-mid` and spills/reuses it. Forcing
- *     recompute (shared v/c tail, or `volatile` on lo/hi) regresses globally.
- *   - Muzzle-flash: `st` lands in dl vs target's bl, flipping the two flag stores'
- *     order and the const register (bh vs dl).
- * All three resisted decl-order, health-var-reuse, volatile, and shared-tail edits.
- * The wrong manifest size (2080 vs real 2387) still forces a length-mismatch in
- * match_reloc regardless. Recipe: -4s -oneatx -zp8 -s -zq.
+ * The SECOND big win: the IPA two-segment redraw. The `if`-branch first fill was
+ * reconstructed with width `lo-mid` but the target draws `hi-mid` there (both fills
+ * of that branch had `lo-mid`, which was wrong). Fixing branch-1 to
+ *   fill(hi-mid, C1); fill(lo-mid, C2);   (else stays  fill(lo-mid, C2); fill(hi-mid, C1))
+ * let Watcom cross-jump the common second-fill tail exactly like the target, AND --
+ * critically -- removed the CSE'd `lo-mid` live temp that had been forcing the frame
+ * to 0xc. The frame is now `sub esp,8` matching the target (this was NOT an
+ * independent Watcom "reserve a slot for mid" tie -- it was a downstream symptom of
+ * the lo-mid reconstruction error). This one edit took 71.1%->84.4%, size 2440->2368.
+ *
+ * REMAINING GAP (~571) is Watcom-9.5 register/instruction-selection ties, not
+ * source-reachable (each resisted decl-order / variable-choice / slot edits):
+ *   - Muzzle-flash: `st` lands in dl vs target's bl (a GLOBAL allocation choice --
+ *     the mutually-exclusive IPA path claims ebx for `mid`), flipping the two flag
+ *     stores' order and the const register (bh vs dl). ~8 bytes.
+ *   - Health bar: target copies `i` into edx and spills the health value to [esp+4]
+ *     with the cached byte in ecx; ours uses ebx / [esp] / edx. Byte-identical up to
+ *     the `xor edx,edx / xor ebx,ebx` that seeds it; cascades small 1-byte diffs.
+ *   - Aux (second) pass: target holds `w` in ecx, ours in ebx, which flips `hp*0x17`
+ *     from `imul edx,ebx,0x17` (target) to a lea/sub *23 strength-reduction chain
+ *     (ours). Same arithmetic, different selection.
+ *   - IPA vline tail: `push 0xc` is scheduled one slot earlier in ours (pure sched).
+ * ours is 19 bytes SHORTER than target (2368 vs 2387): the net of ours using shorter
+ * [esp] encodings in the health bar vs longer lea-chains in the aux pass. A reloc-
+ * exact match needs equal length, so these ties are the floor.
+ * NOTE: the manifest size IS 2387 (functions.json) -- it is NOT undercounted at 2080;
+ * that earlier claim was stale and does not skew match_reloc. Recipe: -4s -oneatx -zp8 -s -zq.
  */
 
 extern unsigned char  g_blink_tick;      /* blink tick counter */
@@ -100,7 +114,7 @@ extern void draw_slot_record_chain(int p, unsigned short idx, int x, int y);
             g_df48[i * 0xb + (CB) + 2] != hi) {                                       \
             fill_rect_buf2(HUD_X(i) + 4, HUD_Y(i) + (YOFF), 0x37, 0xa, 0);              \
             if ((mid < hi && hi > lo) || (mid > hi && hi < lo)) {                     \
-                fill_rect_buf2(HUD_X(i) + 4 + mid, HUD_Y(i) + (YOFF), lo - mid, 0xa, (C1)); \
+                fill_rect_buf2(HUD_X(i) + 4 + mid, HUD_Y(i) + (YOFF), hi - mid, 0xa, (C1)); \
                 fill_rect_buf2(HUD_X(i) + 4 + mid, HUD_Y(i) + (YOFF), lo - mid, 0xa, (C2)); \
             } else {                                                                  \
                 fill_rect_buf2(HUD_X(i) + 4 + mid, HUD_Y(i) + (YOFF), lo - mid, 0xa, (C2)); \
