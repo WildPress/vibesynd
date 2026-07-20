@@ -40,18 +40,22 @@ def score(f):
         return name, None
     ob, fx = c
     tm, om = M.mask(tb, fx), M.mask(ob, fx)
-    if len(tb) == len(om) and tm == om:
-        close, jt = 1.0, False
-    else:
-        matched, tl, pad, nd = M.jumptable_aware_match(tb, ob, fx)
-        if nd is not None:                              # inline jump-table fn: code-only diff
-            close, jt = (1.0 if matched else max(0.0, 1.0 - nd / max(len(tb), 1))), tl > 0
-        else:                                           # plain fn: masked byte diff + length delta
-            n = min(len(tm), len(om))
-            d = sum(1 for a, b in zip(tm[:n], om[:n]) if a != b) + abs(len(tb) - len(ob))
-            close, jt = max(0.0, 1.0 - d / max(len(tb), 1)), False
-    return name, {"close": round(close, 4), "target": len(tb), "ours": len(ob),
-                  "delta": len(ob) - len(tb), "jt": jt}
+    # jumptable_aware_match gives the table_len + pad so we can measure the real CODE length --
+    # an inline-switch fn's obj is [table][pad][code], and counting the table in delta wrongly
+    # inflates it (a fn is "longer" only because Watcom co-located the table the real binary keeps
+    # in a far pool). For plain fns tl=pad=0 so code_len == len(ob).
+    matched, tl, pad, nd = M.jumptable_aware_match(tb, ob, fx)
+    code_len = len(ob) - tl - pad
+    if len(tb) == len(om) and tm == om:                 # plain exact masked match
+        close = 1.0
+    elif nd is not None:                                # inline jump-table fn: code-only diff
+        close = 1.0 if matched else max(0.0, 1.0 - nd / max(len(tb), 1))
+    else:                                               # plain fn: masked byte diff + length delta
+        n = min(len(tm), len(om))
+        d = sum(1 for a, b in zip(tm[:n], om[:n]) if a != b) + abs(len(tb) - len(ob))
+        close = max(0.0, 1.0 - d / max(len(tb), 1))
+    return name, {"close": round(close, 4), "target": len(tb), "ours": code_len,
+                  "delta": code_len - len(tb), "jt": tl > 0}
 
 def main():
     man = json.load(open("manifest/functions.json"))["functions"]
