@@ -451,9 +451,10 @@
     "score": 0.2193
   },
   "walk_sound_record_table": {
-    "verdict": "REGISTER-ROLE",
+    "verdict": "MATCH",
     "flags": "-4s -oneatx -zp8 -s -zq",
-    "score": 1.0
+    "score": 1.0,
+    "note": "MATCHED 2026-07-20 via callee modify-set: #pragma aux snd_cmd_85 modify [eax edx ebx ecx edi ebp] (preserve ESI) recovers snd_cmd_85's real preserve contract, forcing the target's 3-way register colouring. Found by source x flag cross-product."
   },
   "vehicle_drive_step": {
     "verdict": "STRUCTURAL",

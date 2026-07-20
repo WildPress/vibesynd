@@ -24,7 +24,17 @@
    In my compiler the correct-role layout is CORRELATED with (self-xor + imm8-add)
    and the cross-xor/imm32 forms only occur with the swapped role; the target
    breaks that correlation. No source form or recipe (-oneatx/-ot/-os/-or/-oi/none)
-   crosses it. Genuine encoding-tie-break wall, same family as 0x34088 / 0x26e18. */
+   crosses it. Genuine encoding-tie-break wall, same family as 0x34088 / 0x26e18.
+
+   SOURCE x FLAG CROSS-PRODUCT TRIED (leaf fn, so no callee modify-pragma lever
+   like walk_sound_record_table used). Best = baseline accumulator form, first
+   diff 0xc (the xor byte) across the whole -oneatx flag family. Tried: eager
+   result-var / return form (regressed to first-diff 0x2, reshapes the prologue);
+   seven m-spellings (& 0xffff00ff, & ~0xff00, ^ (cur&0xff00), - (cur&0xff00),
+   unsigned/long casts) -- all either self-xor (dh,dh) at 0xc or EXPAND to an
+   `and edx,0xff00`+`xor edx,eax` pair (longer, worse). None emits `xor dh,ah`,
+   and none touches the imm32-add. Both diffs are peephole-encoding choices the
+   value-graph doesn't reach; confirmed wall. */
 int snap_direction(int cur, int tgt)
 {
     int m = cur & 0xffff00ff;

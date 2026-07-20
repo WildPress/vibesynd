@@ -6,9 +6,11 @@
    (2) grid-index register role -- target puts the col part ((short)step>>8&0x7f) in
    EAX and the row part ((short)hi>>1) in EDX; Watcom fixes the memory operand (hi,
    re-read from [esp]) into EAX and the register operand (step, in ESI) into EDX,
-   independent of source operand order; (3) mask peephole -- `and eax,0x7f00` vs the
-   target's byte-wise `and ah,0x7f; xor al,al`. Same §3 register-role + prologue-
-   scheduling wall documented on the identical-template twin find_grid_entity_facing_0x80. */
+   independent of source operand order. (3) mask peephole -- FIXED 2026-07-20: declaring the
+   hoisted `hi` as `short` (not `int`) makes Watcom emit the target's byte-wise
+   `and ah,0x7f; xor al,al` instead of `and eax,0x7f00`; that instruction now matches byte-for-byte.
+   The residue is only §1 load-order (first diff 0x7) + §2 register-role, both genuine 9.5 ties.
+   Same wall documented on the identical-template twin find_grid_entity_facing_0x80. */
 /* frameless @ 0x33b88: spatial-grid proximity scan (mirror of find_grid_entity_facing_0x80).
    Walk 6 grid columns starting at (param_1 - 0x100), stepping +0x100 per row.
    The row part (param_2 & 0x7f00) >> 1 is loop-invariant and hoisted into a
@@ -24,14 +26,14 @@ extern unsigned short g_grid_heads[];
 int find_grid_entity_facing_0xc0(int param_1, int param_2, short param_3)
 {
     int step;
-    int hi;
+    short hi;
     unsigned short row;
 
     step = param_1 - 0x100;
     hi = param_2 & 0x7f00;
     for (row = 0; row < 6; row++, step += 0x100) {
         unsigned short head =
-            g_grid_heads[(((short)step >> 8) & 0x7f) | ((short)hi >> 1)];
+            g_grid_heads[(((short)step >> 8) & 0x7f) | (hi >> 1)];
         while (head != 0) {
             unsigned char *node = g_entity_pool + head;
             if (node[0x18] == 2 &&

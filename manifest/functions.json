@@ -2211,8 +2211,8 @@
       "calls": 1,
       "data_refs": 6,
       "incoming": 0,
-      "status": "unmatched",
-      "match_pct": 0.0,
+      "status": "matched",
+      "match_pct": 100.0,
       "src": "src/sound/walk_sound_record_table.c"
     },
     {

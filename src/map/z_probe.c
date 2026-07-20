@@ -3,10 +3,13 @@
  * result, else a floor-masked z. b tracks z in a full int (EBX); each call sign-extends its low
  * short. Frameless push-ebx/esi/edi, stack-calling. Recipe: -4s -oneatx -zp8 -s -zq.
  *
- * PARKED near-miss, length-EXACT 112/112, 96.8% (regdiff), ONE instruction off at #27: the
- * `b + 1` in the sVar<0 fallback -- target emits `mov eax,ebx; inc eax`, Watcom -oneatx emits the
- * fused `lea eax,[ebx+1]`. Tried `unsigned t=b; ++t;` (copy-propagated back to lea). A lea-vs-mov+inc
- * codegen tie, same class as the parked corpus. Twin 0xfa88 (callee tile_passability_test_b) shares the residue. */
+ * PARKED near-miss, length-EXACT 112/112. NOTE (2026-07-20, corrected): the FIRST diff is at 0x1,
+ * not the lea. The prologue caches {b,y,x} in {EBX,ESI,EDI} in the target (push ebx/esi/edi = 53 56 57)
+ * but {EBX,EDI,EBP} in ours (53 57 55) -- it skips ESI and seats y in EBP. That is a pure register-choice
+ * tie for the 3rd cross-call register, invariant across int-typed locals, y-before-x ordering, and the
+ * full 12-flag matrix (source x flag cross-product, 2026-07-20). The lea-vs-mov+inc for `b + 1`
+ * (`lea eax,[ebx+1]` vs target `mov eax,ebx; inc eax`) is a SECOND diff downstream; both are genuine
+ * 9.5 ties. Twin 0xfa88 (callee tile_passability_test_b) shares the residue. */
 extern unsigned tile_passability_test(int x, int y, int z);
 
 unsigned z_probe(short x, short y, int z)

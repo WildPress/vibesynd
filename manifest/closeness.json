@@ -643,13 +643,6 @@
 "delta": -8,
 "jt": false
 },
-"walk_sound_record_table": {
-"close": 0.9029,
-"target": 103,
-"ours": 103,
-"delta": 0,
-"jt": false
-},
 "play_sound_slot": {
 "close": 0.7778,
 "target": 90,
