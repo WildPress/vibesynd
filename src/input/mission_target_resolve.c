@@ -2,11 +2,19 @@
    TRUE SIZE 3694 bytes. Produces the "cursor action descriptor" *p that the caller
    turns into a click order (move / attack / select-ped / pick-up / map-scroll ...).
 
-   STATUS (this pass): reconstructed the whole missing second half (the switch(g_e120)
-   dispatch, ~1960 bytes, 54% of the fn). EDIT-DIST 2692 -> 1669; byte coverage
-   1602 -> 3413 of 3694 (~27% -> ~55% match). Logic is COMPLETE: all 21 distinct
-   action codes (p[0xd] = 0x2..0x1a) are emitted. What remains is codegen-tie residue,
-   not missing behaviour -- see FLOOR below.
+   STATUS (prior pass): reconstructed the whole missing second half (the switch(g_e120)
+   dispatch, ~1960 bytes, 54% of the fn). Logic is COMPLETE: all 25 action-code stores
+   (p[0xd] = 0x2..0x1a, incl. the three 0x8 forms and two 0x16) are emitted -- verified
+   count/value/order-identical to the target, so NO dispatch case is missing.
+
+   STATUS (this pass): the -281B length shortfall was NOT missing logic -- it was
+   infidelity in how we materialise the agent index. The target reads g_cur_player
+   (0x10b16) exactly 12 times and emits exactly 12 SHL5;ADD;LEA*4;SUB;LEA*8;SUB *0x417
+   chains: it NEVER caches g_cur_player, recomputing the chain fresh at every use. Our
+   build hoisted/CSE'd it. Modelling the original by declaring `g_cur_player` volatile
+   reproduces the 12 reloads and closes the gap: length delta -281 -> -33, ours 3413 ->
+   3661 of 3694B; instruction-aligned byte match 2176 -> 2201, aligned-insn coverage
+   60.8% -> 61.2%. What remains is codegen-tie residue, not missing behaviour -- FLOOR.
 
    PROLOGUE: push ebx;esi;edi; sub esp,4. The 4-byte [esp] slot is the return value
    `r` (modelled here as `volatile int r`, which reproduces the observed memory-homed
@@ -54,12 +62,19 @@
                               HUD, loop the 4 g_5114 regions; three vertical bands emit
                               0xc / 0xe / 0xd with p[1] = clamp((mouse_x-(x0+4))*256/0x37).
 
-   REMAINING (codegen-tie FLOOR, ~1669 edit-dist, all register-level not logic):
+   REMAINING (codegen-tie FLOOR, delta now -33B, all register/shape not logic):
    1. Register allocation: Watcom gives our build a 4th callee-saved reg (push ebp +
       pop ebp at every return); the original manages the whole body in ebx/esi/edi +
       the [esp] slot. This one decision costs ~35 bytes (1 push, ~24 pops, ebp-as-zero
-      at returns) and shifts the param offset. Not steerable from source without a
-      register-pressure change we could not find.
+      at returns), shifts the param offset, and desyncs the instruction-aligned diff at
+      instr 0 (regdiff cannot see past it). The original holds `rec` across the
+      draw_targeting_reticle call and the whole switch in a general temp; our C needs a
+      callee-saved reg for it. Not steerable from source without a register-pressure
+      change we could not find (the documented hard wall).
+   1b.Loop shape: the target's block-scan loops recompute the AGENT_FIRST(+4) bound each
+      iteration (jmp-to-bottom, single test) with the *0x5c stride hoisted in a reg;
+      ours rotates the loop (test duplicated top+bottom) with the bound in a reg. Same
+      semantics, ~15-50B per loop of shape difference, below the flags' control.
    2. Widen-form / register-role ties across the two walled record families: byte loads
       `mov al,[..+0xe551]; and eax,0xff` vs `movsx`, and which GPR holds rec/counter/temp.
       These are the documented Watcom-9.5 wall (same class that parks 0x2d7a8).
@@ -74,7 +89,8 @@ extern unsigned char  g_e296, g_e297, g_e2a3, g_e2a4;
 extern unsigned char  g_10b3e, g_10b3f, g_10b39, g_10b40, g_radar_detail;
 extern unsigned short g_e112, g_e114, g_sel_cursor, g_e118, g_e11a, g_e11c;
 extern unsigned short g_e120, g_e122, g_e124;
-extern short          g_10b10, g_10b12, g_10b14, g_cur_player, g_10b1a;
+extern short          g_10b10, g_10b12, g_10b14, g_10b1a;
+extern volatile short g_cur_player;   /* orig NEVER caches this: 12 uses -> 12 reloads + 12 *0x417 chains */
 extern unsigned short g_10b1c, g_10b1e, g_10b20, g_cursor_x;
 extern unsigned short g_mouse_x, g_mouse_y, g_52f8;
 extern unsigned char  g_10b41;
