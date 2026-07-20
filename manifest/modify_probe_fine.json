@@ -1,0 +1,326 @@
+{
+"build_equip_row": {
+"baseline_fd": 16,
+"best_fd": 16,
+"best": null,
+"match_candidate": false
+},
+"walk_records_2c": {
+"baseline_fd": 7,
+"best_fd": 7,
+"best": null,
+"match_candidate": false
+},
+"draw_circle": {
+"baseline_fd": 45,
+"best_fd": 45,
+"best": null,
+"match_candidate": false
+},
+"draw_object_sprite_list": {
+"baseline_fd": 3,
+"best_fd": 13,
+"best": "record_max+ebx",
+"match_candidate": false
+},
+"economy_daily_tick": {
+"baseline_fd": 174,
+"best_fd": 174,
+"best": null,
+"match_candidate": false
+},
+"render_draw_list": {
+"baseline_fd": 3,
+"best_fd": 5,
+"best": "draw_sprite_buf+ebp",
+"match_candidate": false
+},
+"draw_slot_record_chain": {
+"baseline_fd": 5,
+"best_fd": 5,
+"best": null,
+"match_candidate": false
+},
+"alloc_init_with_errcode": {
+"baseline_fd": 30,
+"best_fd": 30,
+"best": null,
+"match_candidate": false
+},
+"container_load": {
+"baseline_fd": 26,
+"best_fd": 26,
+"best": null,
+"match_candidate": false
+},
+"menu_list_draw": {
+"baseline_fd": 3,
+"best_fd": 54,
+"best": "draw_ui_text+ebp",
+"match_candidate": false
+},
+"sel_marker_dispatch": {
+"baseline_fd": 40,
+"best_fd": 40,
+"best": null,
+"match_candidate": false
+},
+"menu_list_draw_b": {
+"baseline_fd": 3,
+"best_fd": 15,
+"best": "draw_ui_text+ebp",
+"match_candidate": false
+},
+"install_int9_handler": {
+"baseline_fd": 5,
+"best_fd": 5,
+"best": null,
+"match_candidate": false
+},
+"new_game_reset": {
+"baseline_fd": 683,
+"best_fd": 683,
+"best": null,
+"match_candidate": false
+},
+"draw_tactical_map": {
+"baseline_fd": 60,
+"best_fd": 60,
+"best": null,
+"match_candidate": false
+},
+"new_campaign_reset": {
+"baseline_fd": 6,
+"best_fd": 6,
+"best": null,
+"match_candidate": false
+},
+"render_dashed_line": {
+"baseline_fd": 8,
+"best_fd": 8,
+"best": null,
+"match_candidate": false
+},
+"reequip_squad_row": {
+"baseline_fd": 16,
+"best_fd": 16,
+"best": null,
+"match_candidate": false
+},
+"aim_step_clamp": {
+"baseline_fd": 39,
+"best_fd": 39,
+"best": null,
+"match_candidate": false
+},
+"guarded_call_2arg": {
+"baseline_fd": 0,
+"best_fd": 0,
+"best": null,
+"match_candidate": false
+},
+"far_alloc_probe": {
+"baseline_fd": 64,
+"best_fd": 64,
+"best": null,
+"match_candidate": false
+},
+"entity_state_dispatch": {
+"baseline_fd": 84,
+"best_fd": 84,
+"best": null,
+"match_candidate": false
+},
+"submit_ncb": {
+"baseline_fd": 5,
+"best_fd": 5,
+"best": null,
+"match_candidate": false
+},
+"dpmi_alloc_5para": {
+"baseline_fd": 111,
+"best_fd": 111,
+"best": null,
+"match_candidate": false
+},
+"draw_agent_detail": {
+"baseline_fd": 4,
+"best_fd": 4,
+"best": null,
+"match_candidate": false
+},
+"xfer_buf_req_b1": {
+"baseline_fd": 8,
+"best_fd": 8,
+"best": null,
+"match_candidate": false
+},
+"submit_command": {
+"baseline_fd": 161,
+"best_fd": 161,
+"best": null,
+"match_candidate": false
+},
+"netbios_op91": {
+"baseline_fd": 9,
+"best_fd": 9,
+"best": null,
+"match_candidate": false
+},
+"recv_chunked": {
+"baseline_fd": 19,
+"best_fd": 19,
+"best": null,
+"match_candidate": false
+},
+"dos_alloc_and_zero": {
+"baseline_fd": 18,
+"best_fd": 18,
+"best": null,
+"match_candidate": false
+},
+"netbios_op90": {
+"baseline_fd": 9,
+"best_fd": 9,
+"best": null,
+"match_candidate": false
+},
+"dpmi_free_dos_mem": {
+"baseline_fd": 6,
+"best_fd": 6,
+"best": null,
+"match_candidate": false
+},
+"anim_tick_frame_list": {
+"baseline_fd": 20,
+"best_fd": 20,
+"best": null,
+"match_candidate": false
+},
+"entity_event_dispatch": {
+"baseline_fd": 7,
+"best_fd": 7,
+"best": null,
+"match_candidate": false
+},
+"homing_step": {
+"baseline_fd": 62,
+"best_fd": 62,
+"best": null,
+"match_candidate": false
+},
+"mp_session_setup": {
+"baseline_fd": 7,
+"best_fd": 7,
+"best": null,
+"match_candidate": false
+},
+"agent_hud_render": {
+"baseline_fd": 149,
+"best_fd": 149,
+"best": null,
+"match_candidate": false
+},
+"radar_panel_sm": {
+"baseline_fd": 104,
+"best_fd": 104,
+"best": null,
+"match_candidate": false
+},
+"vehicle_exit": {
+"baseline_fd": 8,
+"best_fd": 8,
+"best": null,
+"match_candidate": false
+},
+"los_trace": {
+"baseline_fd": 195,
+"best_fd": 195,
+"best": null,
+"match_candidate": false
+},
+"los_trace_far": {
+"baseline_fd": 60,
+"best_fd": 60,
+"best": null,
+"match_candidate": false
+},
+"entity_aim_helper": {
+"baseline_fd": 42,
+"best_fd": 42,
+"best": null,
+"match_candidate": false
+},
+"projectile_select_turn": {
+"baseline_fd": 35,
+"best_fd": 35,
+"best": null,
+"match_candidate": false
+},
+"pick_passable_shot_dir": {
+"baseline_fd": 17,
+"best_fd": 17,
+"best": null,
+"match_candidate": false
+},
+"march_shot_damage": {
+"baseline_fd": 119,
+"best_fd": 119,
+"best": null,
+"match_candidate": false
+},
+"mission_target_resolve": {
+"baseline_fd": 3,
+"best_fd": 3,
+"best": null,
+"match_candidate": false
+},
+"play_sound_slot": {
+"baseline_fd": 36,
+"best_fd": 36,
+"best": null,
+"match_candidate": false
+},
+"draw_wrapped_text": {
+"baseline_fd": 12,
+"best_fd": 12,
+"best": null,
+"match_candidate": false
+},
+"draw_ui_text": {
+"baseline_fd": 37,
+"best_fd": 37,
+"best": null,
+"match_candidate": false
+},
+"text_input_widget": {
+"baseline_fd": 8,
+"best_fd": 8,
+"best": null,
+"match_candidate": false
+},
+"drop_carried_items": {
+"baseline_fd": 7,
+"best_fd": 7,
+"best": null,
+"match_candidate": false
+},
+"vehicle_drive_step": {
+"baseline_fd": 27,
+"best_fd": 27,
+"best": null,
+"match_candidate": false
+},
+"sound_driver_init": {
+"baseline_fd": 7,
+"best_fd": 7,
+"best": null,
+"match_candidate": false
+},
+"xmidi_music_init": {
+"baseline_fd": 6,
+"best_fd": 7,
+"best": "alloc_init_with_errcode+edi",
+"match_candidate": false
+}
+}
