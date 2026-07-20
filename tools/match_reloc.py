@@ -72,8 +72,15 @@ def main():
     if not os.environ.get("SKIP_COMPILE"):
         if subprocess.run(["bash", "tools/wcompile.sh", name]).returncode:
             sys.exit("compile failed")
-    off = int(f["addr"], 16) - base
-    tb = open(SEG, "rb").read()[off:off + f["size"]]
+    addr = int(f["addr"], 16)
+    if addr < base and os.path.exists("build/obj1_full.bin"):
+        # prefix / sub-graph fns (addr < image_base 0x10000) are NOT in the OBJECT1 linear seg --
+        # read them from the full image build/obj1_full.bin (byte at manifest A = obj1_full.bin[A-0xd748]).
+        off = addr - 0xd748
+        tb = open("build/obj1_full.bin", "rb").read()[off:off + f["size"]]
+    else:
+        off = addr - base
+        tb = open(SEG, "rb").read()[off:off + f["size"]]
     ob, fixups = text_bytes_and_fixups(f"build/{name}.obj")
     tm, om = mask(tb, fixups), mask(ob, fixups)
     print(f"\n=== {name}  addr={f['addr']}  target={len(tb)}B  ours={len(ob)}B ===")
