@@ -1,4 +1,14 @@
-/* PARKED near-miss (NOT matched) -- EDIT-DIST 77 (was 87), TRUE size 310 (manifest
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): pure CODEGEN TIE. Byte-for-byte
+ * comparison of the raw target/ours hex confirms identical arithmetic (row=(y%0x6000)/256,
+ * col=(x&0xff00)/256, index=col+row*128, slot=g_map_cols+index*4, tile=*((z-1)/128+*slot)),
+ * identical g_tile_flags[tile] index (both `25 ff 00 00 00` = and eax,0xff -- the
+ * regdiff --show `and eax,0` was a disassembler alignment artifact from masked relocs),
+ * the same 6-entry switch, and all eight case bodies with matching call targets/args.
+ * Divergences: the 0x6000 divisor register (esi vs ecx) and the g_map_cols load
+ * (lea ecx,[eax*4]+A1-eax vs lea eax,[eax*4]+8b0d-ecx) -- the documented allocator
+ * triangle, same result. No behavioural difference.
+ *
+ * PARKED near-miss (NOT matched) -- EDIT-DIST 77 (was 87), TRUE size 310 (manifest
  * says 150, undercounted: carve stops at the jmp CS:[...] -- code runs to the
  * ret at 0x33fad). Entry block, tile lookup tail, switch, and ALL EIGHT case
  * bodies are byte-identical. The residue is now HALF of the slot-formation

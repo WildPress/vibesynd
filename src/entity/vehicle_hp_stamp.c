@@ -1,4 +1,11 @@
-/* frameless @ 0x20d98: PARKED near-miss (switch-tree balance). Logic, register
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): switch binary-search tree
+   balance. Audited whole function -- +0x18 gate, +0x19 type read, stride 0x2a,
+   loop bound, and all eight +0x14 store constants (0x258/0x64/0x50/0x1e/0x28/
+   0x0a/0x78/0x73) are byte-identical; the same 16-value case set routes to the
+   same stores. Only the binary-search pivot comparisons and jb/jbe tree shape
+   differ (Watcom pivots 4/4 at 0x0f, ours 3/5 at 0x0d). Output-equivalent.
+ *
+ * frameless @ 0x20d98: PARKED near-miss (switch-tree balance). Logic, register
    (EDX cursor), loop bounds and all eight cases are correct; the only diff is
    how Watcom balances the switch's binary-search tree (it pivots the case-ranges
    4/4 at 0x0f, ours 3/5 at 0x0d), which we can't steer from C. Kept for the

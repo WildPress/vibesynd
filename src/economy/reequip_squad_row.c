@@ -1,4 +1,18 @@
-/* reequip_squad_row @ 0x223c8 (724B true size; manifest 686 excludes the 38B of
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): node-pointer formation +
+ * addressing/allocation ties. Audited whole function: all 10 cmp/test bounds
+ * match, all 15 branch conditions match, all 5 call sites match (grid_detach_object
+ * x3, init_record_if_alloc, fill_bytes). Template field offsets confirmed from
+ * the unlinked object's addends: +0x69 (->node+0x14 HP), +0x6b (->node+0x3c),
+ * +0x6f (present byte), +0x70 (count, loaded signed via movsx), +0x72 (kind,
+ * guard>0); the case stores 0x28/0x30/0x38/0x40 to node+0x55/+0x56, mode|0x400,
+ * and `&= ~0x109` all match. Residual tie classes: (a) node-pointer formation
+ * (target `imul edx,edx,0x5c; mov ebp,0x8110; add ebp,edx` vs ours `imul ebp,
+ * edx,0x5c; add ebp,imm32`); (b) inline jump-table placement (target inlines the
+ * 4-entry table at 0x14c70, ours emits it separately); (c) the +0xa read width
+ * (target dword, ours word -- the stored low-16 result is identical); (d)
+ * register/slot allocation. Every memory write is identical.
+ *
+ * reequip_squad_row @ 0x223c8 (724B true size; manifest 686 excludes the 38B of
  * jump-table case bodies hidden behind the CS:[eax*4+0x14c70] dispatch).
  * PARKED ~694/724 (-4s -oneatx -zp8 -s -zq; verify with truediff.py 724):
  * everything matches except the TWO node-pointer formations, where 9.5b

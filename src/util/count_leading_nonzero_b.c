@@ -1,4 +1,9 @@
-/* frameless @ 0x20be8: for the current row g_cur_player, count the leading nonzero word
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): residual = two pure schedule
+   transpositions (inc count/i order; return-load `mov al,ch` vs the g_cur_player
+   write-back). Address arithmetic (si*1047 + param*40 + i*4), the word compare,
+   the i<8 bound and the write-back are byte-identical; same 101B.
+
+   frameless @ 0x20be8: for the current row g_cur_player, count the leading nonzero word
    entries (up to 8) in the strided table at 0xe5c3 for column = param_1. Row stride
    1047, column stride 40, entry stride 4 (words). Stops at the first zero entry and
    returns the count. Sibling of 0x20b78 (which indexes the column via g_roster_index).

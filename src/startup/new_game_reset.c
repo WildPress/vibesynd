@@ -1,4 +1,18 @@
-/* new_game_reset @ 0x21658 -- "new-game / player reset": recompute equipment &
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): register/slot allocation +
+ * addressing-encoding ties. Audited whole function: every struct offset matches
+ * (mem-displacement multiset identical); every constant matches -- flags=1,
+ * funds=0x5f5e100 (100000000), capacity=0x960 (2400), strides 0x1eb (491) /
+ * 0x1f5 (501), HP=0x10, flags=0x1fff, and the full equip-kind set {1,6,7,0xc,
+ * 0x11} (the 6,6 / 0x11,0x11 / 7,7 pairs land via register reuse); every branch
+ * condition matches. Residual tie classes: (a) equip-slot pointer addressing
+ * (target `lea edx,[eax+4*i]` vs ours folds +4*i into the store displacement);
+ * (b) register reuse for consecutive equal kinds; (c) the abs sign-test idiom
+ * (target `test reg,reg` vs ours `cmp [mem],0`, both feed `jge`); (d) loop-
+ * counter signedness (target `jb` vs ours `jl` on the volatile-int counters,
+ * range 0..0x13 non-negative so identical); (e) register/slot allocation.
+ * Output byte-diff is codegen-only; every memory write is identical.
+ *
+ * new_game_reset @ 0x21658 -- "new-game / player reset": recompute equipment &
  * research availability flags for the current player, and (when a research
  * tier is NOT yet owned) reset that player's funds to 100,000,000 and rebuild
  * the squad-order / conveyor / equipment-template tables from defaults.

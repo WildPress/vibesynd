@@ -1,4 +1,12 @@
-/* NEAR-MISS @ 0x2bbe8 -- 160 vs 159 code bytes; JUMP TABLE FULLY RECOVERED via
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): pure CODEGEN TIE. Full hex decode
+ * confirms identical constants (base 0xd4, sentinel -99, switch max 4, record offsets
+ * +0xa/+0xc/+0xe/+0x10/+2/+4), the 5-entry jump table (cases 0 and 4 both routed to the
+ * sw=0 path), the delay decrement, the g_frame_sprite[a] lookup, the store-if-changed,
+ * and the draw_object_sprite_list(spr,x,y) args. Divergences are all scheduling/register
+ * ties: `old` load early vs late, base/`a` folded into ECX vs EDX, entry guard as a
+ * duplicated epilogue vs shared far-jz, and loop-tail load/add order. Same behaviour.
+ *
+ * NEAR-MISS @ 0x2bbe8 -- 160 vs 159 code bytes; JUMP TABLE FULLY RECOVERED via
  * tools/lefix.py (the payoff of the fixed parser). 5-entry dispatcher at
  * obj1:+0x1e480: word +0 -> case 1/2/3 add 1/2/3, cases 0/4 + default add 0.
  * (Manifest size was undercounted 140; corrected to 159 = through the ret.)

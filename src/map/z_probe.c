@@ -10,6 +10,12 @@
  * full 12-flag matrix (source x flag cross-product, 2026-07-20). The lea-vs-mov+inc for `b + 1`
  * (`lea eax,[ebx+1]` vs target `mov eax,ebx; inc eax`) is a SECOND diff downstream; both are genuine
  * 9.5 ties. Twin 0xfa88 (callee tile_passability_test_b) shares the residue. */
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): the only two divergences are the 3rd callee-save
+ * register choice (target push ebx/esi/edi seats y in ESI; ours push ebx/edi/ebp seats y in EBP) and
+ * `lea eax,[ebx+1]` (ours) vs `mov eax,ebx; inc eax` (target) for b+1. Every memory read
+ * (arg loads at [esp+0x18]), all three call targets, the two `test ax,ax`/`jne` guards, the sign
+ * comparison `test bx,bx`/`jge`, and both floor masks (`and al,0x80` / `and bl,0x80`) are byte-identical.
+ * Same value returned for all inputs. Pure register-choice + lea/mov+inc codegen tie. */
 extern unsigned tile_passability_test(int x, int y, int z);
 
 unsigned z_probe(short x, short y, int z)

@@ -1,4 +1,16 @@
-/* agent_hud_render @ 0x2c578 -- AGENT STATUS-PANEL / HUD RENDERER (per-player squad).
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): audited against a clean objdump of
+   0x2c578..0x2ceca. All draw arguments match the target exactly -- fill/vline colours
+   (push 0x5 x2, 0x6 x4, 0x7 x2, 0x8 x1, 0xc x4, 0xd x2, 0xe x3, 0xf x2), bar sizes
+   (0x37, 0xa), panel offsets (0x30/0x3e/0x4c, 0x34/0x24), store_4_globals(0,0,0x80,0x190),
+   and the arithmetic shape (idiv x11, sar x13, shl x3, call x21 all equal). Two divergences,
+   both codegen ties: (1) the aux-pass `prev > 0` test -- target uses an unsigned test/jbe,
+   ours a signed cmp/jle, but prev = g_df76[i] is a zero-extended byte (0..255) so both
+   mean prev!=0; (2) the aux `hp*0x17` -- target `imul ...,0x17`, ours a lea/sub *23
+   strength-reduction (same product), which accounts for the imul(-1) and 0x17-literal(-1)
+   deltas. Residual reg-selection tie class: st in DL vs BL, health/aux register roles,
+   the muzzle-flash cache byte +10 folded into the g_df48 reloc base (ours [ecx+0xa]),
+   and shorter [esp] spill encodings (ours 2368B vs 2387B). No behavioural bug found.
+   -- agent_hud_render @ 0x2c578 -- AGENT STATUS-PANEL / HUD RENDERER (per-player squad).
  *
  * TRUE SIZE = 2387 bytes (0x953), body 0x2c578 - 0x2ceca (RET at 0x2ceca).
  *   manifest/functions.json now records 2387 (0x953) -- correct. (Ghidra's DB had

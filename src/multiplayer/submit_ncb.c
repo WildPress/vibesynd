@@ -1,4 +1,12 @@
-/* frameless @ 0x27d88: submit a NetBIOS NCB via DPMI. Clears the mailbox status
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): lgs far-pointer-load fusion tie. Ours fuses
+   the two halves of far ptr p into `lgs eax,[esp+0x84]` (offset->eax, selector->gs) + `mov esi,gs`;
+   target splits them into `mov esi,[esp+0x88]` (selector) + `mov ebx,[esp+0x84]` (offset) +
+   `mov gs,esi`. Same source bytes, same gs=selector / offset caching. All memory writes verified
+   identical: p[0x31]=0, rm+0x10=offset, rm+0x20=0x100, rm+0x24=rm+0x26=seg (from far[+0x40]),
+   in[0]=0x300, in[1]=0x5c, in[5]=&rm; same memset/segread/int386x(0x31) calls; same
+   report_net_status(g_376c,0x195,-3)/return -1 on carry, else 0. Ours 4B shorter (lgs saves 4).
+
+   frameless @ 0x27d88: submit a NetBIOS NCB via DPMI. Clears the mailbox status
    byte p[0x31], builds a DPMI real-mode register block (rm.ebx = offset of p,
    flags=0x100, ds/fs = the real-mode segment stored at p+0x40 by the allocator
    0x27f08), zeroes in/out REGS + SREGS, segread(), then __int386x(0x31) with

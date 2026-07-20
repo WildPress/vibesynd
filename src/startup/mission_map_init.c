@@ -1,4 +1,10 @@
-/* frameless @ 0x22858: mission/map init sequence. Builds the g_map_cols column table
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): scheduler-fill tie. Sole residual is
+   `xor dh,dh` hoisted into the add->store latency gap -- target emits add eax,6 / xor dh,dh /
+   store eax / 3 byte stores; ours emits add eax,6 / store eax / xor dh,dh / 3 byte stores.
+   Independent register-zero vs independent store reordered; identical writes (g_5324=g_5308+6,
+   g_10b3f=g_10b3e=g_10b50=0), same calls. Rest of the 415B body is byte-identical.
+
+   frameless @ 0x22858: mission/map init sequence. Builds the g_map_cols column table
    (FUN_20d18), fixes up two pointer tables (FUN_25378 x2), clears g_10ac8, session
    init when g_radar_detail==0 (FUN_12ca8), block/tile setup (FUN_20d98), palette/screen
    calls (0x498ef/0x4997e), sprintf's the map filename (fmt g_1f4 net-game, else

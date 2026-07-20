@@ -1,4 +1,16 @@
-/* PARKED near-miss @ 0x11d68 -- EDIT-DIST 1125 (ours 3323B vs target 2881B,
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): audited against a clean objdump of
+   the target region (0x11d68..0x128a8). Every behaviourally-load-bearing element matches
+   the target exactly: box-slack constants (0x20 x11, 0x40 x20-arith, 0x80 x19), z-offsets
+   (0x100 x10, 0x170/0x180/0x190 x1 each), the subtype>0x2a miss bound, all node struct
+   offsets (+4,+6,+8,+0xa,+0xb,+0x18,+0x19,+0x1c,+0x20), the type-1 squad/leader checks,
+   and both inclusive z boundaries (entry dy<=0; case 0x26/27/29 node8<=z+rz -> return).
+   The signed-compare total is identical (jl+jle+jg+jge = 69 both sides); the jl<->jg
+   redistribution is per-body cmp operand-orientation (a<b == b>a) and the case-0x26 <=
+   is a jg-to-skip vs jle-to-return polarity flip -- both behaviour-preserving. Residual
+   tie class: frame 0x84 vs 0x8c, node in EBP (target) vs EBX (ours), ~33 spill-slot
+   assignments + one extra [esp+0x40] reload, and the jump-table index zero-extension
+   form. No wrong constant/offset/operator/bound found.
+   -- PARKED near-miss @ 0x11d68 -- EDIT-DIST 1125 (ours 3323B vs target 2881B,
    ~66% by _probe.sh); recipe -4s -oneatx -zp8 -s -zq. TRUE SIZE 2881 (0xb41)
    -- manifest says 337 (do not trust it; report only). Both jump tables emit
    correctly (6-entry type table + 43-entry subtype table = 49 leading obj

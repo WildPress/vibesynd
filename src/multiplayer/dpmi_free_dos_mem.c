@@ -1,4 +1,12 @@
-/* PARKED near-miss (NOT matched, 103/130) -- guard + build two stack msg buffers + dispatch.
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): whole-TU register-alloc/schedule tie. Ours
+   emits a dead STORE `mov [buf+0xc],ebx` (buf[3]=param_1, immediately overwritten by
+   buf[3]=(ushort)param_2 with no intervening read/call) and loads ebx(param_1) before esi(param_2);
+   target folds the dead store into a dead READ `mov eax,ebx` and loads esi(param_2) first. Final
+   memory image identical: buf[0]=0x101, buf[3]=(unsigned short)param_2. Same guard
+   (param_1!=0 || (ushort)param_2!=0), same memset x2, same int386(0x31,buf,buf+7), same buf[13]
+   test, same report_net_status(0x376c,0x2af,-1). Ours +1B (dead store vs dead read).
+
+   PARKED near-miss (NOT matched, 103/130) -- guard + build two stack msg buffers + dispatch.
    Single int buf[14] reproduces the exact stack layout. WHOLE-TU register-alloc wall: the target
    promotes param_1 to a callee-saved reg with a dead `mov eax,ebx` READ artifact from its module
    compilation context; isolated compile emits a dead STORE + reversed param load order. Same

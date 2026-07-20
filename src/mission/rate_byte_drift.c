@@ -1,4 +1,12 @@
-/* jump-table dispatcher @ 0x2d0d8 -- rate-driven byte drift (3-channel value
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): pure CODEGEN TIE. Block-b is
+ * byte-identical; the whole function matches except one commutative-add destination
+ * tie in block 1 (target `add edx,eax; mov [ebx],dl` vs ours `add eax,edx; mov [ebx],al`),
+ * both yielding *p3 = *p3 + s. Verified identical: force path (*p1=force+0x80, *p3=force),
+ * the mode switch constants (0/b=4,a=0x14; 1/8,0x1c; 2/0x10,0x28; 3/0x28,0x80), both
+ * counter%a and counter%b modulo tests, the toward-0x80 vs toward-*p1 select, and the
+ * three-way -1/0/+1 sign logic in every block. No behavioural difference.
+ *
+ * jump-table dispatcher @ 0x2d0d8 -- rate-driven byte drift (3-channel value
  * fade). 4-entry jump table at obj1:+0x1f980 (manifest 0x2d0c8, via lefix.py):
  *   case 0 -> 0x2d118 (b=4,    a=0x14)   case 2 -> 0x2d131 (b=0x10, a=0x28)
  *   case 1 -> 0x2d124 (b=8,    a=0x1c)   case 3 -> 0x2d141 (b=0x28, a=0x80)

@@ -1,4 +1,14 @@
-/* NEAR-MISS (NOT matched). EDIT-DIST=44 (was 52). Prologue now EXACT: returning
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): register-allocation + value-reuse tie.
+   Full 187B/194B byte walk confirms identical logic: memset(msg)/memset(scratch);
+   msg[0]=0x100; msg[1]=(param_2+0x10)/16 (same sar/sbb divide, same slot store, only
+   scheduled after the pushes in target); int386(0x31,msg,scratch); local_c=scratch[6];
+   if(local_c) report_net_status(0x376c,0x297,-2)/return 0; else set *param_1=scratch[0],
+   param_1[3]=scratch[3], *(int*)(param_1+1)=local_c, far _fmemset(es:off,0,param_2).
+   Residual diffs are pure codegen: (1) local_c in ecx (target) vs edx+extra xor ecx,ecx
+   (ours); (2) return scratch[3]&0xffff0000 -- target reuses eax (al zeroed by fill's
+   xor al,al, ah by mov ah,al, then redundant xor ah,ah) while ours reloads scratch[3]
+   then xor ax,ax. Both yield scratch[3]&0xffff0000. Comment-only; output byte-identical.
+   NEAR-MISS (NOT matched). EDIT-DIST=44 (was 52). Prologue now EXACT: returning
    `scratch[3] & 0xffff0000` directly (no held local_18) drops the ESI spill, so we
    push only EBX+EDI like the target -- 2 callee-saved, not 3.
    dos_alloc_and_zero: DPMI int 0x31 AX=0x100 DOS-memory alloc, then far-pointer

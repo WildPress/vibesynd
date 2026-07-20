@@ -1,4 +1,9 @@
-/* NEAR-MISS @ 0x25348 -- instruction stream byte-IDENTICAL (masked); only an alignment pad differs.
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): code-alignment NOP-pad tie.
+   Full 43B/32B byte walk: ours == target with the 11-byte NOP pad removed. Both do
+   build_two_buffers() then d_setvec(9, g_df0e, g_df12) with identical dispatch
+   (xor eax,eax; mov ax,[g_df12]; push; mov edx,[g_df0e]; push; push 9; call; add esp,0xc).
+   Same call targets (reloc-masked equal), same args. Comment-only; output byte-identical.
+   NEAR-MISS @ 0x25348 -- instruction stream byte-IDENTICAL (masked); only an alignment pad differs.
  *
  * target 43B: e8<28cc8> 8d80 00000000  8d52 00  8bdb  31c0 66a1<df12> 50 8b15<df0e> 52 6a09 e8<b273> 83c40c c3
  * ours   32B: e8<28cc8>                            31c0 66a1<df12> 50 8b15<df0e> 52 6a09 e8<b273> 83c40c c3

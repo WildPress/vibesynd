@@ -1,4 +1,15 @@
-/* inline jump-table switch dispatcher @ 0x2bee8 -- command-list interpreter,
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): full 792B instruction-stream walk of target
+   vs ours confirms every case, constant, struct offset and branch condition is identical --
+   jump-table case map (0..4), 0x417 player stride, 0x5c agent stride, g_pool_a/g_agent_slots
+   bases, a[0x1d]&4 gate, box-test comparators (case-1 tail jl->A_58 vs case-3 tail jge->C_93),
+   g_e120==2 lockout, and the 10 g_df48..51 clears in target order 51,48,4a,49,4b,4d,4c,4e,50,4f.
+   Only three residual diffs, all the documented -ox codegen ties (net 0): (1) case-1's two `=1`
+   cursor-word stores use `mov reg,1; mov [g],reg` vs target's immediate `mov word [g],1`;
+   (2) entry `xor edi,edi`/`movsx` scheduling with early return folding `mov eax,edi`->`xor eax,eax`
+   (edi==0); (3) loop tail `movsx eax,[ebx+0x12]; add ebx,0x12` vs `add ebx,0x12; movsx eax,[ebx]`
+   (same address p+0x12). No behavioural difference.
+
+   inline jump-table switch dispatcher @ 0x2bee8 -- command-list interpreter,
  * THIRD sibling of widget_list_dispatch / command_list_interp2 (same 0x12-byte record walk,
  * word[0]==-0x63 terminator, same select-cursor blocks). 5-entry jump table at
  * obj1:+0x1e788 (manifest 0x2bed0, verified via lefix.py):

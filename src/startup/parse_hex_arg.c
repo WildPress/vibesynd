@@ -1,4 +1,12 @@
-/* parse_hex_arg @ 0x24b08 (221 bytes) -- parse a hex-digit string into a packed
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): register-rotation + co-located-jump-table
+   tie. Full body walk confirms identical logic and constants: repne-scasb strlen; len==0
+   -> return 0; i=len-1 downto 0 (16-bit signed test bx,bx); c=s[i]-0x30; if (unsigned)c>0x16
+   -> continue (cmp al,0x16/ja); and eax,0xff; jmp cs:[eax*4]; cases 0..9->0..9,
+   0x11..0x16->0xa..0xf, gap->continue; mask|=v<<bitpos; bitpos+=4. Only diffs are a
+   3-register role rotation (mask eax<->edx, bitpos edx<->esi, v esi<->eax; forces one extra
+   `mov eax,edx` to return) and the 92-byte jump table co-located in our single-fn object
+   (far CS pool in the shipped binary). Comment-only; output byte-identical.
+   parse_hex_arg @ 0x24b08 (221 bytes) -- parse a hex-digit string into a packed
  * nibble mask. One stack param (char *s at [ESP+0x14] after push ebx/esi/edi/ebp).
  *
  * What it does:

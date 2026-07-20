@@ -1,4 +1,10 @@
-/* NEAR-MISS @ 0x16318 -- 280/287 masked (was ~242/287); PARKED on ONE window:
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): the ONLY divergence is entry-load
+   ordering -- target loads g_cur_player into SI before the param byte (mov ch,[esp+0x10]),
+   ours emits the param load first. Two independent loads, transposed = pure schedule
+   tie. Everything downstream is byte-identical (287B): the g_539e[g*10]==save guard,
+   the 8-link g_b069[g*19+i] loop with the +2 funding add, the (rate-30)/2 signed drift,
+   the toward-30 nudge, the 0..0xff clamp and the SI write-back all match exactly.
+   -- NEAR-MISS @ 0x16318 -- 280/287 masked (was ~242/287); PARKED on ONE window:
  * entry order. Target loads g_cur_player into SI BEFORE the param byte
  * (mov ch,[esp+0x10]); ours always emits the param load first. Failed flips
  * (this session + prior): volatile on/off (non-volatile SINKS the SI load to

@@ -1,4 +1,13 @@
-/* frameless @ 0x264a8: slot-claim eligibility test for record p (char return).
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): pure CODEGEN TIE. Full hex decode
+ * confirms identical record geometry (10-byte recs: claim word +0, owner byte +2; 19-byte
+ * rows: 8 link bytes +0, flag +8), the same block order and outcomes (g_539a->1;
+ * owner==save&&claim!=0xff->0; flag==1&&(owner!=save||claim==0xff)->1; claim==0xff->1;
+ * j<0x32 x k!=8 scan for link-1==p->1 else 0), the g_cur_player save/restore, and the
+ * shared mov al,1 tail. Divergences are register-idiom ties only: entry order of loading
+ * p vs save, half-clear `xor dh,dh`/`xor dh,bh` vs full `xor edx,edx` for the owner-byte
+ * widen, and a block-2 `mov edx,ebx` before the widen. Same dx value, same behaviour.
+ *
+ * frameless @ 0x264a8: slot-claim eligibility test for record p (char return).
    Tables: 10-byte records at 0x539c (word at +0 = claim word, byte at +2 = owner)
    and 19-byte rows at 0xb069 (8 link bytes at +0, flag at +8) — same pair 0x164c8
    walks. save = g_cur_player (self), restored at the single exit (Watcom tail-

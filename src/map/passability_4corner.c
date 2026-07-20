@@ -20,6 +20,15 @@
  * computes z first. An explicit `int px=param_1;` local flips the slot transpose but adds an early
  * reload that drops struct to 72%, so it is not kept. The slot+schedule pair is one coupled
  * allocator-cost-model cascade (same wall class as the corpus); decoded and much closer, not matched. */
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): three inert divergences. (1) Stack-slot transpose --
+ * target homes the row at [esp] and sign-extended param_1 at [esp+4]; ours swaps them ([esp+4]/[esp]).
+ * Both slots hold the same values, read back consistently. (2) Schedule -- target builds the cell
+ * pointer (row+col)*4 off g_map_cols before computing z=param_3/0x80; ours computes z first. (3)
+ * Instruction selection -- `lea eax,[ebx+ebp]` vs `add ebp,ebx`, and a folded `add ecx,[esi+eax*4]`
+ * vs `mov eax,[esi+eax*4]; add eax,ecx` (CSE), which make ours 7B shorter (371 vs 378). Every
+ * constant (0x600 guard, 0x6000 modulus, 0xff00, +0x10 corner offset, 0x80/shl-7, 0x100/sar-8),
+ * all three globals (g_map_cols, g_tile_flags, g_a510), the signed-div-by-power-of-2 idioms, and the
+ * 4-corner compare/je/return-1 branch structure are identical. Same value returned for all inputs. */
 extern unsigned char **g_map_cols;
 extern unsigned char *g_tile_flags;
 extern char g_a510[];

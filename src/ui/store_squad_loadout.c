@@ -1,4 +1,16 @@
-/* store_squad_loadout @ 0x21e18 (TRUE SIZE 1440 = 0x21e18..0x223b7 incl., ends at RET;
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): the compiled-out 2-arg
+ * telemetry hook (WALL 1) is the SOLE residual class, confirmed behaviour-
+ * neutral. Audited whole function: all 20 cmp/test bounds match, all 27 branch
+ * conditions match, every numeric struct offset matches (no numeric displacement
+ * differs), all refund amounts match (+0x32/+0x96/+0x96/+0x12c), pr+0x20=0 clears
+ * (x5), HP=0x10, clear-HP=0xffff, squad_id=0xff, and the g_pool_a base all match.
+ * The only target-side extra is the 5x `push;push;add esp,8` with NO `call`
+ * (the empty-body hook) plus its downstream consequences -- the funds load/store
+ * split and the `mov cx,di` param pinning that feeds `push ecx`. The hook emits
+ * no observable behaviour (arg eval + cdecl cleanup, no call), so the object
+ * difference is behaviour-neutral. Every memory write is identical.
+ *
+ * store_squad_loadout @ 0x21e18 (TRUE SIZE 1440 = 0x21e18..0x223b7 incl., ends at RET;
  * matches the manifest 1440. This was a SEPARATE function the headless sweep had
  * merged into 0x21658; own prologue push ebx/esi/edi/ebp + sub esp,0xc, one
  * ushort param, shared 4-pop epilogue.)

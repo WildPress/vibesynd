@@ -1,4 +1,12 @@
-/* draw_circle @ 0x19318 - draw a circle outline centred (cx,cy), radius r,
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): pure CODEGEN TIE. Full aligned
+ * walk confirms identical arithmetic (d=3-2r, +4x+6, +4(x-y)+10, x/y +=step), all
+ * branch conditions (x<y loop, d<0 test, x==y seam) and all 16 plot_point calls
+ * with matching args. Divergences are register-allocation only (the target holds d
+ * in a callee-saved reg across the d<0 test; ours cmp-in-memory then reloads) plus
+ * downstream register naming. Target-side garbage after the block-2 calls in the
+ * regdiff --show is just the disassembler desyncing on masked call displacements.
+ *
+ * draw_circle @ 0x19318 - draw a circle outline centred (cx,cy), radius r,
  * colour c, by midpoint/Bresenham 8-way symmetry: per step plots the 8 octant
  * points via the pixel-plot 0x40236, decision d = 3 - 2r, d += 4x+6 (d<0) or
  * d += 4(x-y)+10 with y -= step. step is 1, or 2 when g_105 has bit 1 clear

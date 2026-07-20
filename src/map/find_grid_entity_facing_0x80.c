@@ -19,6 +19,13 @@
    param_3 (high byte of node[8] == high byte of param_3), has a secondary link
    node[0x1c]!=0, faces 0x80 (node[0x1a]==0x80), and whose linked node has a nonzero
    value byte at +0x54. Return 0 after 6 rows with no hit. Near-twin of find_grid_entity_facing_0xc0. */
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): two divergences, both inert. (1) Prologue param-load
+   order permutation -- target `mov esi,[esp+0x14]; mov ecx,[esp+0x18]; sub esi,0x100; xor edi,edi`
+   vs ours `mov ecx,[esp+0x18]; mov esi,[esp+0x14]; xor edi,edi; sub esi,0x100` -- same loads to the
+   same registers (esi=param_2, ecx=param_3), same ops, reordered. (2) grid-index sign-extend
+   `cwde; mov edx,eax` (target) vs `movsx edx,ax` (ours), same 16->32 result. Every struct offset
+   (0x18, 8, 0x1c, 0x1a, 0x54), constant (0x100, sar-1, sar-8, 0x7f mask, 0xff00, 0xffff, 2, 6, 0x80),
+   and branch condition (jne/je/jbe/jb) is byte-identical. Same value returned for all inputs. */
 extern unsigned char g_entity_pool[];
 extern unsigned short g_grid_heads[];
 

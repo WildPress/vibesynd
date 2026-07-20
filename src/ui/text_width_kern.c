@@ -20,6 +20,18 @@
          first diff back to 0x16 -- the interference graph pins the widen to the loop
          guard. 16/32 widen + schedule tie-break wall. */
 
+/* BEHAVIOURAL DIFF (unfixed, verified 2026-07-21): NOT a pure codegen tie. The residual 12B is a
+ * sign-extension WIDTH change on param_4, not the sanctioned equal-extension cwde/movsx tie. Target
+ * does `movsx bx,[esp+0x1c]` -- param_4 sign-extended only to 16 bits, high 16 of ebx = high 16 of the
+ * (small) glyph index = 0 -- then folds it into the 32-bit accumulator with `add eax,ebx` and no
+ * further extension. Ours does `movsx ebx,[esp+0x1c]` (full 32-bit) plus a `cwde` that cleans the
+ * width. For param_4 >= 0 the two are byte-for-byte identical in result (all realistic kerning). For
+ * param_4 < 0 they DIFFER by 0x10000 per char: e.g. width=10, param_4=-1 -> target adds 65545, ours
+ * adds 9; param_4=-128 -> target 65418, ours -118. The target's negative kern is a positive
+ * 0x0000FFxx bias (a period-compiler 16-bit-arith artifact); our reconstruction is the arithmetically
+ * correct 32-bit form. NOT fixed: reproducing the target's 16-bit leak is not cleanly expressible in
+ * C without UB, and every prior attempt to force the 16-bit widen regressed the byte match (header
+ * above). Latent -- only observable if a caller ever passes negative letter-spacing. */
 struct glyph { char a; char b; char c; char d; unsigned char w; char e; };
 
 int text_width_kern(unsigned char *str, struct glyph *table, int param_3, signed char param_4)

@@ -21,6 +21,13 @@
    in-place `add esi,edx`, 2 bytes shorter) plus the interleave of the i inc/store
    against the shifts. Not source-reachable — the codegen-tie floor. Tried:
    update reorder y/x/z (worse, 55), `x = step + x` spelling (inert). */
+/* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): the setup region 0..0xd4 is byte-perfect; the only
+ * residue is loop-body (0x126..) instruction scheduling plus the y-step materialization -- target
+ * `add edx,esi; mov esi,edx` vs ours `add esi,edx` (same esi=esi+edx, ours 2B shorter), and the
+ * interleave of the i inc/store against the shifts. Both x/y/z steps read the same tables
+ * (g_dir_dx[dir1], g_dir_dy[dir1], g_dir_dx[dir2]) with the same *0x80>>8 math, the passability call
+ * takes z+0x80, and find_blocking_entity takes (p1,x,y,z,0x80,0x80,0x100). Every struct offset (4,6,8),
+ * the two dist tests, the div-by-0x80, and all branch conditions match. Same value returned. */
 extern short g_dir_dx[];
 extern short g_dir_dy[];
 extern int sum_of_squares_call(int a, int b);
