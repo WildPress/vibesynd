@@ -5,24 +5,30 @@
    the length at the head and reads the remaining length-2 bytes after it. Returns the
    blob, or 0 if the file is null, the record is absent, or p1[0xc]&0x20 is set.
 
-   CLOSED by a per-function FLAG lever (not a source change). Under the bulk recipe
-   -4s -oneatx the original held p2 in esi / p3 in edi and 9.5b assigned the opposite
-   callee-saved pair -- a register tie-break that no source spelling moved. Dropping the
-   single optimisation letter 'a' (relax-alias) from the -o bundle flips that colouring:
-   compiled with -oneatx MINUS 'a' the whole function is reloc-aware byte-identical.
-   Recipe: -4s -oentx -zp8 -s -zq
-   (verified: RELOC-AWARE match YES; the 14 relocations mask as before. 'a' relaxes the
-   aliasing model, so removing it makes 9.5b treat the fread-written globals g_11e34/
-   g_11e35 more conservatively, which is what seats p2=esi / p3=edi to match the original.
-   The full extended flag grid finds NO other combo that matches, and packing is inert.) */
+   Matches CANONICAL -4s -oneatx -zp8 -s -zq (reloc-aware byte-identical).
+   The fix is the struct. The header globals (tag0 0x11e34, tag1 0x11e35, offset 0x11e36)
+   and the length (0x11e3a) are one contiguous object that fread(&g_hdr,6,..) then
+   fread(&g_hdr.len,2,..) write. Spelt as four separate externs, canonical's relax-alias
+   ('a') assumed the fread could not touch the distinctly-named tag reads, so it was free
+   to re-order the two tag comparisons and picked the opposite callee-saved colouring --
+   p2 landed in edi / p3 in esi, the reverse of the original's p2=esi / p3=edi. (That is
+   why the function used to need the alias 'a' dropped: recipe -4s -oentx -zp8 -s -zq.)
+   Declaring the header as one packed struct makes the tag reads provably alias the fread
+   write, so relax-alias can no longer re-order them, and canonical seats p2=esi / p3=edi
+   to match. pack(1) keeps offset at +2 and len at +6, faithful to the real addresses. */
 extern int rewind(void *h);
 extern int fread(void *dst, int size, int count, void *h);
 extern int fseek(void *h, int off, int whence);
 extern void *malloc(int size);
-extern signed char g_11e34;
-extern signed char g_11e35;
-extern int g_11e36;
-extern unsigned short g_11e3a;
+
+#pragma pack(1)
+struct tagged_hdr {
+    signed char tag0;      /* 0x11e34 */
+    signed char tag1;      /* 0x11e35 */
+    int off;               /* 0x11e36 */
+    unsigned short len;    /* 0x11e3a */
+};
+extern struct tagged_hdr g_hdr;
 
 void *load_tagged_resource(unsigned char *p1, unsigned short p2, unsigned short p3)
 {
@@ -31,20 +37,20 @@ void *load_tagged_resource(unsigned char *p1, unsigned short p2, unsigned short 
         return 0;
     rewind(p1);
     for (;;) {
-        fread(&g_11e34, 6, 1, p1);
-        if (g_11e35 == -1)
+        fread(&g_hdr, 6, 1, p1);
+        if (g_hdr.tag1 == -1)
             return 0;
-        if (g_11e35 != p2)
+        if (g_hdr.tag1 != p2)
             continue;
-        if (g_11e34 != p3)
+        if (g_hdr.tag0 != p3)
             continue;
         break;
     }
-    fseek(p1, g_11e36, 0);
-    fread(&g_11e3a, 2, 1, p1);
-    blob = malloc(g_11e3a);
-    *(unsigned short *)blob = g_11e3a;
-    fread(blob + 2, g_11e3a - 2, 1, p1);
+    fseek(p1, g_hdr.off, 0);
+    fread(&g_hdr.len, 2, 1, p1);
+    blob = malloc(g_hdr.len);
+    *(unsigned short *)blob = g_hdr.len;
+    fread(blob + 2, g_hdr.len - 2, 1, p1);
     if (p1[0xc] & 0x20)
         return 0;
     return blob;

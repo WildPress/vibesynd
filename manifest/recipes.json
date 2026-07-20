@@ -150,7 +150,7 @@
   },
   "xfer_buf_req94": {
     "addr": "000284a8",
-    "flags": "-4s -or -zp8 -s -zq"
+    "flags": "-4s -oneax -zp8 -s -zq"
   },
   "clamp_point_box": {
     "addr": "0001ba48",
@@ -158,7 +158,7 @@
   },
   "sound_channel_select": {
     "addr": "00038fe8",
-    "flags": "-4s -or -zp8 -s -zq"
+    "flags": "-4s -oneax -zp8 -s -zq"
   },
   "hittest_draw": {
     "addr": "00036298",
@@ -278,7 +278,7 @@
   },
   "scan_syndicate_recs": {
     "addr": "00016638",
-    "flags": "-4s -ot -s -zq"
+    "flags": "-4s -oneatx -zp8 -s -zq"
   },
   "count_syndicate_recs": {
     "addr": "000165f8",
@@ -302,7 +302,7 @@
   },
   "chain_length": {
     "addr": "000377b8",
-    "flags": "-4s -or -zp8 -s -zq"
+    "flags": "-4s -oneax -zp8 -s -zq"
   },
   "clamp_dec_field54": {
     "addr": "00034168",
@@ -978,7 +978,7 @@
   },
   "apply_command_effect": {
     "addr": "000149e8",
-    "flags": "-4s -or -zp8 -s -zq"
+    "flags": "-4s -oneax -zp8 -s -zq"
   },
   "world_tick": {
     "addr": "00026998",
@@ -1570,7 +1570,7 @@
   },
   "load_tagged_resource": {
     "addr": "00038c28",
-    "flags": "-4s -oentx -zp8 -s -zq"
+    "flags": "-4s -oneatx -zp8 -s -zq"
   },
   "blit_cell_wh": {
     "addr": "00015e38",
@@ -1582,6 +1582,38 @@
   },
   "guarded_init_alloc": {
     "addr": "00025238",
+    "flags": "-4s -oneatx -zp8 -s -zq"
+  },
+  "find_rec_by_field8": {
+    "addr": "00020568",
+    "flags": "-4s -oneatx -zp8 -s -zq"
+  },
+  "find_free_pool_slots": {
+    "addr": "00022768",
+    "flags": "-4s -oneatx -zp8 -s -zq"
+  },
+  "center_string_16": {
+    "addr": "000299c8",
+    "flags": "-4s -oneatx -zp8 -s -zq"
+  },
+  "entity_update_target_lock": {
+    "addr": "0002d038",
+    "flags": "-4s -oneatx -zp8 -s -zq"
+  },
+  "pool_list_dispatch": {
+    "addr": "0002e588",
+    "flags": "-4s -oneatx -zp8 -s -zq"
+  },
+  "reacquire_and_engage_target": {
+    "addr": "00030868",
+    "flags": "-4s -oneatx -zp8 -s -zq"
+  },
+  "flag_hp_adjust": {
+    "addr": "00036d18",
+    "flags": "-4s -oneatx -zp8 -s -zq"
+  },
+  "copy_if_set": {
+    "addr": "0000fee8",
     "flags": "-4s -oneatx -zp8 -s -zq"
   }
 }

@@ -5,14 +5,12 @@ extern unsigned char g_539e[];
 char scan_syndicate_recs(unsigned char count, unsigned char val)
 {
     signed char idx = 0xff;
-    if (count != 0) {
-        do {
-            idx++;
-            if (idx >= 0x32)
-                idx = 0;
-            if (val == g_539e[idx * 10])
-                count--;
-        } while (count != 0);
+    while (count != 0) {
+        idx++;
+        if (idx >= 0x32)
+            idx = 0;
+        if (val == g_539e[idx * 10])
+            count--;
     }
     return idx;
 }
