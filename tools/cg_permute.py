@@ -22,6 +22,14 @@ try:
 except ImportError:
     subprocess.run("pip install -q --break-system-packages capstone", shell=True)
     import capstone
+try:
+    import keystone
+except ImportError:
+    subprocess.run("pip install -q --break-system-packages keystone-engine", shell=True)
+    try:
+        import keystone
+    except ImportError:
+        keystone = None   # only the --apply path needs it
 import regdiff
 import match_reloc as M
 
@@ -96,7 +104,19 @@ def solve(name):
         oby = om[o.address:o.address + o.size]
         tby = tm[t.address:t.address + t.size]
         if oby == tby:
-            continue                                  # identical instruction, no constraint
+            # IDENTICAL instruction: every GP register it names is FIXED (maps to itself). Recording
+            # these identity constraints is essential -- without them the solver would accept a
+            # remap of a register that also appears unchanged elsewhere (e.g. add eax,0 stays eax but
+            # a remap says eax->edx), a false bijection the applier can't realise.
+            for oo in o.operands:
+                for rid in ((oo.reg,) if oo.type == capstone.x86.X86_OP_REG else
+                            (oo.mem.base, oo.mem.index) if oo.type == capstone.x86.X86_OP_MEM else ()):
+                    cc = canon(rid) if rid else None
+                    if cc:
+                        rr = _constrain(fwd, rev, cc[0], cc[0])
+                        if rr:
+                            return name, f"INCONSISTENT (fixed reg in identical insn) at 0x{o.address:x}: {rr}"
+            continue
         diffs += 1
         if o.size != t.size:
             return name, f"SIZE-DIFF at 0x{o.address:x} ({o.mnemonic} {o.size}B vs {t.mnemonic} {t.size}B) -- encoding tie, not pure register"
@@ -158,8 +178,64 @@ def _constrain(fwd, rev, a, b):
     fwd[a] = b; rev[b] = a
     return None
 
+REGCODE = {"EAX": 0, "ECX": 1, "EDX": 2, "EBX": 3, "ESP": 4, "EBP": 5, "ESI": 6, "EDI": 7}
+SUBREGS = {"EAX": ("eax", "ax", "al", "ah"), "ECX": ("ecx", "cx", "cl", "ch"),
+           "EDX": ("edx", "dx", "dl", "dh"), "EBX": ("ebx", "bx", "bl", "bh"),
+           "ESP": ("esp", "sp", None, None), "EBP": ("ebp", "bp", None, None),
+           "ESI": ("esi", "si", None, None), "EDI": ("edi", "di", None, None)}
+
+def _token_map(mapping):
+    full = {c: c for c in REGCODE}; full.update(mapping)
+    tok = {}
+    for s, d in full.items():
+        for i, sr in enumerate(SUBREGS[s]):
+            if sr and SUBREGS[d][i]:
+                tok[sr] = SUBREGS[d][i]
+    return tok
+
+def apply_and_verify(name):
+    """Slice 2: derive the target's exact bytes from OUR compiled output by re-assembling only the
+    register-differing instructions with the permutation applied (everything else keeps our bytes,
+    so relocs/encodings stay intact), then verify the result equals the target under reloc masking."""
+    import re
+    man = json.load(open("manifest/functions.json"))["functions"]
+    f = next((x for x in man if x["name"] == name), None)
+    name, res = solve(name)
+    if not isinstance(res, dict):
+        return name, f"NOT-SOLVABLE: {res}"
+    mapping = res["mapping"]
+    tokmap = _token_map(mapping)
+    flags = regdiff.recipe_flags(name, "-4s -oneatx -zp8 -s -zq")
+    for _ in range(2):
+        r = subprocess.run(["bash", "tools/wcc_95.sh", name, flags], capture_output=True)
+        if r.returncode == 0 and os.path.exists(f"build/{name}.obj"):
+            break
+    ob, fx = regdiff.text_bytes_and_fixups(f"build/{name}.obj")
+    tb = target_bytes(f)
+    md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32); md.detail = True
+    ks = keystone.Ks(keystone.KS_ARCH_X86, keystone.KS_MODE_32)
+    rx = re.compile(r"\b(" + "|".join(sorted(tokmap, key=len, reverse=True)) + r")\b")
+    out = bytearray()
+    for insn in md.disasm(bytes(ob), 0):
+        ib = bytes(ob[insn.address:insn.address + insn.size])
+        text = (insn.mnemonic + " " + insn.op_str).strip()
+        newtext = rx.sub(lambda m: tokmap[m.group(0)], text)
+        if newtext == text:
+            out += ib                                   # no reg remap -> keep our exact bytes
+        else:
+            enc, _ = ks.asm(newtext, insn.address)
+            if enc is None or len(enc) != insn.size:
+                return name, f"REASM-FAIL 0x{insn.address:x}: {text!r} -> {newtext!r} ({None if enc is None else len(enc)}B vs {insn.size})"
+            out += bytes(enc)
+    ok = M.mask(bytes(out), fx) == M.mask(tb, fx) and len(out) == len(tb)
+    return name, ("VERIFIED byte-exact via register-permute " + str(mapping)) if ok else f"MISMATCH after apply (len {len(out)} vs {len(tb)})"
+
 def main():
     import multiprocessing as mp
+    if "--apply" in sys.argv:
+        for n in [a for a in sys.argv[1:] if not a.startswith("-")]:
+            print("%-28s %s" % apply_and_verify(n), flush=True)
+        return
     names = [a for a in sys.argv[1:] if not a.startswith("-")]
     if "--all" in sys.argv:
         man = json.load(open("manifest/functions.json"))["functions"]

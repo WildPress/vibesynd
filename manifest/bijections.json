@@ -1,14 +1,1 @@
-{
- "vehicle_exit": {
-  "EAX": "EDX"
- },
- "shot_collision_query": {
-  "EBX": "EDX",
-  "EDX": "EBX"
- },
- "walk_sound_record_table": {
-  "ECX": "EBX",
-  "EBX": "ESI",
-  "ESI": "ECX"
- }
-}
+{}
