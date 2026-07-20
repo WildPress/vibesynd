@@ -1,0 +1,654 @@
+{
+"blit_cell_wh": {
+"close": 0.1358,
+"target": 162,
+"ours": 160,
+"delta": -2,
+"jt": false
+},
+"entity_state_dispatch": {
+"close": 0.288,
+"target": 1528,
+"ours": 1620,
+"delta": 92,
+"jt": true
+},
+"build_equip_row": {
+"close": 0.5067,
+"target": 1188,
+"ours": 1215,
+"delta": 27,
+"jt": true
+},
+"find_blocking_entity": {
+"close": 0.1086,
+"target": 2881,
+"ours": 3323,
+"delta": 442,
+"jt": true
+},
+"research_funding_tick": {
+"close": 0.9756,
+"target": 287,
+"ours": 287,
+"delta": 0,
+"jt": false
+},
+"economy_daily_tick": {
+"close": 0.6552,
+"target": 957,
+"ours": 939,
+"delta": -18,
+"jt": false
+},
+"draw_player_budget_label": {
+"close": 0.7421,
+"target": 190,
+"ours": 187,
+"delta": -3,
+"jt": false
+},
+"alloc_init_with_errcode": {
+"close": 0.3927,
+"target": 191,
+"ours": 190,
+"delta": -1,
+"jt": false
+},
+"draw_circle": {
+"close": 0.5009,
+"target": 585,
+"ours": 592,
+"delta": 7,
+"jt": false
+},
+"draw_filled_shape": {
+"close": 0.2311,
+"target": 1523,
+"ours": 1643,
+"delta": 120,
+"jt": true
+},
+"draw_tactical_map": {
+"close": 0.1252,
+"target": 3474,
+"ours": 3240,
+"delta": -234,
+"jt": true
+},
+"draw_object_sprite_list": {
+"close": 0.2077,
+"target": 183,
+"ours": 168,
+"delta": -15,
+"jt": false
+},
+"render_draw_list": {
+"close": 0.1939,
+"target": 165,
+"ours": 144,
+"delta": -21,
+"jt": false
+},
+"menu_list_hit_test": {
+"close": 0.0382,
+"target": 314,
+"ours": 307,
+"delta": -7,
+"jt": false
+},
+"sel_marker_dispatch": {
+"close": 0.6567,
+"target": 1334,
+"ours": 1384,
+"delta": 50,
+"jt": true
+},
+"menu_list_draw": {
+"close": 0.2843,
+"target": 299,
+"ours": 295,
+"delta": -4,
+"jt": false
+},
+"menu_list_draw_b": {
+"close": 0.271,
+"target": 310,
+"ours": 303,
+"delta": -7,
+"jt": false
+},
+"count_leading_nonzero": {
+"close": 0.4587,
+"target": 109,
+"ours": 111,
+"delta": 2,
+"jt": false
+},
+"keyboard_state_machine": {
+"close": 0.2044,
+"target": 137,
+"ours": 130,
+"delta": -7,
+"jt": false
+},
+"count_leading_nonzero_b": {
+"close": 0.9307,
+"target": 101,
+"ours": 101,
+"delta": 0,
+"jt": false
+},
+"relocate_map_columns": {
+"close": 0.4038,
+"target": 52,
+"ours": 45,
+"delta": -7,
+"jt": false
+},
+"vehicle_hp_stamp": {
+"close": 0.3216,
+"target": 342,
+"ours": 336,
+"delta": -6,
+"jt": false
+},
+"new_game_reset": {
+"close": 0.5775,
+"target": 1969,
+"ours": 1948,
+"delta": -21,
+"jt": false
+},
+"new_campaign_reset": {
+"close": 0.2079,
+"target": 1510,
+"ours": 1627,
+"delta": 117,
+"jt": false
+},
+"store_squad_loadout": {
+"close": 0.2292,
+"target": 1440,
+"ours": 1332,
+"delta": -108,
+"jt": false
+},
+"reequip_squad_row": {
+"close": 0.3992,
+"target": 724,
+"ours": 738,
+"delta": 14,
+"jt": true
+},
+"mission_map_init": {
+"close": 0.9928,
+"target": 415,
+"ours": 415,
+"delta": 0,
+"jt": false
+},
+"guarded_init_alloc": {
+"close": 0.4795,
+"target": 146,
+"ours": 143,
+"delta": -3,
+"jt": false
+},
+"parse_hex_arg": {
+"close": 0.3846,
+"target": 221,
+"ours": 313,
+"delta": 92,
+"jt": true
+},
+"install_int9_handler": {
+"close": 0.4186,
+"target": 43,
+"ours": 32,
+"delta": -11,
+"jt": false
+},
+"run_mission_command": {
+"close": 0.1962,
+"target": 5280,
+"ours": 5458,
+"delta": 178,
+"jt": true
+},
+"slot_claim_test": {
+"close": 0.4882,
+"target": 297,
+"ours": 299,
+"delta": 2,
+"jt": false
+},
+"render_dashed_line": {
+"close": 0.182,
+"target": 544,
+"ours": 529,
+"delta": -15,
+"jt": false
+},
+"draw_agent_detail": {
+"close": 0.3703,
+"target": 1234,
+"ours": 1237,
+"delta": 3,
+"jt": false
+},
+"advance_linked_index": {
+"close": 0.2586,
+"target": 58,
+"ours": 48,
+"delta": -10,
+"jt": false
+},
+"aim_step_clamp": {
+"close": 0.5176,
+"target": 170,
+"ours": 171,
+"delta": 1,
+"jt": false
+},
+"move_entity_xyz": {
+"close": 0.411,
+"target": 292,
+"ours": 291,
+"delta": -1,
+"jt": false
+},
+"grid_unlink_object": {
+"close": 0.3113,
+"target": 106,
+"ours": 105,
+"delta": -1,
+"jt": false
+},
+"submit_ncb": {
+"close": 0.2087,
+"target": 230,
+"ours": 226,
+"delta": -4,
+"jt": false
+},
+"mp_session_setup": {
+"close": 0.2679,
+"target": 1482,
+"ours": 1474,
+"delta": -8,
+"jt": false
+},
+"far_alloc_probe": {
+"close": 0.7234,
+"target": 94,
+"ours": 89,
+"delta": -5,
+"jt": false
+},
+"guarded_call_2arg": {
+"close": 0.1765,
+"target": 34,
+"ours": 33,
+"delta": -1,
+"jt": false
+},
+"dpmi_alloc_5para": {
+"close": 0.7027,
+"target": 185,
+"ours": 183,
+"delta": -2,
+"jt": false
+},
+"submit_command": {
+"close": 0.638,
+"target": 326,
+"ours": 324,
+"delta": -2,
+"jt": false
+},
+"xfer_buf_req_b1": {
+"close": 0.686,
+"target": 258,
+"ours": 256,
+"delta": -2,
+"jt": false
+},
+"netbios_op91": {
+"close": 0.1086,
+"target": 313,
+"ours": 307,
+"delta": -6,
+"jt": false
+},
+"netbios_op90": {
+"close": 0.1093,
+"target": 311,
+"ours": 305,
+"delta": -6,
+"jt": false
+},
+"dos_alloc_and_zero": {
+"close": 0.6471,
+"target": 187,
+"ours": 194,
+"delta": 7,
+"jt": false
+},
+"dpmi_free_dos_mem": {
+"close": 0.4462,
+"target": 130,
+"ours": 131,
+"delta": 1,
+"jt": false
+},
+"recv_chunked": {
+"close": 0.3714,
+"target": 140,
+"ours": 138,
+"delta": -2,
+"jt": false
+},
+"radar_panel_sm": {
+"close": 0.6762,
+"target": 1427,
+"ours": 1531,
+"delta": 104,
+"jt": true
+},
+"mission_target_resolve": {
+"close": 0.2445,
+"target": 3694,
+"ours": 3413,
+"delta": -281,
+"jt": false
+},
+"anim_tick_frame_list": {
+"close": 0.4088,
+"target": 159,
+"ours": 192,
+"delta": 33,
+"jt": true
+},
+"rate_byte_drift": {
+"close": 0.994,
+"target": 333,
+"ours": 349,
+"delta": 16,
+"jt": true
+},
+"refresh_hud_inventory": {
+"close": 0.916,
+"target": 262,
+"ours": 342,
+"delta": 80,
+"jt": true
+},
+"agent_hud_render": {
+"close": 0.421,
+"target": 2387,
+"ours": 2368,
+"delta": -19,
+"jt": false
+},
+"path_probe_y": {
+"close": 0.5962,
+"target": 265,
+"ours": 330,
+"delta": 65,
+"jt": true
+},
+"path_probe_0x40": {
+"close": 0.61,
+"target": 259,
+"ours": 324,
+"delta": 65,
+"jt": true
+},
+"interp_scale_a": {
+"close": 0.1765,
+"target": 85,
+"ours": 84,
+"delta": -1,
+"jt": false
+},
+"interp_scale_b": {
+"close": 0.1786,
+"target": 84,
+"ours": 84,
+"delta": 0,
+"jt": false
+},
+"interp_scale_c": {
+"close": 0.1765,
+"target": 85,
+"ours": 84,
+"delta": -1,
+"jt": false
+},
+"anim_speed_select": {
+"close": 0.1168,
+"target": 197,
+"ours": 200,
+"delta": 3,
+"jt": false
+},
+"entity_event_dispatch": {
+"close": 0.1478,
+"target": 203,
+"ours": 196,
+"delta": -7,
+"jt": false
+},
+"projectile_select_turn": {
+"close": 0.3629,
+"target": 1284,
+"ours": 1282,
+"delta": -2,
+"jt": false
+},
+"homing_step": {
+"close": 0.9625,
+"target": 240,
+"ours": 240,
+"delta": 0,
+"jt": false
+},
+"los_trace_far": {
+"close": 0.8273,
+"target": 388,
+"ours": 386,
+"delta": -2,
+"jt": false
+},
+"los_trace": {
+"close": 0.8247,
+"target": 519,
+"ours": 519,
+"delta": 0,
+"jt": false
+},
+"record_kill_stats": {
+"close": 0.3826,
+"target": 230,
+"ours": 232,
+"delta": 2,
+"jt": false
+},
+"vehicle_exit": {
+"close": 0.9905,
+"target": 211,
+"ours": 211,
+"delta": 0,
+"jt": false
+},
+"commit_funding": {
+"close": 0.6016,
+"target": 866,
+"ours": 864,
+"delta": -2,
+"jt": false
+},
+"find_grid_entity_facing_0xc0": {
+"close": 0.8772,
+"target": 171,
+"ours": 171,
+"delta": 0,
+"jt": false
+},
+"table_save_restore": {
+"close": 0.5191,
+"target": 418,
+"ours": 418,
+"delta": 0,
+"jt": false
+},
+"find_grid_entity_facing_0x80": {
+"close": 0.9162,
+"target": 167,
+"ours": 167,
+"delta": 0,
+"jt": false
+},
+"map_tile_hit_dispatch": {
+"close": 0.7548,
+"target": 310,
+"ours": 343,
+"delta": 33,
+"jt": true
+},
+"snap_direction": {
+"close": 0.5179,
+"target": 56,
+"ours": 54,
+"delta": -2,
+"jt": false
+},
+"shot_collision_query": {
+"close": 0.9922,
+"target": 129,
+"ours": 129,
+"delta": 0,
+"jt": false
+},
+"march_shot_damage": {
+"close": 0.9669,
+"target": 453,
+"ours": 453,
+"delta": 0,
+"jt": false
+},
+"compass_tile_probe": {
+"close": 0.2462,
+"target": 666,
+"ours": 659,
+"delta": -7,
+"jt": false
+},
+"pick_passable_shot_dir": {
+"close": 0.3508,
+"target": 590,
+"ours": 573,
+"delta": -17,
+"jt": false
+},
+"vehicle_drive_step": {
+"close": 0.3164,
+"target": 964,
+"ours": 963,
+"delta": -1,
+"jt": false
+},
+"sound_driver_init": {
+"close": 0.3382,
+"target": 346,
+"ours": 338,
+"delta": -8,
+"jt": false
+},
+"walk_sound_record_table": {
+"close": 0.9029,
+"target": 103,
+"ours": 103,
+"delta": 0,
+"jt": false
+},
+"play_sound_slot": {
+"close": 0.7778,
+"target": 90,
+"ours": 90,
+"delta": 0,
+"jt": false
+},
+"draw_wrapped_text": {
+"close": 0.2256,
+"target": 523,
+"ours": 517,
+"delta": -6,
+"jt": false
+},
+"measure_text_width": {
+"close": 0.2283,
+"target": 92,
+"ours": 91,
+"delta": -1,
+"jt": false
+},
+"text_width_kern": {
+"close": 0.8481,
+"target": 79,
+"ours": 79,
+"delta": 0,
+"jt": false
+},
+"draw_ui_text": {
+"close": 0.7017,
+"target": 362,
+"ours": 365,
+"delta": 3,
+"jt": false
+},
+"text_input_widget": {
+"close": 0.1874,
+"target": 987,
+"ours": 988,
+"delta": 1,
+"jt": false
+},
+"drop_carried_items": {
+"close": 0.1546,
+"target": 304,
+"ours": 286,
+"delta": -18,
+"jt": false
+},
+"xmidi_music_init": {
+"close": 0.2294,
+"target": 741,
+"ours": 698,
+"delta": -43,
+"jt": false
+},
+"copy_if_set": {
+"close": 1.0,
+"target": 24,
+"ours": 24,
+"delta": 0,
+"jt": false
+},
+"find_related_ped": null,
+"find_nearby_ped": null,
+"walk_records_2c": null,
+"container_load": null,
+"draw_line": null,
+"dispatch_jt45": null,
+"draw_slot_record_chain": null,
+"widget_list_dispatch": null,
+"command_list_interp": null,
+"command_list_interp2": null,
+"entity_aim_helper": null,
+"oneshot_state_setter": null,
+"z_probe": null,
+"z_probe_b": null,
+"passability_4corner": null
+}

@@ -134,6 +134,14 @@ def main():
                 EQUIV.add(n)
             elif v.get("verdict") == "STRUCTURAL" and (v.get("score") or 0) >= 0.90:
                 NEAR.add(n)
+    # closeness.json (from score_closeness.py) is the HONEST gradient input: a reloc-aware masked
+    # BYTE distance, sub-image-base aware and jump-table aware, so it doesn't desync on an early
+    # diff the way the structural score does. Where present it overrides the structural score.
+    clf = os.path.join(ROOT, "manifest", "closeness.json")
+    if os.path.exists(clf):
+        for n, v in json.load(open(clf)).items():
+            if v and isinstance(v.get("close"), (int, float)):
+                SCORE[n] = v["close"]
 
     def klass(f):
         if f["name"] in ASM:
