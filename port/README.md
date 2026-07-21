@@ -146,9 +146,12 @@ Then it plays natively.
 - [x] A genuine Windows `.exe` (MinGW + Windows SDL2), `port/build_win.sh` -> syn-demo.exe + SDL2.dll
 - [x] **Whole game code links natively**: all 568 fns + 42 gap blobs + 53 internal labels ->
       one object, 0 undefined code symbols (`port/build_asm_all.sh`; 663 text symbols, all byte-identical)
-- [ ] obj1 code-pointer fixups (1854: switch jump tables + data pointers) -> case-label / function symbols
-- [ ] Wire `__obj2/3/4` to the DGROUP data model (port_data.py); resolve tbl_* data-internal pointers
+- [x] Switch jump tables / code pointers solved: emit object1 as ONE contiguous blob at its
+      original offsets (`tools/asm_emit_blob.py`), so every `__obj1 + off` code pointer resolves.
+      Byte-identical (261620 bytes, 9204 fixups symbolized).
+- [x] **Whole game (code + DGROUP data model) links into a native 32-bit executable, 0 undefined
+      symbols** (`port/build_native.sh`: 261KB text + 1.08MB data). Not yet runnable.
 - [ ] C shims behind platform.h for the ~64 hardware-touching routines (VGA/int21h/PIT/kbd/mouse ISRs)
-- [ ] Link game object + data model + shims into a native executable + wire the entry
+- [ ] Wire the entry to the game's startup (skip DOS video-mode/DPMI init) + load `data/`
 - [ ] Reach the game's render into g_screen_buf -> present via SDL  ->  **port-v0.1.0** (live frame)
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)
