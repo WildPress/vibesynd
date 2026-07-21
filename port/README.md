@@ -156,7 +156,13 @@ Then it plays natively.
 - [x] **The game's own file loader runs natively** (`port/build_loader.sh`): game_load_unpack_file
       opens + reads + RNC-decompresses a real file off disk via POSIX shims (port/shims_file.c).
       Confirmed: the game is -4s (STACK calling), so shims + entry are plain cdecl C.
-- [ ] Remaining hardware shims: video (VGA present/palette), timer (PIT), input (kbd/mouse), memory
+- [x] Video shims -> SDL layer: vga_planar_present / present_* read g_screen_buf (DGROUP 0x5368)
+      and route to the GPU framebuffer; upload_palette captures the DAC palette; set_video_mode /
+      clear / cursor-bg / vsync handled. Memory shims (os_getmem/brk/heap_grow) -> malloc.
+- [x] **The game's own present path drives a real frame natively** (`port/build_video.sh`):
+      game_vga_planar_present presents g_screen_buf, palette via the game's own RNC loader --
+      byte-identical to the reference render. (Headless PPM; a 32-bit SDL window is a follow-up.)
+- [ ] Timer (PIT) + input (poll_key/mouse) shims
 - [ ] Wire the entry to the game's startup (skip DOS video-mode/DPMI init) + load `data/`
 - [ ] Reach the game's render into g_screen_buf -> present via SDL  ->  **port-v0.1.0** (live frame)
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)
