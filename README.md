@@ -73,3 +73,14 @@ ghidra_scripts/  headless inventory scripts
 docker/          the pipeline image
 inputs/ ghidra/ toolchain/ build/    git-ignored
 ```
+
+## Acknowledgements
+
+Inspired by the [**FreeSynd**](https://freesynd.sourceforge.io/) project — the
+cross-platform, GPL reimplementation of the *Syndicate* engine. FreeSynd took a
+different route (a clean-room reimplementation from the data formats and observed
+behaviour rather than the original code), but its work mapping out how the game is
+structured, and the very idea that this classic deserves to run natively again, are
+what set us down this road. The native port on the `port` branch owes a debt to their
+example. Thank you.
+
