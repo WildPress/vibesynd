@@ -83,6 +83,16 @@ static int do_int21(int ah, greg_t *r) {
 
 static unsigned long g_traps = 0;
 
+/* async-signal-safe: "label 0xVALUE\n" */
+static void wr_hex(const char *s, unsigned v) {
+    char b[64]; int i, n = 0;
+    while (*s) b[n++] = *s++;
+    b[n++] = '0'; b[n++] = 'x';
+    for (i = 28; i >= 0; i -= 4) { int d = (v >> i) & 0xf; b[n++] = d < 10 ? '0' + d : 'a' + d - 10; }
+    b[n++] = '\n';
+    if (write(2, b, n) < 0) { /* ignore */ }
+}
+
 static void on_trap(int sig, siginfo_t *si, void *ucv) {
     ucontext_t *uc = ucv;
     greg_t *r = uc->uc_mcontext.gregs;
@@ -90,12 +100,30 @@ static void on_trap(int sig, siginfo_t *si, void *ucv) {
     unsigned char *p = (unsigned char *)(long)eip;
     unsigned base = (unsigned)(unsigned long)__code;
 
-    if (getenv("SYN_TRAPLOG") && g_traps++ < 24 && eip >= base)
+    /* if EIP itself is unmapped (a bad jump), reading p[] below would nest-fault -> core dump
+     * with no message. Detect via the instruction-fetch fault (fault address == EIP) and report
+     * the caller instead, without touching p. */
+    if (sig == SIGSEGV && (unsigned)(long)si->si_addr == eip) {
+        unsigned *sp = (unsigned *)(long)r[REG_ESP];
+        unsigned ret = sp ? sp[0] : 0;
+        wr_hex("BAD-JUMP eip=", eip);
+        wr_hex("  caller-ret=", ret);
+        if (ret >= base && ret < base + 0x40000) wr_hex("  caller-manifest=", 0xd748 + (ret - base));
+        _exit(4);
+    }
+
+    if (getenv("SYN_TRAPLOG") && g_traps++ < 60 && eip >= base)
         fprintf(stderr, "[trap %lu] manifest 0x%x op=%02x %02x %02x\n",
                 g_traps, 0xd748 + (eip - base), p ? p[0] : 0, p ? p[1] : 0, p ? p[2] : 0);
 
     if (p && p[0] == 0xCD) {              /* int nn */
         int n = p[1], ah = AH(r), handled = 0;
+        if (n == 0x21 && ah == 0x4c) {    /* DOS terminate: log where from before exiting */
+            unsigned *sp = (unsigned *)(long)r[REG_ESP];
+            wr_hex("DOS-EXIT eip=", eip);
+            if (eip >= base && eip < base + 0x40000) wr_hex("  manifest=", 0xd748 + (eip - base));
+            wr_hex("  ret=", sp ? sp[0] : 0);
+        }
         if (n == 0x21) handled = do_int21(ah, r);
         else if (n == 0x10) { CLC(r); handled = 1; }   /* video BIOS: no-op */
         else if (n == 0x16) {                           /* keyboard BIOS */
@@ -152,21 +180,15 @@ static void on_trap(int sig, siginfo_t *si, void *ucv) {
             if (is_out) { r[REG_EIP] = eip + len; return; }
         }
     }
-    fprintf(stderr, "\n%s eip=0x%x fault=%p", strsignal(sig), eip, si->si_addr);
-    if (eip >= base) fprintf(stderr, "  -> manifest 0x%x", 0xd748 + (eip - base));
-    fprintf(stderr, "\n");
-    /* walk the ebp chain for a manifest backtrace */
-    {
-        unsigned *fp = (unsigned *)(long)r[REG_EBP];
-        int depth;
-        for (depth = 0; depth < 12 && fp; depth++) {
-            unsigned ret = fp[1];
-            if (ret >= base && ret < base + 0x40000)
-                fprintf(stderr, "  [%d] manifest 0x%x\n", depth, 0xd748 + (ret - base));
-            else { fprintf(stderr, "  [%d] 0x%x (non-blob)\n", depth, ret); break; }
-            fp = (unsigned *)(long)fp[0];
-        }
-    }
+    /* crash-safe report: registers only, no dereferencing (EBP is often data here) */
+    fprintf(stderr, "\n%s eip=0x%x fault=%p esp=0x%x ebp=0x%x", strsignal(sig),
+            eip, si->si_addr, (unsigned)r[REG_ESP], (unsigned)r[REG_EBP]);
+    if (eip >= base && eip < base + 0x40000)
+        fprintf(stderr, "  -> manifest 0x%x (blob+0x%x)", 0xd748 + (eip - base), eip - base);
+    else
+        fprintf(stderr, "  (eip non-blob)");
+    fprintf(stderr, "  bytes %02x %02x %02x\n", p ? p[0] : 0, p ? p[1] : 0, p ? p[2] : 0);
+    fflush(stderr);
     _exit(2);
 }
 

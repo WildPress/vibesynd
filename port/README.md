@@ -178,7 +178,13 @@ Then it plays natively.
       segment-register loads skipped (port/dosint.c).
 - [x] **Boot runs through CLIB init, startup data load (hpal/hpointer/hreq), memory setup, and
       into the graphics driver overlay** (loads + executes gamedg.dll, register_driver)
-- [ ] Graphics-driver init + continue fault-by-fault to the intro/menu render  ->  **port-v0.1.0**
+- [x] Crash-safe trap handler: async-signal-safe reporting, BAD-JUMP (unmapped-EIP) + DOS-EXIT
+      detection without dereferencing wild pointers (port/dosint.c)
+- [ ] **gamedg.dll / gamefm.dll are DOS MZ overlays** (header `MZ\x80..`): the game reads them and
+      loads/relocates/executes them as graphics+sound drivers. Next subsystem = a DOS EXE overlay
+      loader (or stub the driver and route rendering through the already-working vga_planar_present
+      shim). This is where boot currently stops.
+- [ ] Then continue to the intro/menu render  ->  **port-v0.1.0** (live frame)
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)
 - [ ] Reach the game's render into g_screen_buf -> present via SDL  ->  **port-v0.1.0** (live frame)
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)
