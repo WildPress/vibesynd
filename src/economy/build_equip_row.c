@@ -9,7 +9,7 @@
    🅿️ PARKED ~1090/1188 (9 source configs, -4s -oneatx -zp8 -s -zq; verify
    against TRUE size 0x4a4, not the manifest's 955 -- match95/match_reloc will
    mis-split the jump-table tail until the manifest size is corrected).
-   MATCHED: whole entry (slot scan, code=k*8, row header + g_e8a7=1 via the
+   MATCHED: whole entry (slot scan, code=k*8, row header + g_equip_valid=1 via the
    reg-form store), the 18-entry clear loop incl. c@[esp]/i@[esp+4] slots and
    alignment pads, outer-loop guard/tail, best-research scan shape, the
    1beae/1beaf blocks' shapes incl. reg-form constant stores (the `int v, w`
@@ -32,7 +32,7 @@
    Finds k's first active pool-A slot (bit 1 of +0x1c, base 0x8110, agent
    stride 0x2e0 = 8 slots x 0x5c) -> row header code k*8+slot in g_agent_slots
    (template row stride 0x417, cf. reequip_squad_row's docs); row word +0x356
-   (g_e8a7) = 1; clears the 18 template entry slot-no bytes (g_squad_slot, entry
+   (g_equip_valid) = 1; clears the 18 template entry slot-no bytes (g_squad_slot, entry
    stride 40). Marks g_c358[2k]=1 / g_c359[2k]=0. Then for each i < g_3eb5
    whose walking slot has flag 2: slot |= 0x10 at +0x1d, entry i gets
    slot-no i+1, word0 (g_e5ba) = 0x10, pair0 = (kind, count=g_item_max_qty[kind])
@@ -45,7 +45,7 @@
    +0x10 = 0. Finally reequip_squad_row(k, 0x1002) applies the row. */
 extern unsigned char g_pool_a[];
 extern unsigned char g_agent_slots[];
-extern unsigned char g_e8a7[];
+extern unsigned char g_equip_valid[];
 extern unsigned char g_e5ba[];
 extern unsigned char g_e5bc[];
 extern unsigned char g_squad_slot[];
@@ -81,7 +81,7 @@ void build_equip_row(unsigned char k)
     }
     g_agent_slots[k * 0x417] = code;
     v = 1;
-    *(unsigned short *)(g_e8a7 + k * 0x417) = v;
+    *(unsigned short *)(g_equip_valid + k * 0x417) = v;
     for (c = 0; c < 18; c++)
         g_squad_slot[k * 0x417 + c * 40] = 0;
     g_c359[k * 2] = 0;

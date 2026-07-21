@@ -2,7 +2,7 @@
    vs ours confirms every case, constant, struct offset and branch condition is identical --
    jump-table case map (0..4), 0x417 player stride, 0x5c agent stride, g_pool_a/g_agent_slots
    bases, a[0x1d]&4 gate, box-test comparators (case-1 tail jl->A_58 vs case-3 tail jge->C_93),
-   g_e120==2 lockout, and the 10 g_df48..51 clears in target order 51,48,4a,49,4b,4d,4c,4e,50,4f.
+   g_cursor_mode==2 lockout, and the 10 g_agent_cmd_state..51 clears in target order 51,48,4a,49,4b,4d,4c,4e,50,4f.
    Only three residual diffs, all the documented -ox codegen ties (net 0): (1) case-1's two `=1`
    cursor-word stores use `mov reg,1; mov [g],reg` vs target's immediate `mov word [g],1`;
    (2) entry `xor edi,edi`/`movsx` scheduling with early return folding `mov eax,edi`->`xor eax,eax`
@@ -21,10 +21,10 @@
  * Case 1 has an EXTRA gate the siblings lack: after box/sel selection it checks
  * the commanded agent's flag byte -- agent rec = g_pool_a + 0x5c*(p[0xb]-1 +
  * g_agent_slots[g_cur_player*0x417]) must have bit 4 set at +0x1d, else skip. On activation
- * it sets the cursor state words (g_sel_cursor/g_e114 + g_10b3f/g_10b3e) and advances
- * the command word by 2. Case 3 adds a g_e120==2 lockout before writing cmd=1.
+ * it sets the cursor state words (g_sel_cursor/g_e114 + g_target_pending/g_10b3e) and advances
+ * the command word by 2. Case 3 adds a g_cursor_mode==2 lockout before writing cmd=1.
  * Post-switch tail (when p[0xa]!=0, or unconditionally from active cases):
- * clears TEN per-record flag bytes g_df48..g_df51 (each an 11-stride column,
+ * clears TEN per-record flag bytes g_agent_cmd_state..g_df51 (each an 11-stride column,
  * index (p[0xb]-1)*0xb, written in target order 9,0,2,1,3,5,4,6,8,7).
  *
  * TRUE SIZE: 792 bytes (0x2bee8..0x2c1ff inclusive; manifest's 226 is a big
@@ -55,12 +55,12 @@
 extern volatile unsigned short g_cursor_x, g_cursor_y;   /* cursor point (x, y) */
 extern unsigned short g_e114, g_sel_cursor;     /* selection cursor state words */
 extern volatile unsigned short g_e114v, g_e116v;  /* same words, volatile view (case 3) */
-extern unsigned short g_e120;
-extern unsigned char  g_10b3e, g_10b3f;   /* selection cursor flags */
+extern unsigned short g_cursor_mode;
+extern unsigned char  g_10b3e, g_target_pending;   /* selection cursor flags */
 extern short g_cur_player;                     /* current player index */
 extern unsigned char g_agent_slots[];            /* per-player block (0x417 stride) */
 extern unsigned char g_pool_a[];            /* agent records (0x5c stride) */
-extern unsigned char g_df48[], g_df49[], g_df4a[], g_df4b[], g_df4c[];
+extern unsigned char g_agent_cmd_state[], g_df49[], g_df4a[], g_df4b[], g_df4c[];
 extern unsigned char g_df4d[], g_df4e[], g_df4f[], g_df50[], g_df51[];
 extern short FUN_00029988(unsigned char *p);
 
@@ -99,7 +99,7 @@ unsigned short command_list_interp(unsigned char *p, int sel, unsigned char setX
                 if ((a[0x1d] & 4) == 0) goto Lcheck;
             }
             g_sel_cursor = 0;
-            if (setX) { g_10b3f = 0; g_e116v = 1; }
+            if (setX) { g_target_pending = 0; g_e116v = 1; }
             g_e114 = 0;
             if (setY) { g_10b3e = 0; g_e114v = 1; }
             {
@@ -134,14 +134,14 @@ unsigned short command_list_interp(unsigned char *p, int sel, unsigned char setX
                 if (g_cursor_y >= y) goto C_93;
             }
             g_e116v = 0;
-            if (setX) { g_10b3f = 0; g_e116v = 1; }
+            if (setX) { g_target_pending = 0; g_e116v = 1; }
             g_e114v = 0;
             if (setY) { g_10b3e = 0; g_e114v = 1; }
             p[0xa] = 2;
             goto Lclear;
         C_93:
             if ((unsigned short)sel == *(signed char *)(p + 0xb)) goto Lcheck;
-            if (g_e120 == 2) goto Lcheck;
+            if (g_cursor_mode == 2) goto Lcheck;
             *(short *)p = 1;
             p[0xa] = 2;
             goto Lclear;
@@ -156,7 +156,7 @@ unsigned short command_list_interp(unsigned char *p, int sel, unsigned char setX
         if (p[0xa] == 0) goto Lnext;
     Lclear:                                     /* 0x2c15d */
         g_df51[(*(signed char *)(p + 0xb) - 1) * 0xb] = 0;
-        g_df48[(*(signed char *)(p + 0xb) - 1) * 0xb] = 0;
+        g_agent_cmd_state[(*(signed char *)(p + 0xb) - 1) * 0xb] = 0;
         g_df4a[(*(signed char *)(p + 0xb) - 1) * 0xb] = 0;
         g_df49[(*(signed char *)(p + 0xb) - 1) * 0xb] = 0;
         g_df4b[(*(signed char *)(p + 0xb) - 1) * 0xb] = 0;

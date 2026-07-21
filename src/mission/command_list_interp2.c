@@ -32,7 +32,7 @@
  */
 extern volatile unsigned short g_cursor_x, g_cursor_y;   /* cursor point (x, y) */
 extern unsigned short g_e114, g_sel_cursor;     /* selection cursor state words */
-extern unsigned char  g_10b3e, g_10b3f;   /* selection cursor flags */
+extern unsigned char  g_10b3e, g_target_pending;   /* selection cursor flags */
 extern unsigned char  g_df75[];           /* record-indexed flag table (tail clears) */
 extern short FUN_00029988(unsigned char *p);
 
@@ -65,7 +65,7 @@ unsigned short command_list_interp2(unsigned char *p, int sel, unsigned char set
             if ((unsigned short)sel != *(signed char *)(p + 0xb)) goto Lcheck;
         A_58:
             g_sel_cursor = 0;
-            if (setX) { g_10b3f = 0; g_sel_cursor = 1; }
+            if (setX) { g_target_pending = 0; g_sel_cursor = 1; }
             g_e114 = 0;
             if (setY) { g_10b3e = 0; g_e114 = 1; }
             {
@@ -101,7 +101,7 @@ unsigned short command_list_interp2(unsigned char *p, int sel, unsigned char set
                 if (g_cursor_y >= y) goto C_93;
             }
             g_sel_cursor = 0;
-            if (setX) { g_10b3f = 0; g_sel_cursor = 1; }
+            if (setX) { g_target_pending = 0; g_sel_cursor = 1; }
             g_e114 = 0;
             if (setY) { g_10b3e = 0; g_e114 = 1; }
             p[0xa] = 2;

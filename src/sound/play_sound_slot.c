@@ -1,4 +1,4 @@
-/* frameless @ 0x35f78: guarded dispatch. If g_sound_enabled && g_537f, index the
+/* frameless @ 0x35f78: guarded dispatch. If g_sound_enabled && g_snd_slot_gate, index the
    0x20-stride record table g_objective_slots by param_1, then call snd_cmd_7b passing
    g_snd_driver, a far pointer built from *(int*)(rec+0x12) with the DS segment
    (mov dx,ds / and edx,0xffff idiom, cf. sibling 0x35e68), *(int*)(rec+0xe)
@@ -19,7 +19,7 @@
    exactly the target's colouring. Not source-reachable at this recipe. */
 extern unsigned char *g_objective_slots;
 extern int g_snd_driver;
-extern unsigned char g_sound_enabled, g_537f;
+extern unsigned char g_sound_enabled, g_snd_slot_gate;
 extern void snd_cmd_7b(int a, void __far *p, int b, int c);
 extern void snd_cmd_7d(int a);
 
@@ -27,7 +27,7 @@ void play_sound_slot(unsigned char param_1)
 {
     unsigned char *p;
 
-    if (g_sound_enabled != 0 && g_537f != 0) {
+    if (g_sound_enabled != 0 && g_snd_slot_gate != 0) {
         p = g_objective_slots + param_1 * 0x20;
         snd_cmd_7b(g_snd_driver, (void __far *)(*(int *)(p + 0x12)),
                      *(int *)(p + 0xe), -1);

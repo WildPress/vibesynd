@@ -18,7 +18,7 @@
  * narrows the counter with `mov ax,bx` -- cut +29B drift to +5B); the node
  * agent selector is `(signed char)tpl[0xb6]` NOT `(char)` (Watcom char is
  * unsigned -> byte load; target uses movsx). NEW (cont.27, -61B total):
- * (1) g_10b2e is `unsigned short` not `short` -- op01 single-player branch
+ * (1) g_cur_mission is `unsigned short` not `short` -- op01 single-player branch
  * loads it zero-extended `xor eax,eax; mov ax,[10b2e]` exactly like g_e553,
  * NOT `movsx` (-6B). (2) the op10/op30 scatter scalar `a` (=lcg_rand(0xff)) is
  * `unsigned short` not `int` -- target spills it to a WORD slot and reloads it
@@ -72,12 +72,12 @@ extern unsigned char g_pool_a[];
 extern unsigned char g_entity_pool[];
 extern short g_num_players;
 extern short g_cur_player;
-extern unsigned short g_10b2e;
+extern unsigned short g_cur_mission;
 extern unsigned short g_e553;
 extern unsigned char g_player_owner[];
 extern unsigned char g_in_mission;
 extern unsigned char g_radar_detail;
-extern unsigned char *g_10ae0;
+extern unsigned char *g_pool_a_free;
 extern char **g_map_cols;
 extern short g_dir_dx[];
 extern short g_dir_dy[];
@@ -114,7 +114,7 @@ void run_mission_command(unsigned int idx)
                     g_player_owner[(unsigned short)k * 0x417] = (unsigned char)k;
             }
         } else {
-            FUN_000229f8(0x26c, g_10b2e);
+            FUN_000229f8(0x26c, g_cur_mission);
             reequip_squad_row((unsigned short)idx, 2);
         }
         if ((unsigned short)idx == g_cur_player)
@@ -294,7 +294,7 @@ void run_mission_command(unsigned int idx)
         }
         if ((*(unsigned short *)(node + 0x1c) & 0x1002) != 2)
             goto consume;
-        end = g_10ae0;
+        end = g_pool_a_free;
         if (g_pool_a < end) {
             p = g_pool_a;
             do {
@@ -303,7 +303,7 @@ void run_mission_command(unsigned int idx)
                     entity_aim_helper(p, *(short *)rec, *(short *)(rec + 2),
                                  *(short *)(rec + 4));
                 p += 0x5c;
-            } while (p < g_10ae0);
+            } while (p < g_pool_a_free);
         }
         break;
     }
@@ -325,14 +325,14 @@ void run_mission_command(unsigned int idx)
             }
             if ((*(unsigned short *)(node + 0x1c) & 0x1002) == 2) {
                 unsigned char *p;
-                if (g_10ae0 > g_pool_a) {
+                if (g_pool_a_free > g_pool_a) {
                     p = g_pool_a;
                     do {
                         if (*(unsigned short *)(p + 0x20) == (unsigned short)cur_id)
                             entity_aim_helper(p, *(short *)rec, *(short *)(rec + 2),
                                          *(short *)(rec + 4));
                         p += 0x5c;
-                    } while (p < g_10ae0);
+                    } while (p < g_pool_a_free);
                 }
             }
         }

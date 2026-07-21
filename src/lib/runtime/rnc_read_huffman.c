@@ -1,7 +1,7 @@
 /* GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Huffman symbol lookup @ 0x3a383.
    Non-leaf (calls the bit-reader 0x3a3c6 twice). Input: table pointer in EDX.
    XCHG ESI,EDX puts the table in ESI, then scans (mask_word, code_word) pairs with
-   LODSW until (mask_word & g_bfbc) == code_word, reads the matched entry's length
+   LODSW until (mask_word & g_rnc_bit_buf_lo) == code_word, reads the matched entry's length
    field at [ESI+0x3c], restores ESI, and consumes that many bits via 0x3a3c6; if the
    symbol is >= 2 bits it consumes one more and ORs in the top bit to rebuild the value
    in CX. ESI/EDX/EBX/ECX/EAX are hand-asm scratch (not preserved) -> declared in the

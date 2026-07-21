@@ -1,5 +1,5 @@
 /* 0x35638 -- message-line setter. Sets g_506c=1/g_5064=0, strcpy(g_bdfc,
- * g_b4c0[i]), clears g_10b3f; if g_5591 set, calls 0x4987e(g_10aa0) and clears
+ * g_b4c0[i]), clears g_target_pending; if g_palette_reload set, calls 0x4987e(g_10aa0) and clears
  * it; calls 0x39ca0(0,0,g_b958); then the two screen-buffer copies 0x35588 /
  * 0x35538 (both matched) and re-sets g_506c=1.
  * Byte zeros land in AH/DH (Watcom high-byte picks). Recipe: -4s -oneatx -zp8 -s -zq
@@ -9,8 +9,8 @@ extern int g_506c;
 extern int g_5064;
 extern void strcpy(char *dst, char *src);
 extern char g_bdfc[];
-extern volatile unsigned char g_10b3f;
-extern volatile unsigned char g_5591;
+extern volatile unsigned char g_target_pending;
+extern volatile unsigned char g_palette_reload;
 extern unsigned char g_5591w; /* same address; write alias so the store schedules non-volatile (reloc masked) */
 extern int g_10aa0;
 extern void upload_palette(int a);
@@ -24,8 +24,8 @@ void set_message_line(int i)
     g_506c = 1;
     g_5064 = 0;
     strcpy(g_bdfc, g_b4c0[i]);
-    g_10b3f = 0;
-    if (g_5591 != 0) {
+    g_target_pending = 0;
+    if (g_palette_reload != 0) {
         upload_palette(g_10aa0);
         g_5591w = 0;
     }

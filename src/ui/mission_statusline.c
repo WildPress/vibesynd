@@ -11,7 +11,7 @@
  * after the call) -> draw_localized. Else scan the 8 14-byte slots at
  * 0x1be3a: first slot with dword+0 == 0 and known kind (word+4) centers
  * the per-language string tbl_44xx[g_language] into field 0x10564 and, if the
- * slot index changed (g_532e), stores it and resets blink counter g_532c
+ * slot index changed (g_status_slot), stores it and resets blink counter g_status_blink
  * to 0x10. Epilogue centers string 0x3828 into field 0x10574.
  *
  * MATCHED (TRUE-SIZE MASKED MATCH at 372; match95 length check fails only
@@ -29,15 +29,15 @@
  *   folds it into AX and loses the mov ax,dx widen copy.
  * - no fl local: `(g_in_mission & 6)` / `& 2` re-reads CSE into DL across the
  *   branch, and the `& 4` after the call re-reads memory (f6 05 test).
- * - store order `g_532c = 0x10; g_532e = bx;` makes Watcom stage 0x10 in
+ * - store order `g_status_blink = 0x10; g_status_slot = bx;` makes Watcom stage 0x10 in
  *   ECX and tail-reorder the stores (532e first, then cx) -- the direct
  *   source order emits a 66c705 imm16 store (-3B).
  * Recipe: -4s -oneatx -zp8 -s -zq. */
 extern unsigned char g_radar_detail;
 extern unsigned char g_in_mission;
 extern unsigned short g_537c;
-extern unsigned short g_532e;
-extern unsigned short g_532c;
+extern unsigned short g_status_slot;
+extern unsigned short g_status_blink;
 extern unsigned char g_language;
 extern unsigned char g_objectives[];
 extern int tbl_4408[];
@@ -101,9 +101,9 @@ void mission_statusline(int a, int b)
                     continue;
                 }
 hit:
-                if (g_532e != bx) {
-                    g_532c = 0x10;
-                    g_532e = bx;
+                if (g_status_slot != bx) {
+                    g_status_blink = 0x10;
+                    g_status_slot = bx;
                 }
                 break;
             }

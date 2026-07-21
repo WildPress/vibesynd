@@ -48,7 +48,7 @@ extern short g_num_players;                 /* number of players */
 extern short g_cur_player;                 /* our index (-1 until registered) */
 extern unsigned char g_input_echo;         /* input-echo flag */
 extern unsigned char g_e285;          /* abort/ESC flag */
-extern unsigned char g_df30[];        /* per-player ready byte */
+extern unsigned char g_peer_active[];        /* per-player ready byte */
 extern unsigned char g_player_status[];       /* per-player status (stride 14) */
 extern char g_name_buf[];                 /* base session name */
 extern char g_36b8[], g_36cc[], g_36ec[], g_370c[];
@@ -95,7 +95,7 @@ readloop:
     g_input_echo = save;
     printf(g_36cc);
     for (i = 0; i < g_num_players; i++)
-        g_df30[i] = 0;
+        g_peer_active[i] = 0;
 esccheck:
     if (g_e285 != 0) return -2;
     g_cur_player = -1;
@@ -121,13 +121,13 @@ found:
             sprintf(nbuf, g_3684, g_name_buf, i);
             netbios_op91(g_conn[i], nbuf, 1, 0, 0);
         }
-        g_df30[i] = 0;
+        g_peer_active[i] = 0;
         g_player_status[i * 14] = 0;
     }
     printf(g_370c);
     for (i = 0; i < g_num_players; i++) {
         int r;
-        g_df30[i] = 0;
+        g_peer_active[i] = 0;
         if (i == g_cur_player) continue;
         if (g_conn[i][2] == 0) goto do_connect;
         if (g_conn[i][0x31] != 0xff) continue;
@@ -141,7 +141,7 @@ found:
         _fstrcpy((char __far *)(g_conn[i] + 0xa), (char __far *)(g_conn[g_cur_player] + 0xa));
         g_conn[i][2] = g_conn[g_cur_player][2];
         connected++;
-        g_df30[i] = 1;
+        g_peer_active[i] = 1;
     }
     printf(g_375c);
     if (g_e285 != 0) return -2;

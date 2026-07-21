@@ -1,6 +1,6 @@
 /* GAME hand-asm (NOT CLIB -- 0% RTL fingerprint). Bitstream bit-extractor @ 0x3a3c6.
    Leaf. Reads CL (=AL param) bits out of the little-endian bit buffer held in globals
-   g_bfbe (word, high half AX), g_bfbc (word, low/current half BX) and g_bfc1 (byte,
+   g_rnc_bit_buf_hi (word, high half AX), g_rnc_bit_buf_lo (word, low/current half BX) and g_rnc_bit_count (byte,
    bits still available CH), advancing the compressed-data pointer ESI by 2 and
    refilling AX from *ESI whenever the request crosses the current word boundary
    (SUB CH,CL borrow => refill path). Writes the updated buffer/counter back to the

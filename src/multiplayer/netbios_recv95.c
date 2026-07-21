@@ -1,14 +1,14 @@
 /* frameless @ 0x28558: NetBIOS receive via the DPMI mailbox (opcode 0x95),
    sibling of matched 0x284a8 (0x94 send). Builds the NCB at sel:>off: word+6 =
-   g_df1c, word+8 = g_df38, byte 0 = 0x95; submits via FUN_27d88 (-1 -> -0x63).
+   g_df1c, word+8 = g_net_chunk_size, byte 0 = 0x95; submits via FUN_27d88 (-1 -> -0x63).
    async != 0 -> return 0 immediately. Else busy-wait status [0x31] != 0xff,
    copy the answer (length = NCB word+8) from the transfer buffer far ptr
-   g_df1e (off@0xdf1e, sel@0xdf22) to near dst via an inlined far memcpy
+   g_net_recv_buf (off@0xdf1e, sel@0xdf22) to near dst via an inlined far memcpy
    (db-transcribed pragma, same body as 0x284a8's fmemcpy94), then
    report+return -status on error else return the answer length word. */
 extern unsigned short g_df1c;
-extern unsigned short g_df38;
-extern unsigned char __far *g_df1e;
+extern unsigned short g_net_chunk_size;
+extern unsigned char __far *g_net_recv_buf;
 extern char g_376c[];
 extern short submit_ncb(unsigned char __far *p);
 extern void report_net_status(char *s, int b, int c);
@@ -19,7 +19,7 @@ extern void fmemcpy95(unsigned char __far *dst, unsigned char __far *src, unsign
 short netbios_recv95(unsigned int off, unsigned short sel, void *dst, unsigned short async)
 {
     *(unsigned short __far *)((sel :> (unsigned char *)off) + 6) = g_df1c;
-    *(unsigned short __far *)((sel :> (unsigned char *)off) + 8) = g_df38;
+    *(unsigned short __far *)((sel :> (unsigned char *)off) + 8) = g_net_chunk_size;
     (sel :> (unsigned char *)off)[0] = 0x95;
     if (submit_ncb(sel :> (unsigned char *)off) == -1)
         return -0x63;
@@ -27,7 +27,7 @@ short netbios_recv95(unsigned int off, unsigned short sel, void *dst, unsigned s
         return 0;
     while ((sel :> (unsigned char *)off)[0x31] == 0xff)
         ;
-    fmemcpy95((unsigned char __far *)dst, g_df1e,
+    fmemcpy95((unsigned char __far *)dst, g_net_recv_buf,
               *(unsigned short __far *)((sel :> (unsigned char *)off) + 8));
     if ((sel :> (unsigned char *)off)[0x31] != 0) {
         report_net_status(g_376c, 0x260, (sel :> (unsigned char *)off)[0x31]);

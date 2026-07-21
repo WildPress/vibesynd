@@ -1,9 +1,9 @@
 /* @ 0x15f58 -- daily/time economy tick.  Reads 5 volatile input-edge flags
    (g_e2bf..g_e2c3) that toggle bookkeeping bytes / nudge the game-speed global
-   g_5304 (busy-wait while the flag==1).  Then, for the normal path
-   (g_radar_detail==0): busy-waits on g_10b50 vs speed, recomputes a displayed
+   g_game_speed (busy-wait while the flag==1).  Then, for the normal path
+   (g_radar_detail==0): busy-waits on g_timer_tick vs speed, recomputes a displayed
    money/rate byte (g_3ee8) and commits the funding entry via FUN_33568 when the
-   status g_5594 is 0 or 3, and if the record's time-budget dword can cover
+   status g_fund_block is 0 or 3, and if the record's time-budget dword can cover
    (param_1-1) days, spends them: money-=days, day++ (wrap at 0x16d -> year++),
    then runs the 50-region economic sweep (FUN_16318 owner funding, g_player_recs +=
    FUN_16438 income, g_syndicate_money[i] += 0x1f4-rand) and FUN_164c8 target reassignment.
@@ -16,14 +16,14 @@
    PARKED near-miss: ours 939B vs target 957B, EDIT-DIST=322 (~66% by
    1-editdist/maxlen), structure byte-faithful. Levers that landed: per-block
    `int idx=g_cur_player*0x417` (folds g_player_budget into disp32, killed a
-   1381B recompute blowup); `g_5304 > 0` (JBE not JE); named `money` load;
-   volatile edge-flags + g_10b50.
+   1381B recompute blowup); `g_game_speed > 0` (JBE not JE); named `money` load;
+   volatile edge-flags + g_timer_tick.
    KEY FIX (336 -> 322): g_cur_player is a PLAIN global, not volatile. Watcom
    still reloads it per basic block (movsx at 0xd3/0x138/0x1cc/0x2bc -- it never
    caches a global across calls), so dropping `volatile` costs no reloads but
-   lets the g_5304 resync move LATE. g_5304 is register-cached in EDI across the
+   lets the g_game_speed resync move LATE. g_game_speed is register-cached in EDI across the
    whole fn (spill-before-call at 0x110, reload-after). With volatile g_cur_player
-   the reload `mov edi,[g_5304]` scheduled EARLY (0x138, before idx/money); plain
+   the reload `mov edi,[g_game_speed]` scheduled EARLY (0x138, before idx/money); plain
    global lets it schedule LATE (0x161, after the money load) -- matching target
    exactly and also realigning the loop's `add esp,4` (0x1e3).
    WALL (Watcom-9.5 codegen seed, not source-reachable): a global 3-register
@@ -32,7 +32,7 @@
    (target EDX) and the g_syndicate_money temp to EDX (target ECX, which also
    adds a stray `mov eax,edx`). It rewrites nearly every modrm byte in the back
    half. Confirmed global not loop-driven: block2 has zero loop pressure yet
-   shows the identical money ECX-vs-EDX rotation. Also `g_10b50=0` zero-reg is
+   shows the identical money ECX-vs-EDX rotation. Also `g_timer_tick=0` zero-reg is
    DH (ours) vs AH (target) and `ret=1` reg CH/DL/AH -- encoding ties. Not moved
    by: register hint on money, delta/need temps, function-scope money decl,
    `-or`, `>` vs `!=`. */
@@ -41,11 +41,11 @@ extern volatile unsigned char g_e2c0;
 extern volatile unsigned char g_e2c1;
 extern volatile unsigned char g_e2c2;
 extern volatile unsigned char g_e2c3;
-extern unsigned char g_537f;
+extern unsigned char g_snd_slot_gate;
 extern unsigned char g_10b4d;
 extern unsigned char g_offscreen_obj;
-extern unsigned int g_5304;
-extern volatile unsigned char g_10b50;
+extern unsigned int g_game_speed;
+extern volatile unsigned char g_timer_tick;
 extern unsigned char g_radar_detail;
 extern unsigned char g_10b52;
 extern int g_10b06;
@@ -53,7 +53,7 @@ extern short g_cur_player;
 extern unsigned char g_player_budget[];
 extern unsigned char g_player_recs[];
 extern unsigned char g_3ee8;
-extern unsigned char g_5594;
+extern unsigned char g_fund_block;
 extern unsigned char g_syndicate_money[];
 extern unsigned char commit_funding(void);
 extern void research_funding_tick(unsigned char i);
@@ -70,37 +70,37 @@ char economy_daily_tick(unsigned int param_1)
     ret = 0;
     if (g_e2bf != 0) {
         while (g_e2bf == 1);
-        g_537f = (g_537f + 1) & 1;
+        g_snd_slot_gate = (g_snd_slot_gate + 1) & 1;
     }
     if (g_e2c0 != 0) {
         while (g_e2c0 == 1);
         g_10b4d = (g_10b4d + 1) & 1;
     }
-    if (g_e2c1 != 0 && g_5304 > 0) {
+    if (g_e2c1 != 0 && g_game_speed > 0) {
         while (g_e2c1 == 1);
-        g_5304--;
+        g_game_speed--;
     }
-    if (g_e2c2 != 0 && g_5304 < 0xc) {
+    if (g_e2c2 != 0 && g_game_speed < 0xc) {
         while (g_e2c2 == 1);
-        g_5304++;
+        g_game_speed++;
     }
     if (g_e2c3 != 0) {
         while (g_e2c3 == 1);
         g_offscreen_obj = (g_offscreen_obj + 1) & 1;
     }
     if (g_radar_detail == 0) {
-        if (g_5304 >= 3) {
-            while (g_10b50 < g_5304 && g_10b50 != 0);
+        if (g_game_speed >= 3) {
+            while (g_timer_tick < g_game_speed && g_timer_tick != 0);
         }
-        g_10b50 = 0;
+        g_timer_tick = 0;
         {
             int idx = g_cur_player * 0x417;
             unsigned char v = *(unsigned int *)(g_player_budget + idx) / (param_1 / 0x18);
             if (v != g_3ee8) {
-                unsigned char sst = g_5594;
+                unsigned char sst = g_fund_block;
                 g_3ee8 = v;
                 if (sst == 0 || sst == 3)
-                    g_5594 = commit_funding();
+                    g_fund_block = commit_funding();
             }
         }
         {

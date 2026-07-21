@@ -1,6 +1,6 @@
 /* 0x2def8 (1284B): projectile trajectory aim/turn selection.
  * Compute aim angle w1e = 0x14c58(dx,dy) from target coords obj[0x2e]/obj[0x30]
- * vs own obj[4]/obj[6]. If busy flag g_5300 != 0, bail. Set g_5300 = 1.
+ * vs own obj[4]/obj[6]. If busy flag g_proj_turn_busy != 0, bail. Set g_proj_turn_busy = 1.
  * Round facing to a quadrant d = ((obj[0x1a]+0x20)>>6<<6)-0x40. Search up to 4
  * quadrants clockwise with the two step probes (0x2d738 for dA, 0x2d6c8 for dB).
  * If 0x2d6c8 found none, take the fallback: search again from dA+0x20, add a random
@@ -22,7 +22,7 @@
  * [esp+0xc0]; cl-vs-dh 0x80 store; the `ushort<ushort` compare emitted as a
  * 16-bit cmp/jae here vs target's zero-extend-to-32 cmp/jge) -- all verified
  * semantics-identical, not fixable by C spelling. */
-extern short g_5300;
+extern short g_proj_turn_busy;
 extern short g_dir_dx[];
 extern short g_dir_dy[];
 extern short g_level_step;
@@ -58,9 +58,9 @@ void projectile_select_turn(unsigned char *obj, int tgt)
     aim = sum_of_squares_call(
         (short)(*(short *)(obj + 0x2e) - *(short *)(obj + 4)),
         (short)(*(short *)(obj + 0x30) - *(short *)(obj + 6)));
-    if (g_5300 != 0)
+    if (g_proj_turn_busy != 0)
         goto done;
-    g_5300 = 1;
+    g_proj_turn_busy = 1;
     dA = dB = ((obj[0x1a] + 0x20) >> 6 << 6) - 0x40;
 
     for (j = 0; j < 4; j++) {

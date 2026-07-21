@@ -2,7 +2,7 @@
  * resets g_e13c[i]=0xff, skips self (g_cur_player); x=FUN_165f8(i) rates the slot
  * (0x32 aborts the whole sweep, 0 skips); pick d = x==1 ? 1 : rand(x-1)+1 via
  * FUN_e568, then r=FUN_16638(d,i). Scans the 8 entries of r's 19-byte row in
- * g_b069: nonzero entry v indexes a 10-byte record g_539e[(v-1)*10]; if its
+ * g_syndicate_links: nonzero entry v indexes a 10-byte record g_syndicate_owner[(v-1)*10]; if its
  * owner byte isn't i/self and a d100 roll < 0x32, claims it (owner=i,
  * g_e13c[i]=r) -- first hit ends the row scan. Recipe: -4s -oneatx -zp8 -s -zq
  * Lever: the self-check's 16-bit `cmp dx,bx` with a full `xor edx,edx` widen
@@ -13,8 +13,8 @@
  */
 extern unsigned char g_e13c[];
 extern unsigned short g_cur_player;
-extern unsigned char g_b069[];
-extern unsigned char g_539e[];
+extern unsigned char g_syndicate_links[];
+extern unsigned char g_syndicate_owner[];
 extern int count_syndicate_recs(int slot);
 extern unsigned short lcg_rand(unsigned short n);
 extern int scan_syndicate_recs(int d, int slot);
@@ -43,15 +43,15 @@ void player_target_sweep(void)
             d = lcg_rand(x - 1) + 1;
         r = scan_syndicate_recs(d, i);
         for (j = 0; j < 8; j++) {
-            if (g_b069[j + r * 19] == 0)
+            if (g_syndicate_links[j + r * 19] == 0)
                 continue;
-            if (g_539e[(g_b069[j + r * 19] - 1) * 10] == i)
+            if (g_syndicate_owner[(g_syndicate_links[j + r * 19] - 1) * 10] == i)
                 continue;
-            if ((unsigned short)g_539e[(g_b069[j + r * 19] - 1) * 10] == g_cur_player)
+            if ((unsigned short)g_syndicate_owner[(g_syndicate_links[j + r * 19] - 1) * 10] == g_cur_player)
                 break;
             if (lcg_rand(0x64) >= 0x32)
                 break;
-            g_539e[(g_b069[j + r * 19] - 1) * 10] = i;
+            g_syndicate_owner[(g_syndicate_links[j + r * 19] - 1) * 10] = i;
             g_e13c[i] = r;
             break;
         }

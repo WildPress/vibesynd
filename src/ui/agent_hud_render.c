@@ -8,7 +8,7 @@
    mean prev!=0; (2) the aux `hp*0x17` -- target `imul ...,0x17`, ours a lea/sub *23
    strength-reduction (same product), which accounts for the imul(-1) and 0x17-literal(-1)
    deltas. Residual reg-selection tie class: st in DL vs BL, health/aux register roles,
-   the muzzle-flash cache byte +10 folded into the g_df48 reloc base (ours [ecx+0xa]),
+   the muzzle-flash cache byte +10 folded into the g_agent_cmd_state reloc base (ours [ecx+0xa]),
    and shorter [esp] spill encodings (ours 2368B vs 2387B). No behavioural bug found.
    -- agent_hud_render @ 0x2c578 -- AGENT STATUS-PANEL / HUD RENDERER (per-player squad).
  *
@@ -22,7 +22,7 @@
  *
  * WHAT IT DOES
  *   1. Clears the panel region (store_4_globals(0,0,0x80,0x190) stores the clip
- *      rectangle globals g_5380..g_538c = 0,0,128,400).
+ *      rectangle globals g_clip_x..g_clip_h = 0,0,128,400).
  *   2. Advances a blink tick (g_blink_tick++) and rebuilds an 8-entry blink table:
  *      g_e394[k] = (g_blink_tick / (k+1)) & 1   -- eight phase-shifted blink flags.
  *   3. For each of the player's 4 agents (i=0..3; entity =
@@ -36,7 +36,7 @@
  *          scaled *55/255 into a 55px bar) with a change animation, then a
  *          vertical health bar (entity[0x14] word), then the icon.
  *        Each bar is redrawn only when its cached value(s) change (dirty tracking
- *        via the 11-byte per-agent cache at g_df48 + i*0xb).
+ *        via the 11-byte per-agent cache at g_agent_cmd_state + i*0xb).
  *   4. A second pass walks a chain of up to 8 auxiliary objects hung off the
  *      squad-reference entity's +0x3a link (chained via +0x1c) and draws a small
  *      4px progress bar for each enabled type (g_frame_enable[frame]!=0), value =
@@ -97,7 +97,7 @@ extern signed char    g_agent_tmpl[];     /* player record +0xb6: reference-enti
 extern unsigned char  g_pool_a[];     /* pool A: entity record k at +k*0x5c */
 extern unsigned char  g_entity_pool[];     /* pool A base-2: node = g_entity_pool + id */
 extern unsigned char  g_hud_panel[];     /* agent HUD panel table, stride 0x12: x@+0,y@+2,flag@+8 */
-extern unsigned char  g_df48[];     /* per-agent 11-byte HUD value cache */
+extern unsigned char  g_agent_cmd_state[];     /* per-agent 11-byte HUD value cache */
 extern unsigned char  g_df76[];     /* aux-bar value cache (8 bytes) */
 extern unsigned char  g_auxbar_panel[];     /* aux-bar panel table, stride 0x12: x@+0,y@+2 */
 extern unsigned short g_item_max_qty[];     /* per-frame max/quantity table */
@@ -122,8 +122,8 @@ extern void draw_slot_record_chain(int p, unsigned short idx, int x, int y);
         mid = (int)(unsigned char)p[(FMID)] * 55 / 255;                               \
         lo  = (int)(unsigned char)p[(FMID) - 1] * 55 / 255;                           \
         hi  = (int)(unsigned char)p[(FMID) + 1] * 55 / 255;                           \
-        if (g_df48[i * 0xb + (CB)] != lo || g_df48[i * 0xb + (CB) + 1] != mid ||      \
-            g_df48[i * 0xb + (CB) + 2] != hi) {                                       \
+        if (g_agent_cmd_state[i * 0xb + (CB)] != lo || g_agent_cmd_state[i * 0xb + (CB) + 1] != mid ||      \
+            g_agent_cmd_state[i * 0xb + (CB) + 2] != hi) {                                       \
             fill_rect_buf2(HUD_X(i) + 4, HUD_Y(i) + (YOFF), 0x37, 0xa, 0);              \
             if ((mid < hi && hi > lo) || (mid > hi && hi < lo)) {                     \
                 fill_rect_buf2(HUD_X(i) + 4 + mid, HUD_Y(i) + (YOFF), hi - mid, 0xa, (C1)); \
@@ -133,9 +133,9 @@ extern void draw_slot_record_chain(int p, unsigned short idx, int x, int y);
                 fill_rect_buf2(HUD_X(i) + 4 + mid, HUD_Y(i) + (YOFF), hi - mid, 0xa, (C1)); \
             }                                                                         \
             draw_vline_buf2(HUD_Y(i) + (YOFF), HUD_Y(i) + (YOFF) + 9, HUD_X(i) + 4, 0xc);\
-            g_df48[i * 0xb + (CB)] = lo;                                              \
-            g_df48[i * 0xb + (CB) + 1] = mid;                                         \
-            g_df48[i * 0xb + (CB) + 2] = hi;                                          \
+            g_agent_cmd_state[i * 0xb + (CB)] = lo;                                              \
+            g_agent_cmd_state[i * 0xb + (CB) + 1] = mid;                                         \
+            g_agent_cmd_state[i * 0xb + (CB) + 2] = hi;                                          \
         }                                                                             \
     } while (0)
 
@@ -160,12 +160,12 @@ void agent_hud_render(void)
 
         if (p[0xb] & 1) {
             /* firing / special: muzzle-flash state machine, icon only */
-            unsigned char st = g_df48[i * 0xb + 10];
+            unsigned char st = g_agent_cmd_state[i * 0xb + 10];
             if (st == 0) {
                 g_hud_panel[i * 0x12 + 8] = 1;
-                g_df48[i * 0xb + 10] = 1;
+                g_agent_cmd_state[i * 0xb + 10] = 1;
             } else if (st == 1) {
-                g_df48[i * 0xb + 10] = 2;
+                g_agent_cmd_state[i * 0xb + 10] = 2;
             }
             goto draw_icon;
         }
@@ -177,13 +177,13 @@ void agent_hud_render(void)
 
         /* vertical health bar (entity[0x14] word) */
         hi = *(short *)(p + 0x14) * 36 / 16;
-        if (g_df48[i * 0xb + 9] != hi) {
+        if (g_agent_cmd_state[i * 0xb + 9] != hi) {
             fill_rect_buf2(HUD_X(i) + 0x34,
-                         HUD_Y(i) + 6 + (0x24 - (int)g_df48[i * 0xb + 9]),
-                         6, g_df48[i * 0xb + 9], 0);
+                         HUD_Y(i) + 6 + (0x24 - (int)g_agent_cmd_state[i * 0xb + 9]),
+                         6, g_agent_cmd_state[i * 0xb + 9], 0);
             if (hi > 0) {
                 fill_rect_buf2(HUD_X(i) + 0x34, HUD_Y(i) + 6 + (0x24 - hi), 6, hi, 0xc);
-                g_df48[i * 0xb + 9] = (unsigned char)hi;
+                g_agent_cmd_state[i * 0xb + 9] = (unsigned char)hi;
             }
         }
 

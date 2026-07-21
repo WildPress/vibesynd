@@ -14,7 +14,7 @@
    The keyboard line-editor widget (text-input field).
    Clamps the cursor to the string length, fetches a key (0x4d442) and inserts
    printable chars at the cursor with a right-shift (optionally upper-casing a-z
-   when caps set), then dispatches the special-key scancode in g_537e:
+   when caps set), then dispatches the special-key scancode in g_text_input_key:
    Enter(0x1c) clears active; Home(0x47) cursor=0; End(0x4f) cursor=len;
    Left(0x4b)/Right(0x4d) move; Delete(0x53)/Backspace(0xe) remove (g_e2a1 flag
    switches between single-char and to-end/to-start bulk removal). Each case also
@@ -22,7 +22,7 @@
    else 0. Renders the horizontally-scrolled visible window (width chars) via the
    0x36698 text drawer, then when active draws the cursor as a coloured underline
    (0xfc, or 0x58 when flags&4) spanning the char at the cursor via 0x18ae8. */
-extern unsigned char g_537e;
+extern unsigned char g_text_input_key;
 extern unsigned char g_e2a0;
 extern unsigned char g_e2a1;
 extern unsigned char g_e2cb;
@@ -79,7 +79,7 @@ int text_input_widget(unsigned short x, unsigned short y, int width, unsigned sh
             ++*cur;
         }
         ret = 1;
-        switch (g_537e) {
+        switch (g_text_input_key) {
         case 0x1c:  /* Enter */
             *active = 0;
             g_e2a0 = 0;
@@ -139,7 +139,7 @@ int text_input_widget(unsigned short x, unsigned short y, int width, unsigned sh
             break;
         }
     }
-    g_537e = 0;
+    g_text_input_key = 0;
 
     d = *cur - width;
     if (d < 0)

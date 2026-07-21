@@ -13,7 +13,7 @@
  * RECIPE -- use -4s (stack calling), NOT the -4r in manifest/equivalence.json.
  * The real target passes every call argument on the stack: lcg_rand(3/7/0x14)
  * as `push imm; call; add esp,4`, and fill_bytes as `push 0x1e9; push 0;
- * push &g_5594; call; add esp,0xc`. -4r makes our calls register-pass and
+ * push &g_fund_block; call; add esp,0xc`. -4r makes our calls register-pass and
  * diverge at every call site; -4s reproduces the prologue (push ebx/esi/edi/ebp)
  * and all five call sites byte-for-byte in shape.
  *
@@ -85,7 +85,7 @@ extern unsigned char g_player_recs[];    /* 8 player templates, stride 0x417    
 extern unsigned char g_syndicate_recs[];    /* 50 syndicate records, stride 0xa         */
 extern unsigned char g_5788[];    /* 18 research records, stride 0x1eb        */
 extern unsigned char g_7bf4[];    /* 20 mod records, stride 0x1f5             */
-extern unsigned char g_5594[];    /* flat state block                         */
+extern unsigned char g_fund_block[];    /* flat state block                         */
 extern unsigned char g_roster_index[];   /* 4-entry roster index table               */
 extern short g_research_src[];            /* research source table (word)             */
 extern short g_mod_src[];            /* mod source table (word)                  */
@@ -178,7 +178,7 @@ void new_campaign_reset(void)
     /* ---- 50 syndicate records (0x539c, stride 0xa): starting money ---- */
     for (i = 0; i < 0x32; i++) {
         if (g_keep_synd_colours && i != 0)
-            g_syndicate_recs[i * 0xa + 2] = 0;                         /* g_539e */
+            g_syndicate_recs[i * 0xa + 2] = 0;                         /* g_syndicate_owner */
         else
             g_syndicate_recs[i * 0xa + 2] = (unsigned char)(lcg_rand(7) + 1);
         *(short *)(g_syndicate_recs + i * 0xa + 0) = 0;                /* g_syndicate_recs */
@@ -222,7 +222,7 @@ void new_campaign_reset(void)
     }
 
     /* ---- flat state block ---- */
-    fill_bytes(g_5594, 0, 0x1e9);                /* memset(g_5594, 0, 0x1e9) */
-    *(int *)(g_5594 + 3) = -1;                     /* g_5597 */
-    g_5594[0] = 2;
+    fill_bytes(g_fund_block, 0, 0x1e9);                /* memset(g_fund_block, 0, 0x1e9) */
+    *(int *)(g_fund_block + 3) = -1;                     /* g_fund_sel */
+    g_fund_block[0] = 2;
 }

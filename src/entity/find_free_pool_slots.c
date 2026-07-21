@@ -15,15 +15,15 @@
    slots are free (the byte at record+0x18 is the "in use" flag) and record the
    lowest free slot; cache the three pointers in globals. If g_10b42 is set, skip
    the scan and just store the pool ends.
-     pool A: [0x8110, 0xdd10)  256 x 0x5c (92B)   -> free ptr in g_10ae0
-     pool B: [0xdd10, 0xe790)   64 x 0x2a (42B)   -> free ptr in g_10adc
-     pool C: [0xe790, 0x11670) 400 x 0x1e (30B)   -> free ptr in g_10aec */
+     pool A: [0x8110, 0xdd10)  256 x 0x5c (92B)   -> free ptr in g_pool_a_free
+     pool B: [0xdd10, 0xe790)   64 x 0x2a (42B)   -> free ptr in g_pool_b_free
+     pool C: [0xe790, 0x11670) 400 x 0x1e (30B)   -> free ptr in g_pool_c_free */
 extern unsigned char pool_a[];    /* 0x8110  */
 extern unsigned char pool_b[];    /* 0xdd10  = end of A */
 extern unsigned char pool_c[];    /* 0xe790  = end of B */
 extern unsigned char pool_end[];  /* 0x11670 = end of C */
 extern unsigned char g_10b42;
-extern unsigned char *g_10ae0, *g_10adc, *g_10aec;
+extern unsigned char *g_pool_a_free, *g_pool_b_free, *g_pool_c_free;
 void find_free_pool_slots(void)
 {
     unsigned char *c, *b, *a;
@@ -48,7 +48,7 @@ void find_free_pool_slots(void)
             c = e;
         }
     }
-    g_10aec = c;
-    g_10adc = b;
-    g_10ae0 = a;
+    g_pool_c_free = c;
+    g_pool_b_free = b;
+    g_pool_a_free = a;
 }

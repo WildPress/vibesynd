@@ -4,13 +4,13 @@
    headless sweep truncated). Custom frame PUSH EBP;MOV EBP,ESP;PUSH ESI/EDI;PUSH DS/ES; sets
    ES=DS, CLD. Validates the stream header magic ('RN' = 0x4e52 then 0x0143) via LODSW; on
    mismatch takes the STC error return. Reads the two 32-bit sizes with the big-endian reader
-   0x3a37a into g_bfb0/g_bfb4, copies the compressed block into place (backward REP MOVSD +
+   0x3a37a into g_rnc_unpacked_size/g_rnc_packed_size, copies the compressed block into place (backward REP MOVSD +
    MOVSB tail under STD when it would overlap), primes the bit reader (0x3a3c6) and builds the
-   three Huffman tables at g_be30/g_beb0/g_bf30 (0x3a449), then the outer/inner decode loops
+   three Huffman tables at g_rnc_huff_raw/g_rnc_huff_dist/g_rnc_huff_len (0x3a449), then the outer/inner decode loops
    emit literals and back-references via the symbol lookup 0x3a383 and bit reader 0x3a3c6,
-   maintaining the rolling match window in g_bfbc/g_bfbe. Returns g_bfb0 (CLC) on success.
+   maintaining the rolling match window in g_rnc_bit_buf_lo/g_rnc_bit_buf_hi. Returns g_rnc_unpacked_size (CLC) on success.
    All ten CALL rel32s to the four subsystem routines are real extern calls (masked by
-   match_reloc); every absolute global (g_bfb0.. immediates, the g_be30/g_beb0/g_bf30 table
+   match_reloc); every absolute global (g_rnc_unpacked_size.. immediates, the g_rnc_huff_raw/g_rnc_huff_dist/g_rnc_huff_len table
    pointers loaded into EDX, and the internal Jcc/JMP displacements) is a literal db byte.
    Body db-transcribed minus the trailing RET, split across seven #pragma aux routines under
    the DOS wcc386 source-line limit (Watcom concatenates them contiguously so the long

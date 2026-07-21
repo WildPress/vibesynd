@@ -52,7 +52,7 @@ extern char *strcat(char *dst, const char *src);
 #pragma intrinsic(strcat)
 
 extern unsigned char  g_entry_video_mode;
-extern unsigned short g_10b2e, g_1be30, g_506c;
+extern unsigned short g_cur_mission, g_1be30, g_506c;
 extern unsigned char  g_105;
 extern unsigned char  g_radar_detail, g_10b42, g_10b44, g_10b3b, g_10b3a, g_input_echo;
 extern unsigned char  g_10b47, g_unlimited_funds, g_sound_enabled, g_music_enabled, g_539a;
@@ -60,8 +60,8 @@ extern unsigned char  g_keep_synd_colours, g_language, g_10b53, g_10b52, g_10b48
 extern volatile int   g_10ad8;
 extern unsigned short g_4d94, g_4d96, g_4d98;
 extern char           g_name_buf[];
-extern unsigned char *g_5308, *g_530c, *g_5324;
-extern int            g_5310;
+extern unsigned char *g_rec6_table, *g_rec6_end, *g_rec6_cursor;
+extern int            g_rec6_addend;
 extern char           g_4d9c[], g_4ea4[];
 extern char           g_3584[], g_3594[];
 extern char           g_355c[], g_3568[], g_356c[];
@@ -87,7 +87,7 @@ void startup_main(short argc, char **argv)
     }
     system(cmdbuf);
 
-    g_10b2e = 1;
+    g_cur_mission = 1;
     g_1be30 = 1;
     g_105 = 2;
     g_radar_detail = 0;
@@ -174,8 +174,8 @@ void startup_main(short argc, char **argv)
         validate_records_or_abort(g_4ea4);
     }
 
-    pool_records_add(g_5308, g_530c, g_5310);
-    g_5324 = g_5308 + 6;
+    pool_records_add(g_rec6_table, g_rec6_end, g_rec6_addend);
+    g_rec6_cursor = g_rec6_table + 6;
     g_506c = 1;
     init_input_subsystem();
     noop_ret();

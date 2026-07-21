@@ -3,7 +3,7 @@
  * sprintf(buf, fmt 0x3cf0, str 0xb970, n) like the matched reader 0x35c88;
  * opens 0x18828(buf, 0x222); if fd > 0 writes via 0x188c8: the 0x14-byte name,
  * player recs g_player_recs (0x20b8), research g_syndicate_recs (0x1f4), g_7bf4 (0x2724),
- * g_list_recs (0x2286), g_5594 (0x1e9), g_roster_index (4), then closes 0x18878.
+ * g_list_recs (0x2286), g_fund_block (0x1e9), g_roster_index (4), then closes 0x18878.
  * Recipe: -4s -oneatx -zp8 -s -zq
  */
 extern short g_cur_player;
@@ -17,7 +17,7 @@ extern void file_close(int fd);
 extern char g_syndicate_recs[];
 extern char g_7bf4[];
 extern char g_list_recs[];
-extern char g_5594[];
+extern char g_fund_block[];
 extern char g_roster_index[];
 
 void save_game(char *name, int n)
@@ -36,7 +36,7 @@ void save_game(char *name, int n)
         file_write(fd, g_syndicate_recs, 0x1f4);
         file_write(fd, g_7bf4, 0x2724);
         file_write(fd, g_list_recs, 0x2286);
-        file_write(fd, g_5594, 0x1e9);
+        file_write(fd, g_fund_block, 0x1e9);
         file_write(fd, g_roster_index, 4);
         file_close(fd);
     }

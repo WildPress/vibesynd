@@ -6,7 +6,7 @@
  * 3-byte `test dh,imm` forms); (3) counter scaling written as COMPOUND
  * `ca *= w+1` gives the in-place `and ecx,0xffff; imul ecx,eax` (plain
  * `ca = ca * ...` splits into an xor-form EDX temp); (4) `end` read through
- * a VOLATILE alias extern of g_10ae0 pins the `mov ebp,[g]` load FIRST at
+ * a VOLATILE alias extern of g_pool_a_free pins the `mov ebp,[g]` load FIRST at
  * entry (non-volatile, the scheduler sinks it below the id_a chain); the
  * done-store uses the normal name. A named `w` for the +0x20 re-read
  * REGRESSED block 1 (reuse-copy instead of the fresh re-load) -- the plain
@@ -25,12 +25,12 @@
  * ca >= 0x20 and ca > cb. Otherwise (branch B, weights 5/2/2/1/1) only a's
  * squad is scored and the result is a ladder on b's +0x1c flags:
  * bit0/ca>=1, bit4/ca>=2, bit3/ca>=4, bit2/ca>=8 -> 1, else 0. The pool-end
- * pointer g_10ae0 is loaded at entry and re-stored (unchanged) at every
+ * pointer g_pool_a_free is loaded at entry and re-stored (unchanged) at every
  * exit -- single-exit source, Watcom tail-duplicates the return-1 blocks. */
 extern unsigned char g_entity_pool[];
 extern unsigned char g_pool_a[];
-extern unsigned char *g_10ae0;
-extern unsigned char * volatile g_10ae0v;   /* volatile alias of g_10ae0: pins the
+extern unsigned char *g_pool_a_free;
+extern unsigned char * volatile g_pool_a_free_v;   /* volatile alias of g_pool_a_free: pins the
                                                entry load first (fixups are masked,
                                                so the alias symbol is free) */
 
@@ -38,7 +38,7 @@ int squad_threat_test(unsigned char *a, unsigned char *b)
 {
     unsigned short id_a;
     unsigned short id_b;
-    unsigned char *end = g_10ae0v;
+    unsigned char *end = g_pool_a_free_v;
     unsigned char *nb;
     unsigned short ca;
     unsigned short cb;
@@ -130,6 +130,6 @@ int squad_threat_test(unsigned char *a, unsigned char *b)
 fail:
     r = 0;
 done:
-    g_10ae0 = end;
+    g_pool_a_free = end;
     return r;
 }

@@ -1,6 +1,6 @@
 /* @ 0x27e78: far-alloc probe. Alloc a 0x5c far block (DOS int-21h allocator 0x3b239,
    returns seg:off in DX:EAX); if null return -1. Then through the global far pointer
-   g_5056 (offset @0x5056, selector @0x505a): stamp byte[0]=0x7f, call 0x27d88 with the
+   g_ncb_ptr (offset @0x5056, selector @0x505a): stamp byte[0]=0x7f, call 0x27d88 with the
    far ptr; if its (short) result == -1 return -1; finally if byte[1]==3 return 0 else -1.
 
    NEAR-MISS 89/94 (default -4s -oneatx -zp8 -s -zq). Structure, far-ptr CSE, both other
@@ -17,19 +17,19 @@
 extern void __far *d_getvec(unsigned n);
 extern short submit_ncb(unsigned char __far *p);
 
-extern unsigned char __far *g_5056;   /* far ptr: off @0x5056, sel @0x505a */
+extern unsigned char __far *g_ncb_ptr;   /* far ptr: off @0x5056, sel @0x505a */
 
 int far_alloc_probe(void)
 {
     void __far *blk = d_getvec(0x5c);
     if (blk == 0)
         return -1;
-    g_5056[0] = 0x7f;
-    if (submit_ncb(g_5056) != -1)
+    g_ncb_ptr[0] = 0x7f;
+    if (submit_ncb(g_ncb_ptr) != -1)
         goto check;
     return -1;
 check:
-    if (g_5056[1] != 3)
+    if (g_ncb_ptr[1] != 3)
         return -1;
     return 0;
 }

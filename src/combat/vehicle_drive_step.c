@@ -7,7 +7,7 @@
  *    the tile (recompute_state_code), accumulate the shot vector (advance_aim_along_dir) and
  *    commit the cursor (move_entity_xyz).
  *  - otherwise: publish the shot accumulators g_shot_x/g_shot_y/g_shot_level and the
- *    target coords g_10b54/56/58, run the trajectory march march_shot_damage, snap
+ *    target coords g_target_x/56/58, run the trajectory march march_shot_damage, snap
  *    the cursor to the facing (snap_direction by octant), re-pick the passable
  *    facing (pick_passable_shot_dir) when the cursor moved off the target tile, probe the
  *    blocked-tile map (g_map_cols column table -> g_tile_flags class) and drop on a block,
@@ -46,9 +46,9 @@ extern short g_aim_level;
 extern short g_shot_x;
 extern short g_shot_y;
 extern short g_shot_level;
-extern short g_10b54;
-extern short g_10b56;
-extern short g_10b58;
+extern short g_target_x;
+extern short g_target_y;
+extern short g_target_level;
 extern char **g_map_cols;
 extern unsigned char *g_tile_flags;
 
@@ -110,9 +110,9 @@ void vehicle_drive_step(unsigned char *p1, unsigned char *p2)
         g_shot_x = g_aim_x;
         g_shot_y = g_aim_y;
         g_shot_level = g_aim_level;
-        g_10b54 = *(short *)(p1 + 0x2e);
-        g_10b56 = *(short *)(p1 + 0x30);
-        g_10b58 = *(short *)(p1 + 0x32);
+        g_target_x = *(short *)(p1 + 0x2e);
+        g_target_y = *(short *)(p1 + 0x30);
+        g_target_level = *(short *)(p1 + 0x32);
         march_shot_damage(p2, p1, 6);
 
         switch (p2[0x1a]) {

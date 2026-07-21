@@ -38,7 +38,7 @@
  *     `cmp byte[esp+18],0` + IMMEDIATE `=0` stores) -- but THIS target keeps
  *     register-loaded setX/setY tests and reg-form `=0`, so bee8's target genuinely
  *     differed there; our first-`=1` reg-form is the same wall as bee8's CASE 1.
- *   - store-order swap `{ g_sel_cursor = 1; g_10b3f = 0; }`: scheduler reorders back, still
+ *   - store-order swap `{ g_sel_cursor = 1; g_target_pending = 0; }`: scheduler reorders back, still
  *     `mov ecx,1` reg-form. The imm-vs-reg pick is register-availability driven (2nd
  *     `=1` is imm only because ECX is wanted by the following `mov cx,[ebx]`).
  *   - `goto Lret;` to a shared final return: Watcom CROSS-JUMPS (jz rel32) instead of
@@ -51,7 +51,7 @@
  */
 extern volatile unsigned short g_cursor_x, g_cursor_y;   /* cursor point (x, y) */
 extern unsigned short g_e114, g_sel_cursor;     /* selection cursor state words */
-extern unsigned char  g_10b3e, g_10b3f;   /* selection cursor flags */
+extern unsigned char  g_10b3e, g_target_pending;   /* selection cursor flags */
 extern short FUN_00029988(unsigned char *p);
 
 unsigned short widget_list_dispatch(unsigned char *p, int sel, unsigned char setX, unsigned char setY)
@@ -83,7 +83,7 @@ unsigned short widget_list_dispatch(unsigned char *p, int sel, unsigned char set
             if ((unsigned short)sel != *(signed char *)(p + 0xb)) goto Lnext;
         A_58:
             g_sel_cursor = 0;
-            if (setX) { g_10b3f = 0; g_sel_cursor = 1; }
+            if (setX) { g_target_pending = 0; g_sel_cursor = 1; }
             g_e114 = 0;
             if (setY) { g_10b3e = 0; g_e114 = 1; }
             {
@@ -117,7 +117,7 @@ unsigned short widget_list_dispatch(unsigned char *p, int sel, unsigned char set
                 if (g_cursor_y >= y) goto C_93;
             }
             g_sel_cursor = 0;
-            if (setX) { g_10b3f = 0; g_sel_cursor = 1; }
+            if (setX) { g_target_pending = 0; g_sel_cursor = 1; }
             g_e114 = 0;
             if (setY) { g_10b3e = 0; g_e114 = 1; }
             goto Lpa;

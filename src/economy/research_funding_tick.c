@@ -1,8 +1,8 @@
 /* BEHAVIOURALLY EQUIVALENT (verified 2026-07-21): the ONLY divergence is entry-load
    ordering -- target loads g_cur_player into SI before the param byte (mov ch,[esp+0x10]),
    ours emits the param load first. Two independent loads, transposed = pure schedule
-   tie. Everything downstream is byte-identical (287B): the g_539e[g*10]==save guard,
-   the 8-link g_b069[g*19+i] loop with the +2 funding add, the (rate-30)/2 signed drift,
+   tie. Everything downstream is byte-identical (287B): the g_syndicate_owner[g*10]==save guard,
+   the 8-link g_syndicate_links[g*19+i] loop with the +2 funding add, the (rate-30)/2 signed drift,
    the toward-30 nudge, the 0..0xff clamp and the SI write-back all match exactly.
    -- NEAR-MISS @ 0x16318 -- 280/287 masked (was ~242/287); PARKED on ONE window:
  * entry order. Target loads g_cur_player into SI BEFORE the param byte
@@ -23,7 +23,7 @@
  *
    0x16318 -- research funding tick for group g. Records are 10 bytes at
  * 0x539c: word +0 funding, byte +2 owner, byte +3 rate. If we own g
- * (owner == g_cur_player): for each of the 8 links in g_b069[g*19 + i], a nonzero
+ * (owner == g_cur_player): for each of the 8 links in g_syndicate_links[g*19 + i], a nonzero
  * link owned by someone else adds +2 funding. Then funding drifts by
  * (rate - 30)/2, nudges 2 toward 30, and clamps to 0..0xff. g_cur_player is
  * saved in ESI and restored at the end (unmodified).
@@ -31,8 +31,8 @@
  */
 extern volatile short g_cur_player;
 extern unsigned char g_syndicate_recs[];
-extern unsigned char g_539e[];
-extern unsigned char g_b069[];
+extern unsigned char g_syndicate_owner[];
+extern unsigned char g_syndicate_links[];
 
 void research_funding_tick(unsigned char g)
 {
@@ -40,11 +40,11 @@ void research_funding_tick(unsigned char g)
     short save;
 
     save = g_cur_player;
-    if (g_539e[g * 10] == save) {
+    if (g_syndicate_owner[g * 10] == save) {
         for (i = 0; i != 8; i++) {
             unsigned int idx = g * 19 + i;
-            if (g_b069[idx] != 0
-                && g_539e[g_b069[idx] * 10] != save)
+            if (g_syndicate_links[idx] != 0
+                && g_syndicate_owner[g_syndicate_links[idx] * 10] != save)
                 *(short *)(g_syndicate_recs + g * 10) += 2;
         }
     }

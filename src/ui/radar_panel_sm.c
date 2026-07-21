@@ -10,12 +10,12 @@
  * Semantics: clears g_52ff, state=1. If word g_mouse_x >= 0x80: index the
  * 0x417-byte mission records at 0xe551 by (short)g_cur_player; pool-A record
  * p = 0x8110 + 0x5c*((uchar)rec[0] + (schar)rec[1]); state=2. If entity id
- * word g_10b14 is live (nonzero, its record (id/0x5c)>>3 != g_cur_player, dead
+ * word g_target_id is live (nonzero, its record (id/0x5c)>>3 != g_cur_player, dead
  * flag [+0xb]&1 clear): target id p[0x44] -> 0 => state 5 else LOS check
  * los_trace(p, ent, g_a6c2[weapon type]) => state 6/5. Else if word
  * g_10b12 live: same via los_trace_far => 6/5. Else if g_10b1a: state 4,
  * n = chain_length(p) (carried-item count). Dispatch switch(state):
- *  1/2 -> g_5324 = g_5308 + 6*state; return.   3 -> nothing.
+ *  1/2 -> g_rec6_cursor = g_rec6_table + 6*state; return.   3 -> nothing.
  *  4   -> g_52ff=1; e = g_entity_pool + g_10b1a; if g_e398==0 and n<8: inner
  *         switch on type e[0x19] queues a draw-list node
  *         render_draw_list(*(ushort*)(g_frame_sprite+OFS), g_auxbar_panel[n*9], g_auxbar_panel[n*9+1]),
@@ -23,9 +23,9 @@
  *         0x10, 0x2c2 for 0x11/12/13; type 0xc also centers string
  *         tbl_4b10[type-1][g_language] into field 0x10584; then if g_frame_enable[type]
  *         draw gauge fill_rect(x+4, y+0x18, 0x17, 4, 0xc). Always:
- *         center tbl_4b10[type-1][g_language] into 0x10584; g_5324 = g_5308 +
+ *         center tbl_4b10[type-1][g_language] into 0x10584; g_rec6_cursor = g_rec6_table +
  *         6*state; return.
- *  5/6 -> g_5324 = g_5308 + 6*state; fall out.
+ *  5/6 -> g_rec6_cursor = g_rec6_table + 6*state; fall out.
  *
  * PARKED near-miss (NOT matched): fair masked-aligned 1182/1427 (~83%),
  * length 1419 vs 1427. Everything structural matches: both jump tables,
@@ -70,7 +70,7 @@
 extern unsigned char g_52ff;
 extern unsigned short g_mouse_x;
 extern short g_cur_player;
-extern unsigned short g_10b14;
+extern unsigned short g_target_id;
 extern unsigned short g_10b12;
 extern unsigned short g_10b1a;
 extern unsigned char g_agent_slots[];
@@ -83,8 +83,8 @@ extern short g_auxbar_panel[];
 extern unsigned char g_frame_enable[];
 extern int tbl_4b10[][3];
 extern unsigned char g_language;
-extern int g_5308;
-extern int g_5324;
+extern int g_rec6_table;
+extern int g_rec6_cursor;
 extern unsigned char *los_trace(unsigned char *a, unsigned char *rec, short p);
 extern unsigned char *los_trace_far(unsigned char *p1, unsigned char *p2, int dist);
 extern int chain_length(unsigned char *p);
@@ -112,7 +112,7 @@ void radar_panel_sm(void)
     if (g_mouse_x >= 0x80) {
         k = g_cur_player * 0x417;
         p = g_pool_a + ((signed char)g_agent_slots[k + 1] + g_agent_slots[k]) * 0x5c;
-        id1 = g_10b14;
+        id1 = g_target_id;
         e1 = g_entity_pool + id1;
         state = 2;
         if (id1 != 0
@@ -149,7 +149,7 @@ void radar_panel_sm(void)
     switch (state) {
     case 1:
     case 2:
-        g_5324 = g_5308 + state * 6;
+        g_rec6_cursor = g_rec6_table + state * 6;
         return;
     case 3:
         break;
@@ -232,11 +232,11 @@ void radar_panel_sm(void)
                              (unsigned short)g_auxbar_panel[n * 9 + 1] + 0x18, 0x17, 4, 0xc);
         }
         center_string_16(0x10584, tbl_4b10[e[0x19] - 1][g_language]);
-        g_5324 = g_5308 + state * 6;
+        g_rec6_cursor = g_rec6_table + state * 6;
         return;
     case 5:
     case 6:
-        g_5324 = g_5308 + state * 6;
+        g_rec6_cursor = g_rec6_table + state * 6;
         break;
     }
 }

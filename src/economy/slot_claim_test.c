@@ -36,7 +36,7 @@
 extern volatile unsigned char g_539a;
 extern volatile unsigned short g_cur_player;
 extern unsigned char g_syndicate_recs[];
-extern unsigned char g_b069[];
+extern unsigned char g_syndicate_links[];
 
 char slot_claim_test(unsigned char p)
 {
@@ -55,7 +55,7 @@ char slot_claim_test(unsigned char p)
             goto done;
         }
     }
-    if (g_b069[p * 19 + 8] == 1) {
+    if (g_syndicate_links[p * 19 + 8] == 1) {
         if ((unsigned short)g_syndicate_recs[p * 10 + 2] != save
             || *(unsigned short *)(g_syndicate_recs + p * 10) == 0xff) {
             goto ret1;
@@ -72,7 +72,7 @@ ret1:
         if (*(unsigned short *)(g_syndicate_recs + j * 10) == 0xff)
             continue;
         for (k = 0; k != 8; k++) {
-            v = g_b069[j * 19 + k] - 1;
+            v = g_syndicate_links[j * 19 + k] - 1;
             if (v == p) {
                 ret = 1;
                 goto done;
