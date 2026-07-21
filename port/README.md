@@ -169,9 +169,16 @@ Then it plays natively.
       stepping EIP over them; prints a manifest backtrace on a real fault
 - [x] **The game boots natively into its own startup_main** (`port/build_boot.sh`) and runs CLIB
       init + subsystem setup before the next wall
-- [ ] DGROUP data-pointer fixup pass: relocate data-internal pointers (obj2/3/4 fixup sources)
-      so strings/tables resolve -- first blocker in startup (set_message_line strcpy of a null ptr)
-- [ ] Continue fault-by-fault to the intro/menu render  ->  **port-v0.1.0** (live frame)
+- [x] DGROUP data-pointer fixup pass (`tools/port_dgroup.py`): the 851 data-internal pointers
+      (obj2/3/4 fixup sources) emitted as `.long __obj<N>+off` in the data image + the FULL LE
+      object pages (no 0x28b8 cut). Strings/tables now resolve; past set_message_line.
+- [x] Full malloc family + RWX allocator (port/shims_mem.c): malloc/nmalloc/free -> mmap
+      PROT_EXEC, so the game's data buffers AND its loaded code overlays (gamedg/gamefm.dll) run.
+- [x] Extended DOS-int emulator: real file ops (int21 read/write/lseek/open/close), cli/sti and
+      segment-register loads skipped (port/dosint.c).
+- [x] **Boot runs through CLIB init, startup data load (hpal/hpointer/hreq), memory setup, and
+      into the graphics driver overlay** (loads + executes gamedg.dll, register_driver)
+- [ ] Graphics-driver init + continue fault-by-fault to the intro/menu render  ->  **port-v0.1.0**
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)
 - [ ] Reach the game's render into g_screen_buf -> present via SDL  ->  **port-v0.1.0** (live frame)
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)

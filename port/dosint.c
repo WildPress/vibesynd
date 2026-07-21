@@ -16,6 +16,12 @@
 #include <signal.h>
 #include <ucontext.h>
 #include <unistd.h>
+#include <fcntl.h>
+#ifdef O_BINARY
+#define O_BINARY_ O_BINARY
+#else
+#define O_BINARY_ 0
+#endif
 
 extern char __code[];
 
@@ -34,8 +40,30 @@ extern char __code[];
 
 static char g_dta[128];    /* a Disk Transfer Area for AH=0x1a/0x2f */
 
+/* DOS/4GW extends int21 file calls to 32-bit: EBX=handle, ECX=count, EDX=flat buf/path. */
 static int do_int21(int ah, greg_t *r) {
     switch (ah) {
+    case 0x3f: {   /* read  */
+        long n = read((int)(r[REG_EBX] & 0xffff), (void *)(long)r[REG_EDX], (size_t)r[REG_ECX]);
+        r[REG_EAX] = (n < 0) ? 0 : (unsigned)n; if (n < 0) STC(r); else CLC(r); return 1;
+    }
+    case 0x40: {   /* write */
+        long n = write((int)(r[REG_EBX] & 0xffff), (void *)(long)r[REG_EDX], (size_t)r[REG_ECX]);
+        r[REG_EAX] = (n < 0) ? 0 : (unsigned)n; if (n < 0) STC(r); else CLC(r); return 1;
+    }
+    case 0x42: {   /* lseek: CX:DX offset, AL whence -> DX:AX */
+        long off = (long)((r[REG_ECX] & 0xffff) << 16 | (r[REG_EDX] & 0xffff));
+        long pos = lseek((int)(r[REG_EBX] & 0xffff), off, (int)(r[REG_EAX] & 0xff));
+        if (pos < 0) { STC(r); return 1; }
+        r[REG_EAX] = (unsigned)pos & 0xffff; SET_DX(r, (pos >> 16) & 0xffff); CLC(r); return 1;
+    }
+    case 0x3d: case 0x3c: {   /* open / creat: EDX = flat path */
+        int fl = (ah == 0x3c) ? (O_WRONLY | O_CREAT | O_TRUNC) : ((r[REG_EAX] & 3) | O_CREAT);
+        int fd = open((const char *)(long)r[REG_EDX], fl | O_BINARY_, 0666);
+        r[REG_EAX] = (fd < 0) ? 2 : (unsigned)fd; if (fd < 0) STC(r); else CLC(r); return 1;
+    }
+    case 0x3e:     /* close */
+        close((int)(r[REG_EBX] & 0xffff)); CLC(r); return 1;
     case 0x30: SET_AX(r, 0x0005); SET_BX(r, 0); SET_CX(r, 0); CLC(r); return 1; /* DOS 5.0 */
     case 0x19: SET_AL(r, 2);       CLC(r); return 1;   /* current drive = C: */
     case 0x2c: SET_CX(r, 0x0c00); SET_DX(r, 0); CLC(r); return 1;  /* time 12:00:00 */
@@ -53,12 +81,18 @@ static int do_int21(int ah, greg_t *r) {
     }
 }
 
+static unsigned long g_traps = 0;
+
 static void on_trap(int sig, siginfo_t *si, void *ucv) {
     ucontext_t *uc = ucv;
     greg_t *r = uc->uc_mcontext.gregs;
     unsigned eip = (unsigned)r[REG_EIP];
     unsigned char *p = (unsigned char *)(long)eip;
     unsigned base = (unsigned)(unsigned long)__code;
+
+    if (getenv("SYN_TRAPLOG") && g_traps++ < 24 && eip >= base)
+        fprintf(stderr, "[trap %lu] manifest 0x%x op=%02x %02x %02x\n",
+                g_traps, 0xd748 + (eip - base), p ? p[0] : 0, p ? p[1] : 0, p ? p[2] : 0);
 
     if (p && p[0] == 0xCD) {              /* int nn */
         int n = p[1], ah = AH(r), handled = 0;
@@ -73,6 +107,29 @@ static void on_trap(int sig, siginfo_t *si, void *ucv) {
         fprintf(stderr, "\nunhandled int 0x%02x AH=0x%02x at manifest 0x%x\n",
                 n, ah, base ? 0xd748 + (eip - base) : eip);
         _exit(3);
+    }
+
+    /* privileged instructions that are meaningless in a flat userspace process: skip them.
+     * cli/sti (interrupt flag), and segment-register loads `mov Sreg,r/m` / `pop Sreg`
+     * (es/ds/fs/gs stay the flat selector, which is what the code wants anyway). */
+    if (p) {
+        int i0 = (p[0] == 0x66 || p[0] == 0x67) ? 1 : 0;
+        unsigned char q = p[i0];
+        if (q == 0xFA || q == 0xFB) { r[REG_EIP] = eip + i0 + 1; return; }     /* cli / sti */
+        if (q == 0x8E) {   /* mov Sreg, r/m16 -- skip whole ModRM instruction */
+            unsigned char modrm = p[i0 + 1];
+            int len = i0 + 2;
+            int mod = modrm >> 6, rm = modrm & 7;
+            if (mod != 3) {
+                if (rm == 4) len++;                       /* SIB */
+                if (mod == 1) len += 1;
+                else if (mod == 2) len += 4;
+                else if (mod == 0 && rm == 5) len += 4;   /* disp32 */
+            }
+            r[REG_EIP] = eip + len; return;
+        }
+        if (q == 0x07 || q == 0x17 || q == 0x1F) { r[REG_EIP] = eip + i0 + 1; return; } /* pop es/ss/ds */
+        if (q == 0x0F && (p[i0+1] == 0xA1 || p[i0+1] == 0xA9)) { r[REG_EIP] = eip + i0 + 2; return; } /* pop fs/gs */
     }
 
     /* emulate port I/O (in/out) -- VGA/PIT registers. `in` returns a toggling value so
@@ -113,6 +170,22 @@ static void on_trap(int sig, siginfo_t *si, void *ucv) {
     _exit(2);
 }
 
+/* --- sampling profiler: prints where execution is, to find spin loops --- */
+#include <sys/time.h>
+static int g_samples = 0;
+static void on_alrm(int sig, siginfo_t *si, void *ucv) {
+    ucontext_t *uc = ucv;
+    unsigned eip = (unsigned)uc->uc_mcontext.gregs[REG_EIP];
+    unsigned base = (unsigned)(unsigned long)__code;
+    (void)sig; (void)si;
+    if (g_samples++ < 12) {
+        if (eip >= base && eip < base + 0x40000)
+            fprintf(stderr, "[prof %d] manifest 0x%x\n", g_samples, 0xd748 + (eip - base));
+        else
+            fprintf(stderr, "[prof %d] 0x%x (non-blob)\n", g_samples, eip);
+    }
+}
+
 void dosint_install(void) {
     static char altstk[64 * 1024];
     stack_t ss;
@@ -125,4 +198,16 @@ void dosint_install(void) {
     sigaction(SIGSEGV, &sa, NULL);
     sigaction(SIGILL, &sa, NULL);
     sigaction(SIGFPE, &sa, NULL);
+
+    if (getenv("SYN_PROF")) {
+        struct sigaction pa;
+        struct itimerval it;
+        memset(&pa, 0, sizeof pa);
+        pa.sa_sigaction = on_alrm; pa.sa_flags = SA_SIGINFO | SA_ONSTACK | SA_RESTART;
+        sigaction(SIGALRM, &pa, NULL);
+        it.it_interval.tv_sec = 0; it.it_interval.tv_usec = 500000;
+        it.it_value = it.it_interval;
+        int rc = setitimer(ITIMER_REAL, &it, NULL);
+        fprintf(stderr, "[dosint] profiler armed rc=%d\n", rc);
+    }
 }

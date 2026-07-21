@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #ifndef O_BINARY
 #define O_BINARY 0
@@ -17,7 +18,9 @@
 int shim_sopen(const char *path, int oflag, int shflag) {
     int fd;
     (void)shflag;
-    fd = open(path, (oflag & 3) | O_BINARY, 0666);
+    if (getenv("SYN_DEBUG")) fprintf(stderr, "[open] %s\n", path);
+    /* write / read-write modes need O_CREAT so a new file (config/save) can be made */
+    fd = open(path, (oflag & 3) | ((oflag & 3) ? O_CREAT : 0) | O_BINARY, 0666);
     return fd;   /* -1 on failure, as DOS expects */
 }
 

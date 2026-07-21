@@ -11,6 +11,7 @@
 #include "platform.h"
 #include "gfx.h"
 #include <string.h>
+#include <stdio.h>
 
 extern unsigned char __dgroup[];
 #define G_SCREEN_BUF (*(unsigned char **)(__dgroup + 0x5368))   /* front offscreen buffer ptr */
@@ -27,7 +28,11 @@ void shim_upload_palette(const unsigned char *pal) {
     if (pal) plat_set_palette(pal);      /* 256 * (r,g,b), 6-bit VGA */
 }
 
+#include <stdlib.h>
+static int g_pres = 0;
 void shim_vga_planar_present(void) {
+    if (getenv("SYN_DEBUG") && g_pres++ < 3)
+        fprintf(stderr, "[present #%d] g_screen_buf=%p\n", g_pres, (void *)G_SCREEN_BUF);
     unsigned char *gsb = G_SCREEN_BUF;
     ensure_video();
     if (gsb) {

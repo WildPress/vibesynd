@@ -3,6 +3,9 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdio.h>
+#include <signal.h>
+#include <stdlib.h>
 
 extern unsigned char __dgroup[];
 #define G_TIMER_TICK (*(volatile unsigned *)(__dgroup + 0x10b50))   /* loop waits on this */
@@ -13,6 +16,8 @@ static volatile int g_timer_run = 0;
 
 static void *timer_loop(void *arg) {
     (void)arg;
+    sigset_t m; sigemptyset(&m); sigaddset(&m, SIGALRM);
+    pthread_sigmask(SIG_BLOCK, &m, 0);
     while (g_timer_run) {
         usleep(14000);          /* ~70 Hz, the game's reprogrammed PIT rate */
         G_TIMER_TICK++;
@@ -21,6 +26,7 @@ static void *timer_loop(void *arg) {
 }
 
 void shim_install_timer_isr(void) {
+    if (getenv("SYN_DEBUG")) fprintf(stderr, "[timer] install_timer_isr called\n");
     if (!g_timer_run) {
         g_timer_run = 1;
         pthread_create(&g_timer_thread, 0, timer_loop, 0);
