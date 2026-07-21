@@ -859,3 +859,69 @@ own colours on the treemap so the distinction is never hidden. Green, cyan, and 
 axis that decides whether the game runs correctly. Amber is where a genuine difference would still
 live. The score we cannot move is a compiler tie, measured and named, and the score that matters now
 has a headline that tells the truth.
+
+---
+
+## Running it natively, no DOS underneath
+
+The byte-match was always one axis. The other was whether the recovered code could run as a real
+native program, with no DOS and no DOSBox holding it up. That work lives on a second branch, and
+this is how it went.
+
+The first plan was the wrong one. Keep the C, the thinking went, and swap out the platform layer
+for something modern. It falls apart the moment you look at what runs each frame. The main loop,
+the rendering, the menus, and every blitter are not C. They are the hand-written assembly we carry
+as byte transcriptions, and those transcriptions have addresses baked into them for the exact DOS
+layout. A modern operating system loads the program somewhere else, and every baked address then
+points at nothing.
+
+So the port had to do two things the naive plan skipped. It had to make the game's own assembly
+run at a native address, and it had to give that assembly a platform that was not DOS.
+
+The first half turned out to be mechanical once framed right. Every baked reference is one of two
+kinds. A data reference we already know from the game's own relocation table. A call we can name.
+Rewrite both as symbols, leave everything else as raw bytes, and the function becomes something a
+native linker can place anywhere. The check was a round trip: assemble it, link it back at the
+original address, and compare. Two hundred and seventy-three of two hundred and seventy-five
+transcriptions came back byte for byte. That was the moment it was clear the whole approach held.
+
+What actually runs is even simpler than per-function linking. Emit the entire code segment as one
+blob at its original relative offsets. Then every jump and call inside the code is already correct,
+and even the switch-jump tables, which had been the awkward case, resolve as a plain offset into
+the blob. Only the data references need to be symbols. It is the DOS build's own layout, rebuilt as
+a native object. Link that against a data image with the same globals, and the whole game, code and
+data, resolves with nothing left undefined.
+
+Then it ran, and immediately reached for DOS. The shims that answer are plain C, which was a
+relief that came from a small discovery: the game uses Watcom's stack calling convention, so its
+routines take arguments on the stack like ordinary C. No assembly glue. File calls became POSIX
+file descriptors. Video handed the frame to a render backend. Memory returned real, and executable,
+blocks, because the game loads code overlays and jumps into them. A background thread advanced the
+timer tick the loop waits on.
+
+The rest was a fault chase, and the shape of it is the interesting part. Boot, watch where it
+faults, learn what that instruction wanted, answer it, run again. A whole class of those faults, the
+raw `int 0x21` and the direct port reads and writes that a few library helpers still make, was
+better answered not by shimming each function but by catching the fault and servicing the
+instruction in place. A signal handler that, on seeing a DOS call or a port write or a `cli`, does
+the small thing it meant and steps past it. That one handler carried the boot a long way in a
+single stroke.
+
+It stopped at the drivers. Syndicate loads `gamedg.dll` and `gamefm.dll`, and they are not native
+libraries at all. They are DOS executables the game reads, relocates, and runs, and their code
+reaches for hardware that is not there. Building a DOS program loader to run them would have been a
+project of its own. The simpler road worked: fail the driver open, and the game falls back to its
+own built-in render path, which is the path the shims already cover.
+
+With the drivers out of the way it went the whole distance. It loaded its menu and title art,
+played the intro, and then the frame came up black. The frame was there, twenty-four thousand
+non-black bytes sitting in the offscreen buffer, but the palette was empty. The palette had been a
+casualty of an earlier convenience: the routine that sets it had been stubbed to nothing. Let it
+run for real, catch the palette writes at the hardware ports the way the video hardware would have,
+and the colours arrived.
+
+The Syndicate title screen, drawn by the game's own code, in a native process, from the user's own
+data. The platform underneath it, the relocated code, the data fixups, the shims, and the fault
+handler, is the whole port carrying a real frame. What is left after that is breadth, a live window
+and input and the walk from the title into a mission, not another wall of the kind that had to be
+broken to get here. The full write-up is in [running the game natively](native-port).

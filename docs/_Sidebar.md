@@ -11,6 +11,7 @@
 **Concepts**
 
 - [Matching decompilation](matching-decompilation)
+- [Running the game natively](native-port)
 - [Porting this method to another game](porting-guide)
 - [Stack frames](stack-frames)
 - [Calling conventions](calling-conventions)

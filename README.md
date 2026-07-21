@@ -41,8 +41,14 @@ The treemap measures one axis, byte-matching. There is a second axis it does not
 rebuilt executable actually *runs*. It does. Built from the original bytes with the fixups reconstructed,
 it boots under DOS/4GW, plays the Bullfrog intro with subtitles, reaches the main menu and the world map
 with full dashboard text, and **plays sound** whose captured output matches the original's to a fraction
-of a decibel. The full story is in the [journal](docs/journal.md); the most recent entry is the sound
-fix, a relocation the rebuild had been emitting across a record boundary and so corrupting.
+of a decibel. The full story is in the [journal](docs/journal.md).
+
+There is now a third axis on the `port` branch: running the recovered code as a real **native program**,
+with no DOS and no DOSBox. It boots the game's own startup, loads the user's own data, plays the intro,
+and draws the Syndicate title screen in a native process, and the same render path builds to a Windows
+`.exe`. How that was done, relocating the game's assembly, rewriting the DOS platform as shims, and
+emulating the leftover DOS calls in a fault handler, is written up in
+[running the game natively](docs/native-port.md).
 
 ## Start with the wiki
 
