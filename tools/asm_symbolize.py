@@ -25,8 +25,12 @@ Usage:
 import sys, os, re, json, subprocess
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OBJ1 = os.path.join(ROOT, "inputs", "SYNDICAT_MAIN_OBJECT1.linear.bin")
-CODE_BASE = 0x10000            # OBJECT1 maps here (manifest space)
+# obj1_full.bin (tools/linearize.py) is the TRUE object1 image at manifest base 0xd748 --
+# it includes the code PREFIX [0xd748,0x10000) that the shifted *.linear.bin extract dropped,
+# so a single file covers every carved function.
+OBJ1 = os.path.join(ROOT, "build", "obj1_full.bin")
+CODE_BASE = 0xd748
+CODE_HI = 0x4fdf4     # end of object1 code (obj1 base 0x10000 + vsize 0x3fdf4)
 
 IS_WIN = sys.platform == "win32"    # on Windows binutils live in WSL; on Linux they're native
 
@@ -41,15 +45,19 @@ def _wslpath(p):
 
 _OBJ1_WSL = None
 def obj1_wsl():
-    """Path to OBJECT1 as the binutils env sees it."""
+    """Path to the code image as the binutils env sees it."""
     global _OBJ1_WSL
     if _OBJ1_WSL is None:
         _OBJ1_WSL = _wslpath(OBJ1) if IS_WIN else OBJ1
     return _OBJ1_WSL
 
+_ROOT_ENV = None
 def root_in_env():
     """Repo root as the binutils env sees it."""
-    return obj1_wsl().rsplit("/inputs/", 1)[0]
+    global _ROOT_ENV
+    if _ROOT_ENV is None:
+        _ROOT_ENV = _wslpath(ROOT) if IS_WIN else ROOT
+    return _ROOT_ENV
 
 def code_image():
     return open(OBJ1, "rb").read()
@@ -117,7 +125,8 @@ def rel32_sites(addr, size):
             continue
         rel = int.from_bytes(bytes(raw[opi:opi + 4]), "little", signed=True)
         target = (ia + len(raw) + rel) & 0xffffffff
-        if not (addr <= target < end):
+        # inter-function call to real code only; a target outside the code range is data
+        if not (addr <= target < end) and CODE_BASE <= target < CODE_HI:
             operand_off = ia + opi           # abs file/manifest offset of the 4-byte rel
             sites.append((operand_off, target))
     return sites

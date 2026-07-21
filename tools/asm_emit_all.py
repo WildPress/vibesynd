@@ -15,8 +15,9 @@ Usage: python tools/asm_emit_all.py [outdir]
 import os, re, sys, json, subprocess
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OBJ1 = os.path.join(ROOT, "inputs", "SYNDICAT_MAIN_OBJECT1.linear.bin")
-CODE_BASE = 0x10000
+OBJ1 = os.path.join(ROOT, "build", "obj1_full.bin")   # true object1 at base 0xd748 (incl. prefix)
+CODE_BASE = 0xd748
+CODE_HI = 0x4fdf4     # end of object1 code (lefix: obj1 base 0x10000 + vsize 0x3fdf4)
 IS_WIN = sys.platform == "win32"
 
 def sh(cmd):
@@ -73,9 +74,12 @@ def func_names():
             pass
     return m
 
-def emit_one(name, addr, size, img, insns, fixups, names):
+def emit_one(name, addr, size, img, insns, fixups, names, labels=None):
+    """labels: {abs_offset: symbol} -> emit `.globl sym; sym:` before that byte (for internal
+    entry points that other functions call into)."""
     data = img[addr - CODE_BASE: addr - CODE_BASE + size]
     end = addr + size
+    labels = labels or {}
     reloc = {}
     for o, info in fixups.items():
         if addr <= o < end:
@@ -90,7 +94,9 @@ def emit_one(name, addr, size, img, insns, fixups, names):
         if opi is not None and len(raw) >= opi + 4:
             rel = int.from_bytes(bytes(raw[opi:opi + 4]), "little", signed=True)
             tgt = (a + len(raw) + rel) & 0xffffffff
-            if not (addr <= tgt < end):
+            # only inter-function calls to REAL code; a target outside the code range is
+            # data mis-decoded in a gap blob -> leave the bytes verbatim
+            if not (addr <= tgt < end) and CODE_BASE <= tgt < CODE_HI:
                 reloc[a + opi] = ("rel", tgt)
         a += len(raw)
     lines = ["    .text", "    .globl %s" % name, "%s:" % name]
@@ -103,6 +109,10 @@ def emit_one(name, addr, size, img, insns, fixups, names):
     i = 0
     while i < size:
         o = addr + i
+        if o in labels:
+            flush()
+            lines.append("    .globl %s" % labels[o])
+            lines.append("%s:" % labels[o])
         if o in reloc:
             flush()
             kind, val = reloc[o]
@@ -123,6 +133,8 @@ def emit_one(name, addr, size, img, insns, fixups, names):
     exts.discard(name)
     return "\n".join(lines) + "\n", exts
 
+CODE_HI = 0x4fdf4    # end of object1 code (lefix: obj1 base 0x10000 + vsize 0x3fdf4)
+
 def main():
     outdir = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "port", "gen", "asm")
     os.makedirs(outdir, exist_ok=True)
@@ -130,25 +142,65 @@ def main():
     img, insns = disasm_all()
     names = func_names()
     fns = json.load(open(os.path.join(ROOT, "manifest", "functions.json")))["functions"]
-    fns = [f for f in fns if f.get("addr") and int(f.get("size", 0)) > 0]
-    emitted, skipped, all_ext, defined = 0, [], set(), set()
-    for f in fns:
-        addr = int(f["addr"], 16); size = int(f["size"])
-        name = f["name"]
-        if addr < CODE_BASE:               # cut-off prefix -- bytes not in the file
-            skipped.append(name); continue
-        s, exts = emit_one(name, addr, size, img, insns, fixups, names)
+    fns = [(int(f["addr"], 16), int(f["size"]), f["name"])
+           for f in fns if f.get("addr") and int(f.get("size", 0)) > 0]
+    fns.sort()
+    spans = [(a, a + sz, n) for a, sz, n in fns]
+
+    def containing(a):
+        for s, e, n in spans:
+            if s <= a < e:
+                return (s, e, n)
+        return None
+
+    # units = (addr, size, name); grows as gap blobs are discovered. Track referenced targets.
+    units = {name: (a, sz) for a, sz, name in fns}
+    all_ext, defined = set(), set()
+
+    def emit(name, a, sz, labels=None):
+        s, exts = emit_one(name, a, sz, img, insns, fixups, names, labels)
         open(os.path.join(outdir, name + ".s"), "w").write(s)
-        all_ext |= exts; defined.add(name); emitted += 1
+        return exts
+
+    # pass 1: emit carved functions, discover gap blobs iteratively
+    for name, (a, sz) in list(units.items()):
+        all_ext |= emit(name, a, sz); defined.add(name)
+    starts = sorted(a for a, _, _ in fns)
+    def next_start(a):
+        return next((s for s in starts if s > a), CODE_HI)
+    blobs = {}
+    changed = True
+    while changed:
+        changed = False
+        for e in sorted(e for e in all_ext if e.startswith("fn_") and e not in defined):
+            a = int(e[3:], 16)
+            if containing(a) or not (CODE_BASE <= a < CODE_HI):
+                continue                            # internal entry (handled in pass 2) or non-code
+            sz = next_start(a) - a
+            all_ext |= emit(e, a, sz); defined.add(e); blobs[e] = sz
+            spans.append((a, a + sz, e)); units[e] = (a, sz)
+            starts = sorted(starts + [a]); changed = True
+
+    # pass 2: internal entry points (a call target inside a unit, not at its start) become
+    # real labels inside that unit -> re-emit the hosts that contain them.
+    host_labels = {}
+    n_internal = 0
+    for e in sorted(e for e in all_ext if e.startswith("fn_") and e not in defined):
+        a = int(e[3:], 16)
+        c = containing(a)
+        if c:
+            host_labels.setdefault(c[2], {})[a] = e
+            n_internal += 1
+    for host, labels in host_labels.items():
+        a, sz = units[host]
+        emit(host, a, sz, labels)               # re-emit with the internal labels
+        defined |= set(labels.values())
+
     unresolved = sorted(e for e in all_ext if e not in defined)
-    print("emitted %d .s into %s   (skipped %d prefix funcs)" % (emitted, outdir, len(skipped)))
-    print("external symbols referenced but not defined here: %d" % len(unresolved))
     open(os.path.join(outdir, "_unresolved.txt"), "w").write("\n".join(unresolved) + "\n")
-    open(os.path.join(outdir, "_prefix_skipped.txt"), "w").write("\n".join(skipped) + "\n")
-    fn_addr = sorted(u for u in unresolved if u.startswith("fn_"))
-    print("  fn_<addr> (callees not in manifest / prefix): %d" % len(fn_addr))
-    print("  named externs (CLIB / boundary): %d" % (len(unresolved) - len(fn_addr)))
-    print("  sample named:", [u for u in unresolved if not u.startswith("fn_")][:12])
+    print("emitted %d carved + %d gap-blob functions; %d internal-entry labels in %d hosts"
+          % (len(fns), len(blobs), n_internal, len(host_labels)))
+    print("unresolved after closure: %d  %s" % (len(unresolved), unresolved[:16]))
 
 if __name__ == "__main__":
     main()

@@ -141,11 +141,14 @@ Then it plays natively.
 - [x] SDL2 video backend: 8-bit framebuffer -> palette -> GPU streaming texture, resizable window
 - [x] VGA blitters (plot/fill/blit) + palette conversion reimplemented in portable C
 - [x] **Renders a real Syndicate screen natively from the user's data** (byte-identical to reference)
-- [x] Asm-relocation pipeline: 273/275 transcriptions -> relocatable, byte-identical (asm_symbolize.py)
+- [x] Asm-relocation pipeline: transcriptions -> relocatable, byte-identical (asm_symbolize.py)
 - [x] **The game's own asm runs natively** (symbolized rnc_decompress decompresses a palette, -m32)
-- [~] A genuine Windows `.exe` (MinGW + Windows SDL2): `port/build_win.sh` staged, needs `gcc-mingw-w64`
-- [ ] C shims behind platform.h for the ~64 hardware-touching transcriptions (VGA/int21h/ISRs)
-- [ ] Runtime fixup pass for data-internal pointers (tbl_* tables, function tables)
-- [ ] Emit all symbolized asm + link with the C + data model into one native binary
-- [ ] Wire `main()` to the game's real main loop + load `data/`  ->  **port-v0.1.0** (renders a live frame)
+- [x] A genuine Windows `.exe` (MinGW + Windows SDL2), `port/build_win.sh` -> syn-demo.exe + SDL2.dll
+- [x] **Whole game code links natively**: all 568 fns + 42 gap blobs + 53 internal labels ->
+      one object, 0 undefined code symbols (`port/build_asm_all.sh`; 663 text symbols, all byte-identical)
+- [ ] obj1 code-pointer fixups (1854: switch jump tables + data pointers) -> case-label / function symbols
+- [ ] Wire `__obj2/3/4` to the DGROUP data model (port_data.py); resolve tbl_* data-internal pointers
+- [ ] C shims behind platform.h for the ~64 hardware-touching routines (VGA/int21h/PIT/kbd/mouse ISRs)
+- [ ] Link game object + data model + shims into a native executable + wire the entry
+- [ ] Reach the game's render into g_screen_buf -> present via SDL  ->  **port-v0.1.0** (live frame)
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)
