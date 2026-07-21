@@ -63,3 +63,14 @@ Link surface measured: **351 globals + 90 boundary functions**. Remaining to mak
 3. Wire `main()` to the game's real main loop and load the data/ files.
 
 Then it plays natively.
+
+## Bring-up progress
+
+- [x] Game logic compiles natively (205/205, modern gcc)
+- [x] Links to a native binary (stub platform)
+- [x] DGROUP data model: globals at true offsets, overlapping views alias (verified in binary)
+- [x] 32-bit native binary with the real data model (correct pointer sizes)
+- [ ] Runtime fixup pass for data-internal pointers (tbl_* tables, function tables)
+- [ ] Wire `main()` to the game's real main loop + load `data/`
+- [ ] SDL2 video backend (GPU-textured framebuffer) + port the VGA blitters to C  ->  **port-v0.1.0** (renders)
+- [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)
