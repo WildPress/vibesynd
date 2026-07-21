@@ -51,9 +51,12 @@ objects, generates placeholder globals + weak boundary stubs, and links `port/bu
 -- a native executable that starts and exits. The compile->link->native-exe pipeline is proven.
 
 Link surface measured: **351 globals + 90 boundary functions**. Remaining to make it PLAY:
-1. **DGROUP data model** -- replace the BSS-placeholder globals with the real initialised data
-   image at correct offsets, so overlapping field-views (g_syndicate_owner == g_syndicate_recs+2)
-   alias like the DOS build. The meaty correctness step.
+1. **DGROUP data model -- DONE (layout + aliasing).** `tools/port_data.py` builds the real
+   initialised DGROUP image (OBJECT2|zero|OBJECT4|zero, 1.06 MB) and `port/gen/globals.s`, which
+   places all 479 referenced globals at their true offsets via `.set g_x, __dgroup + <addr>`.
+   Overlapping field-views now alias (verified: g_syndicate_owner @0x539e == g_syndicate_recs @0x539c
+   + 2). Data-internal pointers (tbl_* string tables, data->code function tables) still need a
+   runtime fixup pass -- the remaining data step.
 2. **Platform shim** -- replace the 90 stubs with real backends: video (SDL2 + GPU-textured
    framebuffer) -> input (SDL) -> timing (SDL) -> audio (SDL); and port the CLIB utilities
    (isqrt32, copy_bytes, filelength) as plain C.
