@@ -46,8 +46,17 @@ executable. Requires the user's own *Syndicate* data files at runtime (see `../B
 
 ## Status
 
-Scaffolding. Feasibility proven (205/205 game-logic files compile). Next:
-1. Generate C definitions for the globals (from `manifest/globals.json`) so the logic links.
-2. Link a native binary against a **stub** platform (starts + exits).
-3. Bring the platform up one subsystem at a time: video -> input -> timing -> sound, each
-   checked against the DOS build's behaviour.
+**Native binary builds and runs.** `tools/port_bringup.py` compiles all 205 game-logic
+objects, generates placeholder globals + weak boundary stubs, and links `port/build/syndicate`
+-- a native executable that starts and exits. The compile->link->native-exe pipeline is proven.
+
+Link surface measured: **351 globals + 90 boundary functions**. Remaining to make it PLAY:
+1. **DGROUP data model** -- replace the BSS-placeholder globals with the real initialised data
+   image at correct offsets, so overlapping field-views (g_syndicate_owner == g_syndicate_recs+2)
+   alias like the DOS build. The meaty correctness step.
+2. **Platform shim** -- replace the 90 stubs with real backends: video (SDL2 + GPU-textured
+   framebuffer) -> input (SDL) -> timing (SDL) -> audio (SDL); and port the CLIB utilities
+   (isqrt32, copy_bytes, filelength) as plain C.
+3. Wire `main()` to the game's real main loop and load the data/ files.
+
+Then it plays natively.
