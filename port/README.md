@@ -151,7 +151,12 @@ Then it plays natively.
       Byte-identical (261620 bytes, 9204 fixups symbolized).
 - [x] **Whole game (code + DGROUP data model) links into a native 32-bit executable, 0 undefined
       symbols** (`port/build_native.sh`: 261KB text + 1.08MB data). Not yet runnable.
-- [ ] C shims behind platform.h for the ~64 hardware-touching routines (VGA/int21h/PIT/kbd/mouse ISRs)
+- [x] Shim-redirect mechanism: `asm_emit_blob.py --shims` replaces a DOS leaf's blob entry with
+      `jmp shim_<name>`; blob symbols prefixed `game_` so they don't collide with libc
+- [x] **The game's own file loader runs natively** (`port/build_loader.sh`): game_load_unpack_file
+      opens + reads + RNC-decompresses a real file off disk via POSIX shims (port/shims_file.c).
+      Confirmed: the game is -4s (STACK calling), so shims + entry are plain cdecl C.
+- [ ] Remaining hardware shims: video (VGA present/palette), timer (PIT), input (kbd/mouse), memory
 - [ ] Wire the entry to the game's startup (skip DOS video-mode/DPMI init) + load `data/`
 - [ ] Reach the game's render into g_screen_buf -> present via SDL  ->  **port-v0.1.0** (live frame)
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)
