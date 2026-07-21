@@ -80,6 +80,32 @@ The C render path is byte-for-byte identical to the reference renderer. This is 
 video shim; the blitters here (`gfx_soft.c`) are the portable-C stand-ins for the hand-asm
 `plot_point`/`fill_bytes`/`blit_block` that the game logic will call once it's C on the hot path.
 
+## Making the asm run natively (the relocation pipeline)
+
+The catch above — 275 hot-path functions are asm with offsets baked for the DOS layout — has a
+mechanical fix. `tools/asm_symbolize.py` rewrites a transcription into **relocatable** assembly:
+
+- every absolute data ref (a type-7 LE fixup) becomes `.long __dgroup + <flat addr>`, and
+- every inter-function call/jump (found by disassembly) becomes `.long <callee> - . - 4`,
+
+while all intra-function bytes are emitted verbatim, so the layout is preserved and self-relative
+offsets stay valid. The native linker then resolves the symbols — to the C reimplementation of a
+routine where one exists, or to the symbolized asm otherwise.
+
+Verified by a byte-identity round trip (assemble → link at the original address → compare to the
+original bytes): **273 of 275 transcriptions reproduce byte-for-byte** (`tools/asm_symbolize_batch.py`;
+the 2 failures are jump-dispatch functions with a trailing table). And it doesn't just match — it
+**runs**: `port/build_asm_native.sh` symbolizes the RNC decompressor, links it with C, and the game's
+own `rnc_decompress` machine code decompresses a real palette correctly in a native 32-bit process:
+
+```
+bash port/build_asm_native.sh    # -> "NATIVE-ASM-OK: the game's assembly decompressed a 768-byte palette"
+```
+
+Caveat: the ~64 transcriptions that touch hardware (VGA ports, `int 21h`, the PIT/keyboard/mouse
+ISRs) still need a C shim behind `platform.h` — symbolizing them makes them link, not work. But the
+~211 pure-computation ones are now natively linkable, which is most of the hot path.
+
 ## Build (planned, full game)
 
 CMake compiles the portable game logic from `../src` + `port/platform_sdl.c` into a native
@@ -115,8 +141,11 @@ Then it plays natively.
 - [x] SDL2 video backend: 8-bit framebuffer -> palette -> GPU streaming texture, resizable window
 - [x] VGA blitters (plot/fill/blit) + palette conversion reimplemented in portable C
 - [x] **Renders a real Syndicate screen natively from the user's data** (byte-identical to reference)
-- [ ] A genuine Windows `.exe` (MinGW/MSVC + Windows SDL2) — so far a Linux/WSLg build
+- [x] Asm-relocation pipeline: 273/275 transcriptions -> relocatable, byte-identical (asm_symbolize.py)
+- [x] **The game's own asm runs natively** (symbolized rnc_decompress decompresses a palette, -m32)
+- [~] A genuine Windows `.exe` (MinGW + Windows SDL2): `port/build_win.sh` staged, needs `gcc-mingw-w64`
+- [ ] C shims behind platform.h for the ~64 hardware-touching transcriptions (VGA/int21h/ISRs)
 - [ ] Runtime fixup pass for data-internal pointers (tbl_* tables, function tables)
-- [ ] Decompile the hot-path asm (main loop, render, screens) to C on `main` so it links natively
+- [ ] Emit all symbolized asm + link with the C + data model into one native binary
 - [ ] Wire `main()` to the game's real main loop + load `data/`  ->  **port-v0.1.0** (renders a live frame)
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)

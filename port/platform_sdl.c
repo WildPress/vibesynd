@@ -10,6 +10,7 @@
  */
 #include "platform.h"
 #include "gfx.h"
+#define SDL_MAIN_HANDLED   /* keep our own main(); don't let SDL wrap it (needed on Windows) */
 #include <SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,6 +31,7 @@ static int g_mx, g_my, g_mbtn;
 void plat_video_init(int width, int height) {
     int scale = 3;
     (void)width; (void)height;
+    SDL_SetMainReady();
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) {
         fprintf(stderr, "SDL_Init failed: %s\n", SDL_GetError());
         exit(1);
