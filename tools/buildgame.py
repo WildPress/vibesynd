@@ -265,7 +265,7 @@ def main():
              "  op stub=C:\\BINB\\WSTUB.EXE", "  format os2 le", "end",
              "system myd4g", "option quiet", "option stack=64k",
              "libpath C:\\LIB386", "libpath C:\\LIB386\\DOS",
-             "name D:\\GAME.EXE"]
+             "name D:\\GAME.EXE", "option map=D:\\GAME.MAP"]
     for a, tgt in alias_pairs:                                # register-convention name -> clean def
         lines.append("alias %s=%s" % (a, tgt))
     if realstart:
