@@ -212,6 +212,38 @@ def main():
     # everything referenced but not defined by our objects or the data image.
     # CLIB symbols (leading underscore runtime helpers) are left for CLIB3S.LIB to satisfy.
     unresolved = refs - defs - data_defs
+    # Watcom register vs stack calling convention decorate a CODE symbol differently: the
+    # register convention (-4r/-3r) appends a TRAILING underscore, the stack convention (-4s/-3s)
+    # does not. So the SAME function `foo` can be referenced as `foo` by a `-s` caller and as
+    # `foo_` by a `-r` caller, while its defining object publishes only one of the two names.
+    # Bridge either mismatch with a wlink ALIAS (both directions) instead of mis-stubbing the ref
+    # as BSS data -- a jmp/call into zeroed BSS crashes rather than degrades. Covers the sound
+    # dispatch cluster (`sound_dispatch_trampoline_` from the -4r stubs; `snd_cmd_65`.. clean names
+    # referenced by the -4s driver table while the -4r stubs define `snd_cmd_65_`..) and the
+    # sibling `fill_bytes_`/`lcg_rand_`/... alias class.
+    alias_pairs = []
+    for s in unresolved:
+        if s.endswith("_") and s[:-1] in defs:          # ref foo_ , def foo
+            alias_pairs.append((s, s[:-1]))
+        elif not s.endswith("_") and (s + "_") in defs:  # ref foo , def foo_
+            alias_pairs.append((s, s + "_"))
+    # ADDRESS aliases: a ref like FUN_<addr> / FUN_LE_<addr> / fn_<addr> names a function by its
+    # original address, but that function is BUILT under a semantic name. If a function starts at
+    # <addr> and its semantic name is defined, alias the address-name onto it. (Mid-function offsets
+    # -- e.g. ISR handlers -- have no name_of[addr] and stay stubbed.)
+    import re as _re
+    addr_alias = []
+    for s in sorted(unresolved):
+        m = _re.match(r"(?:FUN_LE_|FUN_|fn_)0*([0-9a-fA-F]+)_?$", s)
+        if not m:
+            continue
+        key = "%08x" % int(m.group(1), 16)
+        tgt = name_of.get(key)
+        if tgt and tgt in defs and tgt != s:
+            addr_alias.append((s, tgt))
+    alias_pairs = sorted(set(alias_pairs) | set(addr_alias))
+    unresolved = unresolved - {a for a, _ in alias_pairs}
+    print("address aliases (FUN_<addr> -> built name): %d" % len(addr_alias))
     # classify EVERY unresolved symbol: code if a call-target name (FUN_/fn_), else data.
     # nearly all are matching-artifact aliases (fn_/tbl_/pool_/_g_/suffixed g_) the reloc-
     # masking workflow introduced; a few are sub-0x10000 pseudo-funcs + the 4 excluded objs.
@@ -234,6 +266,8 @@ def main():
              "system myd4g", "option quiet", "option stack=64k",
              "libpath C:\\LIB386", "libpath C:\\LIB386\\DOS",
              "name D:\\GAME.EXE"]
+    for a, tgt in alias_pairs:                                # register-convention name -> clean def
+        lines.append("alias %s=%s" % (a, tgt))
     if realstart:
         # link the GENUINE Watcom startup: wlink auto-pulls CSTRTX3S (which owns the LE entry
         # __x386_start that DOS/4GW's loader requires) + CLIB from the library; MAIN.OBJ supplies
@@ -254,6 +288,7 @@ def main():
     print("valid objects : %d" % len(objlist))
     print("malformed/empty (excluded): %d %s" % (len(bad), bad if len(bad) <= 12 else bad[:12]+["..."]))
     print("missing src   : %d %s" % (len(missing_src), missing_src))
+    print("reg-conv aliases resolved: %d %s" % (len(alias_pairs), [a for a, _ in alias_pairs][:20]))
     print("stub FUNCS    : %d" % len(stub_funcs))
     print("stub DATA     : %d %s" % (len(stub_data), stub_data))
     print("other unresolved (left to CLIB): %d %s" % (len(clib_like), clib_like[:20]))

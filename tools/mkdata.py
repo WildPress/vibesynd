@@ -21,14 +21,92 @@ Layout (DGROUP offset == global address, the address baked into the original cod
 seglen is stretched to cover the two far-outlier globals (g_5340b ptr, g_108110 table)
 as zero-filled BSS -- they resolve, values best-effort.
 """
-import re, glob, struct, sys, json
+import re, glob, struct, sys, json, os
 
 OBJ2 = "inputs/SYNDICAT_MAIN_OBJECT2.linear.bin"
 OBJ4 = "inputs/SYNDICAT_MAIN_OBJECT4.linear.bin"
+LE_EXE = "inputs/SYNDICAT_MAIN.EXE"
 OUT  = "build/dataimg.obj"
 # Contiguous DGROUP packing (OBJ2 | OBJ3 | OBJ4) -- matches the code's baked data displacements
 # (which run 0..0x31092 with no gaps). OBJ4 begins right after OBJ2(0x13e60)+OBJ3(0xc00).
 OBJ4_BASE = 0x14a60
+
+# --- Engine string-pointer tables (the 12 tbl_XXXX dispatch-lookup tables) ---------------------
+# radar/status-line dispatchers index these as `tbl_XXXX[g_language]` (and tbl_4b10[type-1][lang]).
+# Each entry is a 32-bit POINTER into OBJECT2's own string pool -- but that pointer is stored ONLY
+# as an LE relocation, so the raw object image is ZERO at every slot. With no definition the linker
+# stubs the symbol to a zero BSS dword and the dispatchers null-deref. Fix: define each table inside
+# this data object (its bytes already live in the OBJ2 blob at offset==addr) and, for every slot,
+# emit a DGROUP-relative FIXUPP to _DATA:+<obj2 target offset> so wlink writes the correct pointer --
+# exactly replicating the LE loader's own relocation. (name, data_addr, entry_count):
+TBL_DEFS = [
+    ("tbl_4408", 0x4408, 3), ("tbl_4414", 0x4414, 3), ("tbl_4420", 0x4420, 3),
+    ("tbl_442c", 0x442c, 3), ("tbl_4438", 0x4438, 3), ("tbl_4444", 0x4444, 3),
+    ("tbl_4450", 0x4450, 3), ("tbl_445c", 0x445c, 3), ("tbl_4468", 0x4468, 3),
+    ("tbl_4474", 0x4474, 3), ("tbl_4480", 0x4480, 3), ("tbl_4b10", 0x4b10, 57),
+]
+
+
+def le_obj2_table_fixups():
+    """Parse SYNDICAT_MAIN.EXE's LE fixup table and return {data_addr: obj2_target_offset} for
+    every 4-byte slot covered by TBL_DEFS. Every such slot is an internal (target object 2),
+    32-bit-offset (source type 7) relocation with no additive. Since OBJECT2's data is laid into
+    the _DATA segment at offset 0 (offset==addr, the same model used for every g_XXXX global), the
+    obj2 target offset IS the target's _DATA offset -- so the table and the strings it points at
+    share one mapping and stay self-consistent regardless of the segment's final link base."""
+    f = open(LE_EXE, "rb").read()
+    u8  = lambda o: f[o]
+    u16 = lambda o: struct.unpack_from("<H", f, o)[0]
+    s16 = lambda o: struct.unpack_from("<h", f, o)[0]
+    u32 = lambda o: struct.unpack_from("<I", f, o)[0]
+    H = u32(0x3c)
+    assert f[H:H+2] in (b"LE", b"LX"), "no LE/LX header"
+    page_size = u32(H + 0x28); n_pages = u32(H + 0x14)
+    otab = u32(H + 0x40) + H;   nobj = u32(H + 0x44)
+    fpt_off = u32(H + 0x68) + H; frt_off = u32(H + 0x6c) + H
+    objs = [(u32(otab + i*24 + 12), u32(otab + i*24 + 16)) for i in range(nobj)]  # (pidx, pcnt)
+    def page_obj(lp):
+        for oi, (pidx, pcnt) in enumerate(objs):
+            if pidx <= lp < pidx + pcnt:
+                return oi + 1, (lp - pidx) * page_size
+        return None, 0
+    fpt = [u32(fpt_off + 4*i) for i in range(n_pages + 1)]
+    want = set()
+    for _, a, n in TBL_DEFS:
+        want.update(a + 4*k for k in range(n))
+    out = {}
+    for p in range(1, n_pages + 1):
+        onum, page_off = page_obj(p)
+        rec = frt_off + fpt[p-1]; end = frt_off + fpt[p]
+        while rec < end:
+            sf = u8(rec); tf = u8(rec+1); rec += 2
+            stype = sf & 0x0f
+            if sf & 0x20:
+                cnt = u8(rec); rec += 1; srcoffs = None
+            else:
+                srcoffs = [s16(rec)]; rec += 2
+            ttype = tf & 0x03; toff = None
+            if ttype == 0:
+                rec += 2 if tf & 0x40 else 1
+                if stype != 0x02:
+                    toff = u32(rec) if tf & 0x10 else u16(rec); rec += 4 if tf & 0x10 else 2
+            elif ttype == 1:
+                rec += 2 if tf & 0x40 else 1; rec += 4 if tf & 0x80 else 2
+            elif ttype == 2:
+                rec += 2 if tf & 0x40 else 1; rec += 4 if tf & 0x10 else 2
+            else:
+                rec += 2 if tf & 0x40 else 1
+            if tf & 0x04:
+                rec += 4 if tf & 0x20 else 2
+            if srcoffs is None:
+                srcoffs = [s16(rec + 2*k) for k in range(cnt)]; rec += 2*cnt
+            if onum != 2:
+                continue
+            for so in srcoffs:
+                a = page_off + so
+                if a in want and toff is not None:
+                    out[a] = toff
+    return out
 
 
 def collect_globals():
@@ -75,11 +153,30 @@ def pstr(s):
 def main():
     reloc = "--reloc-ptrs" in sys.argv
     globs = collect_globals()                # name -> addr
+    d2 = bytearray(open(OBJ2, "rb").read())
+    d4 = bytearray(open(OBJ4, "rb").read())
+
+    # The 12 engine string-pointer tables: define each tbl_ name (PUBDEF at its OBJ2 offset==addr,
+    # so `extern int tbl_XXXX[]` resolves) and recover its per-slot pointer targets from the LE
+    # fixup table. tbl_sites {data_addr: obj2_target_off} become DGROUP-relative FIXUPPs below.
+    tbl_sites = {}
+    if os.path.exists(LE_EXE):
+        tbl_sites = le_obj2_table_fixups()
+        for name, a, n in TBL_DEFS:
+            globs[name] = a
+            for k in range(n):
+                struct.pack_into("<I", d2, a + 4*k, 0)   # clear placeholder; FIXUPP supplies value
+        got = sum(1 for _, a, n in TBL_DEFS for k in range(n) if (a + 4*k) in tbl_sites)
+        want = sum(n for _, _, n in TBL_DEFS)
+        print("engine tables: %d symbols, %d/%d slot relocations from LE" % (len(TBL_DEFS), got, want))
+        if got != want:
+            print("WARN: %d table slots had no LE fixup (will link as 0)" % (want - got))
+    else:
+        print("WARN: %s absent -- 12 engine tables left unresolved (zero-stubbed)" % LE_EXE)
+
     addrs = sorted(set(globs.values()))
     maxa = addrs[-1]
     seglen = maxa + 0x1000                    # room for the highest global's object
-    d2 = bytearray(open(OBJ2, "rb").read())
-    d4 = bytearray(open(OBJ4, "rb").read())
 
     # --reloc-ptrs: DATA-side relocation recovery. OBJECT2/4 hold function POINTERS baked to the
     # ORIGINAL code addresses; when the program is RELINKED (--clibstart) our functions move, so
@@ -140,7 +237,8 @@ def main():
 
     # LEDATA32 + FIXUPP for any pointer sites in each chunk (chunks are dword-aligned so 4-byte
     # pointers never split across a record boundary).
-    def emit_ledata(base, data, sites):
+    def emit_ledata(base, data, sites, segsites=None):
+        segsites = segsites or {}
         off = 0
         while off < len(data):
             chunk = bytes(data[off:off + 1024]); clen = len(chunk)
@@ -152,10 +250,18 @@ def main():
                     locat = 0x8000 | (1 << 14) | (9 << 10) | (doff & 0x3FF)   # M=1 abs, LOC=9 32-bit
                     fb += bytes([locat >> 8, locat & 0xFF])
                     fb += bytes([0x56]) + idx(ptr_syms.index(nm) + 1)          # frame=target,ext,noP
+            # engine-table pointer slots: DGROUP-relative FIXUPP to _DATA(seg 1):+target_off, so the
+            # linker writes segbase+target_off -- the flat pointer to the string, self-relocating.
+            for a, toff in segsites.items():
+                if base + off <= a < base + off + clen:
+                    doff = a - (base + off)
+                    locat = 0x8000 | (1 << 14) | (9 << 10) | (doff & 0x3FF)   # M=1 abs, LOC=9 32-bit
+                    fb += bytes([locat >> 8, locat & 0xFF])
+                    fb += bytes([0x00]) + idx(1) + idx(1) + struct.pack("<I", toff)  # F0/T0 SEGDEF+disp
             if fb:
                 out.extend(rec(0x9D, bytes(fb)))
             off += clen
-    emit_ledata(0x0, d2, sites2)
+    emit_ledata(0x0, d2, sites2, tbl_sites)
     emit_ledata(OBJ4_BASE, d4, sites4)
 
     out += rec(0x8B, bytes([0x00]))

@@ -110,10 +110,8 @@ extern void copy_5fields_8recs(void);
 extern int  interp_scale_a(unsigned char *rec, int a);
 extern int  interp_scale_b(unsigned char *rec, int a);
 extern int  FUN_00036be8(unsigned char *rec, unsigned short *node);
-extern int  pool_table_lookup(unsigned char *rec);
-extern unsigned char *FUN_00037608(unsigned char *rec);
+extern int  pool_table_lookup(unsigned char *rec);   /* @0x377e8; caller also calls this as "ped_check_a" */
 extern void draw_targeting_reticle(unsigned char *rec);
-extern int  ped_check_a(unsigned char *rec);
 extern unsigned char *pool_resolve(unsigned char *rec, int a);
 
 #define AGENT_FIRST(idx)  ((unsigned int)g_agent_slots[(int)(idx) * 0x417])
@@ -328,7 +326,7 @@ after_scan:                                          /* 0x2b01b */
             r = 0; return r;
         }
         if (g_10b40 && g_mouse_x >= 0x80 && *(short *)(rec + 0x44) != 0) {   /* 0x2b69f */
-            if (ped_check_a(rec) != 0 || g_10b3e != 0) {
+            if (pool_table_lookup(rec) != 0 || g_10b3e != 0) {
                 if (g_10b3e != 0) g_10b3e = 0;
                 if (g_10b14 != 0 && (g_pool_a - 2 + g_10b14) != rec) {   /* 0x2b6fb -> action 0x8 */
                     unsigned char *o = g_pool_a - 2 + g_10b14;

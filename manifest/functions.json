@@ -5,6 +5,156 @@
   "language": "x86:LE:32:default",
   "functions": [
     {
+      "addr": "0000d758",
+      "name": "update_agent_proximity_sound",
+      "size": 449,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/update_agent_proximity_sound.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
+      "addr": "0000d928",
+      "name": "main_game_loop",
+      "size": 354,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/main_game_loop.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
+      "addr": "0000daa8",
+      "name": "deliver_entity_event_if_visible",
+      "size": 352,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/deliver_entity_event_if_visible.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
+      "addr": "0000dc08",
+      "name": "oneshot_state_setter",
+      "size": 65,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "unmatched",
+      "match_pct": "",
+      "src": "src/render/oneshot_state_setter.c"
+    },
+    {
+      "addr": "0000e568",
+      "name": "lcg_rand",
+      "size": 50,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": 100.0,
+      "src": "src/util/lcg_rand.c"
+    },
+    {
+      "addr": "0000e5a8",
+      "name": "run_mission_briefing",
+      "size": 3011,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/run_mission_briefing.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
+      "addr": "0000f5e8",
+      "name": "mouse_to_world_iso",
+      "size": 362,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/mouse_to_world_iso.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
+      "addr": "0000f898",
+      "name": "passability_4corner",
+      "size": 378,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "unmatched",
+      "match_pct": "",
+      "src": "src/map/passability_4corner.c"
+    },
+    {
+      "addr": "0000fa18",
+      "name": "z_probe",
+      "size": 112,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "unmatched",
+      "match_pct": "",
+      "src": "src/map/z_probe.c"
+    },
+    {
+      "addr": "0000fa88",
+      "name": "z_probe_b",
+      "size": 112,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "unmatched",
+      "match_pct": "",
+      "src": "src/map/z_probe_b.c"
+    },
+    {
+      "addr": "0000fb48",
+      "name": "tile_passability_test",
+      "size": 414,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/tile_passability_test.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
+      "addr": "0000fd38",
+      "name": "tile_passability_test_b",
+      "size": 432,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/tile_passability_test_b.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
+      "addr": "0000fee8",
+      "name": "copy_if_set",
+      "size": 24,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": 100.0,
+      "src": "src/render/copy_if_set.c"
+    },
+    {
       "addr": "00011d68",
       "name": "find_blocking_entity",
       "size": 2881,
@@ -58,6 +208,18 @@
       "status": "unmatched",
       "match_pct": 0.0,
       "src": "src/economy/build_equip_row.c"
+    },
+    {
+      "addr": "00013258",
+      "name": "tick_agent_states",
+      "size": 336,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/tick_agent_states.c",
+      "match_method": "db-transcription (unbake, verified)"
     },
     {
       "addr": "000133a8",
@@ -223,6 +385,18 @@
       "status": "unmatched",
       "match_pct": 0.0,
       "src": "src/render/blit_cell_wh.c"
+    },
+    {
+      "addr": "00015ee8",
+      "name": "draw_box_outline",
+      "size": 112,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/draw_box_outline.c",
+      "match_method": "db-transcription (unbake, verified)"
     },
     {
       "addr": "00015f58",
@@ -478,6 +652,18 @@
       "src": "src/sys/open_detect_rnc_header.c"
     },
     {
+      "addr": "00018a28",
+      "name": "draw_rect_outline",
+      "size": 144,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/draw_rect_outline.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
       "addr": "00018ab8",
       "name": "store_4_globals",
       "size": 37,
@@ -566,6 +752,54 @@
       "src": "src/map/minimap_mark_rect.c"
     },
     {
+      "addr": "0001aa08",
+      "name": "draw_minimap",
+      "size": 400,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/draw_minimap.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
+      "addr": "0001ab98",
+      "name": "render_sorted_sprites",
+      "size": 2144,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/render_sorted_sprites.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
+      "addr": "0001b3f8",
+      "name": "plot_agents_minimap",
+      "size": 608,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/plot_agents_minimap.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
+      "addr": "0001b658",
+      "name": "draw_scanner_markers",
+      "size": 320,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/draw_scanner_markers.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
       "addr": "0001b798",
       "name": "draw_object_sprite_list",
       "size": 183,
@@ -610,6 +844,18 @@
       "src": "src/util/clamp_point_box.c"
     },
     {
+      "addr": "0001bb48",
+      "name": "edge_scroll_dispatch",
+      "size": 224,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/edge_scroll_dispatch.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
       "addr": "0001bc28",
       "name": "sel_marker_dispatch",
       "size": 1334,
@@ -641,6 +887,18 @@
       "status": "matched",
       "match_pct": 100.0,
       "src": "src/entity/spawn_pool_15e70.c"
+    },
+    {
+      "addr": "0001c2c8",
+      "name": "update_bullet_sfx_states",
+      "size": 4044,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/update_bullet_sfx_states.c",
+      "match_method": "db-transcription (unbake, verified)"
     },
     {
       "addr": "0001ff98",
@@ -764,6 +1022,18 @@
       "src": "src/entity/vehicle_hp_stamp.c"
     },
     {
+      "addr": "00020ef8",
+      "name": "reset_hud_render_state",
+      "size": 208,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/reset_hud_render_state.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
       "addr": "00020fc8",
       "name": "new_campaign_reset",
       "size": 1675,
@@ -830,6 +1100,18 @@
       "src": "src/startup/zero_bss_region.c"
     },
     {
+      "addr": "00022728",
+      "name": "init_call_seq",
+      "size": 55,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/init_call_seq.c",
+      "match_method": "clean C"
+    },
+    {
       "addr": "00022768",
       "name": "find_free_pool_slots",
       "size": 148,
@@ -872,6 +1154,54 @@
       "status": "matched",
       "match_pct": 100.0,
       "src": "src/entity/spawn_pool_11670.c"
+    },
+    {
+      "addr": "00022c58",
+      "name": "count_active_players",
+      "size": 80,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/count_active_players.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
+      "addr": "00022ca8",
+      "name": "init_squad_slots",
+      "size": 26,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/init_squad_slots.c",
+      "match_method": "clean C"
+    },
+    {
+      "addr": "00022cc8",
+      "name": "refresh_netgame_map",
+      "size": 368,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/refresh_netgame_map.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
+      "addr": "00022e38",
+      "name": "init_netgame_session",
+      "size": 160,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/init_netgame_session.c",
+      "match_method": "db-transcription (unbake, verified)"
     },
     {
       "addr": "00022ed8",
@@ -1017,6 +1347,18 @@
       "src": "src/input/keyboard_hook_install.c"
     },
     {
+      "addr": "000254f8",
+      "name": "run_world_map_screen",
+      "size": 2144,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/run_world_map_screen.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
       "addr": "00025d58",
       "name": "draw_agent_detail",
       "size": 1234,
@@ -1072,6 +1414,18 @@
       "src": "src/render/render_dashed_line.c"
     },
     {
+      "addr": "00026998",
+      "name": "world_tick",
+      "size": 30,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/world_tick.c",
+      "match_method": "clean C"
+    },
+    {
       "addr": "000269b8",
       "name": "grid_detach_object",
       "size": 22,
@@ -1092,6 +1446,18 @@
       "status": "unmatched",
       "match_pct": 0.0,
       "src": "src/entity/advance_linked_index.c"
+    },
+    {
+      "addr": "00026a18",
+      "name": "update_drift_vector",
+      "size": 608,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/update_drift_vector.c",
+      "match_method": "db-transcription (unbake, verified)"
     },
     {
       "addr": "00026aa8",
@@ -1169,6 +1535,18 @@
       "status": "matched",
       "match_pct": 100.0,
       "src": "src/entity/grid_insert_object.c"
+    },
+    {
+      "addr": "00027158",
+      "name": "sync_network_players",
+      "size": 352,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/sync_network_players.c",
+      "match_method": "db-transcription (unbake, verified)"
     },
     {
       "addr": "000272b8",
@@ -1424,6 +1802,30 @@
       "src": "src/map/map_row_col_index.c"
     },
     {
+      "addr": "00029088",
+      "name": "update_static_object_states",
+      "size": 2368,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/update_static_object_states.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
+      "addr": "00029988",
+      "name": "FUN_00029988",
+      "size": 60,
+      "calls": 0,
+      "data_refs": 1,
+      "incoming": 3,
+      "status": "unmatched",
+      "match_pct": 0.0,
+      "src": "src/mission/FUN_00029988.c",
+      "match_method": "db-transcription (carved: manifest-oversize split from update_static_object_states)"
+    },
+    {
       "addr": "000299c8",
       "name": "center_string_16",
       "size": 96,
@@ -1479,6 +1881,30 @@
       "src": "src/ui/hud_icon_select.c"
     },
     {
+      "addr": "00029d88",
+      "name": "FUN_00029d88",
+      "size": 570,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 1,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/FUN_00029d88.c",
+      "match_method": "db-transcription (verified byte-exact)"
+    },
+    {
+      "addr": "00029fc8",
+      "name": "update_mission_lists",
+      "size": 704,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/update_mission_lists.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
       "addr": "0002a288",
       "name": "radar_panel_sm",
       "size": 1427,
@@ -1488,6 +1914,30 @@
       "status": "unmatched",
       "match_pct": 0.0,
       "src": "src/ui/radar_panel_sm.c"
+    },
+    {
+      "addr": "0002a828",
+      "name": "setup_mission_view",
+      "size": 672,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/setup_mission_view.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
+      "addr": "0002aac8",
+      "name": "draw_targeting_reticle",
+      "size": 656,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 1,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/draw_targeting_reticle.c",
+      "match_method": "db-transcription (unbake, verified)"
     },
     {
       "addr": "0002ad58",
@@ -1842,6 +2292,18 @@
       "src": "src/combat/los_trace_far.c"
     },
     {
+      "addr": "0002ea88",
+      "name": "entity_behaviour_dispatch",
+      "size": 912,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/entity_behaviour_dispatch.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
       "addr": "0002ed28",
       "name": "record_kill_stats",
       "size": 230,
@@ -1862,6 +2324,30 @@
       "status": "matched",
       "match_pct": 100.0,
       "src": "src/combat/find_target_for_agent.c"
+    },
+    {
+      "addr": "0002ef78",
+      "name": "update_agent_ai",
+      "size": 1472,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/update_agent_ai.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
+      "addr": "0002f538",
+      "name": "register_visible_entity",
+      "size": 208,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/register_visible_entity.c",
+      "match_method": "db-transcription (unbake, verified)"
     },
     {
       "addr": "0002f608",
@@ -1928,6 +2414,18 @@
       "status": "matched",
       "match_pct": 100.0,
       "src": "src/combat/reacquire_and_engage_target.c"
+    },
+    {
+      "addr": "00031858",
+      "name": "entity_pool_tick",
+      "size": 2240,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/entity_pool_tick.c",
+      "match_method": "db-transcription (unbake, verified)"
     },
     {
       "addr": "00032118",
@@ -2128,6 +2626,18 @@
       "src": "src/util/noop_ret.c"
     },
     {
+      "addr": "00034d48",
+      "name": "run_menu_sequence",
+      "size": 2032,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/run_menu_sequence.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
       "addr": "00035538",
       "name": "bulk_dword_copy",
       "size": 72,
@@ -2170,6 +2680,18 @@
       "status": "matched",
       "match_pct": 100.0,
       "src": "src/ui/set_message_line.c"
+    },
+    {
+      "addr": "000356c8",
+      "name": "process_mission_outcome",
+      "size": 1184,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/process_mission_outcome.c",
+      "match_method": "db-transcription (unbake, verified)"
     },
     {
       "addr": "00035b68",
@@ -2249,6 +2771,18 @@
       "src": "src/sound/play_sound_slot.c"
     },
     {
+      "addr": "00036038",
+      "name": "schedule_priority_sound",
+      "size": 304,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/schedule_priority_sound.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
       "addr": "00036168",
       "name": "guarded_sound_call",
       "size": 22,
@@ -2258,6 +2792,18 @@
       "status": "matched",
       "match_pct": 100.0,
       "src": "src/sound/guarded_sound_call.c"
+    },
+    {
+      "addr": "00036188",
+      "name": "init_sound_driver",
+      "size": 27,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/init_sound_driver.c",
+      "match_method": "db-transcription (unbake, verified)"
     },
     {
       "addr": "000361a8",
@@ -2359,6 +2905,18 @@
       "src": "src/ui/text_input_widget.c"
     },
     {
+      "addr": "00036be8",
+      "name": "FUN_00036be8",
+      "size": 58,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 1,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/FUN_00036be8.c",
+      "match_method": "db-transcription (verified byte-exact)"
+    },
+    {
       "addr": "00036c28",
       "name": "walk_chain_1c",
       "size": 69,
@@ -2390,6 +2948,30 @@
       "status": "matched",
       "match_pct": 100.0,
       "src": "src/combat/flag_hp_adjust.c"
+    },
+    {
+      "addr": "00036fd8",
+      "name": "vehicle_pool_tick",
+      "size": 1584,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/vehicle_pool_tick.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
+      "addr": "00037608",
+      "name": "pool_resolve",
+      "size": 80,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 1,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/pool_resolve.c",
+      "match_method": "db-transcription (unbake, verified)"
     },
     {
       "addr": "00037658",
@@ -2471,6 +3053,18 @@
       "unit": "pool_table_lookup"
     },
     {
+      "addr": "00037848",
+      "name": "subobject_node_expired",
+      "size": 656,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/subobject_node_expired.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
       "addr": "00037878",
       "name": "chain_unlink_node",
       "size": 155,
@@ -2526,6 +3120,30 @@
       "src": "src/mission/best_weapon_select_typed.c"
     },
     {
+      "addr": "00037ff8",
+      "name": "FUN_00037ff8",
+      "size": 74,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 1,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/FUN_00037ff8.c",
+      "match_method": "db-transcription (verified byte-exact)"
+    },
+    {
+      "addr": "000380b8",
+      "name": "update_pickup_states",
+      "size": 2928,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/update_pickup_states.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
       "addr": "00038c28",
       "name": "load_tagged_resource",
       "size": 206,
@@ -2568,6 +3186,18 @@
       "status": "matched",
       "match_pct": 100.0,
       "src": "src/lib/sound/stop_current_sequence.c"
+    },
+    {
+      "addr": "00039158",
+      "name": "seq_active_check",
+      "size": 41,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/seq_active_check.c",
+      "match_method": "db-transcription (unbake, verified)"
     },
     {
       "addr": "00039188",
@@ -2900,6 +3530,18 @@
       "src": "src/lib/sound/snd_cmd_7d.c"
     },
     {
+      "addr": "00039b0f",
+      "name": "sound_cmd_thunks_7e_84",
+      "size": 70,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/sound_cmd_thunks_7e_84.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
       "addr": "00039b55",
       "name": "snd_cmd_96",
       "size": 10,
@@ -2986,6 +3628,18 @@
       "status": "matched",
       "match_pct": 100.0,
       "src": "src/lib/sound/snd_cmd_ab.c"
+    },
+    {
+      "addr": "00039bd7",
+      "name": "sound_cmd_thunks",
+      "size": 201,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/sound_cmd_thunks.c",
+      "match_method": "db-transcription (unbake, verified)"
     },
     {
       "addr": "00039ca0",
@@ -3457,6 +4111,30 @@
       "src": "src/lib/runtime/system.c"
     },
     {
+      "addr": "0003afa4",
+      "name": "watcom_copyright_banner",
+      "size": 122,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/watcom_copyright_banner.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
+      "addr": "0003b01e",
+      "name": "cstart",
+      "size": 435,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/cstart.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
       "addr": "0003b1d1",
       "name": "thunk_FUN_0003b1f6",
       "size": 2,
@@ -3757,6 +4435,18 @@
       "status": "matched",
       "match_pct": 100.0,
       "src": "src/lib/runtime/doprnt.c"
+    },
+    {
+      "addr": "0003bd31",
+      "name": "FUN_0003bd31",
+      "size": 6,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 1,
+      "status": "unmatched",
+      "match_pct": 0.0,
+      "src": "src/lib/runtime/FUN_0003bd31.c",
+      "match_method": "db-transcription (carved: shared doprnt epilogue, prtf_conversion tail-jmp)"
     },
     {
       "addr": "0003bd37",
@@ -4157,6 +4847,30 @@
       "status": "matched",
       "match_pct": 100.0,
       "src": "src/lib/runtime/exec_shell_forward.c"
+    },
+    {
+      "addr": "0003cfe6",
+      "name": "cstart_call_main",
+      "size": 80,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/cstart_call_main.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
+      "addr": "0003d036",
+      "name": "run_init_routines",
+      "size": 67,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/run_init_routines.c",
+      "match_method": "db-transcription (unbake, verified)"
     },
     {
       "addr": "0003d079",
@@ -5288,6 +6002,18 @@
       "src": "src/lib/gfx/blit_width_dispatch.c"
     },
     {
+      "addr": "0004aa59",
+      "name": "FUN_0004aa59",
+      "size": 227,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 1,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/FUN_0004aa59.c",
+      "match_method": "db-transcription (verified byte-exact)"
+    },
+    {
       "addr": "0004b073",
       "name": "span_op_dispatch",
       "size": 64,
@@ -5297,6 +6023,18 @@
       "status": "matched",
       "match_pct": 100.0,
       "src": "src/lib/gfx/span_op_dispatch.c"
+    },
+    {
+      "addr": "0004b859",
+      "name": "FUN_0004b859",
+      "size": 4723,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 1,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/FUN_0004b859.c",
+      "match_method": "db-transcription (verified byte-exact)"
     },
     {
       "addr": "0004cacc",
@@ -5497,6 +6235,18 @@
       "src": "src/lib/gfx/isqrt32.c"
     },
     {
+      "addr": "0004d434",
+      "name": "wait_vsync",
+      "size": 14,
+      "calls": 0,
+      "data_refs": 0,
+      "incoming": 0,
+      "status": "matched",
+      "match_pct": "",
+      "src": "src/lib/runtime/wait_vsync.c",
+      "match_method": "db-transcription (unbake, verified)"
+    },
+    {
       "addr": "0004d442",
       "name": "poll_key",
       "size": 15,
@@ -5530,646 +6280,76 @@
       "src": "src/lib/gfx/hex32_to_ascii.c"
     },
     {
-      "addr": "0000e568",
-      "name": "lcg_rand",
-      "size": 50,
+      "addr": "00013c98",
+      "name": "FUN_00013c98",
+      "size": 979,
       "calls": 0,
       "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": 100.0,
-      "src": "src/util/lcg_rand.c"
-    },
-    {
-      "addr": "0000dc08",
-      "name": "oneshot_state_setter",
-      "size": 65,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
+      "incoming": 1,
       "status": "unmatched",
-      "match_pct": "",
-      "src": "src/render/oneshot_state_setter.c"
+      "match_pct": 0.0,
+      "src": "src/entity/FUN_00013c98.c",
+      "match_method": "db-transcription (uncarved callee)"
     },
     {
-      "addr": "0000fa18",
-      "name": "z_probe",
-      "size": 112,
+      "addr": "000141f8",
+      "name": "FUN_000141f8",
+      "size": 753,
       "calls": 0,
       "data_refs": 0,
-      "incoming": 0,
+      "incoming": 1,
       "status": "unmatched",
-      "match_pct": "",
-      "src": "src/map/z_probe.c"
+      "match_pct": 0.0,
+      "src": "src/entity/FUN_000141f8.c",
+      "match_method": "db-transcription (uncarved callee)"
     },
     {
-      "addr": "0000fee8",
-      "name": "copy_if_set",
-      "size": 24,
+      "addr": "00014588",
+      "name": "FUN_00014588",
+      "size": 355,
       "calls": 0,
       "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": 100.0,
-      "src": "src/render/copy_if_set.c"
-    },
-    {
-      "addr": "0000fa88",
-      "name": "z_probe_b",
-      "size": 112,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
+      "incoming": 1,
       "status": "unmatched",
-      "match_pct": "",
-      "src": "src/map/z_probe_b.c"
+      "match_pct": 0.0,
+      "src": "src/entity/FUN_00014588.c",
+      "match_method": "db-transcription (uncarved callee)"
     },
     {
-      "addr": "0000f898",
-      "name": "passability_4corner",
-      "size": 378,
+      "addr": "00014828",
+      "name": "FUN_00014828",
+      "size": 275,
       "calls": 0,
       "data_refs": 0,
-      "incoming": 0,
+      "incoming": 1,
       "status": "unmatched",
-      "match_pct": "",
-      "src": "src/map/passability_4corner.c"
+      "match_pct": 0.0,
+      "src": "src/entity/FUN_00014828.c",
+      "match_method": "db-transcription (uncarved callee)"
     },
     {
-      "addr": "0000d758",
-      "name": "update_agent_proximity_sound",
-      "size": 449,
+      "addr": "000229f8",
+      "name": "FUN_000229f8",
+      "size": 314,
       "calls": 0,
       "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/update_agent_proximity_sound.c",
-      "match_method": "db-transcription (unbake, verified)"
+      "incoming": 1,
+      "status": "unmatched",
+      "match_pct": 0.0,
+      "src": "src/startup/FUN_000229f8.c",
+      "match_method": "db-transcription (uncarved callee)"
     },
     {
-      "addr": "0000daa8",
-      "name": "deliver_entity_event_if_visible",
-      "size": 352,
+      "addr": "00027a88",
+      "name": "FUN_00027a88",
+      "size": 385,
       "calls": 0,
       "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/deliver_entity_event_if_visible.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0000f5e8",
-      "name": "mouse_to_world_iso",
-      "size": 362,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/mouse_to_world_iso.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0000fb48",
-      "name": "tile_passability_test",
-      "size": 414,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/tile_passability_test.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0000fd38",
-      "name": "tile_passability_test_b",
-      "size": 432,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/tile_passability_test_b.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0000e5a8",
-      "name": "run_mission_briefing",
-      "size": 3011,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/run_mission_briefing.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0000d928",
-      "name": "main_game_loop",
-      "size": 354,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/main_game_loop.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00013258",
-      "name": "tick_agent_states",
-      "size": 336,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/tick_agent_states.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00015ee8",
-      "name": "draw_box_outline",
-      "size": 112,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/draw_box_outline.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00018a28",
-      "name": "draw_rect_outline",
-      "size": 144,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/draw_rect_outline.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0001aa08",
-      "name": "draw_minimap",
-      "size": 400,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/draw_minimap.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0001ab98",
-      "name": "render_sorted_sprites",
-      "size": 2144,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/render_sorted_sprites.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0001b3f8",
-      "name": "plot_agents_minimap",
-      "size": 608,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/plot_agents_minimap.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0001b658",
-      "name": "draw_scanner_markers",
-      "size": 320,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/draw_scanner_markers.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0001bb48",
-      "name": "edge_scroll_dispatch",
-      "size": 224,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/edge_scroll_dispatch.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00020ef8",
-      "name": "reset_hud_render_state",
-      "size": 208,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/reset_hud_render_state.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00022728",
-      "name": "init_call_seq",
-      "size": 55,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/init_call_seq.c",
-      "match_method": "clean C"
-    },
-    {
-      "addr": "00022c58",
-      "name": "count_active_players",
-      "size": 80,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/count_active_players.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00022ca8",
-      "name": "init_squad_slots",
-      "size": 26,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/init_squad_slots.c",
-      "match_method": "clean C"
-    },
-    {
-      "addr": "00022cc8",
-      "name": "refresh_netgame_map",
-      "size": 368,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/refresh_netgame_map.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00022e38",
-      "name": "init_netgame_session",
-      "size": 160,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/init_netgame_session.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "000254f8",
-      "name": "run_world_map_screen",
-      "size": 2144,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/run_world_map_screen.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00026998",
-      "name": "world_tick",
-      "size": 30,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/world_tick.c",
-      "match_method": "clean C"
-    },
-    {
-      "addr": "00026a18",
-      "name": "update_drift_vector",
-      "size": 608,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/update_drift_vector.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00027158",
-      "name": "sync_network_players",
-      "size": 352,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/sync_network_players.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00029088",
-      "name": "update_static_object_states",
-      "size": 2368,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/update_static_object_states.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00029fc8",
-      "name": "update_mission_lists",
-      "size": 704,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/update_mission_lists.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0002a828",
-      "name": "setup_mission_view",
-      "size": 1328,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/setup_mission_view.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0002ea88",
-      "name": "entity_behaviour_dispatch",
-      "size": 912,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/entity_behaviour_dispatch.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0002ef78",
-      "name": "update_agent_ai",
-      "size": 1472,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/update_agent_ai.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0002f538",
-      "name": "register_visible_entity",
-      "size": 208,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/register_visible_entity.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00031858",
-      "name": "entity_pool_tick",
-      "size": 2240,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/entity_pool_tick.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00034d48",
-      "name": "run_menu_sequence",
-      "size": 2032,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/run_menu_sequence.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "000356c8",
-      "name": "process_mission_outcome",
-      "size": 1184,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/process_mission_outcome.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00036038",
-      "name": "schedule_priority_sound",
-      "size": 304,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/schedule_priority_sound.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00036188",
-      "name": "init_sound_driver",
-      "size": 27,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/init_sound_driver.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00036fd8",
-      "name": "vehicle_pool_tick",
-      "size": 1664,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/vehicle_pool_tick.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00037848",
-      "name": "subobject_node_expired",
-      "size": 656,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/subobject_node_expired.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "000380b8",
-      "name": "update_pickup_states",
-      "size": 2928,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/update_pickup_states.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00039158",
-      "name": "seq_active_check",
-      "size": 41,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/seq_active_check.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00039b0f",
-      "name": "sound_cmd_thunks_7e_84",
-      "size": 70,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/sound_cmd_thunks_7e_84.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "00039bd7",
-      "name": "sound_cmd_thunks",
-      "size": 201,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/sound_cmd_thunks.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0003afa4",
-      "name": "watcom_copyright_banner",
-      "size": 122,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/watcom_copyright_banner.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0003b01e",
-      "name": "cstart",
-      "size": 435,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/cstart.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0003cfe6",
-      "name": "cstart_call_main",
-      "size": 80,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/cstart_call_main.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0003d036",
-      "name": "run_init_routines",
-      "size": 67,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/run_init_routines.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0004d434",
-      "name": "wait_vsync",
-      "size": 14,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/wait_vsync.c",
-      "match_method": "db-transcription (unbake, verified)"
-    },
-    {
-      "addr": "0001c2c8",
-      "name": "update_bullet_sfx_states",
-      "size": 4044,
-      "calls": 0,
-      "data_refs": 0,
-      "incoming": 0,
-      "status": "matched",
-      "match_pct": "",
-      "src": "src/lib/runtime/update_bullet_sfx_states.c",
-      "match_method": "db-transcription (unbake, verified)"
+      "incoming": 1,
+      "status": "unmatched",
+      "match_pct": 0.0,
+      "src": "src/multiplayer/FUN_00027a88.c",
+      "match_method": "db-transcription (uncarved callee)"
     }
   ]
 }

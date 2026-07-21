@@ -1,1619 +1,1647 @@
 {
-  "FUN_0004cd18": {
-    "addr": "0004cd18",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "FUN_0004a639": {
-    "addr": "0004a639",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "FUN_0003c644": {
-    "addr": "0003c644",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "thunk_FUN_0003b1f6": {
-    "addr": "0003b1d1",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "startup_main": {
-    "addr": "00024be8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "validate_records_or_abort": {
-    "addr": "00018338",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "realloc_block_descriptor": {
-    "addr": "000184b8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "file_open_read_close": {
-    "addr": "000180f8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "open_detect_rnc_header": {
-    "addr": "00018958",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "buffered_read": {
-    "addr": "00017998",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "container_total_size": {
-    "addr": "000179f8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "keyboard_hook_install": {
-    "addr": "000254a8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "mouse_init_int33": {
-    "addr": "00028b88",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "pool_records_add": {
-    "addr": "000253a8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "noop_ret": {
-    "addr": "00034c28",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "sound_dispatch_trampoline": {
-    "addr": "000392ac",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "clear_voice_tables": {
-    "addr": "00039393",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "install_timer_isr": {
-    "addr": "000393e0",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "reprogram_pit_ch0": {
-    "addr": "00039467",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "recompute_timer_period": {
-    "addr": "000394c6",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "init_voice_tables": {
-    "addr": "0003954c",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "timer_rate_critsec": {
-    "addr": "00039846",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "int386": {
-    "addr": "0003adb2",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "segread": {
-    "addr": "0003b3b9",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "heap_alloc": {
-    "addr": "0003c594",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "init_input_subsystem": {
-    "addr": "00025338",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "global_add_and_call": {
-    "addr": "00018458",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "FUN_00037818": {
-    "addr": "00037818",
-    "flags": "-4s -oneatx -zp8 -s -zq",
-    "unit": "FUN_000377e8"
-  },
-  "mission_statusline": {
-    "addr": "00029ad8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "mp_record_sync": {
-    "addr": "000272b8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "stats_panel_draw": {
-    "addr": "000265d8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "hud_icon_select": {
-    "addr": "00029c58",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "minimap_mark_rect": {
-    "addr": "0001a918",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "netbios_recv95": {
-    "addr": "00028558",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "grid_hit_y": {
-    "addr": "00033cf8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "grid_hit_x": {
-    "addr": "00033c38",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "masked_blit_cell": {
-    "addr": "000263f8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "xfer_buf_req94": {
-    "addr": "000284a8",
-    "flags": "-4s -oneax -zp8 -s -zq"
-  },
-  "clamp_point_box": {
-    "addr": "0001ba48",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "sound_channel_select": {
-    "addr": "00038fe8",
-    "flags": "-4s -oneax -zp8 -s -zq"
-  },
-  "hittest_draw": {
-    "addr": "00036298",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "hittest_draw_b": {
-    "addr": "00036338",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "pool_chain_reset": {
-    "addr": "00036c78",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "find_projectile_step": {
-    "addr": "0002e4f8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "palette_flash3": {
-    "addr": "00013b38",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "measure_draw_text": {
-    "addr": "00036208",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "copy_5fields_8recs": {
-    "addr": "0002c468",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "spawn_pool_15e70": {
-    "addr": "0001c178",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "draw_gauge_segment": {
-    "addr": "0001ff98",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "find_free_slot_15e70": {
-    "addr": "00022b38",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "spawn_pool_11670": {
-    "addr": "00022ba8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "reset_flash_palette": {
-    "addr": "00013ac8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "projectile_step": {
-    "addr": "0002d738",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "pool_list_last": {
-    "addr": "00013bc8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "combat_aim_update": {
-    "addr": "0002d358",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "blit_backbuffer": {
-    "addr": "000355d8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "center_draw_string": {
-    "addr": "000361a8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "eligibility_test": {
-    "addr": "000146f8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "zero_even_bytes": {
-    "addr": "00035ed8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "record_max": {
-    "addr": "00035f28",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "fill_minimap_grid": {
-    "addr": "0001a8c8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "bulk_dword_copy": {
-    "addr": "00035538",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "bulk_dword_copy_b": {
-    "addr": "00035588",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "walk_chain_1c": {
-    "addr": "00036c28",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "recompute_state_code": {
-    "addr": "0002d998",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "init_call5": {
-    "addr": "00025168",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "walk_chain_3a": {
-    "addr": "00037778",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "detach_chain_3a": {
-    "addr": "00037a48",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "chain_sum_3a": {
-    "addr": "000376f8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "scan_syndicate_recs": {
-    "addr": "00016638",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "count_syndicate_recs": {
-    "addr": "000165f8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "build_two_buffers": {
-    "addr": "00028cc8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "pool_accessor_44": {
-    "addr": "00037738",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "lcg_rand": {
-    "addr": "0000e568",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "max_abs": {
-    "addr": "00026aa8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "chain_length": {
-    "addr": "000377b8",
-    "flags": "-4s -oneax -zp8 -s -zq"
-  },
-  "clamp_dec_field54": {
-    "addr": "00034168",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "walk_15byte_chain": {
-    "addr": "00014998",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "store_4_globals": {
-    "addr": "00018ab8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "sub_and_call": {
-    "addr": "00018488",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "add_c_stride6": {
-    "addr": "00025378",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "scan_pool_4": {
-    "addr": "00014cc8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "forward_if_flag": {
-    "addr": "00013a98",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "timer_setup": {
-    "addr": "000252d8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "init_call_seq": {
-    "addr": "00022728",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "heap_boundary_check": {
-    "addr": "0003c74f",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "strupr": {
-    "addr": "0003c42d",
-    "flags": "-3s -d2 -os -zp8 -s -zq"
-  },
-  "zero_bss_region": {
-    "addr": "00022708",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "init_squad_slots": {
-    "addr": "00022ca8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "clib_ret_zero": {
-    "addr": "0003ca0d",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "noop_ret_b": {
-    "addr": "0001c168",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "seq_active_check": {
-    "addr": "00039158",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "draw_localized": {
-    "addr": "00029a68",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "stricmp_call": {
-    "addr": "0003aee6",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "lookup_base_record": {
-    "addr": "00032118",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "init_record_if_alloc": {
-    "addr": "000226a8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "cond_3call": {
-    "addr": "00018828",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "aim_step": {
-    "addr": "0002d6c8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "rnc_decompress": {
-    "addr": "0003a1ec",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "rnc_read_be_len": {
-    "addr": "0003a37a",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "rnc_input_bits": {
-    "addr": "0003a3c6",
-    "flags": "-4r -oneatx -zp8 -s -zq"
-  },
-  "rnc_make_huffman": {
-    "addr": "0003a449",
-    "flags": "-4r -oneatx -zp8 -s -zq"
-  },
-  "rnc_read_huffman": {
-    "addr": "0003a383",
-    "flags": "-4r -oneatx -zp8 -s -zq"
-  },
-  "file_read_n": {
-    "addr": "000188a8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "vehicle_ride": {
-    "addr": "0002fca8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "anim_frame_tick": {
-    "addr": "0002d228",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "aim_cursor_advance": {
-    "addr": "0002d3b8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "entity_halve_hp": {
-    "addr": "00030508",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "entity_apply_damage": {
-    "addr": "00030708",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "field54_sub_threshold": {
-    "addr": "00034118",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "player_target_sweep": {
-    "addr": "000164c8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "save_game": {
-    "addr": "00035b68",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "grid_insert_object": {
-    "addr": "00026e18",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "chain_link_node": {
-    "addr": "00037658",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "chain_unlink_node": {
-    "addr": "00037878",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "map_row_col_index": {
-    "addr": "00028ec8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "map_passability_check": {
-    "addr": "00033fb8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "best_weapon_select": {
-    "addr": "00037ad8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "best_weapon_select_typed": {
-    "addr": "00037d08",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "net_sync_build": {
-    "addr": "00014078",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "conn_status_scan": {
-    "addr": "000279f8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "xfer_chunked": {
-    "addr": "00028878",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "session_init": {
-    "addr": "00012ca8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "load_unpack_file": {
-    "addr": "000188e8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "set_message_line": {
-    "addr": "00035638",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "kill_credit_eligible": {
-    "addr": "000139a8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "sum_of_squares_call": {
-    "addr": "00014c58",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "syndicate_timer_pct": {
-    "addr": "00016438",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "reset_player_slot": {
-    "addr": "00022ed8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "report_net_status": {
-    "addr": "000289a8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "probe_nesw_zones": {
-    "addr": "00028d08",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "launch_move_setup": {
-    "addr": "0002de18",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "find_target_for_agent": {
-    "addr": "0002ee18",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "read_name_record": {
-    "addr": "00035c88",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "guarded_sound_call": {
-    "addr": "00036168",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "pool_table_lookup": {
-    "addr": "000377e8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "atol": {
-    "addr": "0003a526",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "cenvarg": {
-    "addr": "0003dfcf",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "chktty": {
-    "addr": "0003db36",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "d_getvec": {
-    "addr": "0003b239",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "d_setvec": {
-    "addr": "0003b273",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "ftell": {
-    "addr": "0003da03",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "ioalloc": {
-    "addr": "0003d894",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "isatty": {
-    "addr": "0003c44d",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "labs": {
-    "addr": "0003aed8",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "lseek": {
-    "addr": "0003a93b",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "ltoa": {
-    "addr": "0003dcb5",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "open": {
-    "addr": "0003a579",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "outp": {
-    "addr": "0003b22d",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "prtf": {
-    "addr": "0003be40",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "qread": {
-    "addr": "0003d935",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "spawnve": {
-    "addr": "0003cbf9",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "strchr": {
-    "addr": "0003e7f7",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "strcpy": {
-    "addr": "0003a8d7",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "stricmp": {
-    "addr": "0003aef9",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "strncmp": {
-    "addr": "0003aea6",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "strnicmp": {
-    "addr": "0003deee",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "tell": {
-    "addr": "0003a97c",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "tolower": {
-    "addr": "0003da37",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "toupper": {
-    "addr": "0003dce5",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "unlink": {
-    "addr": "0003e590",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "printf": {
-    "addr": "0003ad66",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "system": {
-    "addr": "0003af38",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "rewind": {
-    "addr": "0003b407",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "sprintf": {
-    "addr": "0003a4fa",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "dosret": {
-    "addr": "0003c479",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "getstream": {
-    "addr": "0003b90d",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "plot_point": {
-    "addr": "00040236",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "fill_bytes": {
-    "addr": "0004d199",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "blit_block": {
-    "addr": "0004d0b4",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "draw_sprite_rle": {
-    "addr": "0004a734",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "vga_planar_present": {
-    "addr": "0004a492",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "flic_play": {
-    "addr": "00039ca0",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "flic_decode_frame": {
-    "addr": "00039e42",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "flic_parse_header": {
-    "addr": "00039ee2",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "flic_load_palette": {
-    "addr": "00039f92",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "uninstall_timer_isr": {
-    "addr": "0003942f",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "stop_voice": {
-    "addr": "00039a82",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "draw_text": {
-    "addr": "0004cb68",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "draw_text_fixed": {
-    "addr": "0004cde3",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "draw_hex": {
-    "addr": "0004cacc",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "draw_dec": {
-    "addr": "0004cb1a",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "vec_to_angle": {
-    "addr": "0004d221",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "isqrt32": {
-    "addr": "0004d393",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "isqrt16": {
-    "addr": "0004d352",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "copy_bytes": {
-    "addr": "0004d1db",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "copy_fixed_block": {
-    "addr": "0004d04b",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "poll_key": {
-    "addr": "0004d442",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "hex32_to_ascii": {
-    "addr": "0004d513",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "dec32_to_ascii": {
-    "addr": "0004d451",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "set_video_mode": {
-    "addr": "000498ef",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "upload_palette": {
-    "addr": "0004987e",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "reset_gfx_write_mode": {
-    "addr": "00049922",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "clear_offscreen": {
-    "addr": "0004993b",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "clear_vga_screen": {
-    "addr": "0004997e",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "plot_op_dispatch": {
-    "addr": "000402e0",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "plot_op_dispatch2": {
-    "addr": "000404b8",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "draw_tile_region": {
-    "addr": "00040f4e",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "iso_tile_dispatch": {
-    "addr": "0004107b",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "iso_cell_dispatch": {
-    "addr": "00047a7e",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "iso_block_dispatch": {
-    "addr": "00045e61",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "iso_block_dispatch2": {
-    "addr": "00045f8a",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "merge_cell_mask": {
-    "addr": "000418ac",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "clear_occlusion_mask": {
-    "addr": "00046188",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "fill_planar_column": {
-    "addr": "00049a31",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "draw_animated_marker": {
-    "addr": "00049b67",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "present_patch_gated": {
-    "addr": "00049edf",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "restore_backing_column": {
-    "addr": "0004a3cc",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "save_backing_column": {
-    "addr": "0004a42f",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "present_frame_dispatch": {
-    "addr": "0004a574",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "present_frame_planar": {
-    "addr": "0004a5a8",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "draw_sprite_buf": {
-    "addr": "0004a63a",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "draw_sprite_surf": {
-    "addr": "0004a66b",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "blit_sprite": {
-    "addr": "0004a69c",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "draw_sprite_rle_buf": {
-    "addr": "0004a6c8",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "draw_sprite_rle_vga": {
-    "addr": "0004a6fe",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "capture_sprite": {
-    "addr": "0004a898",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "blit_width_dispatch": {
-    "addr": "0004a909",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "span_op_dispatch": {
-    "addr": "0004b073",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "glyph_dispatch_wide": {
-    "addr": "0004cc4d",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "glyph_blit_wide": {
-    "addr": "0004cc77",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "glyph_dispatch_narrow": {
-    "addr": "0004cd19",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "glyph_blit_narrow": {
-    "addr": "0004cd3e",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "glyph_stamp_fixed": {
-    "addr": "0004ce87",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "build_empty_slot_mask": {
-    "addr": "0004d069",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "run_seq_commands": {
-    "addr": "000391a8",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "driver_msg_lookup": {
-    "addr": "00039280",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "program_pit_period_us": {
-    "addr": "00039495",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "unload_all_drivers": {
-    "addr": "000395b6",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "alloc_seq_slot": {
-    "addr": "00039625",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "free_seq_slot": {
-    "addr": "000396d5",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "stop_all_seqs": {
-    "addr": "00039722",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "start_seq": {
-    "addr": "00039747",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "pause_seq": {
-    "addr": "0003979c",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "set_seq_period": {
-    "addr": "000397f1",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "set_seq_rate": {
-    "addr": "00039879",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "register_driver": {
-    "addr": "000398d7",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "unregister_driver": {
-    "addr": "00039966",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "voice_get_driver_obj": {
-    "addr": "00039994",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "start_voice": {
-    "addr": "000399bd",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "vec_to_angle_short": {
-    "addr": "00026ba8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "xfer_buf_req35": {
-    "addr": "00028628",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "squad_threat_test": {
-    "addr": "0002d9e8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "draw_item_detail": {
-    "addr": "00020158",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "apply_command_effect": {
-    "addr": "000149e8",
-    "flags": "-4s -oneax -zp8 -s -zq"
-  },
-  "world_tick": {
-    "addr": "00026998",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "refresh_item_slots": {
-    "addr": "0002c4e8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "draw_status_labels": {
-    "addr": "00029a28",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "advance_aim_along_dir": {
-    "addr": "00026ad8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "is_even_entity_type": {
-    "addr": "00023038",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "present_frame": {
-    "addr": "00015d98",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "draw_fixed_box": {
-    "addr": "00015e08",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "file_close": {
-    "addr": "00018878",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "file_write": {
-    "addr": "000188c8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "grid_detach_object": {
-    "addr": "000269b8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "init_sound_driver": {
-    "addr": "00036188",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "stop_current_sequence": {
-    "addr": "00039088",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "shutdown_music_drivers": {
-    "addr": "00039188",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "skip_flic_chunk": {
-    "addr": "00039f49",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "read_flic_palette": {
-    "addr": "00039f69",
-    "flags": "-3s -os -zp8 -s -zq"
-  },
-  "snd_cmd_65": {
-    "addr": "000399b3",
-    "flags": "-4r -oneatx -zp8 -s -zq"
-  },
-  "snd_cmd_7b": {
-    "addr": "00039ae7",
-    "flags": "-4r -oneatx -zp8 -s -zq"
-  },
-  "snd_cmd_85": {
-    "addr": "00039af1",
-    "flags": "-4r -oneatx -zp8 -s -zq"
-  },
-  "snd_cmd_7c": {
-    "addr": "00039afb",
-    "flags": "-4r -oneatx -zp8 -s -zq"
-  },
-  "snd_cmd_7d": {
-    "addr": "00039b05",
-    "flags": "-4r -oneatx -zp8 -s -zq"
-  },
-  "snd_cmd_96": {
-    "addr": "00039b55",
-    "flags": "-4r -oneatx -zp8 -s -zq"
-  },
-  "snd_cmd_97": {
-    "addr": "00039b5f",
-    "flags": "-4r -oneatx -zp8 -s -zq"
-  },
-  "snd_cmd_99": {
-    "addr": "00039b73",
-    "flags": "-4r -oneatx -zp8 -s -zq"
-  },
-  "snd_cmd_9a": {
-    "addr": "00039b7d",
-    "flags": "-4r -oneatx -zp8 -s -zq"
-  },
-  "snd_cmd_9b": {
-    "addr": "00039b87",
-    "flags": "-4r -oneatx -zp8 -s -zq"
-  },
-  "snd_cmd_9c": {
-    "addr": "00039b91",
-    "flags": "-4r -oneatx -zp8 -s -zq"
-  },
-  "snd_cmd_aa": {
-    "addr": "00039bb9",
-    "flags": "-4r -oneatx -zp8 -s -zq"
-  },
-  "snd_cmd_ab": {
-    "addr": "00039bc3",
-    "flags": "-4r -oneatx -zp8 -s -zq"
-  },
-  "rle_blit_word": {
-    "addr": "0003a033",
-    "flags": "-4r -oneatx -zp8 -s -zq"
-  },
-  "rle_blit_byte": {
-    "addr": "0003a10c",
-    "flags": "-4r -oneatx -zp8 -s -zq"
-  },
-  "frame_throttle": {
-    "addr": "0003a19a",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "sopen": {
-    "addr": "0003a598",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "read": {
-    "addr": "0003a7c4",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "close": {
-    "addr": "0003a89d",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "strcat_word": {
-    "addr": "0003a900",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "strcmp": {
-    "addr": "0003a9c8",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "malloc": {
-    "addr": "0003aa74",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "nmalloc": {
-    "addr": "0003aa84",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "memset": {
-    "addr": "0003aaf8",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "filelength": {
-    "addr": "0003ab1a",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "free": {
-    "addr": "0003ab59",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "nfree": {
-    "addr": "0003ab69",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "write": {
-    "addr": "0003ab8e",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "exit": {
-    "addr": "0003ad89",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "open_rw_creat_trunc": {
-    "addr": "0003addb",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "setmode": {
-    "addr": "0003adf0",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "write_msg_and_exit": {
-    "addr": "0003b1d3",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "_exit": {
-    "addr": "0003b1f6",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "inp": {
-    "addr": "0003b2aa",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "fputc_nl": {
-    "addr": "0003b2b5",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "fgets_console": {
-    "addr": "0003b326",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "fseek": {
-    "addr": "0003b594",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "parse_open_mode": {
-    "addr": "0003b739",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "fopen_core": {
-    "addr": "0003b7e8",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "fsopen": {
-    "addr": "0003b8cd",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "fclose_free": {
-    "addr": "0003b9ca",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "build_temp_filename": {
-    "addr": "0003ba01",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "close_stream": {
-    "addr": "0003ba80",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "doprnt": {
-    "addr": "0003bb1e",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "parse_conv_spec": {
-    "addr": "0003bd37",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "far_strnlen": {
-    "addr": "0003be93",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "far_wcsnlen": {
-    "addr": "0003bebc",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "format_hex_field": {
-    "addr": "0003bee3",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "format_fixed_frac": {
-    "addr": "0003bf36",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "prtf_out_call": {
-    "addr": "0003c002",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "prtf_conversion": {
-    "addr": "0003c019",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "errno_ptr": {
-    "addr": "0003c46d",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "doserrno_ptr": {
-    "addr": "0003c473",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "dosret_map_err": {
-    "addr": "0003c491",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "set_doserr": {
-    "addr": "0003c4b9",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "fd_to_stream": {
-    "addr": "0003c529",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "fd_handle_store": {
-    "addr": "0003c57b",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "dpmi_dos_alloc_paras": {
-    "addr": "0003c772",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "heap_grow": {
-    "addr": "0003c816",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "memset_align_head": {
-    "addr": "0003ca18",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "memset_dwords": {
-    "addr": "0003ca4f",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "stack_avail": {
-    "addr": "0003cabb",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "stk_check_thunk": {
-    "addr": "0003cacb",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "stack_limit_check": {
-    "addr": "0003cade",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "stack_overflow": {
-    "addr": "0003cafb",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "stream_reopen": {
-    "addr": "0003cb24",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "getenv": {
-    "addr": "0003cba4",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "spawn_load_check": {
-    "addr": "0003cc26",
-    "flags": "-3s -os -zp8 -s -zq"
-  },
-  "spawn_exec": {
-    "addr": "0003cc45",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "run_fini_routines": {
-    "addr": "0003d079",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "build_argv": {
-    "addr": "0003d0bc",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "parse_cmdline": {
-    "addr": "0003d16f",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "fputs": {
-    "addr": "0003d24a",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "fputc": {
-    "addr": "0003d2c3",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "getc": {
-    "addr": "0003d36b",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "fill_buffer": {
-    "addr": "0003d40f",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "intr_call_core": {
-    "addr": "0003d4f3",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "memcpy": {
-    "addr": "0003d90b",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "flush_stream": {
-    "addr": "0003d966",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "alloc_stream": {
-    "addr": "0003da4c",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "free_stream": {
-    "addr": "0003dae1",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "get_tmp_seed": {
-    "addr": "0003db63",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "utoa": {
-    "addr": "0003db9e",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "itoa": {
-    "addr": "0003dbeb",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "strlen": {
-    "addr": "0003dc1b",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "ultoa": {
-    "addr": "0003dc68",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "os_getmem": {
-    "addr": "0003dcfa",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "brk": {
-    "addr": "0003dd97",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "fcloseall": {
-    "addr": "0003dea0",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "dos_findfirst": {
-    "addr": "0003df3c",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "copy_finddata_from_dta": {
-    "addr": "0003df89",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "build_exec_block": {
-    "addr": "0003dfe8",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "build_cmdtail": {
-    "addr": "0003e143",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "dos_exec": {
-    "addr": "0003e1af",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "copy_path_component": {
-    "addr": "0003e27a",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "splitpath2": {
-    "addr": "0003e2bb",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "spawn_with_env": {
-    "addr": "0003e471",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "exec_with_env": {
-    "addr": "0003e48e",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "set_heap_alloc_flag": {
-    "addr": "0003e4aa",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "flushall": {
-    "addr": "0003e4c0",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "getche": {
-    "addr": "0003e4f8",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "qwrite": {
-    "addr": "0003e513",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "setenvp": {
-    "addr": "0003e5b4",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "check_dos_carry": {
-    "addr": "0003e698",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "spawn_search_path": {
-    "addr": "0003e6ab",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "restore_cursor_bg": {
-    "addr": "0003e816",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "save_cursor_bg": {
-    "addr": "0003ea6b",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "draw_mouse_pointer": {
-    "addr": "0003eda6",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "end_cursor_draw": {
-    "addr": "0003ee21",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "save_sprite_bg": {
-    "addr": "0003f0f1",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "restore_sprite_bg": {
-    "addr": "0003f2b7",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "draw_vline": {
-    "addr": "0003f4b4",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "draw_vline_buf2": {
-    "addr": "0003f575",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "draw_hline": {
-    "addr": "0003f636",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "draw_hline_buf2": {
-    "addr": "0003f8bb",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "fill_rect": {
-    "addr": "0003fb40",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "fill_rect_buf2": {
-    "addr": "0003feb3",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "blit_cursor_sprite": {
-    "addr": "0004a8d1",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "nibble_to_hex": {
-    "addr": "0003b9ee",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "freopen": {
-    "addr": "0003b972",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "canon_path_sep": {
-    "addr": "0003e361",
-    "flags": "-3s -d2 -oneatx -zp8 -s -zq"
-  },
-  "remove": {
-    "addr": "0003db69",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "spawn_exec_core": {
-    "addr": "0003cc74",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "exec_shell_forward": {
-    "addr": "0003cfce",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "fopen": {
-    "addr": "0003b8f8",
-    "flags": "-3s -of -oneatx -zp8 -s -zq"
-  },
-  "fclose": {
-    "addr": "0003b99e",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "makepath": {
-    "addr": "0003e381",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "__filbuf": {
-    "addr": "0003d3e4",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "fgetc": {
-    "addr": "0003b539",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "fread": {
-    "addr": "0003b420",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "__int386x": {
-    "addr": "0003d4bc",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "int386x": {
-    "addr": "0003b3e6",
-    "flags": "-3s -oneatx -zp8 -s -zq"
-  },
-  "load_tagged_resource": {
-    "addr": "00038c28",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "blit_cell_wh": {
-    "addr": "00015e38",
-    "flags": "-4s -onetx -zp8 -s -zq"
-  },
-  "walk_sound_record_table": {
-    "addr": "00035e68",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "guarded_init_alloc": {
-    "addr": "00025238",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "find_rec_by_field8": {
-    "addr": "00020568",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "find_free_pool_slots": {
-    "addr": "00022768",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "center_string_16": {
-    "addr": "000299c8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "entity_update_target_lock": {
-    "addr": "0002d038",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "pool_list_dispatch": {
-    "addr": "0002e588",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "reacquire_and_engage_target": {
-    "addr": "00030868",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "flag_hp_adjust": {
-    "addr": "00036d18",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  },
-  "copy_if_set": {
-    "addr": "0000fee8",
-    "flags": "-4s -oneatx -zp8 -s -zq"
-  }
+ "FUN_0004cd18": {
+  "addr": "0004cd18",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0004a639": {
+  "addr": "0004a639",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0003c644": {
+  "addr": "0003c644",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "thunk_FUN_0003b1f6": {
+  "addr": "0003b1d1",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "startup_main": {
+  "addr": "00024be8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "validate_records_or_abort": {
+  "addr": "00018338",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "realloc_block_descriptor": {
+  "addr": "000184b8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "file_open_read_close": {
+  "addr": "000180f8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "open_detect_rnc_header": {
+  "addr": "00018958",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "buffered_read": {
+  "addr": "00017998",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "container_total_size": {
+  "addr": "000179f8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "keyboard_hook_install": {
+  "addr": "000254a8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "mouse_init_int33": {
+  "addr": "00028b88",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "pool_records_add": {
+  "addr": "000253a8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "noop_ret": {
+  "addr": "00034c28",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "sound_dispatch_trampoline": {
+  "addr": "000392ac",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "clear_voice_tables": {
+  "addr": "00039393",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "install_timer_isr": {
+  "addr": "000393e0",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "reprogram_pit_ch0": {
+  "addr": "00039467",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "recompute_timer_period": {
+  "addr": "000394c6",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "init_voice_tables": {
+  "addr": "0003954c",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "timer_rate_critsec": {
+  "addr": "00039846",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "int386": {
+  "addr": "0003adb2",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "segread": {
+  "addr": "0003b3b9",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "heap_alloc": {
+  "addr": "0003c594",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "init_input_subsystem": {
+  "addr": "00025338",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "global_add_and_call": {
+  "addr": "00018458",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "FUN_00037818": {
+  "addr": "00037818",
+  "flags": "-4s -oneatx -zp8 -s -zq",
+  "unit": "FUN_000377e8"
+ },
+ "mission_statusline": {
+  "addr": "00029ad8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "mp_record_sync": {
+  "addr": "000272b8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "stats_panel_draw": {
+  "addr": "000265d8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "hud_icon_select": {
+  "addr": "00029c58",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "minimap_mark_rect": {
+  "addr": "0001a918",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "netbios_recv95": {
+  "addr": "00028558",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "grid_hit_y": {
+  "addr": "00033cf8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "grid_hit_x": {
+  "addr": "00033c38",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "masked_blit_cell": {
+  "addr": "000263f8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "xfer_buf_req94": {
+  "addr": "000284a8",
+  "flags": "-4s -oneax -zp8 -s -zq"
+ },
+ "clamp_point_box": {
+  "addr": "0001ba48",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "sound_channel_select": {
+  "addr": "00038fe8",
+  "flags": "-4s -oneax -zp8 -s -zq"
+ },
+ "hittest_draw": {
+  "addr": "00036298",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "hittest_draw_b": {
+  "addr": "00036338",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "pool_chain_reset": {
+  "addr": "00036c78",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "find_projectile_step": {
+  "addr": "0002e4f8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "palette_flash3": {
+  "addr": "00013b38",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "measure_draw_text": {
+  "addr": "00036208",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "copy_5fields_8recs": {
+  "addr": "0002c468",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "spawn_pool_15e70": {
+  "addr": "0001c178",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "draw_gauge_segment": {
+  "addr": "0001ff98",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "find_free_slot_15e70": {
+  "addr": "00022b38",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "spawn_pool_11670": {
+  "addr": "00022ba8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "reset_flash_palette": {
+  "addr": "00013ac8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "projectile_step": {
+  "addr": "0002d738",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "pool_list_last": {
+  "addr": "00013bc8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "combat_aim_update": {
+  "addr": "0002d358",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "blit_backbuffer": {
+  "addr": "000355d8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "center_draw_string": {
+  "addr": "000361a8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "eligibility_test": {
+  "addr": "000146f8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "zero_even_bytes": {
+  "addr": "00035ed8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "record_max": {
+  "addr": "00035f28",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "fill_minimap_grid": {
+  "addr": "0001a8c8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "bulk_dword_copy": {
+  "addr": "00035538",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "bulk_dword_copy_b": {
+  "addr": "00035588",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "walk_chain_1c": {
+  "addr": "00036c28",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "recompute_state_code": {
+  "addr": "0002d998",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "init_call5": {
+  "addr": "00025168",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "walk_chain_3a": {
+  "addr": "00037778",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "detach_chain_3a": {
+  "addr": "00037a48",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "chain_sum_3a": {
+  "addr": "000376f8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "scan_syndicate_recs": {
+  "addr": "00016638",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "count_syndicate_recs": {
+  "addr": "000165f8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "build_two_buffers": {
+  "addr": "00028cc8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "pool_accessor_44": {
+  "addr": "00037738",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "lcg_rand": {
+  "addr": "0000e568",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "max_abs": {
+  "addr": "00026aa8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "chain_length": {
+  "addr": "000377b8",
+  "flags": "-4s -oneax -zp8 -s -zq"
+ },
+ "clamp_dec_field54": {
+  "addr": "00034168",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "walk_15byte_chain": {
+  "addr": "00014998",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "store_4_globals": {
+  "addr": "00018ab8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "sub_and_call": {
+  "addr": "00018488",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "add_c_stride6": {
+  "addr": "00025378",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "scan_pool_4": {
+  "addr": "00014cc8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "forward_if_flag": {
+  "addr": "00013a98",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "timer_setup": {
+  "addr": "000252d8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "init_call_seq": {
+  "addr": "00022728",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "heap_boundary_check": {
+  "addr": "0003c74f",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "strupr": {
+  "addr": "0003c42d",
+  "flags": "-3s -d2 -os -zp8 -s -zq"
+ },
+ "zero_bss_region": {
+  "addr": "00022708",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "init_squad_slots": {
+  "addr": "00022ca8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "clib_ret_zero": {
+  "addr": "0003ca0d",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "noop_ret_b": {
+  "addr": "0001c168",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "seq_active_check": {
+  "addr": "00039158",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "draw_localized": {
+  "addr": "00029a68",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "stricmp_call": {
+  "addr": "0003aee6",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "lookup_base_record": {
+  "addr": "00032118",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "init_record_if_alloc": {
+  "addr": "000226a8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "cond_3call": {
+  "addr": "00018828",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "aim_step": {
+  "addr": "0002d6c8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "rnc_decompress": {
+  "addr": "0003a1ec",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "rnc_read_be_len": {
+  "addr": "0003a37a",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "rnc_input_bits": {
+  "addr": "0003a3c6",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "rnc_make_huffman": {
+  "addr": "0003a449",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "rnc_read_huffman": {
+  "addr": "0003a383",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "file_read_n": {
+  "addr": "000188a8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "vehicle_ride": {
+  "addr": "0002fca8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "anim_frame_tick": {
+  "addr": "0002d228",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "aim_cursor_advance": {
+  "addr": "0002d3b8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "entity_halve_hp": {
+  "addr": "00030508",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "entity_apply_damage": {
+  "addr": "00030708",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "field54_sub_threshold": {
+  "addr": "00034118",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "player_target_sweep": {
+  "addr": "000164c8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "save_game": {
+  "addr": "00035b68",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "grid_insert_object": {
+  "addr": "00026e18",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "chain_link_node": {
+  "addr": "00037658",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "chain_unlink_node": {
+  "addr": "00037878",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "map_row_col_index": {
+  "addr": "00028ec8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "map_passability_check": {
+  "addr": "00033fb8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "best_weapon_select": {
+  "addr": "00037ad8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "best_weapon_select_typed": {
+  "addr": "00037d08",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "net_sync_build": {
+  "addr": "00014078",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "conn_status_scan": {
+  "addr": "000279f8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "xfer_chunked": {
+  "addr": "00028878",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "session_init": {
+  "addr": "00012ca8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "load_unpack_file": {
+  "addr": "000188e8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "set_message_line": {
+  "addr": "00035638",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "kill_credit_eligible": {
+  "addr": "000139a8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "sum_of_squares_call": {
+  "addr": "00014c58",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "syndicate_timer_pct": {
+  "addr": "00016438",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "reset_player_slot": {
+  "addr": "00022ed8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "report_net_status": {
+  "addr": "000289a8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "probe_nesw_zones": {
+  "addr": "00028d08",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "launch_move_setup": {
+  "addr": "0002de18",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "find_target_for_agent": {
+  "addr": "0002ee18",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "read_name_record": {
+  "addr": "00035c88",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "guarded_sound_call": {
+  "addr": "00036168",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "pool_table_lookup": {
+  "addr": "000377e8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "atol": {
+  "addr": "0003a526",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "cenvarg": {
+  "addr": "0003dfcf",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "chktty": {
+  "addr": "0003db36",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "d_getvec": {
+  "addr": "0003b239",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "d_setvec": {
+  "addr": "0003b273",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "ftell": {
+  "addr": "0003da03",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "ioalloc": {
+  "addr": "0003d894",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "isatty": {
+  "addr": "0003c44d",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "labs": {
+  "addr": "0003aed8",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "lseek": {
+  "addr": "0003a93b",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "ltoa": {
+  "addr": "0003dcb5",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "open": {
+  "addr": "0003a579",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "outp": {
+  "addr": "0003b22d",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "prtf": {
+  "addr": "0003be40",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "qread": {
+  "addr": "0003d935",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "spawnve": {
+  "addr": "0003cbf9",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "strchr": {
+  "addr": "0003e7f7",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "strcpy": {
+  "addr": "0003a8d7",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "stricmp": {
+  "addr": "0003aef9",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "strncmp": {
+  "addr": "0003aea6",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "strnicmp": {
+  "addr": "0003deee",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "tell": {
+  "addr": "0003a97c",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "tolower": {
+  "addr": "0003da37",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "toupper": {
+  "addr": "0003dce5",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "unlink": {
+  "addr": "0003e590",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "printf": {
+  "addr": "0003ad66",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "system": {
+  "addr": "0003af38",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "rewind": {
+  "addr": "0003b407",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "sprintf": {
+  "addr": "0003a4fa",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "dosret": {
+  "addr": "0003c479",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "getstream": {
+  "addr": "0003b90d",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "plot_point": {
+  "addr": "00040236",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fill_bytes": {
+  "addr": "0004d199",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "blit_block": {
+  "addr": "0004d0b4",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_sprite_rle": {
+  "addr": "0004a734",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "vga_planar_present": {
+  "addr": "0004a492",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "flic_play": {
+  "addr": "00039ca0",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "flic_decode_frame": {
+  "addr": "00039e42",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "flic_parse_header": {
+  "addr": "00039ee2",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "flic_load_palette": {
+  "addr": "00039f92",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "uninstall_timer_isr": {
+  "addr": "0003942f",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "stop_voice": {
+  "addr": "00039a82",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_text": {
+  "addr": "0004cb68",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_text_fixed": {
+  "addr": "0004cde3",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_hex": {
+  "addr": "0004cacc",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_dec": {
+  "addr": "0004cb1a",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "vec_to_angle": {
+  "addr": "0004d221",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "isqrt32": {
+  "addr": "0004d393",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "isqrt16": {
+  "addr": "0004d352",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "copy_bytes": {
+  "addr": "0004d1db",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "copy_fixed_block": {
+  "addr": "0004d04b",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "poll_key": {
+  "addr": "0004d442",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "hex32_to_ascii": {
+  "addr": "0004d513",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "dec32_to_ascii": {
+  "addr": "0004d451",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "set_video_mode": {
+  "addr": "000498ef",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "upload_palette": {
+  "addr": "0004987e",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "reset_gfx_write_mode": {
+  "addr": "00049922",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "clear_offscreen": {
+  "addr": "0004993b",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "clear_vga_screen": {
+  "addr": "0004997e",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "plot_op_dispatch": {
+  "addr": "000402e0",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "plot_op_dispatch2": {
+  "addr": "000404b8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_tile_region": {
+  "addr": "00040f4e",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "iso_tile_dispatch": {
+  "addr": "0004107b",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "iso_cell_dispatch": {
+  "addr": "00047a7e",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "iso_block_dispatch": {
+  "addr": "00045e61",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "iso_block_dispatch2": {
+  "addr": "00045f8a",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "merge_cell_mask": {
+  "addr": "000418ac",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "clear_occlusion_mask": {
+  "addr": "00046188",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fill_planar_column": {
+  "addr": "00049a31",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_animated_marker": {
+  "addr": "00049b67",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "present_patch_gated": {
+  "addr": "00049edf",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "restore_backing_column": {
+  "addr": "0004a3cc",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "save_backing_column": {
+  "addr": "0004a42f",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "present_frame_dispatch": {
+  "addr": "0004a574",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "present_frame_planar": {
+  "addr": "0004a5a8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_sprite_buf": {
+  "addr": "0004a63a",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_sprite_surf": {
+  "addr": "0004a66b",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "blit_sprite": {
+  "addr": "0004a69c",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_sprite_rle_buf": {
+  "addr": "0004a6c8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_sprite_rle_vga": {
+  "addr": "0004a6fe",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "capture_sprite": {
+  "addr": "0004a898",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "blit_width_dispatch": {
+  "addr": "0004a909",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "span_op_dispatch": {
+  "addr": "0004b073",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "glyph_dispatch_wide": {
+  "addr": "0004cc4d",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "glyph_blit_wide": {
+  "addr": "0004cc77",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "glyph_dispatch_narrow": {
+  "addr": "0004cd19",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "glyph_blit_narrow": {
+  "addr": "0004cd3e",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "glyph_stamp_fixed": {
+  "addr": "0004ce87",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "build_empty_slot_mask": {
+  "addr": "0004d069",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "run_seq_commands": {
+  "addr": "000391a8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "driver_msg_lookup": {
+  "addr": "00039280",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "program_pit_period_us": {
+  "addr": "00039495",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "unload_all_drivers": {
+  "addr": "000395b6",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "alloc_seq_slot": {
+  "addr": "00039625",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "free_seq_slot": {
+  "addr": "000396d5",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "stop_all_seqs": {
+  "addr": "00039722",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "start_seq": {
+  "addr": "00039747",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "pause_seq": {
+  "addr": "0003979c",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "set_seq_period": {
+  "addr": "000397f1",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "set_seq_rate": {
+  "addr": "00039879",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "register_driver": {
+  "addr": "000398d7",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "unregister_driver": {
+  "addr": "00039966",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "voice_get_driver_obj": {
+  "addr": "00039994",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "start_voice": {
+  "addr": "000399bd",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "vec_to_angle_short": {
+  "addr": "00026ba8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "xfer_buf_req35": {
+  "addr": "00028628",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "squad_threat_test": {
+  "addr": "0002d9e8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "draw_item_detail": {
+  "addr": "00020158",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "apply_command_effect": {
+  "addr": "000149e8",
+  "flags": "-4s -oneax -zp8 -s -zq"
+ },
+ "world_tick": {
+  "addr": "00026998",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "refresh_item_slots": {
+  "addr": "0002c4e8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "draw_status_labels": {
+  "addr": "00029a28",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "advance_aim_along_dir": {
+  "addr": "00026ad8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "is_even_entity_type": {
+  "addr": "00023038",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "present_frame": {
+  "addr": "00015d98",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "draw_fixed_box": {
+  "addr": "00015e08",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "file_close": {
+  "addr": "00018878",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "file_write": {
+  "addr": "000188c8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "grid_detach_object": {
+  "addr": "000269b8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "init_sound_driver": {
+  "addr": "00036188",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "stop_current_sequence": {
+  "addr": "00039088",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "shutdown_music_drivers": {
+  "addr": "00039188",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "skip_flic_chunk": {
+  "addr": "00039f49",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "read_flic_palette": {
+  "addr": "00039f69",
+  "flags": "-3s -os -zp8 -s -zq"
+ },
+ "snd_cmd_65": {
+  "addr": "000399b3",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "snd_cmd_7b": {
+  "addr": "00039ae7",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "snd_cmd_85": {
+  "addr": "00039af1",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "snd_cmd_7c": {
+  "addr": "00039afb",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "snd_cmd_7d": {
+  "addr": "00039b05",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "snd_cmd_96": {
+  "addr": "00039b55",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "snd_cmd_97": {
+  "addr": "00039b5f",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "snd_cmd_99": {
+  "addr": "00039b73",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "snd_cmd_9a": {
+  "addr": "00039b7d",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "snd_cmd_9b": {
+  "addr": "00039b87",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "snd_cmd_9c": {
+  "addr": "00039b91",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "snd_cmd_aa": {
+  "addr": "00039bb9",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "snd_cmd_ab": {
+  "addr": "00039bc3",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "rle_blit_word": {
+  "addr": "0003a033",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "rle_blit_byte": {
+  "addr": "0003a10c",
+  "flags": "-4r -oneatx -zp8 -s -zq"
+ },
+ "frame_throttle": {
+  "addr": "0003a19a",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "sopen": {
+  "addr": "0003a598",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "read": {
+  "addr": "0003a7c4",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "close": {
+  "addr": "0003a89d",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "strcat_word": {
+  "addr": "0003a900",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "strcmp": {
+  "addr": "0003a9c8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "malloc": {
+  "addr": "0003aa74",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "nmalloc": {
+  "addr": "0003aa84",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "memset": {
+  "addr": "0003aaf8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "filelength": {
+  "addr": "0003ab1a",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "free": {
+  "addr": "0003ab59",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "nfree": {
+  "addr": "0003ab69",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "write": {
+  "addr": "0003ab8e",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "exit": {
+  "addr": "0003ad89",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "open_rw_creat_trunc": {
+  "addr": "0003addb",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "setmode": {
+  "addr": "0003adf0",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "write_msg_and_exit": {
+  "addr": "0003b1d3",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "_exit": {
+  "addr": "0003b1f6",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "inp": {
+  "addr": "0003b2aa",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fputc_nl": {
+  "addr": "0003b2b5",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fgets_console": {
+  "addr": "0003b326",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fseek": {
+  "addr": "0003b594",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "parse_open_mode": {
+  "addr": "0003b739",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fopen_core": {
+  "addr": "0003b7e8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fsopen": {
+  "addr": "0003b8cd",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "fclose_free": {
+  "addr": "0003b9ca",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "build_temp_filename": {
+  "addr": "0003ba01",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "close_stream": {
+  "addr": "0003ba80",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "doprnt": {
+  "addr": "0003bb1e",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "parse_conv_spec": {
+  "addr": "0003bd37",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "far_strnlen": {
+  "addr": "0003be93",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "far_wcsnlen": {
+  "addr": "0003bebc",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "format_hex_field": {
+  "addr": "0003bee3",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "format_fixed_frac": {
+  "addr": "0003bf36",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "prtf_out_call": {
+  "addr": "0003c002",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "prtf_conversion": {
+  "addr": "0003c019",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "errno_ptr": {
+  "addr": "0003c46d",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "doserrno_ptr": {
+  "addr": "0003c473",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "dosret_map_err": {
+  "addr": "0003c491",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "set_doserr": {
+  "addr": "0003c4b9",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "fd_to_stream": {
+  "addr": "0003c529",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "fd_handle_store": {
+  "addr": "0003c57b",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "dpmi_dos_alloc_paras": {
+  "addr": "0003c772",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "heap_grow": {
+  "addr": "0003c816",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "memset_align_head": {
+  "addr": "0003ca18",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "memset_dwords": {
+  "addr": "0003ca4f",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "stack_avail": {
+  "addr": "0003cabb",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "stk_check_thunk": {
+  "addr": "0003cacb",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "stack_limit_check": {
+  "addr": "0003cade",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "stack_overflow": {
+  "addr": "0003cafb",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "stream_reopen": {
+  "addr": "0003cb24",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "getenv": {
+  "addr": "0003cba4",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "spawn_load_check": {
+  "addr": "0003cc26",
+  "flags": "-3s -os -zp8 -s -zq"
+ },
+ "spawn_exec": {
+  "addr": "0003cc45",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "run_fini_routines": {
+  "addr": "0003d079",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "build_argv": {
+  "addr": "0003d0bc",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "parse_cmdline": {
+  "addr": "0003d16f",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fputs": {
+  "addr": "0003d24a",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fputc": {
+  "addr": "0003d2c3",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "getc": {
+  "addr": "0003d36b",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fill_buffer": {
+  "addr": "0003d40f",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "intr_call_core": {
+  "addr": "0003d4f3",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "memcpy": {
+  "addr": "0003d90b",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "flush_stream": {
+  "addr": "0003d966",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "alloc_stream": {
+  "addr": "0003da4c",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "free_stream": {
+  "addr": "0003dae1",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "get_tmp_seed": {
+  "addr": "0003db63",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "utoa": {
+  "addr": "0003db9e",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "itoa": {
+  "addr": "0003dbeb",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "strlen": {
+  "addr": "0003dc1b",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "ultoa": {
+  "addr": "0003dc68",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "os_getmem": {
+  "addr": "0003dcfa",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "brk": {
+  "addr": "0003dd97",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fcloseall": {
+  "addr": "0003dea0",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "dos_findfirst": {
+  "addr": "0003df3c",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "copy_finddata_from_dta": {
+  "addr": "0003df89",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "build_exec_block": {
+  "addr": "0003dfe8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "build_cmdtail": {
+  "addr": "0003e143",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "dos_exec": {
+  "addr": "0003e1af",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "copy_path_component": {
+  "addr": "0003e27a",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "splitpath2": {
+  "addr": "0003e2bb",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "spawn_with_env": {
+  "addr": "0003e471",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "exec_with_env": {
+  "addr": "0003e48e",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "set_heap_alloc_flag": {
+  "addr": "0003e4aa",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "flushall": {
+  "addr": "0003e4c0",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "getche": {
+  "addr": "0003e4f8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "qwrite": {
+  "addr": "0003e513",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "setenvp": {
+  "addr": "0003e5b4",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "check_dos_carry": {
+  "addr": "0003e698",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "spawn_search_path": {
+  "addr": "0003e6ab",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "restore_cursor_bg": {
+  "addr": "0003e816",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "save_cursor_bg": {
+  "addr": "0003ea6b",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_mouse_pointer": {
+  "addr": "0003eda6",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "end_cursor_draw": {
+  "addr": "0003ee21",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "save_sprite_bg": {
+  "addr": "0003f0f1",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "restore_sprite_bg": {
+  "addr": "0003f2b7",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_vline": {
+  "addr": "0003f4b4",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_vline_buf2": {
+  "addr": "0003f575",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_hline": {
+  "addr": "0003f636",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_hline_buf2": {
+  "addr": "0003f8bb",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fill_rect": {
+  "addr": "0003fb40",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fill_rect_buf2": {
+  "addr": "0003feb3",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "blit_cursor_sprite": {
+  "addr": "0004a8d1",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "nibble_to_hex": {
+  "addr": "0003b9ee",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "freopen": {
+  "addr": "0003b972",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "canon_path_sep": {
+  "addr": "0003e361",
+  "flags": "-3s -d2 -oneatx -zp8 -s -zq"
+ },
+ "remove": {
+  "addr": "0003db69",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "spawn_exec_core": {
+  "addr": "0003cc74",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "exec_shell_forward": {
+  "addr": "0003cfce",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "fopen": {
+  "addr": "0003b8f8",
+  "flags": "-3s -of -oneatx -zp8 -s -zq"
+ },
+ "fclose": {
+  "addr": "0003b99e",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "makepath": {
+  "addr": "0003e381",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "__filbuf": {
+  "addr": "0003d3e4",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fgetc": {
+  "addr": "0003b539",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "fread": {
+  "addr": "0003b420",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "__int386x": {
+  "addr": "0003d4bc",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "int386x": {
+  "addr": "0003b3e6",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "load_tagged_resource": {
+  "addr": "00038c28",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "blit_cell_wh": {
+  "addr": "00015e38",
+  "flags": "-4s -onetx -zp8 -s -zq"
+ },
+ "walk_sound_record_table": {
+  "addr": "00035e68",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "guarded_init_alloc": {
+  "addr": "00025238",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "find_rec_by_field8": {
+  "addr": "00020568",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "find_free_pool_slots": {
+  "addr": "00022768",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "center_string_16": {
+  "addr": "000299c8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "entity_update_target_lock": {
+  "addr": "0002d038",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "pool_list_dispatch": {
+  "addr": "0002e588",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "reacquire_and_engage_target": {
+  "addr": "00030868",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "flag_hp_adjust": {
+  "addr": "00036d18",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "copy_if_set": {
+  "addr": "0000fee8",
+  "flags": "-4s -oneatx -zp8 -s -zq"
+ },
+ "FUN_00029d88": {
+  "addr": "00029d88",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_00036be8": {
+  "addr": "00036be8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_00037ff8": {
+  "addr": "00037ff8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0004aa59": {
+  "addr": "0004aa59",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "FUN_0004b859": {
+  "addr": "0004b859",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "draw_targeting_reticle": {
+  "addr": "0002aac8",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ },
+ "pool_resolve": {
+  "addr": "00037608",
+  "flags": "-3s -oneatx -zp8 -s -zq"
+ }
 }
