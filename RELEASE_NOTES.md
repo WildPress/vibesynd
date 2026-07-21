@@ -13,8 +13,9 @@ Built via `tools/origbuild.py` into `GAMEO.EXE` and run under DOS/4GW, the engin
 - Renders the title screen, main menu, and world-map mission-selection screen.
 - Responds to keyboard and mouse; the mission timer (INT8) runs.
 
-Verified end-to-end against a retail data set: title -> main menu -> world map, interactive,
-no faults.
+Verified end-to-end against a retail data set: title -> main menu -> world map -> a played
+tactical mission (isometric map, agent control, movement, combat). Failure/edge paths (agent
+death, mission failure, alarms) not yet exhaustively tested.
 
 ## Decompilation status
 
@@ -37,6 +38,6 @@ next to `GAMEO.EXE`. Nothing copyrighted is distributed here.
 
 ## Known limits
 
-- Deep in-mission gameplay (the isometric tactical map) is not yet exhaustively verified; a
-  handful of db-transcribed callees may have rough edges.
+- A full mission plays on a completed route; failure and edge paths (agent death, mission
+  failure, alarm/reinforcement logic, all mission types) are not yet exhaustively tested.
 - Not yet ported off DOS/4GW; a modern-OS port and modding support are the post-1.0 roadmap.
