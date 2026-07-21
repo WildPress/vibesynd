@@ -14,8 +14,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* the data segment the symbolized asm references as `__dgroup + <flat addr>` */
-unsigned char __dgroup[0x20000];
+/* the data segment the symbolized asm references as `__obj<N> + <offset>`. RNC touches
+ * only obj2 (bit-buffer state + Huffman tables), so obj2's base is all this demo needs. */
+unsigned char __obj2[0x20000];
 
 extern long rnc_decompress(void *src, void *dst);
 

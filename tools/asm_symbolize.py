@@ -69,16 +69,25 @@ def func_names():
     return m
 
 def data_fixups(addr, size):
-    """Set of source offsets (abs) of type-7 data fixups within [addr, addr+size)."""
+    """Type-7 data fixups within [addr, addr+size).
+    Returns {source_offset(abs): (obj_num, target_offset, additive_or_None)}.
+    The 4-byte slot holds an OBJECT-RELATIVE placeholder (== target offset, validated by
+    lefix); the real DGROUP address is <object base> + target_offset, so we symbolize to
+    a per-object base symbol `__obj<N>` and let the link supply the base."""
     out = subprocess.run([sys.executable, os.path.join(ROOT, "tools", "lefix.py"),
                           "src", "%x" % addr, "0x%x" % size],
                          capture_output=True, text=True).stdout
-    offs = set()
+    fx = {}
     for line in out.splitlines():
-        m = re.match(r"src=0x([0-9a-fA-F]+)\s+stype=7", line)
+        m = re.match(r"src=0x([0-9a-fA-F]+)\s+stype=7\s+ttype=\d+\s+->\s+obj(\d):\+0x([0-9a-fA-F]+)\s+add=(\S+)",
+                     line)
         if m:
-            offs.add(int(m.group(1), 16))
-    return offs
+            off = int(m.group(1), 16)
+            objn = int(m.group(2))
+            toff = int(m.group(3), 16)
+            add = None if m.group(4) == "None" else int(m.group(4), 0)
+            fx[off] = (objn, toff, add)
+    return fx
 
 # rel32 control-flow opcodes: E8 call, E9 jmp, 0F 80..8F jcc
 def rel32_sites(addr, size):
@@ -119,11 +128,10 @@ def symbolize(name, addr, size):
     dfix = data_fixups(addr, size)
     rels = {off: tgt for off, tgt in rel32_sites(addr, size)}
 
-    # reloc map: offset(abs) -> ('data', flat_addr) or ('rel', target_abs)
+    # reloc map: offset(abs) -> ('data', (objn, toff, add)) or ('rel', target_abs)
     reloc = {}
-    for o in dfix:
-        v = int.from_bytes(data[o - addr:o - addr + 4], "little")
-        reloc[o] = ("data", v)
+    for o, info in dfix.items():
+        reloc[o] = ("data", info)
     for o, tgt in rels.items():
         reloc[o] = ("rel", tgt)
 
@@ -143,7 +151,11 @@ def symbolize(name, addr, size):
             flush()
             kind, val = reloc[o]
             if kind == "data":
-                lines.append("    .long __dgroup + 0x%x" % val)
+                objn, toff, add = val
+                expr = "__obj%d + 0x%x" % (objn, toff)
+                if add:
+                    expr += " + 0x%x" % add
+                lines.append("    .long %s" % expr)
             else:
                 sym = names.get(val, "fn_%x" % val)
                 lines.append("    .long %s - . - 4" % sym)
@@ -181,7 +193,7 @@ def verify(name, addr, size):
     r = wsl("as --32 -o '%s' '%s'" % (opu, spu))
     if r.returncode:
         return False, "assemble failed:\n" + r.stderr
-    defs = ["--defsym __dgroup=0"]
+    defs = ["--defsym __obj1=0", "--defsym __obj2=0", "--defsym __obj3=0", "--defsym __obj4=0"]
     for e in exts:
         if e.startswith("fn_"):
             defs.append("--defsym %s=0x%x" % (e, int(e[3:], 16)))
