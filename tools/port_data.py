@@ -70,6 +70,16 @@ def main():
         w.write('    .incbin "%s"\n\n' % os.path.join(GEN, "dgroup.bin").replace("\\", "/"))
         for n, a in sorted(placed.items(), key=lambda kv: kv[1]):
             w.write("    .global %s\n    .set %s, __dgroup + 0x%x\n" % (n, n, a))
+        # skipped/ambiguous globals: define as standalone BSS placeholders so the link
+        # completes (their true DGROUP offset is unresolved -- typed-view aliases like
+        # g_pool_a_free_v, g_5056fp2; correctness is a follow-up). Not placed in the image.
+        if skipped:
+            w.write("\n    .section .bss\n    .balign 16\n")
+            for n in sorted(skipped):
+                w.write("    .global %s\n%s:\n    .zero 256\n" % (n, n))
+    # emit a GNU-stack note so the linker stops warning about executable stack
+    with open(os.path.join(GEN, "globals.s"), "a") as w:
+        w.write('\n    .section .note.GNU-stack,"",@progbits\n')
     print("DGROUP image: %d bytes (0x%x); OBJECT2 @0, OBJECT4 @0x%x" % (seglen, seglen, OBJ4_BASE))
     print("globals placed: %d  (skipped/ambiguous: %d)" % (len(placed), len(skipped)))
     if skipped: print("  skipped:", skipped[:12])
