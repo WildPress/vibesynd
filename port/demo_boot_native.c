@@ -5,14 +5,44 @@
  * Run from a directory with a lowercase data/ of the user's own files.
  */
 #include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <unistd.h>
 
 extern void game_startup_main(int argc, char **argv);   /* game asm @0x24be8 */
 extern void dosint_install(void);
+extern void plat_video_init(int, int);
+extern void plat_present_buf(const unsigned char *buf);
+extern void plat_set_palette(const unsigned char *rgb768);
+extern void dosint_get_dac(unsigned char *out768);       /* captured VGA DAC palette */
+
+extern unsigned char __dgroup[];
+#define G_SCREEN_BUF (*(unsigned char **)(__dgroup + 0x5368))
+
+/* periodically snapshot the frame + the DAC palette so we can see the game draw. Present from
+ * g_screen_buf (the game's offscreen buffer) if set, else the VGA window at 0xa0000. */
+static void *display_loop(void *arg) {
+    unsigned char pal[768];
+    (void)arg;
+    for (;;) {
+        unsigned char *src = G_SCREEN_BUF;
+        usleep(150000);
+        { int i, nz = 0; for (i = 0; i < 64000; i++) if (src && src[i]) nz++;
+          if (getenv("SYN_DEBUG")) fprintf(stderr, "[disp] g_screen_buf=%p nz=%d\n", (void *)src, nz); }
+        dosint_get_dac(pal);
+        plat_set_palette(pal);
+        plat_present_buf(src ? src : (const unsigned char *)0xa0000);
+    }
+    return 0;
+}
 
 int main(int argc, char **argv) {
     char *gargv[2];
+    pthread_t dt;
     (void)argc; (void)argv;
     dosint_install();
+    plat_video_init(320, 200);
+    pthread_create(&dt, 0, display_loop, 0);
     gargv[0] = "syndicate"; gargv[1] = NULL;
     fprintf(stderr, "[boot] calling game_startup_main...\n");
     game_startup_main(1, gargv);

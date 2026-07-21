@@ -40,6 +40,11 @@ extern char __code[];
 
 static char g_dta[128];    /* a Disk Transfer Area for AH=0x1a/0x2f */
 
+/* captured VGA DAC palette (256 * r,g,b, 6-bit) */
+unsigned char g_dac[768];
+int g_dac_idx = 0;
+void dosint_get_dac(unsigned char *out768) { int i; for (i = 0; i < 768; i++) out768[i] = g_dac[i]; }
+
 /* DOS/4GW extends int21 file calls to 32-bit: EBX=handle, ECX=count, EDX=flat buf/path. */
 static int do_int21(int ah, greg_t *r) {
     switch (ah) {
@@ -160,8 +165,16 @@ static void on_trap(int sig, siginfo_t *si, void *ucv) {
         if (q == 0x0F && (p[i0+1] == 0xA1 || p[i0+1] == 0xA9)) { r[REG_EIP] = eip + i0 + 2; return; } /* pop fs/gs */
     }
 
-    /* emulate port I/O (in/out) -- VGA/PIT registers. `in` returns a toggling value so
-     * retrace-wait loops (wait for a bit set, then clear) terminate; `out` is a no-op. */
+    /* rep outsb (F3 6E): the DAC palette blast `rep outs dx,[esi]` to port 0x3c9 -- capture it */
+    if (p && p[0] == 0xF3 && p[1] == 0x6E) {
+        unsigned port = r[REG_EDX] & 0xffff, cnt = r[REG_ECX];
+        unsigned char *src = (unsigned char *)(long)r[REG_ESI];
+        if (port == 0x3c9) { unsigned i; for (i = 0; i < cnt; i++) g_dac[(g_dac_idx++) % 768] = src[i]; }
+        r[REG_ESI] += cnt; r[REG_ECX] = 0; r[REG_EIP] = eip + 2; return;
+    }
+    /* emulate port I/O (in/out) -- VGA/PIT/DAC registers. `in` returns a toggling value so
+     * retrace-wait loops (wait for a bit set, then clear) terminate; `out` is a no-op except
+     * the VGA DAC (0x3c8 index / 0x3c9 data), which we capture as the palette. */
     if (p) {
         int idx = 0, w16 = 0;
         unsigned char op;
@@ -172,12 +185,17 @@ static void on_trap(int sig, siginfo_t *si, void *ucv) {
             int is_out = (op == 0xEE || op == 0xEF || op == 0xE6 || op == 0xE7);
             int imm = (op >= 0xE4 && op <= 0xE7);
             int len = idx + 1 + (imm ? 1 : 0);
+            if (is_out) {
+                unsigned port = imm ? p[idx + 1] : (r[REG_EDX] & 0xffff);
+                if (port == 0x3c8) g_dac_idx = (r[REG_EAX] & 0xff) * 3;
+                else if (port == 0x3c9) g_dac[(g_dac_idx++) % 768] = r[REG_EAX] & 0xff;
+                r[REG_EIP] = eip + len; return;
+            }
             if (is_in) {
                 static int t = 0; t ^= 0xff;
                 if (w16) SET_AX(r, t); else SET_AL(r, t);
                 r[REG_EIP] = eip + len; return;
             }
-            if (is_out) { r[REG_EIP] = eip + len; return; }
         }
     }
     /* crash-safe report: registers only, no dereferencing (EBP is often data here) */
@@ -208,10 +226,16 @@ static void on_alrm(int sig, siginfo_t *si, void *ucv) {
     }
 }
 
+#include <sys/mman.h>
 void dosint_install(void) {
     static char altstk[64 * 1024];
     stack_t ss;
     struct sigaction sa;
+
+    /* back the VGA memory window (0xa0000..0xc0000) so the game's direct-to-VGA writes
+     * (flic_play, mode-13h linear copies) land in real memory instead of faulting. */
+    mmap((void *)0xa0000, 0x20000, PROT_READ | PROT_WRITE | PROT_EXEC,
+         MAP_FIXED | MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     ss.ss_sp = altstk; ss.ss_size = sizeof altstk; ss.ss_flags = 0;
     sigaltstack(&ss, NULL);
     memset(&sa, 0, sizeof sa);

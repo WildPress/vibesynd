@@ -180,11 +180,15 @@ Then it plays natively.
       into the graphics driver overlay** (loads + executes gamedg.dll, register_driver)
 - [x] Crash-safe trap handler: async-signal-safe reporting, BAD-JUMP (unmapped-EIP) + DOS-EXIT
       detection without dereferencing wild pointers (port/dosint.c)
-- [ ] **gamedg.dll / gamefm.dll are DOS MZ overlays** (header `MZ\x80..`): the game reads them and
-      loads/relocates/executes them as graphics+sound drivers. Next subsystem = a DOS EXE overlay
-      loader (or stub the driver and route rendering through the already-working vga_planar_present
-      shim). This is where boot currently stops.
-- [ ] Then continue to the intro/menu render  ->  **port-v0.1.0** (live frame)
+- [x] gamedg.dll / gamefm.dll are DOS MZ overlays -- STUBBED (SYN_NODLL): failing the .dll opens
+      makes the game degrade to its own render path, which is shimmed/DAC-captured.
+- [x] VGA memory window (0xa0000) mapped; VGA-DAC palette (ports 0x3c8/0x3c9, rep outsb) captured
+      in the trap emulator; upload_palette / flic_load_palette left native so they set the DAC.
+- [x] **port-v0.1.0 -- LIVE FRAME**: the game boots natively (startup -> load assets -> intro FLIC),
+      and renders the **Syndicate title screen** from the user's own data, in a native process
+      (no DOSBox). `port/build_boot.sh` -> frame.ppm.
+- [ ] Input/timing wired to a live SDL window (currently headless PPM + a display thread)
+- [ ] Continue: menu interaction, world map, a mission  ->  **port-v1.0.0** (plays natively)
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)
 - [ ] Reach the game's render into g_screen_buf -> present via SDL  ->  **port-v0.1.0** (live frame)
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)

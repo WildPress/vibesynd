@@ -15,10 +15,14 @@
 
 /* sopen(path, oflag, shflag[, pmode]) -- DOS/Watcom open. Low 2 bits of oflag select the
  * access mode (0 read, 1 write, 2 read/write), matching POSIX O_RDONLY/O_WRONLY/O_RDWR. */
+#include <string.h>
 int shim_sopen(const char *path, int oflag, int shflag) {
     int fd;
     (void)shflag;
     if (getenv("SYN_DEBUG")) fprintf(stderr, "[open] %s\n", path);
+    /* EXPERIMENT: fail the driver overlays (gamedg/gamefm .dll) so the game degrades to its
+     * own render path (vga_planar_present is shimmed) instead of loading + executing the MZ. */
+    if (getenv("SYN_NODLL") && strstr(path, ".dll")) return -1;
     /* write / read-write modes need O_CREAT so a new file (config/save) can be made */
     fd = open(path, (oflag & 3) | ((oflag & 3) ? O_CREAT : 0) | O_BINARY, 0666);
     return fd;   /* -1 on failure, as DOS expects */

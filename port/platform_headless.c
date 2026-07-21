@@ -41,6 +41,12 @@ void plat_present(void) {
     g_frames++;
 }
 
+/* present an arbitrary 8-bit 320x200 buffer (e.g. the VGA window at 0xa0000) via the palette */
+void plat_present_buf(const unsigned char *buf) {
+    memcpy(g_fb, buf, SYN_W * SYN_H);
+    plat_present();
+}
+
 int  plat_poll_key(void) { return 0; }
 void plat_mouse(int *x, int *y, int *b) { if (x) *x = 0; if (y) *y = 0; if (b) *b = 0; }
 int  plat_want_quit(void) { return g_frames >= 1; }
