@@ -162,7 +162,16 @@ Then it plays natively.
 - [x] **The game's own present path drives a real frame natively** (`port/build_video.sh`):
       game_vga_planar_present presents g_screen_buf, palette via the game's own RNC loader --
       byte-identical to the reference render. (Headless PPM; a 32-bit SDL window is a follow-up.)
-- [ ] Timer (PIT) + input (poll_key/mouse) shims
-- [ ] Wire the entry to the game's startup (skip DOS video-mode/DPMI init) + load `data/`
+- [x] Timer (PIT) + input shims: a thread advances g_timer_tick (0x10b50) like the PIT ISR;
+      poll_key/int386 stubbed (port/shims_sys.c)
+- [x] DOS-int + port-IO trap emulator (port/dosint.c): services the CLIB stragglers' int 0x21
+      (switch char, DOS version, time, ioctl, ...) and in/out from the SIGSEGV/SIGILL handler,
+      stepping EIP over them; prints a manifest backtrace on a real fault
+- [x] **The game boots natively into its own startup_main** (`port/build_boot.sh`) and runs CLIB
+      init + subsystem setup before the next wall
+- [ ] DGROUP data-pointer fixup pass: relocate data-internal pointers (obj2/3/4 fixup sources)
+      so strings/tables resolve -- first blocker in startup (set_message_line strcpy of a null ptr)
+- [ ] Continue fault-by-fault to the intro/menu render  ->  **port-v0.1.0** (live frame)
+- [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)
 - [ ] Reach the game's render into g_screen_buf -> present via SDL  ->  **port-v0.1.0** (live frame)
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)
