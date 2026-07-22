@@ -24,14 +24,12 @@ extern unsigned char __dgroup[];
 /* periodically snapshot the frame + the DAC palette so we can see the game draw. Present from
  * g_screen_buf (the game's offscreen buffer) if set, else the VGA window at 0xa0000. */
 static void *display_loop(void *arg) {
-    unsigned char pal[768];
     (void)arg;
     for (;;) {
         unsigned char *src = G_SCREEN_BUF;
         usleep(33000);                         /* ~30 fps */
         syn_shm_pump_input();                  /* feed keys into the game's keyboard globals */
-        dosint_get_dac(pal);
-        plat_set_palette(pal);
+        /* palette is set by the upload_palette / flic_load_palette shims (portable C) now */
         plat_present_buf(src ? src : (const unsigned char *)0xa0000);
         if (plat_want_quit()) _exit(0);        /* viewer window closed */
     }

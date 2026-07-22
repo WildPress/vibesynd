@@ -145,6 +145,17 @@ static void on_trap(int sig, siginfo_t *si, void *ucv) {
         fprintf(stderr, "[trap %lu] manifest 0x%x op=%02x %02x %02x\n",
                 g_traps, 0xd748 + (eip - base), p ? p[0] : 0, p ? p[1] : 0, p ? p[2] : 0);
 
+    /* SYN_DOSLOG: log each UNIQUE trap site once -- the exact DOS-instruction surface to port. */
+    if (getenv("SYN_DOSLOG") && eip >= base && eip < base + 0x40000) {
+        static unsigned seen[512]; static int nseen = 0; int i, found = 0;
+        for (i = 0; i < nseen; i++) if (seen[i] == eip) { found = 1; break; }
+        if (!found && nseen < 512) {
+            seen[nseen++] = eip;
+            fprintf(stderr, "[dos] manifest 0x%x op=%02x %02x %02x\n",
+                    0xd748 + (eip - base), p ? p[0] : 0, p ? p[1] : 0, p ? p[2] : 0);
+        }
+    }
+
     if (p && p[0] == 0xCD) {              /* int nn */
         int n = p[1], ah = AH(r), handled = 0;
         if (n == 0x21 && ah == 0x4c) {    /* DOS terminate: log where from before exiting */

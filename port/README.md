@@ -217,6 +217,27 @@ Then it plays natively.
 - [x] Timer rate honours the game's programmed PIT divisor (captured via out 0x40 in the emulator):
       the game asks for divisor 16384 = 72.8 Hz, so animations run at the intended speed, not fixed.
 - [ ] Key-release handling; into a mission  ->  **port-v1.0.0** (plays natively)
+
+### Phase 1 -- remove the DOS dependency (portable C over SDL)
+
+The port runs the original code with a fault-handler DOS emulator (port/dosint.c). Phase 1
+replaces every DOS-touching routine with portable C so the emulator can be retired. `SYN_DOSLOG`
+lists the exact DOS-instruction surface a session hits. On the boot -> menu -> world-map path with
+the drivers stubbed, that surface is now essentially empty:
+
+- [x] File I/O, memory, timer, input -> portable C shims (earlier).
+- [x] Palette: upload_palette + a C reimplementation of flic_load_palette (the FLIC palette-script
+      decoder) -> the platform (port/shims_video.c); the DAC emulation is no longer needed.
+- [x] CLIB/DOS helpers (outp, d_getvec, d_setvec, dos_exec, spawnve) -> portable C (port/shims_dos.c).
+- [x] Result: the whole boot -> menu -> world-map path renders correctly with **no function hitting
+      the DOS emulator**, except flic_play's one `int 0x10` (a video-refresh no-op in the FLIC codec).
+- [ ] flic_play (the FLIC player) is game logic -> its `int 0x10` goes away when it's decompiled (Phase 2).
+
+### Phase 2 -- portable game logic (the long road)
+
+The ~211 game-logic asm functions become portable C, one at a time, swapped in via the redirect
+mechanism and verified against the running game, until nothing is x86 asm and it compiles for any
+platform (incl. ARM). This is the bulk of the remaining reverse-engineering.
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)
 - [ ] Reach the game's render into g_screen_buf -> present via SDL  ->  **port-v0.1.0** (live frame)
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)
