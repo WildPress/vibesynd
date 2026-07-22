@@ -8,7 +8,8 @@ set -e
 cd "$(dirname "$0")/.."
 CC=x86_64-w64-mingw32-gcc
 command -v "$CC" >/dev/null 2>&1 || { echo "missing $CC -- install gcc-mingw-w64-x86-64-win32"; exit 1; }
-SDL=build/sdl2-mingw
+# SDL2 MinGW dev libs: SYN_SDL_MINGW (e.g. the docker image's /opt/sdl2-mingw), else fetched locally
+SDL="${SYN_SDL_MINGW:-build/sdl2-mingw}"
 [ -f "$SDL/lib/libSDL2.dll.a" ] || bash build/get_sdl_mingw.sh
 out=port/build/win
 mkdir -p "$out"

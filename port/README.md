@@ -46,6 +46,23 @@ The port therefore grows in two independent tracks:
 
 The game reads its data with the same code either way; only the boundary changes.
 
+## Reproducible build (Docker)
+
+`docker/port.Dockerfile` pins the whole port toolchain: the 32-bit blob/shim build
+(`gcc-multilib`, `binutils`), the MinGW cross-compiler and SDL2 for the Windows `.exe`, and
+32-bit SDL2 for a live Linux window. No host installs needed.
+
+```
+docker build -t synd-port -f docker/port.Dockerfile .
+docker run --rm -v "$PWD":/work synd-port bash docker/port-build.sh
+# add -v "<your DATA dir>":/gog:ro to also render the title screen to build/rundir/frame.ppm
+```
+
+The image is a *build* environment. The 32-bit blob + shim binaries are Linux ELF (run under
+WSL/Linux), and the Windows `.exe` runs on Windows directly. A live SDL *window* from inside a
+container needs X11/Wayland forwarding to the host, so for the interactive window it's simpler to
+run the built binary under WSLg. Data is never baked into the image.
+
 ## Layers to replace (the shim)
 
 | DOS layer | native replacement |
