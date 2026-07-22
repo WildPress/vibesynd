@@ -87,14 +87,15 @@ int main(int argc, char **argv) {
                     shm->keys[t % SYN_KEYS] = code;
                     shm->key_tail = t + 1;
                 }
-            } else if (e.type == SDL_MOUSEMOTION) {
-                float lx, ly; SDL_RenderWindowToLogical(ren, e.motion.x, e.motion.y, &lx, &ly);
-                shm->mouse_x = (int)lx; shm->mouse_y = (int)ly;
-            } else if (e.type == SDL_MOUSEBUTTONDOWN) {
-                shm->mouse_buttons |= SDL_BUTTON(e.button.button);
-            } else if (e.type == SDL_MOUSEBUTTONUP) {
-                shm->mouse_buttons &= ~SDL_BUTTON(e.button.button);
             }
+        }
+        /* poll the mouse every frame (robust under WSLg) -> logical 320x200 coords + buttons */
+        {
+            int wx, wy; float lx, ly;
+            uint32_t bs = SDL_GetMouseState(&wx, &wy);
+            SDL_RenderWindowToLogical(ren, wx, wy, &lx, &ly);
+            shm->mouse_x = (int)lx; shm->mouse_y = (int)ly;
+            shm->mouse_buttons = (int)bs;   /* SDL mask: bit0 left, bit1 middle, bit2 right */
         }
         if (shm->frame != last) {
             last = shm->frame;

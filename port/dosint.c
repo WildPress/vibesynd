@@ -62,7 +62,7 @@ static int do_int33(greg_t *r) {
     case 0x03: {                                            /* get position + button state */
         /* SDL mask (left=1,middle=2,right=4) -> INT33 (bit0 left, bit1 right, bit2 middle) */
         int b33 = (mb & 1) | ((mb & 4) ? 2 : 0) | ((mb & 2) ? 4 : 0);
-        SET_BX(r, b33); SET_CX(r, mx * 2); SET_DX(r, my); return 1;   /* mode-13h x is 0..639 */
+        SET_BX(r, b33); SET_CX(r, mx * 2); SET_DX(r, my * 2); return 1;  /* game uses 638x398, /2 */
     }
     case 0x01: case 0x02: return 1;                         /* show / hide cursor */
     case 0x04: return 1;                                    /* set position */

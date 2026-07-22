@@ -51,6 +51,10 @@ void plat_present_buf(const unsigned char *buf) {
 extern unsigned char __dgroup[];
 void syn_shm_pump_input(void) {
     if (!g_shm) return;
+    /* mouse position straight into the game's pointer globals (hit-tested against UI boxes),
+     * in addition to the INT33 emulation -- belt and braces so the cursor tracks. */
+    *(short *)(__dgroup + 0x5390) = (short)g_shm->mouse_x;   /* g_mouse_x */
+    *(short *)(__dgroup + 0x5392) = (short)g_shm->mouse_y;   /* g_mouse_y */
     while (g_shm->key_head != g_shm->key_tail) {
         int code = g_shm->keys[g_shm->key_head % SYN_KEYS];
         unsigned char sc = (code >> 8) & 0xff;
