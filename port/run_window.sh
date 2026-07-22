@@ -4,7 +4,7 @@
 set -e
 cd "$(dirname "$0")/.."
 b=port/gen/blob
-[ -x "$b/game_boot" ] && [ -x "$b/viewer" ] || bash port/build_window.sh
+bash port/build_window.sh    # always rebuild (~10s) so a launch never runs stale binaries
 # clear any stale shared-memory segment
 rm -f /dev/shm/syndicate_port_shm 2>/dev/null || true
 ( cd build/rundir && SYN_NODLL=1 exec ../../"$b/game_boot" ) &
