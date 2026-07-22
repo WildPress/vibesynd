@@ -38,8 +38,9 @@ void shim_uninstall_timer_isr(void) {
 void shim_reprogram_pit_ch0(int divisor) { (void)divisor; }   /* rate fixed at ~70 Hz above */
 void shim_frame_throttle(void) { usleep(1000); }              /* yield a little */
 
-/* --- input: no key / no BIOS keyboard for now --- */
-int shim_poll_key(void) { return 0; }
+/* --- input: keys come from the platform backend (shm ring, fed by the SDL viewer) --- */
+extern int plat_poll_key(void);
+int shim_poll_key(void) { return plat_poll_key(); }
 
 /* --- int386(inter, inregs, outregs): the DOS/BIOS call helper. All uses are DOS/video that
  *     the other shims already handle, so this is a no-op returning 0. --- */

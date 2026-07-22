@@ -204,8 +204,11 @@ Then it plays natively.
 - [x] **port-v0.1.0 -- LIVE FRAME**: the game boots natively (startup -> load assets -> intro FLIC),
       and renders the **Syndicate title screen** from the user's own data, in a native process
       (no DOSBox). `port/build_boot.sh` -> frame.ppm.
-- [ ] Input/timing wired to a live SDL window (currently headless PPM + a display thread)
-- [ ] Continue: menu interaction, world map, a mission  ->  **port-v1.0.0** (plays natively)
+- [x] **Live interactive SDL window** (`port/run_window.sh`): the 32-bit game stays SDL-free and
+      publishes its frame + palette to shared memory (port/shm_display.c); a separate 64-bit SDL
+      viewer (port/viewer_sdl.c) presents it in a resizable window and feeds keyboard/mouse back
+      through the shm to the game's input shim. No 32-bit SDL needed. Runs under WSLg.
+- [ ] Continue: title -> menu -> world map -> a mission  ->  **port-v1.0.0** (plays natively)
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)
 - [ ] Reach the game's render into g_screen_buf -> present via SDL  ->  **port-v0.1.0** (live frame)
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)
