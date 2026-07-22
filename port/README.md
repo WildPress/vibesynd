@@ -208,7 +208,11 @@ Then it plays natively.
       publishes its frame + palette to shared memory (port/shm_display.c); a separate 64-bit SDL
       viewer (port/viewer_sdl.c) presents it in a resizable window and feeds keyboard/mouse back
       through the shm to the game's input shim. No 32-bit SDL needed. Runs under WSLg.
-- [ ] Continue: title -> menu -> world map -> a mission  ->  **port-v1.0.0** (plays natively)
+- [x] **Interactive: intro -> main menu -> world map, natively.** The game's keyboard input comes
+      from its INT9 ISR (port 0x60 -> g_text_input_key @0x537e + key-state table @0xe284), not
+      poll_key; the shm keys are pumped straight into those globals (port/shm_display.c). A key
+      leaves the intro, F1-F5 work the menu, F2 (Begin Mission) reaches the world map.
+- [ ] Key-release handling + mouse into the game's globals; into a mission  ->  **port-v1.0.0**
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)
 - [ ] Reach the game's render into g_screen_buf -> present via SDL  ->  **port-v0.1.0** (live frame)
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)

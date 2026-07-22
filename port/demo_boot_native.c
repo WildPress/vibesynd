@@ -15,6 +15,7 @@ extern void plat_video_init(int, int);
 extern void plat_present_buf(const unsigned char *buf);
 extern void plat_set_palette(const unsigned char *rgb768);
 extern int  plat_want_quit(void);
+extern void syn_shm_pump_input(void);                    /* shm keys -> game keyboard globals */
 extern void dosint_get_dac(unsigned char *out768);       /* captured VGA DAC palette */
 
 extern unsigned char __dgroup[];
@@ -28,6 +29,7 @@ static void *display_loop(void *arg) {
     for (;;) {
         unsigned char *src = G_SCREEN_BUF;
         usleep(33000);                         /* ~30 fps */
+        syn_shm_pump_input();                  /* feed keys into the game's keyboard globals */
         dosint_get_dac(pal);
         plat_set_palette(pal);
         plat_present_buf(src ? src : (const unsigned char *)0xa0000);

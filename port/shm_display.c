@@ -45,6 +45,24 @@ void plat_present_buf(const unsigned char *buf) {
 }
 
 /* --- input, fed by the viewer via the shm --- */
+/* The game's keyboard input is filled by its INT9 ISR (reads port 0x60 -> g_text_input_key
+ * @ DGROUP 0x537e, and a key-state table @ 0xe284[scancode]). The ISR never fires natively, so
+ * this pump writes those globals directly from the shm key ring. Call it from the display loop. */
+extern unsigned char __dgroup[];
+void syn_shm_pump_input(void) {
+    if (!g_shm) return;
+    while (g_shm->key_head != g_shm->key_tail) {
+        int code = g_shm->keys[g_shm->key_head % SYN_KEYS];
+        unsigned char sc = (code >> 8) & 0xff;
+        g_shm->key_head++;
+        if (!sc) sc = code & 0xff;             /* ascii-only keys */
+        if (sc) {
+            __dgroup[0x537e] = sc;             /* g_text_input_key -- the "a key" the FLIC waits on */
+            __dgroup[0xe284 + sc] = 1;         /* key-state table: pressed */
+        }
+    }
+}
+
 int plat_poll_key(void) {
     uint32_t h;
     if (!g_shm) return 0;
