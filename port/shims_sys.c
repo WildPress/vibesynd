@@ -10,16 +10,19 @@
 extern unsigned char __dgroup[];
 #define G_TIMER_TICK (*(volatile unsigned *)(__dgroup + 0x10b50))   /* loop waits on this */
 
-/* --- timer: a background thread advances the tick the way the PIT ISR would --- */
+/* --- timer: a background thread advances the tick the way the PIT ISR would.
+ * The PIT runs at 1193182 Hz / divisor; the game programs the divisor, so honour it (a fixed
+ * rate makes timed animations run fast/slow). Default 65536 = the 18.2 Hz power-on rate. --- */
 static pthread_t g_timer_thread;
 static volatile int g_timer_run = 0;
+static volatile unsigned g_tick_us = 54925;   /* 18.2 Hz until the game reprograms it */
 
 static void *timer_loop(void *arg) {
     (void)arg;
     sigset_t m; sigemptyset(&m); sigaddset(&m, SIGALRM);
     pthread_sigmask(SIG_BLOCK, &m, 0);
     while (g_timer_run) {
-        usleep(14000);          /* ~70 Hz, the game's reprogrammed PIT rate */
+        usleep(g_tick_us);
         G_TIMER_TICK++;
     }
     return 0;
@@ -35,7 +38,14 @@ void shim_install_timer_isr(void) {
 void shim_uninstall_timer_isr(void) {
     if (g_timer_run) { g_timer_run = 0; pthread_join(g_timer_thread, 0); }
 }
-void shim_reprogram_pit_ch0(int divisor) { (void)divisor; }   /* rate fixed at ~70 Hz above */
+/* set the tick rate from a PIT divisor (called by the function shim and the port-IO emulator) */
+void syn_set_pit(int divisor) {
+    unsigned d = (unsigned)(divisor & 0xffff);
+    if (d == 0) d = 65536;
+    g_tick_us = (unsigned)(1000000.0 * d / 1193182.0 + 0.5);   /* PIT period in microseconds */
+    if (getenv("SYN_DEBUG")) fprintf(stderr, "[timer] PIT divisor=%u -> %.1f Hz\n", d, 1193182.0 / d);
+}
+void shim_reprogram_pit_ch0(int divisor) { syn_set_pit(divisor); }
 void shim_frame_throttle(void) { usleep(1000); }              /* yield a little */
 
 /* --- input: keys come from the platform backend (shm ring, fed by the SDL viewer) --- */

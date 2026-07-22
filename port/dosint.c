@@ -46,6 +46,30 @@ int g_dac_idx = 0;
 void dosint_get_dac(unsigned char *out768) { int i; for (i = 0; i < 768; i++) out768[i] = g_dac[i]; }
 
 /* DOS/4GW extends int21 file calls to 32-bit: EBX=handle, ECX=count, EDX=flat buf/path. */
+/* mouse position + buttons, provided by the platform backend (weak default = no mouse). */
+void __attribute__((weak)) syn_get_mouse(int *x, int *y, int *b) {
+    if (x) *x = 0; if (y) *y = 0; if (b) *b = 0;
+}
+/* the game programming the PIT divisor (weak default = ignore; shims_sys sets the tick rate). */
+void __attribute__((weak)) syn_set_pit(int divisor) { (void)divisor; }
+
+/* INT 33h mouse driver. AX is the function number. Reports the shm mouse to the game. */
+static int do_int33(greg_t *r) {
+    int fn = (int)(r[REG_EAX] & 0xffff), mx = 0, my = 0, mb = 0;
+    syn_get_mouse(&mx, &my, &mb);
+    switch (fn) {
+    case 0x00: SET_AX(r, 0xffff); SET_BX(r, 2); return 1;   /* reset: installed, 2 buttons */
+    case 0x03: {                                            /* get position + button state */
+        /* SDL mask (left=1,middle=2,right=4) -> INT33 (bit0 left, bit1 right, bit2 middle) */
+        int b33 = (mb & 1) | ((mb & 4) ? 2 : 0) | ((mb & 2) ? 4 : 0);
+        SET_BX(r, b33); SET_CX(r, mx * 2); SET_DX(r, my); return 1;   /* mode-13h x is 0..639 */
+    }
+    case 0x01: case 0x02: return 1;                         /* show / hide cursor */
+    case 0x04: return 1;                                    /* set position */
+    default: SET_AX(r, 0); return 1;
+    }
+}
+
 static int do_int21(int ah, greg_t *r) {
     switch (ah) {
     case 0x3f: {   /* read  */
@@ -134,7 +158,7 @@ static void on_trap(int sig, siginfo_t *si, void *ucv) {
         else if (n == 0x16) {                           /* keyboard BIOS */
             if (ah == 0x01) { uc->uc_mcontext.gregs[REG_EFL] |= 0x40; }  /* ZF: no key */
             SET_AX(r, 0); handled = 1;
-        } else if (n == 0x33) { SET_AX(r, 0); handled = 1; }  /* mouse: absent */
+        } else if (n == 0x33) { handled = do_int33(r); }   /* mouse -> the shm mouse */
         else if (n == 0x31) { CLC(r); handled = 1; }          /* DPMI: succeed */
         if (handled) { r[REG_EIP] = eip + 2; return; }
         fprintf(stderr, "\nunhandled int 0x%02x AH=0x%02x at manifest 0x%x\n",
@@ -187,8 +211,14 @@ static void on_trap(int sig, siginfo_t *si, void *ucv) {
             int len = idx + 1 + (imm ? 1 : 0);
             if (is_out) {
                 unsigned port = imm ? p[idx + 1] : (r[REG_EDX] & 0xffff);
-                if (port == 0x3c8) g_dac_idx = (r[REG_EAX] & 0xff) * 3;
-                else if (port == 0x3c9) g_dac[(g_dac_idx++) % 768] = r[REG_EAX] & 0xff;
+                unsigned val = r[REG_EAX] & 0xff;
+                if (port == 0x3c8) g_dac_idx = val * 3;
+                else if (port == 0x3c9) g_dac[(g_dac_idx++) % 768] = val;
+                else if (port == 0x40) {                 /* PIT channel 0 divisor: low byte then high */
+                    static int lo = -1;
+                    if (lo < 0) lo = val;
+                    else { syn_set_pit(lo | (val << 8)); lo = -1; }
+                }
                 r[REG_EIP] = eip + len; return;
             }
             if (is_in) {

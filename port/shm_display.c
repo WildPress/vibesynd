@@ -76,6 +76,8 @@ void plat_mouse(int *x, int *y, int *b) {
     if (g_shm) { if (x) *x = g_shm->mouse_x; if (y) *y = g_shm->mouse_y; if (b) *b = g_shm->mouse_buttons; }
     else { if (x) *x = 0; if (y) *y = 0; if (b) *b = 0; }
 }
+/* the INT33 emulator (port/dosint.c) reads the mouse through this (overrides its weak default) */
+void syn_get_mouse(int *x, int *y, int *b) { plat_mouse(x, y, b); }
 int plat_want_quit(void) { return g_shm ? (int)g_shm->quit : 0; }
 
 uint32_t plat_ticks_ms(void) { return 0; }

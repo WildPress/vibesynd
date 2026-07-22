@@ -212,7 +212,11 @@ Then it plays natively.
       from its INT9 ISR (port 0x60 -> g_text_input_key @0x537e + key-state table @0xe284), not
       poll_key; the shm keys are pumped straight into those globals (port/shm_display.c). A key
       leaves the intro, F1-F5 work the menu, F2 (Begin Mission) reaches the world map.
-- [ ] Key-release handling + mouse into the game's globals; into a mission  ->  **port-v1.0.0**
+- [x] **Mouse wired**: INT33 emulated (get position/buttons) from the shm mouse (port/dosint.c
+      do_int33 -> syn_get_mouse); clicking the menu/world-map works. mode-13h x doubled (0..639).
+- [x] Timer rate honours the game's programmed PIT divisor (captured via out 0x40 in the emulator):
+      the game asks for divisor 16384 = 72.8 Hz, so animations run at the intended speed, not fixed.
+- [ ] Key-release handling; into a mission  ->  **port-v1.0.0** (plays natively)
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)
 - [ ] Reach the game's render into g_screen_buf -> present via SDL  ->  **port-v0.1.0** (live frame)
 - [ ] Input, timing, audio backends  ->  **port-v1.0.0** (plays a mission natively)
