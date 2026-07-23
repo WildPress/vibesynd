@@ -47,6 +47,7 @@ void plat_present_buf(const unsigned char *buf) {
     plat_present();
 }
 
+void syn_shm_pump_input(void) {}   /* headless: no input source to pump */
 int  plat_poll_key(void) { return 0; }
 void plat_mouse(int *x, int *y, int *b) { if (x) *x = 0; if (y) *y = 0; if (b) *b = 0; }
 int  plat_want_quit(void) { return g_frames >= 1; }

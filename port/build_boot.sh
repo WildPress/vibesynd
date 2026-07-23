@@ -27,6 +27,6 @@ as --32 -o "$b/game_blob.o" "$b/game_blob.s"
 as --32 -o "$b/dgroup.o"    port/gen/blob/dgroup_fixed.s
 gcc -m32 -no-pie -fno-pie -z noexecstack -O2 \
     port/demo_boot_native.c port/shims_file.c port/shims_video.c port/shims_mem.c \
-    port/shims_sys.c port/shims_dos.c port/dosint.c port/gfx_soft.c port/platform_headless.c \
+    port/shims_sys.c port/shims_dos.c port/dosint.c port/dosint_core.c port/gfx_soft.c port/platform_headless.c \
     "$b/game_blob.o" "$b/dgroup.o" -lpthread -o "$b/demo_boot_native"
 cd "$run" && SYN_NODLL=1 SYN_FRAME_OUT=frame.ppm timeout "${SYN_TIMEOUT:-12}" ../../port/gen/blob/demo_boot_native
