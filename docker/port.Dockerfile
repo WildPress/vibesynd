@@ -21,18 +21,20 @@ RUN dpkg --add-architecture i386 \
       ca-certificates curl xz-utils tar \
       python3 \
       build-essential gcc-multilib g++-multilib binutils \
-      gcc-mingw-w64-x86-64-win32 \
+      gcc-mingw-w64-x86-64-win32 gcc-mingw-w64-i686-win32 \
       libsdl2-dev libsdl2-dev:i386 \
  && rm -rf /var/lib/apt/lists/*
 
-# SDL2's prebuilt MinGW dev libraries (headers + import lib + SDL2.dll) for the Windows .exe.
-# build_win.sh picks these up via SYN_SDL_MINGW.
+# SDL2's prebuilt MinGW dev libraries (headers + import lib + SDL2.dll) for the Windows .exe --
+# both the 64-bit (render demo) and 32-bit (the native game .exe) arches.
 ARG SDL_VER=2.30.11
 RUN curl -fsSL "https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VER}/SDL2-devel-${SDL_VER}-mingw.tar.gz" \
       | tar -xz -C /tmp \
- && mkdir -p /opt/sdl2-mingw \
+ && mkdir -p /opt/sdl2-mingw /opt/sdl2-mingw32 \
  && cp -r "/tmp/SDL2-${SDL_VER}/x86_64-w64-mingw32/." /opt/sdl2-mingw/ \
+ && cp -r "/tmp/SDL2-${SDL_VER}/i686-w64-mingw32/."   /opt/sdl2-mingw32/ \
  && rm -rf "/tmp/SDL2-${SDL_VER}"
 ENV SYN_SDL_MINGW=/opt/sdl2-mingw
+ENV SYN_SDL_MINGW32=/opt/sdl2-mingw32
 
 WORKDIR /work

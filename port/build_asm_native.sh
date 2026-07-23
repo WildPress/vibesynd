@@ -27,6 +27,8 @@ PY
 for s in rnc_read_be_len rnc_input_bits rnc_read_huffman rnc_make_huffman rnc_decompress; do
     as --32 -o "$gen/$s.o" "$gen/$s.s"
 done
-gcc -m32 -O2 -no-pie -fno-pie -z noexecstack port/demo_asm_native.c "$gen"/*.o -o "$gen/demo_asm_native"
+# -ffixed-ebx: the game's asm is Watcom (ebx = caller-saved scratch), but the C ABI treats ebx
+# as callee-saved; reserving it keeps gcc from parking a live value there across the asm call.
+gcc -m32 -O2 -no-pie -fno-pie -ffixed-ebx -z noexecstack port/demo_asm_native.c "$gen"/*.o -o "$gen/demo_asm_native"
 echo "built: $gen/demo_asm_native"
 "$gen/demo_asm_native" "$@"
