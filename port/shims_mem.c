@@ -7,8 +7,21 @@
  */
 #include <stdlib.h>
 #include <stdint.h>
-#include <sys/mman.h>
 
+#ifdef _WIN32
+#include <windows.h>
+static void *xalloc(size_t sz) {
+    size_t total = sz + 16;
+    void *m = VirtualAlloc(NULL, total, MEM_RESERVE | MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+    if (!m) return NULL;
+    *(size_t *)m = total;
+    return (char *)m + 16;
+}
+static void xfree(void *p) {
+    if (p) { char *m = (char *)p - 16; VirtualFree(m, 0, MEM_RELEASE); }
+}
+#else
+#include <sys/mman.h>
 static void *xalloc(size_t sz) {
     size_t total = sz + 16;
     void *m = mmap(NULL, total, PROT_READ | PROT_WRITE | PROT_EXEC,
@@ -20,6 +33,7 @@ static void *xalloc(size_t sz) {
 static void xfree(void *p) {
     if (p) { char *m = (char *)p - 16; munmap(m, *(size_t *)m); }
 }
+#endif
 
 /* os_getmem(size) -- DPMI/DOS block alloc, page-rounded. */
 void *shim_os_getmem(int size) {
