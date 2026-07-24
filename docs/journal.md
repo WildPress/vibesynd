@@ -925,3 +925,64 @@ data. The platform underneath it, the relocated code, the data fixups, the shims
 handler, is the whole port carrying a real frame. What is left after that is breadth, a live window
 and input and the walk from the title into a mission, not another wall of the kind that had to be
 broken to get here. The full write-up is in [running the game natively](native-port).
+
+## The same game, on Windows, in a live window
+
+The last entry ended on a promise: what was left was breadth, a live window and the same code on
+Windows, not another wall. This is that breadth, and it went about as expected, with two surprises
+that were worth the trip.
+
+The instinct was to prove the risky part first. Running the whole game on Windows is a big claim,
+so rather than build all of it and hope, the first step was to run one routine. The RNC
+decompressor, a self-contained piece of the game's own assembly, assembled as a Windows object,
+linked with a tiny C harness, and asked to unpack a real palette from the user's data. If the
+game's actual machine code could do that in a native Windows process, the whole relocation
+pipeline worked. If it could not, better to know on one routine than on all of it.
+
+It did not link. The error was an undefined `_obj2`, and it is a detail every Windows toolchain
+carries: a 32-bit object file writes an underscore in front of every C name. The C variable
+`__obj2` is really the symbol `___obj2`, and a call to `rnc_decompress` is a call to
+`_rnc_decompress`. The assembly the emitters produced used the bare names, so the two halves could
+not find each other. The fix was small once seen, a switch that makes the emitters prefix every
+symbol on a Windows target and leave them alone on Linux. It linked.
+
+Then it ran, and returned the right length, seven hundred and sixty-eight bytes, with the wrong
+contents. The maximum byte was a value no six-bit palette entry could hold, and the decompressed
+bytes themselves were perfect, identical to the Linux run. So the output was right but a variable
+that read it was wrong. The tell was that the variable was set to zero before the call and never
+updated after, which only happens if the zero was living in a register the call destroyed.
+
+That is the second surprise, and it is the one worth remembering. The game's assembly is Watcom,
+and Watcom treats `ebx` as a scratch register, free to clobber. The C world treats `ebx` as
+something a called function must preserve. So the C compiler stored a value in `ebx`, called into
+the game's assembly, and the assembly quite correctly, by its own rules, overwrote it. On Linux
+the compiler had happened to use a different register and the bug stayed hidden. On Windows it
+surfaced as a wrong number, and then, once a pointer landed in `ebx` instead of a number, as a
+crash. The cure is to tell the compiler never to use `ebx` in any code that calls into the game.
+One flag, and it was correct on both platforms. Finding it on one routine, rather than deep in a
+booting game, was the whole reason to start small.
+
+With those two understood, the rest was scale and plumbing. The whole code blob and its data image
+assembled and linked as Windows objects with nothing undefined. The fault emulator, which had been
+welded to POSIX signals, split into a core that works on a plain register array and knows nothing
+of any operating system, and two thin adapters, one for the signal handler and one for the Windows
+Vectored Exception Handler. On Windows the game's `int 0x21` arrives as an access violation and its
+`in` and `out` as privileged-instruction faults, but once the handler has the registers it is the
+same code servicing them. The last few shims that still spoke POSIX, the executable allocator and
+the timer thread, grew a Windows branch. And then a Windows console `.exe` booted the whole game
+through its own startup and rendered the title screen to a file, from the user's own data, with no
+DOSBox and no WSL under it. The frame matched Linux.
+
+The live window was the cleaner half. On Linux the window had to be a second process, a 64-bit SDL
+viewer talking to the 32-bit game over shared memory, only because the SDL on that desktop was
+64-bit and could not share the 32-bit game's address space. Windows has a 32-bit SDL, so that whole
+split was unnecessary. The SDL backend links straight into the game, the game runs on one thread,
+and the window and its input run on another. One binary, `syndicate_win.exe`, and the game's own
+code draws the title screen in a real window with the keyboard and mouse wired in.
+
+So the port now stands the same on both platforms, on Linux as a headless frame and a two-process
+window, and on Windows as a single native `.exe` that opens a window on its own. What is left is
+no longer a matter of whether the game's code can run natively, that is settled. It is depth: the
+walk from the title into a mission driven the whole way through, sound, and eventually turning the
+hot-path assembly into portable C so the same game can run somewhere that is neither Linux nor
+Windows. The reference for that last, largest piece is the byte-exact work still going on `main`.
